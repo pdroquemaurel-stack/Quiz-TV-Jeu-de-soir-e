@@ -19,30 +19,33 @@ stateDiagram-v2
     question --> revelation: tous ont répondu ou 20 s
     revelation --> question: après 8 s ou « Suivant »
     revelation --> podium: après la 10e question
-    podium --> question: l'hôte appuie sur « Rejouer »
+    podium --> question: l'hôte appuie sur « Rejouer » (≥ 2 joueurs)
     podium --> [*]: 30 min sans connexion
 ```
+
+La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver dans n'importe quel état, pas seulement au podium.
 
 1. **Création de la salle.** À l'ouverture de l'app, la TV demande une salle au serveur. Elle affiche un grand QR code, le code de salle en 4 lettres et la liste des joueurs (vide).
 2. **Arrivée des joueurs.** Chaque joueur scanne le QR code (ou tape le code), saisit un pseudo et apparaît sur la TV avec sa couleur. Le premier arrivé devient l'hôte (couronne sur la TV).
 3. **Lancement.** L'hôte voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
 4. **Question.** La TV affiche la question, les 4 réponses (couleur + forme), le chrono de 20 s et qui a déjà répondu. Les téléphones affichent 4 gros boutons. Un joueur répond une seule fois, sans changer d'avis.
-5. **Révélation.** Dès que tous les joueurs connectés ont répondu, ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, puis le classement. Chaque téléphone affiche « Bonne réponse, +740 » ou « Raté ».
+5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, puis le classement. Chaque téléphone affiche « Bonne réponse, +740 » ou « Raté ».
 6. **Enchaînement.** Passage automatique après 8 s. L'hôte peut accélérer avec « Suivant ».
 7. **Fin.** Après 10 questions, la TV affiche le podium et les téléphones le rang de chacun.
-8. **Rejouer.** L'hôte appuie sur « Rejouer » : mêmes joueurs, scores remis à zéro, nouvelles questions jamais vues dans cette salle.
+8. **Rejouer.** L'hôte appuie sur « Rejouer », actif dès 2 joueurs connectés : mêmes joueurs, scores remis à zéro, nouvelles questions jamais vues dans cette salle.
 
 ## Fonctionnalités du MVP
 
 ### Salle
 - Création automatique d'une salle à l'ouverture de l'app TV (code de 4 lettres, QR code vers la page joueur)
-- 2 à 10 joueurs, 1 joueur autorisé en mode développeur
-- Rôle d'hôte pour le premier arrivé, transféré automatiquement s'il se déconnecte
-- Fermeture automatique après 30 min sans aucune connexion
+- 2 à 10 joueurs connectés, 1 joueur autorisé en mode développeur (`MODE_DEV=1`)
+- Rôle d'hôte pour le premier arrivé, transféré automatiquement après 10 s de déconnexion
+- Fermeture automatique après 30 min sans aucune connexion, dans n'importe quel état. Tant que la TV est connectée, la salle reste ouverte.
+- Jeton secret remis à la TV à la création de la salle, exigé pour s'y reconnecter
 
 ### Joueur
 - Rejoindre par QR code ou par saisie du code
-- Pseudo unique de 1 à 12 caractères, couleur attribuée automatiquement
+- Pseudo unique de 1 à 12 caractères, couleur attribuée automatiquement (voir « Couleurs »)
 - Reconnexion automatique avec conservation du pseudo et du score
 - Écran maintenu allumé pendant la partie (Wake Lock)
 
@@ -87,8 +90,8 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
   `points = arrondi(1000 - 500 × t / 20)`
 
   Ici, `t` est le temps écoulé en secondes, mesuré par le serveur à la réception de la réponse. On n'utilise jamais l'horloge du téléphone.
-- La manche se termine dès que tous les joueurs connectés ont répondu, ou à 20 s.
-- Classement par score total. En cas d'égalité, les joueurs partagent le même rang, sans départage.
+- **Fin anticipée** : la manche se termine dès que tous les joueurs attendus ont répondu, ou à 20 s. Les joueurs attendus sont ceux qui étaient connectés au début de la manche et qui le sont encore. Un joueur arrivé en cours de manche n'est pas attendu. Si un joueur attendu se déconnecte, on vérifie à nouveau si tous les autres ont répondu.
+- Classement par score total. En cas d'égalité, les joueurs partagent le même rang, sans départage, et le rang suivant est sauté : 1, 1, 3.
 
 ### Modes futurs (hors MVP, intentions à préciser)
 
@@ -100,12 +103,13 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 
 | Situation | Comportement |
 |---|---|
-| Joueur déconnecté | Grisé sur la TV, garde son score, ne bloque pas la manche. Jamais supprimé pendant une partie. |
+| Joueur déconnecté pendant une partie | Grisé sur la TV, garde son score et son pseudo (réservé), ne bloque pas la manche. Jamais supprimé pendant une partie. |
+| Joueur déconnecté en salle d'attente | Retiré de la salle après 10 s de déconnexion. |
 | Joueur qui revient | Retrouve pseudo et score grâce à son identifiant mémorisé, et reprend à l'écran en cours. |
-| Hôte absent plus de 10 s | Le rôle passe au joueur connecté arrivé juste après. L'ancien hôte ne le récupère pas à son retour. |
+| Hôte déconnecté plus de 10 s | Dans tous les états, le rôle passe au joueur connecté arrivé le plus tôt (`arriveeA`). Si aucun autre joueur n'est connecté, l'hôte ne change pas. L'ancien hôte ne récupère pas le rôle à son retour. |
 | Arrivée en cours de partie | Acceptée avec 0 point, joue à partir de la question suivante. Le QR code reste visible dans un coin. |
-| Pseudo déjà pris | Message « Pseudo déjà pris », saisie à refaire. |
-| 11e joueur | Message « Salle pleine (10 max) ». |
+| Pseudo déjà pris | Message « Pseudo déjà pris », saisie à refaire. Les espaces de début et de fin sont retirés, et la comparaison ignore la casse (« paul » = « Paul »). |
+| 11e joueur | Message « Salle pleine (10 max) ». Seuls les joueurs connectés comptent. |
 | Code de salle inconnu ou salle fermée | Message « Salle introuvable ». |
 | Moins de 2 joueurs connectés en cours de partie | La partie continue. |
 | TV rechargée ou coupée | La TV se reconnecte à sa salle et reprend l'état en cours. |
@@ -129,7 +133,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`bonneReponse` est l'index de la bonne réponse (de 0 à 3). L'ordre d'affichage est mélangé à chaque tirage. La `difficulte` va de 1 (facile) à 3 (difficile).
+`bonneReponse` est l'index de la bonne réponse (de 0 à 3). L'ordre d'affichage est mélangé à chaque tirage, et `bonneReponse` est alors recalculé pour pointer vers la même réponse. Un test automatique vérifie ce recalcul. La `difficulte` va de 1 (facile) à 3 (difficile).
 
 ### Joueur
 
@@ -137,7 +141,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 {
   "id": "j_8f3k2a",
   "pseudo": "Paul",
-  "couleur": "#E4572E",
+  "couleur": "#FF8C1A",
   "score": 2740,
   "connecte": true,
   "socketId": "aXc91...",
@@ -156,6 +160,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "etat": "question",
   "hoteId": "j_8f3k2a",
   "tvSocketId": "Zp0e4...",
+  "jetonTv": "t_91kd02mz4q...",
   "joueurs": ["...objets Joueur..."],
   "questionsVues": ["q0042", "q0107"],
   "derniereActiviteA": 1758641200000,
@@ -168,7 +173,9 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`etat` vaut `lobby`, `question`, `revelation` ou `podium`. Les timers (20 s, 8 s, 10 s pour l'hôte) sont gérés par le serveur.
+`etat` vaut `lobby`, `question`, `revelation` ou `podium`. Les timers (20 s, 8 s, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
+
+`jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
 ### Événements Socket.IO
 
@@ -176,17 +183,17 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 
 | Événement | Sens | Contenu |
 |---|---|---|
-| `tv:creer` | TV → serveur | code de l'ancienne salle, facultatif, pour s'y reconnecter |
+| `tv:creer` | TV → serveur | code et `jetonTv` de l'ancienne salle, facultatifs, pour s'y reconnecter. Sans jeton valide, une nouvelle salle est créée. |
 | `joueur:rejoindre` | téléphone → serveur | code, pseudo, id mémorisé éventuel |
 | `hote:lancer` | téléphone de l'hôte → serveur | rien |
 | `joueur:repondre` | téléphone → serveur | index du choix |
 | `hote:suivant` | téléphone de l'hôte → serveur | rien |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien |
-| `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions |
+| `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. |
 | `joueur:etat` | serveur → un téléphone | vue personnalisée : écran à afficher, a déjà répondu, résultat, rang, est hôte |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
 
-Le téléphone ne reçoit jamais la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.
+Ni le téléphone ni la TV ne reçoivent la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.
 
 ## Écrans à concevoir
 
@@ -200,7 +207,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), « En attente que l'hôte lance » |
 | Question | Numéro (3/10), texte, 4 réponses (couleur + forme ▲ ◆ ● ■), chrono, pastilles des joueurs ayant répondu, petit QR code dans un coin |
 | Révélation | Bonne réponse mise en avant, nombre de réponses par choix, qui a eu juste, puis classement avec les points gagnés |
-| Podium | Top 3 (ex æquo possibles), classement complet dessous, « L'hôte peut relancer » |
+| Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3), classement complet dessous, « L'hôte peut relancer » |
 | Quitter ? | Boîte de confirmation déclenchée par la touche Retour |
 
 ### Téléphone (portrait)
@@ -208,13 +215,41 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Rejoindre | Code pré-rempli depuis le QR code, champ pseudo, bouton « Entrer », messages d'erreur |
-| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : bouton « Lancer la partie » (inactif sous 2 joueurs) |
+| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : bouton « Lancer la partie » (inactif sous 2 joueurs connectés) |
 | Répondre | 4 gros boutons couleur + forme, sans texte, qui occupent tout l'écran |
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
 | Résultat | « Bonne réponse, +740 » ou « Raté », rang actuel. Pour l'hôte : bouton « Suivant » |
-| Fin | Rang final et score. Pour l'hôte : bouton « Rejouer » |
+| Fin | Rang final et score. Pour l'hôte : bouton « Rejouer » (inactif sous 2 joueurs connectés) |
 | En attente de la prochaine question | Pour un joueur arrivé en cours de manche |
 | Reconnexion | Bandeau « Reconnexion… » quand la connexion saute |
+
+### Couleurs
+
+Proposition, à valider sur la vraie TV à la tranche 7. Les réponses ne sont jamais identifiées par la couleur seule : la forme les distingue toujours.
+
+Réponses :
+
+| Forme | Couleur |
+|---|---|
+| ▲ | Rouge `#E21B3C` |
+| ◆ | Bleu `#1368CE` |
+| ● | Jaune `#FFC400` |
+| ■ | Vert `#26890C` |
+
+Joueurs, attribués dans cet ordre (première couleur libre) :
+
+| # | Couleur |
+|---|---|
+| 1 | Orange `#FF8C1A` |
+| 2 | Rose `#FF5CA8` |
+| 3 | Violet `#9B5DE5` |
+| 4 | Cyan `#00C2D1` |
+| 5 | Menthe `#3DDC97` |
+| 6 | Citron vert `#B5E61D` |
+| 7 | Brun `#A0522D` |
+| 8 | Blanc `#F1F1F1` |
+| 9 | Bleu ciel `#8EC5FF` |
+| 10 | Gris `#8A8F98` |
 
 ## Contraintes techniques
 
@@ -248,6 +283,16 @@ Limites connues (doc Render) :
 - HTTPS obligatoire en production : l'API Wake Lock ne fonctionne qu'en HTTPS. En développement local (http sur le Wi-Fi), elle est simplement ignorée.
 - Page joueur testée sur Chrome Android et Safari iOS récents.
 - Socket.IO gère les reconnexions. L'identité du joueur repose sur son `id` mémorisé dans le `localStorage`, pas sur le socket.
+- Tests à plusieurs onglets : avec le paramètre `?dev` dans l'URL de la page joueur, l'`id` est mémorisé dans le `sessionStorage` au lieu du `localStorage`. Chaque onglet devient ainsi un joueur distinct.
+
+### Configuration
+
+| Variable d'environnement | Rôle | Par défaut |
+|---|---|---|
+| `URL_PUBLIQUE` | Adresse de base encodée dans le QR code et affichée sous celui-ci | L'IP locale du PC sur le Wi-Fi (par exemple `http://192.168.1.20:3000`), pour que les téléphones puissent l'ouvrir |
+| `MODE_DEV` | `1` autorise une partie à 1 joueur (lancer et rejouer) | Désactivé |
+
+Dépendance validée pour le QR code : `qrcode`.
 
 ## Tranches de développement
 
@@ -256,12 +301,12 @@ On découpe en 10 tranches. Chacune se termine par un test concret, et tout se f
 1. **Squelette.** Serveur Node + Express + Socket.IO, pages `/tv` et `/joueur` vides, route `/sante`.
    *Test : un message tapé dans l'onglet joueur s'affiche dans l'onglet TV.*
 2. **Salle d'attente.** Création de salle (code de 4 lettres + QR code), rejoindre avec un pseudo, liste des joueurs en direct, hôte = premier arrivé, erreurs (pseudo pris, salle pleine, salle introuvable).
-   *Test : 3 onglets joueurs apparaissent sur la TV, et un 2e « Paul » est refusé.*
-3. **Boucle de quiz minimale.** L'hôte lance, 3 questions écrites en dur, les joueurs répondent, révélation, « Suivant » manuel, fin. Mode développeur à 1 joueur.
+   *Test : 3 onglets joueurs (avec `?dev`) apparaissent sur la TV, et un 2e « Paul » (ou « paul ») est refusé.*
+3. **Boucle de quiz minimale.** L'hôte lance, 3 questions écrites en dur, les joueurs répondent, révélation, « Suivant » manuel, fin. Mode développeur à 1 joueur (`MODE_DEV=1`).
    *Test : partie complète seul, en 2 onglets.*
 4. **Règles complètes.** Chrono 20 s côté serveur, fin anticipée, points dégressifs, enchaînement automatique après 8 s, classement avec ex æquo, podium, « Rejouer ».
    *Test : les scores correspondent à la formule, et une égalité donne le même rang.*
-5. **Banque de questions.** `questions.json` d'environ 200 questions (générées avec Claude, relues par Paul), tirage sans répétition dans la salle, mélange de l'ordre des réponses, script qui vérifie le format du fichier.
+5. **Banque de questions.** `questions.json` d'environ 200 questions (générées avec Claude, relues par Paul), tirage sans répétition dans la salle, mélange de l'ordre des réponses (avec test automatique du recalcul de `bonneReponse`), script qui vérifie le format du fichier.
    *Test : 3 parties d'affilée sans aucune question répétée.*
 6. **Robustesse.** Reconnexion des joueurs, transfert de l'hôte après 10 s, arrivée en cours de partie, reconnexion de la TV, fermeture des salles après 30 min.
    *Test : sur de vrais téléphones en Wi-Fi local, verrouiller un téléphone, couper l'hôte, recharger la TV.*
