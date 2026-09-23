@@ -60,6 +60,8 @@ docs/spec.md
 - **Une tranche à la fois** (voir « Tranches de développement » dans la spec). Ne code rien qui appartient à une tranche suivante ou au hors-périmètre.
 - Commence chaque tranche par un plan, que je valide avant tout code.
 - La logique pure (calcul des points, classement avec ex æquo, tirage des questions) a des tests automatiques.
-- En fin de tranche, exécute toi-même le test décrit dans la spec (serveur lancé, onglets TV et joueurs dans le navigateur) et dis-moi ce que tu as vérifié.
 - Jusqu'à la tranche 9, la TV est un onglet de navigateur en 1920x1080.
-- Un commit par tranche terminée, message en français.
+- Quand le code d'une tranche est prêt, lance les tests automatiques.
+- Donne-moi ensuite des instructions pas à pas pour faire moi-même le test de la spec : quoi lancer, quelles URL ouvrir, quoi faire, et ce que je dois observer.
+- Attends mon retour. Ne commite jamais sans m'avoir demandé explicitement « Je peux commiter ? ».
+- Ne t'écarte jamais d'un plan validé sans me demander.
