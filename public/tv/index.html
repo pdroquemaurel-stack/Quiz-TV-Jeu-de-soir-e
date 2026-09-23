@@ -3,10 +3,22 @@
 <head>
   <meta charset="utf-8">
   <title>Quiz TV</title>
+  <link rel="stylesheet" href="/commun/commun.css">
+  <link rel="stylesheet" href="/tv/tv.css">
 </head>
 <body>
-  <h1>Quiz TV</h1>
-  <ul id="messages"></ul>
+  <main id="lobby" hidden>
+    <section class="rejoindre">
+      <img id="qr" alt="QR code pour rejoindre">
+      <p class="url" id="url"></p>
+      <p class="code">Code : <strong id="code"></strong></p>
+    </section>
+    <section class="joueurs">
+      <h1>Joueurs</h1>
+      <ul id="liste-joueurs"></ul>
+      <p class="attente">En attente que l'hôte lance</p>
+    </section>
+  </main>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/tv/tv.js"></script>

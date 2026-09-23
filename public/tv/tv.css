@@ -1,0 +1,48 @@
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  font-size: 40px;
+}
+
+#lobby {
+  display: flex;
+  height: 100%;
+  padding: 80px;
+  gap: 120px;
+}
+
+.rejoindre {
+  text-align: center;
+}
+
+#qr {
+  width: 600px;
+  height: 600px;
+  background: #fff;
+  border-radius: 24px;
+}
+
+.code strong {
+  font-size: 120px;
+  letter-spacing: 12px;
+}
+
+.joueurs {
+  flex: 1;
+}
+
+#liste-joueurs {
+  list-style: none;
+  padding: 0;
+  font-size: 56px;
+  columns: 2;
+}
+
+#liste-joueurs li {
+  margin-bottom: 24px;
+}
+
+.attente {
+  opacity: 0.7;
+}

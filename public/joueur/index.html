@@ -4,12 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quiz TV — Joueur</title>
+  <link rel="stylesheet" href="/commun/commun.css">
+  <link rel="stylesheet" href="/joueur/joueur.css">
 </head>
 <body>
-  <form id="formulaire">
-    <input id="texte" type="text" maxlength="200" autocomplete="off" placeholder="Ton message">
-    <button type="submit">Envoyer</button>
-  </form>
+  <main id="ecran-rejoindre">
+    <h1>Quiz TV</h1>
+    <form id="formulaire">
+      <label>Code de la salle
+        <input id="code" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" required>
+      </label>
+      <label>Ton pseudo
+        <input id="pseudo" type="text" maxlength="12" autocomplete="off" required>
+      </label>
+      <p id="message-erreur" class="erreur" hidden></p>
+      <button type="submit">Entrer</button>
+    </form>
+  </main>
+
+  <main id="ecran-attente" hidden>
+    <p class="bienvenue">Tu es dans la salle</p>
+    <p id="mon-pseudo" class="mon-pseudo"></p>
+    <p id="est-hote" hidden>Tu es l'hôte 👑</p>
+  </main>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/joueur/joueur.js"></script>

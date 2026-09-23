@@ -1,0 +1,55 @@
+main {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+input,
+button {
+  font-size: 1.4rem;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+}
+
+#code {
+  text-transform: uppercase;
+  letter-spacing: 6px;
+}
+
+button {
+  background: #fff;
+  color: #1b1340;
+  font-weight: bold;
+}
+
+.erreur {
+  color: #ff8a8a;
+  font-weight: bold;
+}
+
+#ecran-attente {
+  color: #1b1340;
+  font-size: 1.4rem;
+}
+
+.mon-pseudo {
+  font-size: 2.5rem;
+  font-weight: bold;
+}

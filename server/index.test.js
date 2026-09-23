@@ -12,3 +12,13 @@ test('/sante répond 200', async () => {
   assert.deepEqual(await reponse.json(), { ok: true });
   serveur.close();
 });
+
+test('/qr d\'une salle inconnue répond 404', async () => {
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+
+  const reponse = await fetch(`http://localhost:${port}/qr/ZZZZ.svg`);
+
+  assert.equal(reponse.status, 404);
+  serveur.close();
+});
