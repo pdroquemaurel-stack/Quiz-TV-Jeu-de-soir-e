@@ -54,14 +54,14 @@ test('seul l\'hôte peut terminer la partie', async () => {
   await attendre(autre, 'joueur:etat');
   hote.emettre('hote:lancer');
   await attendre(autre, 'joueur:etat');
-  assert.equal(salle.etat, 'question');
+  assert.equal(salle.etat, 'partie');
 
   autre.emettre('hote:terminer');
   // L'autre joueur répond ensuite : quand il reçoit la mise à jour de sa réponse,
   // le serveur a forcément déjà traité son hote:terminer (même socket, même ordre).
   autre.emettre('joueur:repondre', 0);
   await attendre(autre, 'joueur:etat');
-  assert.equal(salle.etat, 'question');
+  assert.equal(salle.etat, 'partie');
 
   hote.emettre('hote:terminer');
   await attendre(autre, 'joueur:etat');

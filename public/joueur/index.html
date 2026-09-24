@@ -41,7 +41,7 @@
     <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
   </main>
 
-  <main data-ecran="repondre" hidden>
+  <main data-ecran="quiz-repondre" hidden>
     <div class="boutons-choix">
       <button class="choix choix-0 fond-choix-0" data-choix="0" aria-label="Triangle rouge"><span class="forme"></span></button>
       <button class="choix choix-1 fond-choix-1" data-choix="1" aria-label="Losange bleu"><span class="forme"></span></button>
@@ -55,13 +55,13 @@
     <p class="discret">Regarde la TV</p>
   </main>
 
-  <main data-ecran="reponse_envoyee" hidden>
+  <main data-ecran="quiz-reponse_envoyee" hidden>
     <div id="choix-envoye" class="choix choix-envoye rebond"><span class="forme"></span></div>
     <p class="gros-texte">Réponse envoyée</p>
     <p class="discret">Regarde la TV</p>
   </main>
 
-  <main data-ecran="resultat" hidden>
+  <main data-ecran="quiz-resultat" hidden>
     <p id="resultat" class="carte-resultat rebond"></p>
     <p>Score : <strong id="score-resultat"></strong></p>
     <p>Rang : <strong id="rang-resultat"></strong></p>
@@ -93,5 +93,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/joueur/joueur.js"></script>
+  <script src="/joueur/modes/quiz.js"></script>
 </body>
 </html>

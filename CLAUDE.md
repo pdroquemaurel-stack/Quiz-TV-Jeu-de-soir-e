@@ -18,15 +18,18 @@ Jeu de soirée entre amis : la TV (app Android TV = simple WebView) héberge une
 server/
   index.js          # Express + Socket.IO, routes /tv, /joueur, /sante
   salles.js         # création, recherche, fermeture des salles, joueurs, hôte
+  modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
+  modes/commun.js   # tirage, classement, joueurs attendus : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
 public/
-  tv/               # page TV (1920x1080)
-  joueur/           # page téléphone (portrait)
+  tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
+  joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   commun/           # CSS et JS partagés
 data/questions.json
 scripts/verifier-questions.js
 android-tv/
 docs/spec.md
+docs/modes/        # une mini-spec par mode de jeu
 ```
 
 ## Commandes

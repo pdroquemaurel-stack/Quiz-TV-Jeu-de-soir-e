@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, creerSalle, retirerJoueur,
-  trouverHoteParSocket, trouverSalle,
+  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, creerSalle, demarrerPartie, retirerJoueur,
+  terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur,
 } from './salles.js';
+import { modes } from './modes/index.js';
 
 test('le code de salle fait 4 lettres et deux salles ont des codes différents', () => {
   const a = creerSalle('tv1');
@@ -105,4 +106,41 @@ test('si l\'hôte part, le rôle passe au joueur arrivé le plus tôt', () => {
   retirerJoueur(salle, b.id);
   retirerJoueur(salle, c.id);
   assert.equal(salle.hoteId, null);
+});
+
+test('le minimum de joueurs est celui du mode choisi', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'A', 's1');
+  ajouterJoueur(salle, 'B', 's2');
+  assert.equal(assezDeJoueurs(salle), true);
+  salle.mode = 'fictif';
+  modes.fictif = { joueursMin: 3 };
+  assert.equal(assezDeJoueurs(salle), false);
+  delete modes.fictif;
+});
+
+test('lancer passe la salle en partie, terminer la passe au podium', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'A', 's1');
+  demarrerPartie(salle);
+  assert.equal(salle.etat, 'partie');
+  assert.equal(terminerPartie(salle), true);
+  assert.equal(salle.etat, 'podium');
+  assert.equal(terminerPartie(salle), false);
+});
+
+test('le téléphone reçoit le mode, et seul l\'hôte peut terminer, seulement en partie', () => {
+  const salle = creerSalle('tv');
+  const { joueur: hote } = ajouterJoueur(salle, 'A', 's1');
+  const { joueur: autre } = ajouterJoueur(salle, 'B', 's2');
+  assert.equal(vueJoueur(salle, hote).mode, 'quiz');
+  assert.equal(vueJoueur(salle, hote).peutTerminer, false);
+
+  demarrerPartie(salle);
+  assert.equal(vueJoueur(salle, hote).peutTerminer, true);
+  assert.equal(vueJoueur(salle, autre).peutTerminer, false);
+
+  terminerPartie(salle);
+  assert.equal(vueJoueur(salle, hote).peutTerminer, false);
+  assert.equal(vueJoueur(salle, hote).ecran, 'fin');
 });

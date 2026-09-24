@@ -10,19 +10,25 @@ Le code et le modèle de données doivent permettre d'ajouter ensuite d'autres m
 
 ## Déroulé d'une partie
 
-Une salle passe par 4 états, pilotés par le serveur. La TV et les téléphones ne font qu'afficher l'état reçu.
+Une salle passe par 3 états communs à tous les modes, pilotés par le serveur : `lobby`, `partie` et `podium`. Pendant une partie, le mode a ses propres phases, dans `etatMode.phase`. La TV et les téléphones ne font qu'afficher l'état reçu.
 
 ```mermaid
 stateDiagram-v2
     [*] --> lobby: app TV ouverte
-    lobby --> question: l'hôte lance (≥ 2 joueurs)
+    lobby --> partie: l'hôte lance (≥ 2 joueurs)
+    partie --> podium: après la 10e question, ou l'hôte termine
+    podium --> partie: l'hôte appuie sur « Rejouer » (≥ 2 joueurs)
+    podium --> [*]: 30 min sans connexion
+```
+
+Phases du quiz pendant la partie :
+
+```mermaid
+stateDiagram-v2
+    [*] --> question
     question --> revelation: tous ont répondu ou 20 s
     revelation --> question: après 8 s ou « Suivant »
-    revelation --> podium: après la 10e question
-    question --> podium: l'hôte termine (tranche 7)
-    revelation --> podium: l'hôte termine (tranche 7)
-    podium --> question: l'hôte appuie sur « Rejouer » (≥ 2 joueurs)
-    podium --> [*]: 30 min sans connexion
+    revelation --> [*]: après la 10e question
 ```
 
 La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver dans n'importe quel état, pas seulement au podium.
@@ -129,7 +135,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 
 ## Format des données
 
-Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` indexé par code. Le champ `mode` et le bloc `etatMode` isolent ce qui est propre au quiz : un nouveau mode ajoute son propre `etatMode` sans toucher au reste.
+Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` indexé par code. Le champ `mode` et le bloc `etatMode` isolent ce qui est propre au quiz : un nouveau mode ajoute son propre `etatMode` sans toucher au reste. Le serveur passe par un registre des modes (`server/modes/index.js`), et chaque mode respecte le même contrat (voir `docs/modes/estimation.md`).
 
 ### Question (fichier `questions.json`)
 
@@ -168,7 +174,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 {
   "code": "KDZP",
   "mode": "quiz",
-  "etat": "question",
+  "etat": "partie",
   "hoteId": "j_8f3k2a",
   "tvSocketId": "Zp0e4...",
   "jetonTv": "t_91kd02mz4q...",
@@ -176,6 +182,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "questionsVues": ["q0042", "q0107"],
   "derniereActiviteA": 1758641200000,
   "etatMode": {
+    "phase": "question",
     "questions": ["...10 questions tirées..."],
     "indexQuestion": 3,
     "debutQuestionA": 1758641190000,
@@ -184,7 +191,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`etat` vaut `lobby`, `question`, `revelation` ou `podium`. Les timers (20 s, 8 s, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
+`etat` vaut `lobby`, `partie` ou `podium`. Pendant une partie, `etatMode.phase` vaut `question` ou `revelation` pour le quiz. Les timers (20 s, 8 s, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
 
 `jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
@@ -200,9 +207,9 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `joueur:repondre` | téléphone → serveur | index du choix |
 | `hote:suivant` | téléphone de l'hôte → serveur | rien |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien |
-| `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie pendant une question ou une révélation et passe au podium. |
+| `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
 | `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. |
-| `joueur:etat` | serveur → un téléphone | vue personnalisée : écran à afficher, a déjà répondu, résultat, rang, est hôte |
+| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie) |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
 
 Ni le téléphone ni la TV ne reçoivent la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.

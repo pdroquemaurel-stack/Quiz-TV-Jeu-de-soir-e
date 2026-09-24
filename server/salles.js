@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
-import { avancer, echeance, vueJoueurQuiz, vueTvQuiz } from './modes/quiz.js';
+import { rangDe } from './modes/commun.js';
+import { modes } from './modes/index.js';
 
 export const JOUEURS_MAX = 10;
 export const DELAI_ABSENCE_MS = 10000;
@@ -79,10 +80,28 @@ function joueursConnectes(salle) {
   return salle.joueurs.filter((joueur) => joueur.connecte);
 }
 
-// Avec MODE_DEV=1, on peut jouer seul.
+function modeDe(salle) {
+  return modes[salle.mode];
+}
+
+// Le minimum dépend du mode. Avec MODE_DEV=1, on peut jouer seul.
 export function assezDeJoueurs(salle) {
-  const minimum = process.env.MODE_DEV === '1' ? 1 : 2;
+  const minimum = process.env.MODE_DEV === '1' ? 1 : modeDe(salle).joueursMin;
   return joueursConnectes(salle).length >= minimum;
+}
+
+// Lancer ou rejouer : le mode tire son contenu et démarre la première manche.
+export function demarrerPartie(salle) {
+  salle.etat = 'partie';
+  modeDe(salle).demarrerPartie(salle);
+}
+
+// Arrêt par l'hôte. Les points ne sont ajoutés qu'à la révélation : une manche
+// en cours n'est donc pas comptée. Renvoie true si la partie a été terminée.
+export function terminerPartie(salle) {
+  if (salle.etat !== 'partie') return false;
+  salle.etat = 'podium';
+  return true;
 }
 
 // Plus de couleur libre (11e joueur pendant qu'un autre est déconnecté) :
@@ -222,31 +241,34 @@ export function synchroniserMinuteur(salle, quandAvance) {
   const cle = `${salle.code}:etape`;
   annuler(cle);
 
-  const fin = echeance(salle);
+  const fin = modeDe(salle).echeance(salle);
   if (fin === null) return;
 
   programmer(cle, Math.max(0, fin - Date.now()), () => {
-    avancer(salle);
+    modeDe(salle).avancer(salle);
     quandAvance(salle);
   });
 }
 
 export function vueTv(salle) {
-  return { ...salle, etatMode: vueTvQuiz(salle) };
+  return { ...salle, etatMode: modeDe(salle).vueTv(salle) };
 }
 
 export function vueJoueur(salle, joueur) {
+  const estHote = salle.hoteId === joueur.id;
   const vue = {
     ecran: 'attente',
+    mode: salle.mode,
     id: joueur.id,
     pseudo: joueur.pseudo,
     couleur: joueur.couleur,
     score: joueur.score,
-    estHote: salle.hoteId === joueur.id,
+    estHote,
+    peutTerminer: estHote && salle.etat === 'partie',
   };
   if (salle.etat === 'lobby') return { ...vue, assezDeJoueurs: assezDeJoueurs(salle) };
   if (salle.etat === 'podium') {
-    return { ...vue, ...vueJoueurQuiz(salle, joueur), assezDeJoueurs: assezDeJoueurs(salle) };
+    return { ...vue, ecran: 'fin', rang: rangDe(salle, joueur), assezDeJoueurs: assezDeJoueurs(salle) };
   }
-  return { ...vue, ...vueJoueurQuiz(salle, joueur) };
+  return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };
 }

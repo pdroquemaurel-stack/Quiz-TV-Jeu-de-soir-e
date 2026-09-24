@@ -5,13 +5,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import {
-  assezDeJoueurs, ajouterJoueur, creerSalle, deconnecterJoueur, deconnecterTv, erreur,
-  reconnecterJoueur, reconnecterTv, synchroniserMinuteur, trouverHoteParSocket,
-  trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
+  assezDeJoueurs, ajouterJoueur, creerSalle, deconnecterJoueur, deconnecterTv, demarrerPartie,
+  erreur, reconnecterJoueur, reconnecterTv, synchroniserMinuteur, terminerPartie,
+  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
-import {
-  demarrerPartie, enregistrerReponse, passerALaSuite, reveler, terminerPartie, tousOntRepondu,
-} from './modes/quiz.js';
+import { modes } from './modes/index.js';
 
 const dossierPublic = fileURLToPath(new URL('../public', import.meta.url));
 
@@ -91,15 +89,17 @@ export function demarrerServeur(port) {
       const trouve = trouverJoueurParSocket(socket.id);
       if (!trouve) return;
       const { salle, joueur } = trouve;
-      if (!enregistrerReponse(salle, joueur.id, choix)) return;
-      if (tousOntRepondu(salle)) reveler(salle);
+      if (salle.etat !== 'partie') return;
+      const mode = modes[salle.mode];
+      if (!mode.enregistrerReponse(salle, joueur.id, choix)) return;
+      mode.verifierFinAnticipee(salle);
       diffuser(salle);
     });
 
     socket.on('hote:suivant', () => {
       const trouve = trouverHoteParSocket(socket.id);
-      if (!trouve || trouve.salle.etat !== 'revelation') return;
-      passerALaSuite(trouve.salle);
+      if (!trouve || trouve.salle.etat !== 'partie') return;
+      if (!modes[trouve.salle.mode].suivant(trouve.salle)) return;
       diffuser(trouve.salle);
     });
 
@@ -125,7 +125,7 @@ export function demarrerServeur(port) {
       const { salle, joueur } = trouve;
       deconnecterJoueur(salle, joueur, diffuser);
       // Le joueur parti ne doit pas bloquer la manche.
-      if (tousOntRepondu(salle)) reveler(salle);
+      if (salle.etat === 'partie') modes[salle.mode].verifierFinAnticipee(salle);
       diffuser(salle);
     });
   });

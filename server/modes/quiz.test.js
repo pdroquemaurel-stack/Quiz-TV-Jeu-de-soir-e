@@ -1,10 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ajouterJoueur, creerSalle, synchroniserMinuteur, vueJoueur, vueTv } from '../salles.js';
 import {
-  NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, classement, demarrerPartie,
-  echeance, enregistrerReponse, melangerReponses, passerALaSuite, reveler, terminerPartie,
-  tirerQuestions, tousOntRepondu,
+  ajouterJoueur, creerSalle, demarrerPartie, synchroniserMinuteur, terminerPartie, vueJoueur,
+  vueTv,
+} from '../salles.js';
+import { tousOntRepondu } from './commun.js';
+import {
+  NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, classement, echeance,
+  enregistrerReponse, melangerReponses, passerALaSuite, reveler, verifierFinAnticipee,
 } from './quiz.js';
 
 function sallePrete() {
@@ -24,6 +27,9 @@ function simulerTemps(t) {
 function quandAvance(salle) {
   synchroniserMinuteur(salle, quandAvance);
 }
+
+// « question », « revelation » pendant une partie, sinon l'état de la salle.
+const etape = (salle) => (salle.etat === 'partie' ? salle.etatMode.phase : salle.etat);
 
 const bonneReponse = (salle) => salle.etatMode.questions[salle.etatMode.indexQuestion].bonneReponse;
 const mauvaiseReponse = (salle) => (bonneReponse(salle) + 1) % 4;
@@ -51,33 +57,19 @@ test('reveler donne des points dégressifs aux bonnes réponses seulement', (t) 
   enregistrerReponse(salle, lea.id, mauvaiseReponse(salle));
   reveler(salle);
 
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
   assert.equal(paul.score, 750);
   assert.equal(lea.score, 0);
 });
 
 // --- Classement ---
 
-test('classement : une égalité donne le même rang et saute le suivant (1, 1, 3)', () => {
-  const salle = creerSalle('tv');
-  const { joueur: a } = ajouterJoueur(salle, 'A', 's1');
-  const { joueur: b } = ajouterJoueur(salle, 'B', 's2');
-  const { joueur: c } = ajouterJoueur(salle, 'C', 's3');
-  const { joueur: d } = ajouterJoueur(salle, 'D', 's4');
-  demarrerPartie(salle);
-  a.score = 1500;
-  b.score = 1800;
-  c.score = 1800;
-  d.score = 900;
-
-  const lignes = classement(salle);
-  assert.deepEqual(lignes.map((l) => l.pseudo), ['B', 'C', 'A', 'D']);
-  assert.deepEqual(lignes.map((l) => l.rang), [1, 1, 3, 4]);
-});
-
-test('classement : tout le monde à 0 est premier ex æquo', () => {
-  const { salle } = sallePrete();
-  assert.deepEqual(classement(salle).map((l) => l.rang), [1, 1]);
+test('classement : les points de la manche sont ceux du quiz', () => {
+  const { salle, paul, lea } = sallePrete();
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+  enregistrerReponse(salle, lea.id, mauvaiseReponse(salle));
+  reveler(salle);
+  assert.deepEqual(classement(salle).map((l) => [l.pseudo, l.points]), [['Paul', 1000], ['Léa', 0]]);
 });
 
 test('le téléphone reçoit son rang au résultat et à la fin', () => {
@@ -94,10 +86,6 @@ test('le téléphone reçoit son rang au résultat et à la fin', () => {
 });
 
 // --- Tirage des questions ---
-
-function banqueFictive(nombre) {
-  return Array.from({ length: nombre }, (_, i) => ({ id: `q${String(i + 1).padStart(4, '0')}` }));
-}
 
 const idsDe = (questions) => questions.map((question) => question.id);
 
@@ -121,21 +109,6 @@ test('mélange : bonneReponse pointe toujours vers la même réponse', () => {
   assert.equal(ordresVus.size, 24);
   assert.deepEqual(question.reponses, ['Sydney', 'Canberra', 'Melbourne', 'Perth']);
   assert.equal(question.bonneReponse, 1);
-});
-
-test('tirage : le nombre demandé, sans doublon', () => {
-  const tirees = tirerQuestions(banqueFictive(12), [], 10);
-  assert.equal(tirees.length, 10);
-  assert.equal(new Set(idsDe(tirees)).size, 10);
-});
-
-test('tirage : inédites d\'abord, puis les déjà vues les plus anciennes', () => {
-  const banque = banqueFictive(12);
-  // Vues dans cet ordre : q0005 est la plus ancienne. Inédites : q0011 et q0012.
-  const vues = ['q0005', 'q0001', 'q0002', 'q0003', 'q0004', 'q0006', 'q0007', 'q0008', 'q0009', 'q0010'];
-  const ids = idsDe(tirerQuestions(banque, vues, 10));
-  assert.deepEqual(ids.slice(0, 2).sort(), ['q0011', 'q0012']);
-  assert.deepEqual(ids.slice(2), vues.slice(0, 8));
 });
 
 test('la banque contient assez de questions pour une partie', () => {
@@ -188,7 +161,7 @@ test('demarrerPartie passe à la 1re question et remet les scores à zéro', () 
 
   demarrerPartie(salle);
 
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 0);
   assert.equal(salle.etatMode.questions.length, NOMBRE_QUESTIONS);
   assert.deepEqual(salle.etatMode.reponses, {});
@@ -257,13 +230,13 @@ test('les questions s\'enchaînent puis on arrive au podium', () => {
   for (let i = 1; i < NOMBRE_QUESTIONS; i++) {
     reveler(salle);
     passerALaSuite(salle);
-    assert.equal(salle.etat, 'question');
+    assert.equal(etape(salle), 'question');
     assert.equal(salle.etatMode.indexQuestion, i);
     assert.deepEqual(salle.etatMode.reponses, {});
   }
   reveler(salle);
   passerALaSuite(salle);
-  assert.equal(salle.etat, 'podium');
+  assert.equal(etape(salle), 'podium');
 });
 
 test('echeance : 20 s en question, 8 s en révélation, aucune au podium', (t) => {
@@ -273,11 +246,11 @@ test('echeance : 20 s en question, 8 s en révélation, aucune au podium', (t) =
 
   t.mock.timers.tick(3000);
   avancer(salle);
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
   assert.equal(echeance(salle), 11000);
 
   avancer(salle);
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 1);
 
   salle.etat = 'podium';
@@ -291,7 +264,7 @@ test('rejouer : scores à zéro et retour à la 1re question', () => {
 
   demarrerPartie(salle);
 
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 0);
   assert.equal(paul.score, 0);
 });
@@ -308,7 +281,7 @@ test('terminer pendant une question : podium, et la manche en cours ne compte pa
 
   assert.equal(terminerPartie(salle), true);
 
-  assert.equal(salle.etat, 'podium');
+  assert.equal(etape(salle), 'podium');
   assert.equal(paul.score, 1500);
   assert.equal(lea.score, 0);
   assert.equal(echeance(salle), null);
@@ -323,7 +296,7 @@ test('terminer pendant une révélation : les points de la manche révélée son
 
   assert.equal(terminerPartie(salle), true);
 
-  assert.equal(salle.etat, 'podium');
+  assert.equal(etape(salle), 'podium');
   assert.equal(paul.score, scoreRevele);
   assert.ok(scoreRevele > 0);
 });
@@ -332,7 +305,7 @@ test('terminer est sans effet en salle d\'attente et au podium', () => {
   const salle = creerSalle('tv');
   ajouterJoueur(salle, 'Paul', 's1');
   assert.equal(terminerPartie(salle), false);
-  assert.equal(salle.etat, 'lobby');
+  assert.equal(etape(salle), 'lobby');
 
   salle.etat = 'podium';
   assert.equal(terminerPartie(salle), false);
@@ -345,7 +318,7 @@ test('rejouer fonctionne après un arrêt par l\'hôte', () => {
 
   demarrerPartie(salle);
 
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(paul.score, 0);
 });
 
@@ -357,9 +330,9 @@ test('minuteur : la révélation arrive à 20 s pile', (t) => {
   synchroniserMinuteur(salle, quandAvance);
 
   t.mock.timers.tick(19999);
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   t.mock.timers.tick(1);
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
 });
 
 test('minuteur : question suivante 8 s après la révélation, puis podium sans minuteur', (t) => {
@@ -369,9 +342,9 @@ test('minuteur : question suivante 8 s après la révélation, puis podium sans 
 
   t.mock.timers.tick(20000);
   t.mock.timers.tick(7999);
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
   t.mock.timers.tick(1);
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 1);
 
   // On avance étape par étape jusqu'à la révélation de la dernière question :
@@ -381,11 +354,11 @@ test('minuteur : question suivante 8 s après la révélation, puis podium sans 
     t.mock.timers.tick(8000);
   }
   t.mock.timers.tick(20000);
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
   t.mock.timers.tick(8000);
-  assert.equal(salle.etat, 'podium');
+  assert.equal(etape(salle), 'podium');
   t.mock.timers.tick(60000);
-  assert.equal(salle.etat, 'podium');
+  assert.equal(etape(salle), 'podium');
 });
 
 test('minuteur : une resynchronisation en cours de manche ne relance pas le chrono', (t) => {
@@ -398,7 +371,7 @@ test('minuteur : une resynchronisation en cours de manche ne relance pas le chro
   synchroniserMinuteur(salle, quandAvance);
 
   t.mock.timers.tick(15000);
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
 });
 
 test('minuteur : fin anticipée, puis question suivante 8 s plus tard', (t) => {
@@ -409,12 +382,12 @@ test('minuteur : fin anticipée, puis question suivante 8 s plus tard', (t) => {
   t.mock.timers.tick(3000);
   enregistrerReponse(salle, paul.id, 0);
   enregistrerReponse(salle, lea.id, 1);
-  if (tousOntRepondu(salle)) reveler(salle);
+  verifierFinAnticipee(salle);
   synchroniserMinuteur(salle, quandAvance);
-  assert.equal(salle.etat, 'revelation');
+  assert.equal(etape(salle), 'revelation');
 
   t.mock.timers.tick(8000);
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 1);
 });
 
@@ -430,7 +403,7 @@ test('minuteur : « Suivant » annule l\'enchaînement automatique en cours', (t
 
   // Sans annulation, on sauterait à la question 3 à 28 s.
   t.mock.timers.tick(6000);
-  assert.equal(salle.etat, 'question');
+  assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 1);
 });
 

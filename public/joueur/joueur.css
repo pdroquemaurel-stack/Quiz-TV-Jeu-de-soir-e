@@ -24,8 +24,8 @@ main > p {
 }
 
 /* Deux cales centrent le contenu dans l'espace laissé au-dessus du bouton du bas. */
-main:not([data-ecran="repondre"])::before,
-main:not([data-ecran="repondre"])::after {
+main:not([data-ecran="quiz-repondre"])::before,
+main:not([data-ecran="quiz-repondre"])::after {
   content: '';
   flex: 1;
 }
@@ -177,7 +177,7 @@ input {
 
 /* ---------- Répondre : 4 boutons sur tout l'écran ---------- */
 
-main[data-ecran="repondre"] {
+main[data-ecran="quiz-repondre"] {
   padding: 14px;
   align-items: stretch;
 }

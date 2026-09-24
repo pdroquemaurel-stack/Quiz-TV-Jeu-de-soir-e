@@ -63,10 +63,6 @@ document.getElementById('bouton-lancer').addEventListener('click', () => {
   socket.emit('hote:lancer');
 });
 
-document.getElementById('bouton-suivant').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
-
 document.getElementById('bouton-rejouer').addEventListener('click', () => {
   socket.emit('hote:rejouer');
 });
@@ -86,12 +82,6 @@ document.getElementById('confirmer-terminer').addEventListener('click', () => {
   socket.emit('hote:terminer');
 });
 
-for (const bouton of document.querySelectorAll('[data-choix]')) {
-  bouton.addEventListener('click', () => {
-    socket.emit('joueur:repondre', Number(bouton.dataset.choix));
-  });
-}
-
 socket.on('erreur', (erreur) => {
   if (erreur.code === 'salle_introuvable') oublierSalle();
   document.getElementById('entete').hidden = true;
@@ -101,35 +91,37 @@ socket.on('erreur', (erreur) => {
   messageErreur.hidden = false;
 });
 
-const affichages = {
+// Écrans communs à tous les modes.
+const affichagesCommuns = {
   attente: afficherAttente,
   attente_question: () => {},
-  repondre: () => {},
-  reponse_envoyee: afficherReponseEnvoyee,
-  resultat: afficherResultat,
   fin: afficherFin,
 };
+
+// Écrans propres à chaque mode. Remplis par /joueur/modes/<mode>.js.
+const modesJoueur = {};
 
 socket.on('joueur:etat', (vue) => {
   stockage.setItem('idJoueur', vue.id);
   stockage.setItem('codeSalle', codeEnCours);
   stockage.setItem('pseudo', vue.pseudo);
   afficherEntete(vue);
-  afficherEcran(vue.ecran);
-  affichages[vue.ecran](vue);
+  if (affichagesCommuns[vue.ecran]) {
+    afficherEcran(vue.ecran);
+    affichagesCommuns[vue.ecran](vue);
+  } else {
+    afficherEcran(`${vue.mode}-${vue.ecran}`);
+    modesJoueur[vue.mode][vue.ecran](vue);
+  }
   garderEcranAllume();
 });
-
-// Écrans où une manche est en cours : l'hôte peut y terminer la partie.
-const ECRANS_DE_MANCHE = ['repondre', 'reponse_envoyee', 'resultat', 'attente_question'];
 
 function afficherEntete(vue) {
   document.getElementById('entete').hidden = false;
   document.getElementById('ma-pastille').style.setProperty('--couleur', `var(--joueur-${vue.couleur})`);
   document.getElementById('mon-pseudo-entete').textContent = vue.pseudo;
-  const peutTerminer = vue.estHote && ECRANS_DE_MANCHE.includes(vue.ecran);
-  document.getElementById('bouton-terminer').hidden = !peutTerminer;
-  if (!peutTerminer) confirmation.hidden = true;
+  document.getElementById('bouton-terminer').hidden = !vue.peutTerminer;
+  if (!vue.peutTerminer) confirmation.hidden = true;
 }
 
 // Wake Lock : l'écran reste allumé pendant la partie. Il ne marche qu'en HTTPS
@@ -165,20 +157,6 @@ function afficherAttente(vue) {
   const boutonLancer = document.getElementById('bouton-lancer');
   boutonLancer.hidden = !vue.estHote;
   boutonLancer.disabled = !vue.assezDeJoueurs;
-}
-
-function afficherReponseEnvoyee(vue) {
-  document.getElementById('choix-envoye').className =
-    `choix choix-envoye rebond choix-${vue.choix} fond-choix-${vue.choix}`;
-}
-
-function afficherResultat(vue) {
-  const resultat = document.getElementById('resultat');
-  resultat.textContent = vue.juste ? `Bonne réponse, +${vue.points}` : 'Raté';
-  resultat.classList.toggle('juste', vue.juste);
-  document.getElementById('score-resultat').textContent = vue.score;
-  document.getElementById('rang-resultat').textContent = texteRang(vue.rang);
-  document.getElementById('bouton-suivant').hidden = !vue.estHote;
 }
 
 function afficherFin(vue) {

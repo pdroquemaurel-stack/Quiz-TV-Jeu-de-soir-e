@@ -296,23 +296,23 @@ main[data-ecran="lobby"] {
 
 /* ---------- Révélation ---------- */
 
-main[data-ecran="revelation"] .tv-haut {
+main[data-ecran="quiz-revelation"] .tv-haut {
   min-height: 0;
 }
 
-main[data-ecran="revelation"] .question {
+main[data-ecran="quiz-revelation"] .question {
   height: 150px;
   font-size: 48px;
 }
 
-main[data-ecran="revelation"] .reponses li {
+main[data-ecran="quiz-revelation"] .reponses li {
   height: 130px;
   font-size: 48px;
   line-height: 1;
   animation: none;
 }
 
-main[data-ecran="revelation"] .reponses .forme {
+main[data-ecran="quiz-revelation"] .reponses .forme {
   width: 60px;
   height: 60px;
 }
@@ -395,7 +395,7 @@ main[data-ecran="revelation"] .reponses .forme {
 }
 
 /* À la révélation, le classement arrive après la bonne réponse. */
-main[data-ecran="revelation"] .classement {
+main[data-ecran="quiz-revelation"] .classement {
   animation: apparaitre 400ms 1.5s both;
 }
 

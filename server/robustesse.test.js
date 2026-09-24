@@ -2,9 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DELAI_ABSENCE_MS, DELAI_FERMETURE_MS, ajouterJoueur, creerSalle, deconnecterJoueur,
-  deconnecterTv, reconnecterJoueur, reconnecterTv, trouverSalle,
+  deconnecterTv, demarrerPartie, reconnecterJoueur, reconnecterTv, trouverSalle,
 } from './salles.js';
-import { demarrerPartie } from './modes/quiz.js';
 
 // Temps simulé : Date.now() part de 0 et n'avance qu'avec t.mock.timers.tick().
 function simulerTemps(t) {

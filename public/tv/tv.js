@@ -22,29 +22,34 @@ socket.on('connect', () => {
   });
 });
 
-const affichages = {
-  lobby: afficherLobby,
-  question: afficherQuestion,
-  revelation: afficherRevelation,
-  podium: afficherPodium,
-};
+// Écrans de chaque mode pendant une partie, par phase. Remplis par /tv/modes/<mode>.js.
+const modesTv = {};
 
 let intervalleChrono = null;
 
-// Étape affichée (« question:3 »…). Tant qu'elle ne change pas, on ne reconstruit
+// Étape affichée (« partie:question:3 »…). Tant qu'elle ne change pas, on ne reconstruit
 // pas la question et les réponses, pour ne pas rejouer leurs animations d'arrivée.
 let etapeAffichee = '';
 
 socket.on('salle:etat', (salle) => {
   sessionStorage.setItem('codeSalle', salle.code);
   sessionStorage.setItem('jetonTv', salle.jetonTv);
-  const etape = `${salle.etat}:${salle.etatMode.numero ?? ''}`;
+  const { phase = '', numero = '' } = salle.etatMode;
+  const etape = `${salle.etat}:${phase}:${numero}`;
   const nouvelleEtape = etape !== etapeAffichee;
   etapeAffichee = etape;
   clearInterval(intervalleChrono);
-  afficherEcran(salle.etat);
   afficherQrCoin(salle);
-  affichages[salle.etat](salle, nouvelleEtape);
+  if (salle.etat === 'partie') {
+    afficherEcran(`${salle.mode}-${phase}`);
+    modesTv[salle.mode][phase](salle, nouvelleEtape);
+  } else if (salle.etat === 'podium') {
+    afficherEcran('podium');
+    afficherPodium(salle);
+  } else {
+    afficherEcran('lobby');
+    afficherLobby(salle);
+  }
 });
 
 // Petit QR code dans un coin pendant la partie, pour les retardataires.
@@ -116,26 +121,6 @@ function forme(classes) {
   return element;
 }
 
-function afficherQuestion(salle, nouvelleEtape) {
-  const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
-  if (nouvelleEtape) {
-    document.getElementById('numero-question').textContent = `Question ${numero}/${total}`;
-    document.getElementById('texte-question').textContent = question.texte;
-    document.getElementById('reponses-question').replaceChildren(
-      ...question.reponses.map((texte, index) => caseReponse(texte, index)),
-    );
-    viderBarreTemps(tempsRestantMs);
-    document.getElementById('ont-repondu').replaceChildren();
-  }
-  lancerChrono(tempsRestantMs);
-
-  const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  remplirEtiquettes(
-    document.getElementById('ont-repondu'),
-    joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-}
-
 // La barre se vide en même temps que le temps restant mesuré par le serveur.
 function viderBarreTemps(tempsRestantMs) {
   const barre = document.getElementById('barre-temps');
@@ -155,40 +140,6 @@ function lancerChrono(tempsRestantMs) {
   };
   afficher();
   intervalleChrono = setInterval(afficher, 250);
-}
-
-function caseReponse(texte, index) {
-  const element = document.createElement('li');
-  element.className = `choix-${index} fond-choix-${index}`;
-  const libelle = document.createElement('span');
-  libelle.className = 'texte';
-  libelle.textContent = texte;
-  element.append(forme(''), libelle);
-  return element;
-}
-
-function afficherRevelation(salle, nouvelleEtape) {
-  const { numero, total, question, bonneReponse, nombreParChoix, classement } = salle.etatMode;
-  if (nouvelleEtape) {
-    document.getElementById('numero-revelation').textContent = `Question ${numero}/${total}`;
-    document.getElementById('texte-revelation').textContent = question.texte;
-    document.getElementById('reponses-revelation').replaceChildren(
-      ...question.reponses.map((texte, index) => {
-        const element = caseReponse(texte, index);
-        const estBonne = index === bonneReponse;
-        element.classList.add(estBonne ? 'bonne' : 'mauvaise');
-        if (estBonne) element.append(forme('coche'));
-        const nombre = document.createElement('span');
-        nombre.className = 'nombre';
-        nombre.textContent = nombreParChoix[index];
-        element.append(nombre);
-        return element;
-      }),
-    );
-  }
-  document.getElementById('classement-revelation').replaceChildren(
-    ...classement.map((ligne) => ligneClassement(ligne, true)),
-  );
 }
 
 // Tous les joueurs de rang 3 ou mieux : les ex æquo partagent la même marche.
