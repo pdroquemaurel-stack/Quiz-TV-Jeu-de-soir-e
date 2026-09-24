@@ -239,7 +239,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
   assert.deepEqual(
     liste.slice(1).map((m) => [m.id, m.disponible, m.bientot]),
     [
-      ['estimation', false, false], ['qui-de-nous', false, true], ['undercover', false, true],
+      ['estimation', false, false], ['qui-de-nous', false, false], ['undercover', false, true],
       ['meme-reponse', false, true], ['bluff', false, true],
     ],
   );

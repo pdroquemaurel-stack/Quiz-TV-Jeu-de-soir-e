@@ -1,18 +1,13 @@
 // Registre des modes de jeu : salles.js et index.js ne passent que par lui.
 import * as estimation from './estimation.js';
+import * as quiDeNous from './qui-de-nous.js';
 import * as quiz from './quiz.js';
 
-export const modes = { quiz, estimation };
+export const modes = { quiz, estimation, 'qui-de-nous': quiDeNous };
 
 // Modes prévus mais pas encore codés : affichés grisés (« Bientôt »), jamais choisis.
 // Quand un mode est codé, il quitte cette liste pour entrer dans le registre.
 export const modesAVenir = [
-  {
-    id: 'qui-de-nous',
-    nom: 'Qui de nous ?',
-    regleCourte: 'Chacun vote pour un joueur, la TV affiche les résultats.',
-    joueursMin: 4,
-  },
   {
     id: 'undercover',
     nom: 'Undercover',

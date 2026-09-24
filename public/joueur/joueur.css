@@ -396,3 +396,51 @@ main[data-ecran="quiz-repondre"] {
 .apercu-nombre.erreur {
   color: #fff;
 }
+
+/* ---------- Qui de nous ? ---------- */
+
+/* Jusqu'à 9 candidats : deux colonnes de gros boutons. */
+.candidats {
+  width: 100%;
+  max-width: 420px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bouton-candidat {
+  min-height: 84px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  color: var(--texte);
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-bottom-width: 10px;
+  border-radius: 22px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bouton-candidat .pastille {
+  font-size: 32px;
+}
+
+.pseudo-candidat {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bouton-candidat:active {
+  transform: translateY(6px);
+  border-bottom-width: 4px;
+}
+
+/* Un joueur déconnecté reste votable, simplement estompé. */
+.bouton-candidat.deconnecte {
+  opacity: 0.5;
+}

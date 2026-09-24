@@ -94,6 +94,27 @@
     <button id="bouton-suivant-estimation" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="qui-de-nous-voter" hidden>
+    <p class="discret">Qui de nous… ? La question est sur la TV</p>
+    <div id="candidats" class="candidats"></div>
+  </main>
+
+  <main data-ecran="qui-de-nous-vote_envoye" hidden>
+    <p class="gros-texte">Tu as voté pour</p>
+    <span id="pastille-vote" class="pastille grande-pastille rebond"></span>
+    <p id="pseudo-vote" class="nombre-envoye"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="qui-de-nous-resultat" hidden>
+    <p id="resultat-qdn" class="carte-resultat rebond"></p>
+    <p id="elus-qdn" class="gros-texte"></p>
+    <p id="votes-recus-qdn" class="discret"></p>
+    <p>Score : <strong id="score-qdn"></strong></p>
+    <p>Rang : <strong id="rang-qdn"></strong></p>
+    <button id="bouton-suivant-qdn" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -123,5 +144,6 @@
   <script src="/joueur/joueur.js"></script>
   <script src="/joueur/modes/quiz.js"></script>
   <script src="/joueur/modes/estimation.js"></script>
+  <script src="/joueur/modes/qui-de-nous.js"></script>
 </body>
 </html>

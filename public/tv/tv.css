@@ -408,7 +408,9 @@ main[data-ecran="quiz-revelation"] .reponses .forme {
   flex: 1;
 }
 
+/* Interligne fixe : le « ✗ », dessiné par une police de secours, ne doit pas grandir la ligne. */
 .gain {
+  line-height: 1.2;
   min-width: 130px;
   text-align: center;
   padding: 0 14px;
@@ -603,10 +605,147 @@ main[data-ecran="estimation-revelation"] .question {
 }
 
 /* Le classement général, en une seule colonne, arrive après les estimations. */
+/* Sans la marge par défaut des listes, 10 joueurs tiennent dans la hauteur. */
 .classement-colonne {
+  margin: 0;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: none;
   grid-auto-flow: row;
   padding-right: 0;
   animation: apparaitre 400ms 1.5s both;
+}
+
+/* ---------- Qui de nous ? ---------- */
+
+/* Vote : la question seule occupe l'écran, en plus gros. */
+main[data-ecran="qui-de-nous-vote"] .question {
+  height: 420px;
+  font-size: 80px;
+}
+
+.consigne-vote {
+  text-align: center;
+  font-size: 48px;
+  color: var(--texte-doux);
+}
+
+/* Résultats : la question et le ou les élus côte à côte, puis les deux listes. */
+main[data-ecran="qui-de-nous-resultats"] .tv-haut {
+  min-height: 0;
+}
+
+.qdn-entete {
+  display: flex;
+  gap: 32px;
+}
+
+main[data-ecran="qui-de-nous-resultats"] .question {
+  flex: 1;
+  height: 150px;
+  padding: 0 40px;
+  font-size: 40px;
+}
+
+.elus {
+  max-width: 820px;
+  min-width: 460px;
+  height: 150px;
+  margin: 0;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 64px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #fff;
+  background: var(--accent);
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 32px;
+}
+
+.qdn-listes {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 660px;
+  gap: 40px;
+  padding-right: 220px;
+  align-items: start;
+}
+
+/* Le classement montre aussi les points gagnés : un peu plus petit pour que les pseudos tiennent. */
+.qdn-listes .classement {
+  font-size: 36px;
+}
+
+.barres-votes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 40px;
+}
+
+.barres-votes li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 20px;
+}
+
+.barres-votes .pseudo {
+  width: 260px;
+}
+
+.barres-votes .elu {
+  background: #FFF6DA;
+}
+
+.piste-votes {
+  flex: 1;
+  height: 36px;
+  border-radius: 18px;
+  background: var(--piste);
+  overflow: hidden;
+}
+
+/* La largeur vient de style="transform: scaleX(…)" : on n'anime jamais width. */
+.barre-votes {
+  display: block;
+  height: 100%;
+  background: var(--couleur);
+  transform-origin: left;
+  animation: grandir 700ms 300ms ease-out both;
+}
+
+@keyframes grandir {
+  from { transform: scaleX(0); }
+}
+
+.barres-votes .votes {
+  min-width: 50px;
+  text-align: right;
+}
+
+/* Podium : « Le plus désigné de la partie », sous le titre. Le podium rétrécit
+   pour laisser la place à cette ligne avec un classement de 10 joueurs. */
+.plus-designe {
+  font-size: 44px;
+}
+
+.plus-designe:not([hidden]) + .podium {
+  height: 330px;
+}
+
+.plus-designe strong {
+  color: var(--accent);
 }

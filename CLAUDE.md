@@ -22,14 +22,17 @@ server/
   modes/commun.js   # tirage, classement, joueurs attendus : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
   modes/estimation.js # mode Estimation (docs/modes/estimation.md)
+  modes/qui-de-nous.js # mode Qui de nous ? (docs/modes/qui-de-nous.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   commun/           # CSS et JS partagés
 data/questions.json
 data/estimation.json
+data/qui-de-nous.json
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
+scripts/verifier-qui-de-nous.js
 android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
@@ -42,6 +45,7 @@ docs/modes/        # une mini-spec par mode de jeu
 - `npm test` : tests avec `node:test`
 - `node scripts/verifier-questions.js` : vérifie le format de `questions.json`
 - `node scripts/verifier-estimation.js` : vérifie le format de `estimation.json`
+- `node scripts/verifier-qui-de-nous.js` : vérifie le format de `qui-de-nous.json`
 
 ## Règles d'architecture (non négociables)
 

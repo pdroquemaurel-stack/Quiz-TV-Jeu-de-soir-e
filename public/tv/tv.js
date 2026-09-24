@@ -167,6 +167,10 @@ function afficherPodium(salle) {
     ...classement.map((ligne) => ligneClassement(ligne, false)),
   );
   document.getElementById('prochain-mode').textContent = salle.modeChoisi.nom;
+  // Un mode peut ajouter une ligne au podium commun (« Le plus désigné »…).
+  document.getElementById('plus-designe').hidden = true;
+  const { completerPodium } = modesTv[salle.mode];
+  if (completerPodium) completerPodium(salle);
 }
 
 function ligneClassement(ligne, avecGain) {

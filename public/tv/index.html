@@ -74,8 +74,34 @@
       </div>
     </main>
 
+    <main data-ecran="qui-de-nous-vote" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="qdn-numero-vote"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="qdn-barre-temps"></div></div>
+        <p class="chrono" id="qdn-chrono"></p>
+      </div>
+      <h1 class="question rebond" id="qdn-texte-vote"></h1>
+      <p class="consigne-vote">Votez sur votre téléphone</p>
+      <ul class="etiquettes ont-repondu" id="qdn-ont-vote"></ul>
+    </main>
+
+    <main data-ecran="qui-de-nous-resultats" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="qdn-numero-resultats"></p>
+      </div>
+      <div class="qdn-entete">
+        <h1 class="question" id="qdn-texte-resultats"></h1>
+        <p class="elus rebond" id="qdn-elus"></p>
+      </div>
+      <div class="qdn-listes">
+        <ol class="barres-votes" id="qdn-barres"></ol>
+        <ol class="classement classement-colonne" id="qdn-classement"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
+      <p class="plus-designe" id="plus-designe" hidden></p>
       <div class="podium">
         <div class="marche marche-2"><ul class="noms" id="podium-2"></ul><div class="socle">2</div></div>
         <div class="marche marche-1"><ul class="noms" id="podium-1"></ul><div class="socle">1</div></div>
@@ -96,5 +122,6 @@
   <script src="/tv/tv.js"></script>
   <script src="/tv/modes/quiz.js"></script>
   <script src="/tv/modes/estimation.js"></script>
+  <script src="/tv/modes/qui-de-nous.js"></script>
 </body>
 </html>
