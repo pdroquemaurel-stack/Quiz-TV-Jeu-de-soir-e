@@ -64,4 +64,5 @@ docs/spec.md
 - Quand le code d'une tranche est prêt, lance les tests automatiques.
 - Donne-moi ensuite des instructions pas à pas pour faire moi-même le test de la spec : quoi lancer, quelles URL ouvrir, quoi faire, et ce que je dois observer.
 - Attends mon retour. Ne commite jamais sans m'avoir demandé explicitement « Je peux commiter ? ».
+- Après chaque commit validé, demande-moi si tu peux pousser sur GitHub (git push).
 - Ne t'écarte jamais d'un plan validé sans me demander.
