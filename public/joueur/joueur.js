@@ -157,7 +157,38 @@ function afficherAttente(vue) {
   const boutonLancer = document.getElementById('bouton-lancer');
   boutonLancer.hidden = !vue.estHote;
   boutonLancer.disabled = !vue.assezDeJoueurs;
+  afficherModes('attente', vue);
 }
+
+// Salle d'attente et fin : l'hôte choisit le mode, les autres voient le mode choisi.
+function afficherModes(nomEcran, vue) {
+  const ecran = document.querySelector(`main[data-ecran="${nomEcran}"]`);
+  const texte = ecran.querySelector('.mode-choisi');
+  texte.textContent = `Mode : ${vue.modeChoisi}`;
+  texte.hidden = vue.estHote;
+  const liste = ecran.querySelector('.choix-modes');
+  liste.hidden = !vue.estHote;
+  if (vue.estHote) liste.replaceChildren(...vue.modes.map((mode) => boutonMode(mode, vue.mode)));
+}
+
+function boutonMode(mode, modeChoisi) {
+  const bouton = document.createElement('button');
+  bouton.className = 'bouton-mode';
+  bouton.classList.toggle('choisi', mode.id === modeChoisi);
+  bouton.dataset.mode = mode.id;
+  bouton.disabled = !mode.disponible;
+  const detail = document.createElement('small');
+  if (mode.bientot) detail.textContent = 'Bientôt';
+  else if (!mode.disponible) detail.textContent = `${mode.joueursMin} joueurs min.`;
+  bouton.append(mode.nom, detail);
+  return bouton;
+}
+
+// Les boutons sont recréés à chaque mise à jour : un seul écouteur pour tous.
+document.addEventListener('click', (evenement) => {
+  const bouton = evenement.target.closest('.bouton-mode');
+  if (bouton && !bouton.disabled) socket.emit('hote:choisirMode', bouton.dataset.mode);
+});
 
 function afficherFin(vue) {
   document.getElementById('rang-fin').textContent = texteRang(vue.rang);
@@ -165,6 +196,7 @@ function afficherFin(vue) {
   const boutonRejouer = document.getElementById('bouton-rejouer');
   boutonRejouer.hidden = !vue.estHote;
   boutonRejouer.disabled = !vue.assezDeJoueurs;
+  afficherModes('fin', vue);
 }
 
 function texteRang(rang) {

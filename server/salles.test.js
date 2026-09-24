@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, creerSalle, demarrerPartie, retirerJoueur,
-  terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur,
+  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, choisirMode, creerSalle, demarrerPartie,
+  retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
 import { modes } from './modes/index.js';
 
@@ -143,4 +143,121 @@ test('le téléphone reçoit le mode, et seul l\'hôte peut terminer, seulement 
   terminerPartie(salle);
   assert.equal(vueJoueur(salle, hote).peutTerminer, false);
   assert.equal(vueJoueur(salle, hote).ecran, 'fin');
+});
+
+// --- Choix du mode ---
+
+// Mode jouable fictif à 3 joueurs minimum, retiré du registre à la fin du test.
+function avecModeFictif(t) {
+  modes.fictif = {
+    id: 'fictif',
+    nom: 'Fictif',
+    regleCourte: 'Pour les tests.',
+    joueursMin: 3,
+    demarrerPartie: (salle) => { salle.etatMode = { lancePar: 'fictif' }; },
+    echeance: () => null,
+    vueTv: () => ({}),
+    vueJoueur: () => ({ ecran: 'fictif' }),
+  };
+  t.after(() => delete modes.fictif);
+}
+
+function salleAvec(nombre) {
+  const salle = creerSalle('tv');
+  const joueurs = [];
+  for (let i = 1; i <= nombre; i++) joueurs.push(ajouterJoueur(salle, `J${i}`, `s${i}`).joueur);
+  return { salle, joueurs };
+}
+
+test('choix du mode : une nouvelle salle est en quiz', () => {
+  assert.equal(creerSalle('tv').mode, 'quiz');
+});
+
+test('choix du mode : un mode grisé est refusé, puis accepté quand le compte y est', (t) => {
+  avecModeFictif(t);
+  const { salle } = salleAvec(2);
+  assert.equal(choisirMode(salle, 'fictif'), false);
+  assert.equal(salle.mode, 'quiz');
+
+  ajouterJoueur(salle, 'J3', 's3');
+  assert.equal(choisirMode(salle, 'fictif'), true);
+  assert.equal(salle.mode, 'fictif');
+});
+
+test('choix du mode : mode inconnu, mode à venir ou valeur bizarre refusés', () => {
+  const { salle } = salleAvec(10);
+  for (const id of ['inconnu', 'estimation', 'bluff', 'toString', '__proto__', null, 3]) {
+    assert.equal(choisirMode(salle, id), false, String(id));
+  }
+  assert.equal(salle.mode, 'quiz');
+});
+
+test('choix du mode : refusé pendant une partie, accepté au podium', (t) => {
+  avecModeFictif(t);
+  const { salle } = salleAvec(3);
+  demarrerPartie(salle);
+  assert.equal(choisirMode(salle, 'fictif'), false);
+
+  terminerPartie(salle);
+  assert.equal(choisirMode(salle, 'fictif'), true);
+});
+
+test('choix du mode : le mode reste choisi quand un joueur part, et lancer devient impossible', (t) => {
+  avecModeFictif(t);
+  const { salle, joueurs } = salleAvec(3);
+  choisirMode(salle, 'fictif');
+  joueurs[2].connecte = false;
+  assert.equal(salle.mode, 'fictif');
+  assert.equal(assezDeJoueurs(salle), false);
+  assert.equal(vueJoueur(salle, joueurs[0]).assezDeJoueurs, false);
+});
+
+test('choix du mode : rejouer lance le mode choisi', (t) => {
+  avecModeFictif(t);
+  const { salle } = salleAvec(3);
+  demarrerPartie(salle);
+  terminerPartie(salle);
+  choisirMode(salle, 'fictif');
+  demarrerPartie(salle);
+  assert.equal(salle.etat, 'partie');
+  assert.deepEqual(salle.etatMode, { lancePar: 'fictif' });
+});
+
+test('choix du mode : avec MODE_DEV=1, un seul joueur suffit pour tous les modes', (t) => {
+  avecModeFictif(t);
+  const { salle } = salleAvec(1);
+  process.env.MODE_DEV = '1';
+  t.after(() => delete process.env.MODE_DEV);
+  assert.equal(choisirMode(salle, 'fictif'), true);
+});
+
+test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à venir grisés', () => {
+  const { salle, joueurs: [hote, autre] } = salleAvec(2);
+  const { modes: liste, modeChoisi } = vueJoueur(salle, hote);
+  assert.equal(modeChoisi, 'Quiz');
+  assert.deepEqual(liste[0], { id: 'quiz', nom: 'Quiz', joueursMin: 2, disponible: true, bientot: false });
+  assert.deepEqual(
+    liste.slice(1).map((m) => [m.id, m.disponible, m.bientot]),
+    [
+      ['estimation', false, true], ['qui-de-nous', false, true], ['undercover', false, true],
+      ['meme-reponse', false, true], ['bluff', false, true],
+    ],
+  );
+  assert.equal(vueJoueur(salle, autre).modes, undefined);
+  assert.equal(vueJoueur(salle, autre).modeChoisi, 'Quiz');
+});
+
+test('choix du mode : la TV reçoit le mode choisi hors partie seulement', () => {
+  const { salle } = salleAvec(1);
+  assert.deepEqual(vueTv(salle).modeChoisi, {
+    id: 'quiz',
+    nom: 'Quiz',
+    regleCourte: '10 questions, 4 choix : plus tu réponds vite, plus tu marques.',
+    joueursMin: 2,
+    assezDeJoueurs: false,
+  });
+  demarrerPartie(salle);
+  assert.equal(vueTv(salle).modeChoisi, undefined);
+  terminerPartie(salle);
+  assert.equal(vueTv(salle).modeChoisi.nom, 'Quiz');
 });

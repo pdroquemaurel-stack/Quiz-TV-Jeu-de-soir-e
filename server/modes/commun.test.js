@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle } from '../salles.js';
 import { classement, tirerQuestions } from './commun.js';
-import { modes } from './index.js';
+import { modes, modesAVenir } from './index.js';
 
 // --- Registre des modes ---
 
@@ -14,8 +14,20 @@ const CONTRAT = [
 test('chaque mode du registre respecte le contrat', () => {
   for (const [cle, mode] of Object.entries(modes)) {
     assert.equal(mode.id, cle);
+    assert.equal(typeof mode.nom, 'string', `${cle}.nom`);
+    assert.equal(typeof mode.regleCourte, 'string', `${cle}.regleCourte`);
     assert.ok(Number.isInteger(mode.joueursMin) && mode.joueursMin >= 1, `${cle}.joueursMin`);
     for (const nom of CONTRAT) assert.equal(typeof mode[nom], 'function', `${cle}.${nom}`);
+  }
+});
+
+test('les modes à venir sont décrits, sans doublon ni conflit avec le registre', () => {
+  const ids = modesAVenir.map((mode) => mode.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const mode of modesAVenir) {
+    assert.ok(!Object.hasOwn(modes, mode.id), mode.id);
+    assert.ok(mode.nom && mode.regleCourte, mode.id);
+    assert.ok(Number.isInteger(mode.joueursMin), mode.id);
   }
 });
 

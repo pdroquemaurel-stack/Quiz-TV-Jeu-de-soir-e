@@ -5,6 +5,8 @@ import {
 } from './commun.js';
 
 export const id = 'quiz';
+export const nom = 'Quiz';
+export const regleCourte = '10 questions, 4 choix : plus tu réponds vite, plus tu marques.';
 export const joueursMin = 2;
 
 const NOMBRE_CHOIX = 4;

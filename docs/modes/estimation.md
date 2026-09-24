@@ -77,6 +77,15 @@ Un fichier `server/modes/commun.js` reçoit ce qui sert à plusieurs modes, extr
 - Si le mode choisi devient insuffisant (un joueur part), il reste choisi et le bouton « Lancer la partie » (ou « Rejouer ») est désactivé.
 - Au podium, « Rejouer » lance directement le mode choisi, sans repasser par la salle d'attente.
 - Avec `MODE_DEV=1`, un seul joueur suffit pour tous les modes. `MODE_DEV` n'est pas activé sur Render.
+- Les modes pas encore codés apparaissent aussi dans le sélecteur, toujours grisés, avec « Bientôt ». Ils sont décrits dans la liste `modesAVenir` de `server/modes/index.js` (id, nom, règle courte, minimum de joueurs), sans fichier ni code de jeu. Quand un mode est codé, il quitte cette liste pour entrer dans le registre.
+
+  | id | Nom | Minimum |
+  |---|---|---|
+  | `estimation` | Estimation | 3 |
+  | `qui-de-nous` | Qui de nous ? | 4 |
+  | `undercover` | Undercover | 4 |
+  | `meme-reponse` | Même réponse | 3 |
+  | `bluff` | Le bluff | 4 |
 
 ### Événement
 
@@ -84,14 +93,14 @@ Un fichier `server/modes/commun.js` reçoit ce qui sert à plusieurs modes, extr
 |---|---|---|
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode (`"quiz"`, `"estimation"`) |
 
-Le serveur ignore l'action si l'émetteur n'est pas l'hôte, si la salle n'est ni en `lobby` ni en `podium`, si le mode n'existe pas ou s'il est grisé. Sinon, il change `salle.mode` et diffuse l'état. `etatMode` n'est pas touché : il est réinitialisé au lancement suivant.
+Le serveur ignore l'action si l'émetteur n'est pas l'hôte, si la salle n'est ni en `lobby` ni en `podium`, si le mode n'est pas dans le registre (inconnu ou à venir) ou s'il est grisé. Sinon, il change `salle.mode` et diffuse l'état. `etatMode` n'est pas touché : il est réinitialisé au lancement suivant.
 
 `hote:lancer` et `hote:rejouer` vérifient le nombre de joueurs avec le `joueursMin` du mode choisi (au lieu de 2).
 
 ### Ce que reçoivent les clients
 
-- `salle:etat` (TV) : `mode`, et en salle d'attente et au podium `modeChoisi: { id, nom, regleCourte, joueursMin }`.
-- `joueur:etat` en salle d'attente et au podium, pour tous : `modeChoisi` (nom) et `assezDeJoueurs` (calculé pour le mode choisi). Pour l'hôte en plus : `modes: [{ id, nom, joueursMin, disponible }]`.
+- `salle:etat` (TV) : `mode`, et en salle d'attente et au podium `modeChoisi: { id, nom, regleCourte, joueursMin, assezDeJoueurs }`.
+- `joueur:etat` en salle d'attente et au podium, pour tous : `modeChoisi` (nom) et `assezDeJoueurs` (calculé pour le mode choisi). Pour l'hôte en plus : `modes: [{ id, nom, joueursMin, disponible, bientot }]`, les modes jouables puis les modes à venir.
 
 ### Écrans
 

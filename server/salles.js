@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { rangDe } from './modes/commun.js';
-import { modes } from './modes/index.js';
+import { modes, modesAVenir } from './modes/index.js';
 
 export const JOUEURS_MAX = 10;
 export const DELAI_ABSENCE_MS = 10000;
@@ -84,10 +84,38 @@ function modeDe(salle) {
   return modes[salle.mode];
 }
 
-// Le minimum dépend du mode. Avec MODE_DEV=1, on peut jouer seul.
-export function assezDeJoueurs(salle) {
-  const minimum = process.env.MODE_DEV === '1' ? 1 : modeDe(salle).joueursMin;
+// Le minimum dépend du mode. Avec MODE_DEV=1, on peut jouer seul à tous les modes.
+export function modeDisponible(salle, mode) {
+  const minimum = process.env.MODE_DEV === '1' ? 1 : mode.joueursMin;
   return joueursConnectes(salle).length >= minimum;
+}
+
+export function assezDeJoueurs(salle) {
+  return modeDisponible(salle, modeDe(salle));
+}
+
+// Tous les modes pour le sélecteur de l'hôte : les jouables, puis ceux à venir.
+function listeModes(salle) {
+  const jouables = Object.values(modes).map((mode) => ({
+    id: mode.id,
+    nom: mode.nom,
+    joueursMin: mode.joueursMin,
+    disponible: modeDisponible(salle, mode),
+    bientot: false,
+  }));
+  const aVenir = modesAVenir.map(({ id, nom, joueursMin }) => ({
+    id, nom, joueursMin, disponible: false, bientot: true,
+  }));
+  return [...jouables, ...aVenir];
+}
+
+// Choix de l'hôte, en salle d'attente ou au podium. Renvoie true si le mode a changé.
+// Un mode à venir n'est pas dans le registre : il est refusé comme un mode inconnu.
+export function choisirMode(salle, id) {
+  if (salle.etat !== 'lobby' && salle.etat !== 'podium') return false;
+  if (!Object.hasOwn(modes, id) || !modeDisponible(salle, modes[id])) return false;
+  salle.mode = id;
+  return true;
 }
 
 // Lancer ou rejouer : le mode tire son contenu et démarre la première manche.
@@ -251,7 +279,13 @@ export function synchroniserMinuteur(salle, quandAvance) {
 }
 
 export function vueTv(salle) {
-  return { ...salle, etatMode: modeDe(salle).vueTv(salle) };
+  const vue = { ...salle, etatMode: modeDe(salle).vueTv(salle) };
+  if (salle.etat === 'partie') return vue;
+  const { id, nom, regleCourte, joueursMin } = modeDe(salle);
+  return {
+    ...vue,
+    modeChoisi: { id, nom, regleCourte, joueursMin, assezDeJoueurs: assezDeJoueurs(salle) },
+  };
 }
 
 export function vueJoueur(salle, joueur) {
@@ -266,9 +300,11 @@ export function vueJoueur(salle, joueur) {
     estHote,
     peutTerminer: estHote && salle.etat === 'partie',
   };
-  if (salle.etat === 'lobby') return { ...vue, assezDeJoueurs: assezDeJoueurs(salle) };
-  if (salle.etat === 'podium') {
-    return { ...vue, ecran: 'fin', rang: rangDe(salle, joueur), assezDeJoueurs: assezDeJoueurs(salle) };
-  }
-  return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };
+  if (salle.etat === 'partie') return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };
+
+  // Salle d'attente et podium : le mode choisi, et le sélecteur pour l'hôte.
+  const horsPartie = { ...vue, modeChoisi: modeDe(salle).nom, assezDeJoueurs: assezDeJoueurs(salle) };
+  if (estHote) horsPartie.modes = listeModes(salle);
+  if (salle.etat === 'podium') return { ...horsPartie, ecran: 'fin', rang: rangDe(salle, joueur) };
+  return horsPartie;
 }

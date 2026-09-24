@@ -84,6 +84,15 @@ function afficherLobby(salle) {
     document.getElementById('liste-joueurs'),
     salle.joueurs.map((joueur) => etiquetteJoueur(joueur, joueur.id === salle.hoteId)),
   );
+  afficherModeChoisi(salle.modeChoisi);
+}
+
+function afficherModeChoisi(mode) {
+  document.getElementById('nom-mode').textContent = mode.nom;
+  document.getElementById('regle-mode').textContent = mode.regleCourte;
+  const minimum = document.getElementById('minimum-mode');
+  minimum.textContent = `${mode.joueursMin} joueurs minimum`;
+  minimum.hidden = mode.assezDeJoueurs;
 }
 
 function etiquetteJoueur(joueur, estHote) {
@@ -159,6 +168,7 @@ function afficherPodium(salle) {
   document.getElementById('classement-podium').replaceChildren(
     ...classement.map((ligne) => ligneClassement(ligne, false)),
   );
+  document.getElementById('prochain-mode').textContent = salle.modeChoisi.nom;
 }
 
 function ligneClassement(ligne, avecGain) {

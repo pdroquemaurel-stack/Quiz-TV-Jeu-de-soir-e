@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { demarrerServeur } from './index.js';
 import { creerSalle, salles } from './salles.js';
+import { modes } from './modes/index.js';
 
 test('/sante répond 200', async () => {
   const serveur = await demarrerServeur(0);
@@ -82,4 +83,38 @@ test('/qr d\'une salle inconnue répond 404', async () => {
 
   assert.equal(reponse.status, 404);
   serveur.close();
+});
+
+test('seul l\'hôte peut choisir le mode', async (t) => {
+  modes.fictif = {
+    id: 'fictif', nom: 'Fictif', regleCourte: '', joueursMin: 1, echeance: () => null, vueTv: () => ({}),
+  };
+  t.after(() => delete modes.fictif);
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+  const salle = creerSalle('tv-test-mode');
+  const hote = await connecterClient(port);
+  const autre = await connecterClient(port);
+
+  hote.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Hôte' });
+  await attendre(hote, 'joueur:etat');
+  autre.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Autre' });
+  await attendre(autre, 'joueur:etat');
+  const idAutre = autre.evenements.at(-1)[1].id;
+
+  autre.emettre('hote:choisirMode', 'fictif');
+  // Sa reconnexion provoque une diffusion : quand elle arrive, son choix a été traité.
+  autre.emettre('joueur:rejoindre', { code: salle.code, id: idAutre });
+  await attendre(autre, 'joueur:etat');
+  assert.equal(salle.mode, 'quiz');
+
+  hote.emettre('hote:choisirMode', 'fictif');
+  await attendre(autre, 'joueur:etat');
+  assert.equal(salle.mode, 'fictif');
+  assert.equal(autre.evenements.at(-1)[1].modeChoisi, 'Fictif');
+
+  delete salles[salle.code];
+  hote.fermer();
+  autre.fermer();
+  await new Promise((resolve) => serveur.close(resolve));
 });

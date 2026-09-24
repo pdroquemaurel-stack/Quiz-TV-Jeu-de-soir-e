@@ -111,6 +111,33 @@ main[data-ecran="lobby"] {
   font-size: 56px;
 }
 
+.mode-tv p {
+  margin: 0;
+}
+
+.nom-mode {
+  font-size: 56px;
+  color: var(--accent);
+}
+
+.regle-mode,
+.minimum-mode {
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+.minimum-mode {
+  color: var(--rate);
+}
+
+.prochain-mode {
+  font-size: 48px;
+}
+
+.prochain-mode strong {
+  color: var(--accent);
+}
+
 /* ---------- Étiquettes de joueurs (salle d'attente, « a répondu ») ---------- */
 
 .etiquettes {

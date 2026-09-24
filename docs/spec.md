@@ -46,7 +46,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 ### Salle
 - Création automatique d'une salle à l'ouverture de l'app TV (code de 4 lettres, QR code vers la page joueur)
-- 2 à 10 joueurs connectés, 1 joueur autorisé en mode développeur (`MODE_DEV=1`)
+- 2 à 10 joueurs connectés, 1 joueur autorisé pour tous les modes en mode développeur (`MODE_DEV=1`)
 - Rôle d'hôte pour le premier arrivé, transféré automatiquement après 10 s de déconnexion
 - Fermeture automatique après 30 min sans aucune connexion, dans n'importe quel état. Tant que la TV est connectée, la salle reste ouverte.
 - Jeton secret remis à la TV à la création de la salle, exigé pour s'y reconnecter
@@ -206,7 +206,8 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `hote:lancer` | téléphone de l'hôte → serveur | rien |
 | `joueur:repondre` | téléphone → serveur | index du choix |
 | `hote:suivant` | téléphone de l'hôte → serveur | rien |
-| `hote:rejouer` | téléphone de l'hôte → serveur | rien |
+| `hote:rejouer` | téléphone de l'hôte → serveur | rien. Relance le mode choisi. |
+| `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au podium, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
 | `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. |
 | `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie) |
@@ -223,10 +224,10 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Chargement | « Réveil du serveur… » avec nouvelle tentative automatique (voir Contraintes techniques) |
-| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), « En attente que l'hôte lance » |
+| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), « En attente que l'hôte lance » |
 | Question | Numéro (3/10), texte, 4 réponses (couleur + forme ▲ ◆ ● ■), chrono, pastilles des joueurs ayant répondu, petit QR code dans un coin |
 | Révélation | Bonne réponse mise en avant, nombre de réponses par choix, qui a eu juste, puis classement avec les points gagnés |
-| Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3), classement complet dessous, « L'hôte peut relancer » |
+| Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3), classement complet dessous, « Prochain mode : … », « L'hôte peut relancer » |
 | Quitter ? | Boîte de confirmation déclenchée par la touche Retour |
 
 ### Téléphone (portrait)
@@ -234,11 +235,11 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Rejoindre | Code pré-rempli depuis le QR code, champ pseudo, bouton « Entrer », messages d'erreur |
-| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : bouton « Lancer la partie » (inactif sous 2 joueurs connectés) |
+| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : un bouton par mode (grisé s'il manque des joueurs, « Bientôt » s'il n'est pas encore codé), puis « Lancer la partie » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » |
 | Répondre | 4 gros boutons couleur + forme, sans texte, qui occupent tout l'écran |
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
 | Résultat | « Bonne réponse, +740 » ou « Raté », rang actuel. Pour l'hôte : bouton « Suivant » |
-| Fin | Rang final et score. Pour l'hôte : bouton « Rejouer » (inactif sous 2 joueurs connectés) |
+| Fin | Rang final et score. Pour l'hôte : les boutons de mode, puis « Rejouer » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » |
 | En attente de la prochaine question | Pour un joueur arrivé en cours de manche |
 | Reconnexion | Bandeau « Reconnexion… » quand la connexion saute |
 
@@ -313,7 +314,7 @@ Limites connues (doc Render) :
 | Variable d'environnement | Rôle | Par défaut |
 |---|---|---|
 | `URL_PUBLIQUE` | Adresse de base encodée dans le QR code et affichée sous celui-ci | L'IP locale du PC sur le Wi-Fi (par exemple `http://192.168.1.20:3000`), pour que les téléphones puissent l'ouvrir |
-| `MODE_DEV` | `1` autorise une partie à 1 joueur (lancer et rejouer) | Désactivé |
+| `MODE_DEV` | `1` autorise une partie à 1 joueur dans tous les modes (lancer, rejouer, choisir le mode) | Désactivé |
 
 Dépendance validée pour le QR code : `qrcode`.
 

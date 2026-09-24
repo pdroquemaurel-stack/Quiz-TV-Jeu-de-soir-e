@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import {
-  assezDeJoueurs, ajouterJoueur, creerSalle, deconnecterJoueur, deconnecterTv, demarrerPartie,
+  assezDeJoueurs, ajouterJoueur, choisirMode, creerSalle, deconnecterJoueur, deconnecterTv, demarrerPartie,
   erreur, reconnecterJoueur, reconnecterTv, synchroniserMinuteur, terminerPartie,
   trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
@@ -83,6 +83,12 @@ export function demarrerServeur(port) {
       const { salle } = trouve;
       if (salle.etat !== 'lobby' || !assezDeJoueurs(salle)) return;
       lancerPartie(salle);
+    });
+
+    socket.on('hote:choisirMode', (id) => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !choisirMode(trouve.salle, id)) return;
+      diffuser(trouve.salle);
     });
 
     socket.on('joueur:repondre', (choix) => {
