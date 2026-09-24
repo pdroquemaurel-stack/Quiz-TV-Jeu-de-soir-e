@@ -6,7 +6,7 @@ Le MVP permet à 2 à 10 amis réunis dans une même pièce de jouer une partie 
 
 Le MVP est réussi si une soirée réelle se déroule sans intervention technique : ouvrir l'app TV, scanner le QR code, jouer 10 questions, voir le podium, puis rejouer. Il doit aussi supporter au moins une déconnexion de téléphone en cours de partie.
 
-Le code et le modèle de données doivent permettre d'ajouter ensuite les modes « Fausses réponses », « L'imposteur » et « Qui de nous… ? » sans tout réécrire.
+Le code et le modèle de données doivent permettre d'ajouter ensuite d'autres modes de jeu sans tout réécrire. Cinq modes sont prévus après le MVP (voir « Modes de jeu supplémentaires »).
 
 ## Déroulé d'une partie
 
@@ -68,7 +68,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 Ces éléments sont volontairement repoussés. Le modèle de données ne doit pas les empêcher.
 
-- Les modes « Fausses réponses », « L'imposteur » et « Qui de nous… ? »
+- Les modes de jeu autres que le quiz : ils font l'objet de l'étape « Modes de jeu » (tranches 11 à 15), après le MVP
 - Le choix d'un thème ou d'une difficulté (les champs existent déjà dans les questions)
 - Les questions avec image, son ou vidéo
 - Le son et la musique (chrono, jingles)
@@ -95,11 +95,17 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 - **Fin anticipée** : la manche se termine dès que tous les joueurs attendus ont répondu, ou à 20 s. Les joueurs attendus sont ceux qui étaient connectés au début de la manche et qui le sont encore. Un joueur arrivé en cours de manche n'est pas attendu. Si un joueur attendu se déconnecte, on vérifie à nouveau si tous les autres ont répondu.
 - Classement par score total. En cas d'égalité, les joueurs partagent le même rang, sans départage, et le rang suivant est sauté : 1, 1, 3.
 
-### Modes futurs (hors MVP, intentions à préciser)
+### Modes de jeu supplémentaires (après le MVP)
 
-- **Fausses réponses** : chaque joueur invente une fausse réponse à une question peu connue, puis tous votent parmi les fausses réponses et la vraie. On marque des points en trouvant la vraie et en piégeant les autres.
-- **L'imposteur** : tous reçoivent le même mot sauf un joueur. Chacun donne un indice, puis on vote pour démasquer l'imposteur.
-- **Qui de nous… ?** : une question du type « Qui de nous est le plus susceptible de… ». Chacun vote pour un joueur, et on marque en votant comme la majorité.
+Résumés seulement. Les règles détaillées de chaque mode sont écrites dans sa mini-spec (`docs/modes/`), juste avant de le coder. Le maximum reste 10 joueurs pour tous les modes.
+
+| Ordre | Mode | Joueurs | Résumé |
+|---|---|---|---|
+| 1 | **Estimation** | 3 à 10 | Une question à réponse numérique (« Combien de km entre Casablanca et Paris ? »). Chacun saisit un nombre, le plus proche gagne. |
+| 2 | **Qui de nous ?** | 4 à 10 | « Qui est le plus susceptible de rater son avion ? ». Chacun vote pour un joueur, la TV affiche les résultats. |
+| 3 | **Undercover** | 4 à 10 | Chacun reçoit un mot secret sur son téléphone, un joueur a un mot légèrement différent. Tours de description à voix haute, puis vote pour démasquer l'intrus. |
+| 4 | **Même réponse** | 3 à 10 | « Cite un fruit rouge ». On marque des points si on donne la même réponse que d'autres joueurs. |
+| 5 | **Le bluff** | 4 à 10 | Question obscure : chacun invente une fausse réponse, puis tout le monde cherche la vraie parmi les bluffs. Points pour avoir trouvé et pour avoir piégé. |
 
 ## Cas limites
 
@@ -306,9 +312,9 @@ Dépendance validée pour le QR code : `qrcode`.
 
 ## Tranches de développement
 
-On découpe en 10 tranches. Chacune se termine par un test concret. La TV est simulée par un onglet de navigateur jusqu'à la tranche 9.
+On découpe en 15 tranches. Chacune se termine par un test concret. La TV est simulée par un onglet de navigateur jusqu'à la tranche 9.
 
-Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, 9, 10. Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) passe donc avant la tranche 6, pour que les tests sur vrais téléphones se fassent toujours sur le serveur en ligne. Les numéros des tranches ne changent pas.
+Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11 à 15** (modes de jeu), 9, 10. Les tranches 9 (APK) et 10 (soirée test) sont repoussées après les modes de jeu. Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) passe donc avant la tranche 6, pour que les tests sur vrais téléphones se fassent toujours sur le serveur en ligne. Les numéros des tranches ne changent pas.
 
 - **1. Squelette.** Serveur Node + Express + Socket.IO, pages `/tv` et `/joueur` vides, route `/sante`.
   *Test : un message tapé dans l'onglet joueur s'affiche dans l'onglet TV.*
@@ -330,9 +336,36 @@ Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, 9, 10. Le PC de développeme
   - Mise à l'échelle de la page TV : elle reste conçue en 1920×1080, mais elle est réduite ou agrandie en bloc pour tenir entière dans la fenêtre, centrée et sans déformation. Cela évite de zoomer quand le navigateur offre moins de place (écran de PC avec mise à l'échelle Windows à 125 %, WebView du stick qui voit souvent 960×540). Le facteur est calculé en JavaScript (`ajusterEchelle()`), au chargement et à chaque redimensionnement, car le calcul en CSS pur demande des fonctions trop récentes pour la WebView d'Android TV 11.
   - Arrêt de la partie par l'hôte : un bouton « Terminer la partie » sur le téléphone de l'hôte, pendant une question ou une révélation, avec une confirmation pour éviter un appui accidentel. Le téléphone envoie `hote:terminer`, le serveur vérifie que l'émetteur est bien l'hôte et passe directement au podium avec les scores actuels. Une manche en cours n'est pas comptée. « Rejouer » reste disponible ensuite.
   *Test : partie à 4 sur la vraie TV, via l'ordinateur branché. La page TV s'affiche en entier sans zoom du navigateur, quelle que soit la taille de la fenêtre. L'hôte termine une partie à la 4e question : la TV affiche le podium, un autre joueur ne peut pas terminer.*
+
+### Étape « Modes de jeu » (tranches 11 à 15)
+
+Cinq modes ajoutés un par un, dans l'ordre ci-dessous (résumés dans « Modes de jeu supplémentaires »). Chaque mode est testé dans le navigateur via Render : TV dans un onglet du PC, joueurs sur de vrais téléphones et sur des onglets `?dev`.
+
+Règles de l'étape :
+
+- **Une mini-spec par mode**, dans `docs/modes/<mode>.md`, écrite et validée avant de coder le mode. Elle précise au moins : les règles et le calcul des points, les phases de jeu et les chronos, les événements et leur contenu, ce que voient la TV et chaque téléphone (et ce qu'ils ne doivent jamais recevoir), le contenu à préparer (fichier de données et script de vérification), les cas limites (déconnexion, arrivée en cours de partie, joueurs sous le minimum en cours de partie, arrêt par l'hôte) et les tests automatiques.
+- **Contraintes du Mi TV Stick** (voir « Contraintes techniques ») : animations CSS simples (opacité, déplacement), pas de flou (`filter: blur`, `backdrop-filter`), pas d'images lourdes.
+- Les règles d'architecture restent valables : serveur autoritaire, temps mesuré par le serveur, aucune information secrète envoyée avant la révélation, actions `hote:*` vérifiées côté serveur, ce qui est propre à un mode reste dans `etatMode` et `server/modes/<mode>.js`.
+- Le quiz reste disponible et continue de marcher à chaque tranche.
+
+Tranches :
+
+- **11. Choix du mode + Estimation.** L'hôte choisit le mode depuis son téléphone, en salle d'attente et à la fin d'une partie. Un mode est grisé tant qu'il n'y a pas assez de joueurs connectés. La TV affiche le mode choisi. Puis le mode Estimation (3 à 10 joueurs).
+  *Test : défini dans `docs/modes/estimation.md`.*
+- **12. Qui de nous ?** (4 à 10 joueurs).
+  *Test : défini dans `docs/modes/qui-de-nous.md`.*
+- **13. Undercover** (4 à 10 joueurs).
+  *Test : défini dans `docs/modes/undercover.md`.*
+- **14. Même réponse** (3 à 10 joueurs).
+  *Test : défini dans `docs/modes/meme-reponse.md`.*
+- **15. Le bluff** (4 à 10 joueurs).
+  *Test : défini dans `docs/modes/bluff.md`.*
+
+### Fin du projet
+
 - **9. APK Android TV.** Coquille WebView avec page « Réveil du serveur… », touches Retour/OK, installation sur le stick pas à pas.
   *Test : lancer l'app depuis l'accueil du stick et jouer une partie.*
-- **10. Soirée test.** Une vraie soirée avec des amis, en notant les bugs et les frictions. Ces retours décideront si on migre vers une offre payante et quel mode ajouter en premier.
+- **10. Soirée test.** Une vraie soirée avec des amis, en notant les bugs et les frictions. Ces retours décideront si on migre vers une offre payante et quels modes améliorer en priorité.
 
 ## Questions ouvertes
 
