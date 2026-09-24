@@ -2,18 +2,15 @@
 import * as estimation from './estimation.js';
 import * as quiDeNous from './qui-de-nous.js';
 import * as quiz from './quiz.js';
+import * as undercover from './undercover.js';
 
-export const modes = { quiz, estimation, 'qui-de-nous': quiDeNous };
+export const modes = {
+  quiz, estimation, 'qui-de-nous': quiDeNous, undercover,
+};
 
 // Modes prévus mais pas encore codés : affichés grisés (« Bientôt »), jamais choisis.
 // Quand un mode est codé, il quitte cette liste pour entrer dans le registre.
 export const modesAVenir = [
-  {
-    id: 'undercover',
-    nom: 'Undercover',
-    regleCourte: "Un joueur a un mot différent : démasquez l'intrus.",
-    joueursMin: 4,
-  },
   {
     id: 'meme-reponse',
     nom: 'Même réponse',

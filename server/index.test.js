@@ -75,6 +75,38 @@ test('seul l\'hôte peut terminer la partie', async () => {
   await new Promise((resolve) => serveur.close(resolve));
 });
 
+// Le lancement passe par index.js : il ne doit dépendre du contenu d'aucun etatMode.
+// Délai maximal : si le serveur plante, le test échoue au lieu d'attendre sans fin.
+test('chaque mode du registre se lance et se termine par les événements', { timeout: 5000 }, async () => {
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+  const salle = creerSalle('tv-test');
+  const clients = [];
+  for (const pseudo of ['A', 'B', 'C', 'D']) {
+    const client = await connecterClient(port);
+    client.emettre('joueur:rejoindre', { code: salle.code, pseudo });
+    await attendre(client, 'joueur:etat');
+    clients.push(client);
+  }
+  const [hote] = clients;
+
+  for (const id of Object.keys(modes)) {
+    hote.emettre('hote:choisirMode', id);
+    await attendre(hote, 'joueur:etat');
+    hote.emettre(salle.etat === 'lobby' ? 'hote:lancer' : 'hote:rejouer');
+    await attendre(hote, 'joueur:etat');
+    assert.equal(salle.etat, 'partie', id);
+    assert.equal(salle.mode, id);
+    hote.emettre('hote:terminer');
+    await attendre(hote, 'joueur:etat');
+    assert.equal(salle.etat, 'podium', id);
+  }
+
+  delete salles[salle.code];
+  for (const client of clients) client.fermer();
+  await new Promise((resolve) => serveur.close(resolve));
+});
+
 test('/qr d\'une salle inconnue répond 404', async () => {
   const serveur = await demarrerServeur(0);
   const { port } = serveur.address();

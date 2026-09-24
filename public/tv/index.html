@@ -99,6 +99,65 @@
       </div>
     </main>
 
+    <main data-ecran="undercover-description" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="uc-numero-description"></p>
+        <p class="uc-composition" id="uc-composition"></p>
+      </div>
+      <p class="consigne-vote">Décrivez votre mot à voix haute, sans le dire. L'hôte lance le vote.</p>
+      <ol class="uc-ordre" id="uc-ordre"></ol>
+      <div class="uc-bloc-elimines" id="uc-bloc-elimines">
+        <p class="uc-sous-titre">Éliminés</p>
+        <ul class="etiquettes" id="uc-elimines"></ul>
+      </div>
+    </main>
+
+    <main data-ecran="undercover-vote" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="uc-numero-vote"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="uc-barre-temps"></div></div>
+        <p class="chrono" id="uc-chrono"></p>
+      </div>
+      <h1 class="question rebond" id="uc-titre-vote"></h1>
+      <p class="consigne-vote">Votez sur votre téléphone</p>
+      <ul class="etiquettes ont-repondu" id="uc-ont-vote"></ul>
+    </main>
+
+    <main data-ecran="undercover-elimination" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="uc-numero-elimination"></p>
+      </div>
+      <h1 class="uc-verdict rebond" id="uc-verdict"></h1>
+      <p class="uc-detail" id="uc-detail"></p>
+      <ul class="uc-votes" id="uc-votes"></ul>
+    </main>
+
+    <main data-ecran="undercover-devinette" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="uc-numero-devinette"></p>
+        <p class="chrono" id="uc-chrono-devinette"></p>
+      </div>
+      <h1 class="uc-verdict rebond" id="uc-mister-white"></h1>
+      <p class="uc-detail">Il a une seule chance de trouver le mot des civils</p>
+      <p class="uc-proposition" id="uc-proposition"></p>
+      <p class="uc-resultat-devinette rebond" id="uc-resultat-devinette" hidden></p>
+    </main>
+
+    <main data-ecran="undercover-fin_manche" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="uc-numero-fin"></p>
+      </div>
+      <h1 class="uc-verdict rebond" id="uc-gagnant"></h1>
+      <div class="uc-listes">
+        <div class="uc-revelation">
+          <p class="uc-mots">Civils : <strong id="uc-mot-civils"></strong></p>
+          <p class="uc-mots">Undercover : <strong id="uc-mot-undercover"></strong></p>
+          <ul class="etiquettes" id="uc-infiltres"></ul>
+        </div>
+        <ol class="classement classement-colonne" id="uc-classement"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
       <p class="plus-designe" id="plus-designe" hidden></p>
@@ -123,5 +182,6 @@
   <script src="/tv/modes/quiz.js"></script>
   <script src="/tv/modes/estimation.js"></script>
   <script src="/tv/modes/qui-de-nous.js"></script>
+  <script src="/tv/modes/undercover.js"></script>
 </body>
 </html>

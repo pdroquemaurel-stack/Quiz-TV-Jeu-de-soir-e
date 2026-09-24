@@ -444,3 +444,45 @@ main[data-ecran="quiz-repondre"] {
 .bouton-candidat.deconnecte {
   opacity: 0.5;
 }
+
+/* ---------- Undercover ---------- */
+
+.bloc-mot {
+  width: 100%;
+  max-width: 420px;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mot-secret {
+  margin: 0;
+  padding: 16px;
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--accent);
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-radius: 24px;
+}
+
+.mot-secret.mister-white {
+  font-size: 24px;
+  color: var(--texte);
+}
+
+.bloc-mot .bouton {
+  min-height: 60px;
+  font-size: 24px;
+}
+
+.champ-mot {
+  width: 100%;
+  max-width: 420px;
+  height: 80px;
+  font-size: 36px;
+  text-align: center;
+  background: var(--panneau);
+  border-bottom-width: 10px;
+}

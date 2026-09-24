@@ -23,6 +23,7 @@ server/
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
   modes/estimation.js # mode Estimation (docs/modes/estimation.md)
   modes/qui-de-nous.js # mode Qui de nous ? (docs/modes/qui-de-nous.md)
+  modes/undercover.js # mode Undercover (docs/modes/undercover.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -58,6 +59,7 @@ docs/modes/        # une mini-spec par mode de jeu
 - Chaque action `hote:*` vérifie côté serveur que l'émetteur est bien l'hôte.
 - L'identité d'un joueur repose sur son `id` mémorisé dans le `localStorage`, pas sur le socket.
 - Ce qui est propre au quiz reste dans `etatMode` et `server/modes/quiz.js`, pour pouvoir ajouter d'autres modes sans toucher au reste.
+- Le code commun (`server/index.js`, `server/salles.js`) ne lit jamais `etatMode` : c'est la zone privée de chaque mode.
 - Noms de champs et d'événements : exactement ceux de la spec (`salle:etat`, `joueur:repondre`, `etatMode`…).
 
 ## Style de code

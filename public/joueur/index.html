@@ -115,6 +115,68 @@
     <button id="bouton-suivant-qdn" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <!-- Undercover : le mot reste masqué tant qu'on n'appuie pas sur « Voir mon mot ».
+       Le même bloc revient dans plusieurs écrans, d'où les classes au lieu d'id. -->
+  <main data-ecran="undercover-mot" hidden>
+    <p class="uc-manche discret"></p>
+    <div class="bloc-mot"><p class="mot-secret" hidden></p><button class="bouton secondaire voir-mot">Voir mon mot</button></div>
+    <p class="discret">Décris ton mot à voix haute quand c'est ton tour. L'ordre est sur la TV.</p>
+    <button class="bouton en-bas bouton-hote-uc" hidden></button>
+  </main>
+
+  <main data-ecran="undercover-voter" hidden>
+    <p class="gros-texte" id="uc-consigne-vote"></p>
+    <div id="uc-candidats" class="candidats"></div>
+    <div class="bloc-mot"><p class="mot-secret" hidden></p><button class="bouton secondaire voir-mot">Voir mon mot</button></div>
+  </main>
+
+  <main data-ecran="undercover-vote_envoye" hidden>
+    <p class="gros-texte">Tu as voté contre</p>
+    <span id="uc-pastille-vote" class="pastille grande-pastille rebond"></span>
+    <p id="uc-pseudo-vote" class="nombre-envoye"></p>
+    <p class="discret">Regarde la TV</p>
+    <div class="bloc-mot"><p class="mot-secret" hidden></p><button class="bouton secondaire voir-mot">Voir mon mot</button></div>
+  </main>
+
+  <main data-ecran="undercover-elimine" hidden>
+    <p class="carte-resultat rebond">Tu es éliminé</p>
+    <p id="uc-role-elimine" class="gros-texte"></p>
+    <p id="uc-mot-elimine" class="discret"></p>
+    <p class="discret">Regarde la suite sur la TV</p>
+    <button class="bouton en-bas bouton-hote-uc" hidden></button>
+  </main>
+
+  <main data-ecran="undercover-elimination" hidden>
+    <p id="uc-verdict" class="gros-texte rebond"></p>
+    <p id="uc-detail" class="discret"></p>
+    <div class="bloc-mot"><p class="mot-secret" hidden></p><button class="bouton secondaire voir-mot">Voir mon mot</button></div>
+    <button class="bouton en-bas bouton-hote-uc" hidden></button>
+  </main>
+
+  <main data-ecran="undercover-deviner" hidden>
+    <p class="gros-texte">Quel est le mot des civils ?</p>
+    <p id="uc-chrono-devinette" class="discret"></p>
+    <input id="uc-champ-mot" class="champ-mot" type="text" maxlength="30" autocomplete="off" autocapitalize="off" enterkeyhint="done" aria-label="Le mot des civils">
+    <p id="uc-resultat-devinette" class="carte-resultat rebond" hidden></p>
+    <button id="uc-valider-mot" class="bouton en-bas" disabled>Valider</button>
+    <button class="bouton en-bas bouton-hote-uc" hidden></button>
+  </main>
+
+  <main data-ecran="undercover-fin_manche" hidden>
+    <p id="uc-resultat-manche" class="carte-resultat rebond"></p>
+    <p id="uc-role-fin" class="gros-texte"></p>
+    <p id="uc-mots-fin" class="discret"></p>
+    <p>Score : <strong id="uc-score"></strong></p>
+    <p>Rang : <strong id="uc-rang"></strong></p>
+    <button class="bouton en-bas bouton-hote-uc" hidden></button>
+  </main>
+
+  <main data-ecran="undercover-attente_manche" hidden>
+    <p class="gros-texte">Tu joues à la prochaine manche</p>
+    <p class="discret">Regarde la TV</p>
+    <button class="bouton en-bas bouton-hote-uc" hidden></button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -145,5 +207,6 @@
   <script src="/joueur/modes/quiz.js"></script>
   <script src="/joueur/modes/estimation.js"></script>
   <script src="/joueur/modes/qui-de-nous.js"></script>
+  <script src="/joueur/modes/undercover.js"></script>
 </body>
 </html>

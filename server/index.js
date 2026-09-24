@@ -40,11 +40,13 @@ export function demarrerServeur(port) {
     }
   }
 
-  // Le journal des questions tirées permet de vérifier à l'œil qu'aucune ne se répète.
+  // Le journal des tirages permet de vérifier à l'œil qu'aucun contenu ne se répète.
+  // Il lit questionsVues, commune à tous les modes, et jamais etatMode.
   function lancerPartie(salle) {
+    const dejaVues = new Set(salle.questionsVues);
     demarrerPartie(salle);
-    const ids = salle.etatMode.questions.map((question) => question.id);
-    console.log(`Salle ${salle.code}, questions tirées : ${ids.join(' ')}`);
+    const nouvelles = salle.questionsVues.filter((id) => !dejaVues.has(id));
+    console.log(`Salle ${salle.code}, tirages inédits : ${nouvelles.join(' ')} (${salle.questionsVues.length} vus dans la salle)`);
     diffuser(salle);
   }
 
