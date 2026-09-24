@@ -909,3 +909,42 @@ main[data-ecran="undercover-vote"] .question {
 .uc-mots strong {
   color: var(--accent);
 }
+
+/* ---------- Sons : bandeau de déblocage et planche /tv?sons ---------- */
+
+/* Lus depuis le PC, pas à 3 mètres : ils peuvent rester petits. */
+.bandeau-son {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 8px 28px;
+  border: 4px solid var(--contour);
+  border-radius: 999px;
+  background: var(--panneau);
+  color: var(--texte-doux);
+  font-size: 32px;
+  opacity: 0.85;
+}
+
+.planche-sons {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.planche-sons button {
+  padding: 4px 16px;
+  border: 3px solid var(--contour);
+  border-radius: 16px;
+  background: var(--panneau);
+  color: var(--texte);
+  font-size: 24px;
+  cursor: pointer;
+}

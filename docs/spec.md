@@ -77,7 +77,7 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 - Les modes de jeu autres que le quiz : ils font l'objet de l'étape « Modes de jeu » (tranches 11 à 15), après le MVP
 - Le choix d'un thème ou d'une difficulté (les champs existent déjà dans les questions)
 - Les questions avec image, son ou vidéo
-- Le son et la musique (chrono, jingles)
+- Les sons sur les téléphones, et la musique en dehors de la salle d'attente
 - Le jeu à distance, hors de la pièce de la TV
 - Les comptes, l'historique des parties et toute base de données
 - Un back-office pour éditer les questions
@@ -320,9 +320,9 @@ Dépendance validée pour le QR code : `qrcode`.
 
 ## Tranches de développement
 
-On découpe en 15 tranches. Chacune se termine par un test concret. La TV est simulée par un onglet de navigateur jusqu'à la tranche 9.
+On découpe en 16 tranches. Chacune se termine par un test concret. La TV est simulée par un onglet de navigateur jusqu'à la tranche 9.
 
-Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11 à 15** (modes de jeu), 9, 10. Les tranches 9 (APK) et 10 (soirée test) sont repoussées après les modes de jeu. Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) passe donc avant la tranche 6, pour que les tests sur vrais téléphones se fassent toujours sur le serveur en ligne. Les numéros des tranches ne changent pas.
+Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14, 15** (modes de jeu), 9, 10. Les tranches 9 (APK) et 10 (soirée test) sont repoussées après les modes de jeu. Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) passe donc avant la tranche 6, pour que les tests sur vrais téléphones se fassent toujours sur le serveur en ligne. Les numéros des tranches ne changent pas.
 
 - **1. Squelette.** Serveur Node + Express + Socket.IO, pages `/tv` et `/joueur` vides, route `/sante`.
   *Test : un message tapé dans l'onglet joueur s'affiche dans l'onglet TV.*
@@ -369,10 +369,15 @@ Tranches :
 - **15. Le bluff** (4 à 10 joueurs).
   *Test : défini dans `docs/modes/bluff.md`.*
 
+### Tranche « Sons » (réalisée après la tranche 13)
+
+- **16. Sons.** Sons synthétisés par le navigateur (Web Audio API, aucun fichier audio) et joués par la TV seulement, musique de fond en salle d'attente, planche de sons `/tv?sons`.
+  *Test : défini dans `docs/sons.md`.*
+
 ### Fin du projet
 
-- **9. APK Android TV.** Coquille WebView avec page « Réveil du serveur… », touches Retour/OK, installation sur le stick pas à pas.
-  *Test : lancer l'app depuis l'accueil du stick et jouer une partie.*
+- **9. APK Android TV.** Coquille WebView avec page « Réveil du serveur… », touches Retour/OK, lecture du son sans geste dans la WebView (`mediaPlaybackRequiresUserGesture = false`, voir `docs/sons.md`), installation sur le stick pas à pas.
+  *Test : lancer l'app depuis l'accueil du stick et jouer une partie, avec le son.*
 - **10. Soirée test.** Une vraie soirée avec des amis, en notant les bugs et les frictions. Ces retours décideront si on migre vers une offre payante et quels modes améliorer en priorité.
 
 ## Questions ouvertes

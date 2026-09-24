@@ -27,6 +27,7 @@ server/
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
+  tv/sons.js        # sons et musique synthétisés par la TV (docs/sons.md)
   commun/           # CSS et JS partagés
 data/questions.json
 data/estimation.json
@@ -39,6 +40,7 @@ scripts/verifier-undercover.js
 android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
+docs/sons.md       # mini-spec des sons (tranche 16)
 ```
 
 ## Commandes
