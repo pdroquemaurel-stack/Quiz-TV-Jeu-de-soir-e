@@ -44,9 +44,44 @@ button {
   font-weight: bold;
 }
 
-#ecran-attente {
+button:disabled {
+  opacity: 0.4;
+}
+
+main:not([data-ecran="rejoindre"]) {
   color: #1b1340;
   font-size: 1.4rem;
+}
+
+.gros-texte {
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+main[data-ecran="repondre"] {
+  padding: 12px;
+}
+
+.boutons-choix {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.choix {
+  color: #fff;
+  font-size: 4rem;
+  border-radius: 16px;
+}
+
+#choix-envoye {
+  width: 8rem;
+  height: 8rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mon-pseudo {

@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import { vueJoueurQuiz, vueTvQuiz } from './modes/quiz.js';
 
 export const JOUEURS_MAX = 10;
 const PSEUDO_MAX = 12;
@@ -54,6 +55,16 @@ export function trouverSalle(code) {
   return salles[String(code ?? '').trim().toUpperCase()] ?? null;
 }
 
+function joueursConnectes(salle) {
+  return salle.joueurs.filter((joueur) => joueur.connecte);
+}
+
+// Avec MODE_DEV=1, on peut jouer seul.
+export function assezDeJoueurs(salle) {
+  const minimum = process.env.MODE_DEV === '1' ? 1 : 2;
+  return joueursConnectes(salle).length >= minimum;
+}
+
 function premiereCouleurLibre(salle) {
   const prises = salle.joueurs.map((joueur) => joueur.couleur);
   return COULEURS_JOUEURS.find((couleur) => !prises.includes(couleur));
@@ -70,8 +81,7 @@ export function ajouterJoueur(salle, pseudoSaisi, socketId) {
   );
   if (pseudoPris) return { erreur: erreur('pseudo_pris') };
 
-  const connectes = salle.joueurs.filter((joueur) => joueur.connecte);
-  if (connectes.length >= JOUEURS_MAX) return { erreur: erreur('salle_pleine') };
+  if (joueursConnectes(salle).length >= JOUEURS_MAX) return { erreur: erreur('salle_pleine') };
 
   const joueur = {
     id: 'j_' + randomBytes(4).toString('hex'),
@@ -103,12 +113,26 @@ export function trouverJoueurParSocket(socketId) {
   return null;
 }
 
+// Renvoie { salle, joueur } seulement si ce socket est celui de l'hôte.
+export function trouverHoteParSocket(socketId) {
+  const trouve = trouverJoueurParSocket(socketId);
+  if (!trouve || trouve.salle.hoteId !== trouve.joueur.id) return null;
+  return trouve;
+}
+
+export function vueTv(salle) {
+  return { ...salle, etatMode: vueTvQuiz(salle) };
+}
+
 export function vueJoueur(salle, joueur) {
-  return {
+  const vue = {
     ecran: 'attente',
     id: joueur.id,
     pseudo: joueur.pseudo,
     couleur: joueur.couleur,
+    score: joueur.score,
     estHote: salle.hoteId === joueur.id,
   };
+  if (salle.etat === 'lobby') return { ...vue, assezDeJoueurs: assezDeJoueurs(salle) };
+  return { ...vue, ...vueJoueurQuiz(salle, joueur) };
 }

@@ -5,7 +5,7 @@ body {
   font-size: 40px;
 }
 
-#lobby {
+main[data-ecran="lobby"] {
   display: flex;
   height: 100%;
   padding: 80px;
@@ -44,5 +44,68 @@ body {
 }
 
 .attente {
+  opacity: 0.7;
+}
+
+main[data-ecran="question"],
+main[data-ecran="revelation"],
+main[data-ecran="podium"] {
+  height: 100%;
+  padding: 60px 80px;
+}
+
+.numero {
+  margin: 0;
+  opacity: 0.7;
+}
+
+h1 {
+  font-size: 64px;
+}
+
+.reponses {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  font-size: 48px;
+}
+
+.reponses li {
+  padding: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.reponses .mauvaise {
+  opacity: 0.3;
+}
+
+.reponses .bonne {
+  outline: 8px solid #fff;
+}
+
+.reponses .nombre {
+  margin-left: auto;
+  font-weight: bold;
+}
+
+.ont-repondu {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.classement {
+  font-size: 44px;
+  columns: 2;
+}
+
+.classement .gain {
   opacity: 0.7;
 }

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/tv/tv.css">
 </head>
 <body>
-  <main id="lobby" hidden>
+  <main data-ecran="lobby" hidden>
     <section class="rejoindre">
       <img id="qr" alt="QR code pour rejoindre">
       <p class="url" id="url"></p>
@@ -18,6 +18,25 @@
       <ul id="liste-joueurs"></ul>
       <p class="attente">En attente que l'hôte lance</p>
     </section>
+  </main>
+
+  <main data-ecran="question" hidden>
+    <p class="numero" id="numero-question"></p>
+    <h1 id="texte-question"></h1>
+    <ol class="reponses" id="reponses-question"></ol>
+    <ul class="ont-repondu" id="ont-repondu"></ul>
+  </main>
+
+  <main data-ecran="revelation" hidden>
+    <p class="numero" id="numero-revelation"></p>
+    <h1 id="texte-revelation"></h1>
+    <ol class="reponses" id="reponses-revelation"></ol>
+    <ol class="classement" id="classement-revelation"></ol>
+  </main>
+
+  <main data-ecran="podium" hidden>
+    <h1>Partie terminée</h1>
+    <ol class="classement" id="classement-podium"></ol>
   </main>
 
   <script src="/socket.io/socket.io.js"></script>

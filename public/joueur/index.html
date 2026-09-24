@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/joueur/joueur.css">
 </head>
 <body>
-  <main id="ecran-rejoindre">
+  <main data-ecran="rejoindre">
     <h1>Quiz TV</h1>
     <form id="formulaire">
       <label>Code de la salle
@@ -22,10 +22,36 @@
     </form>
   </main>
 
-  <main id="ecran-attente" hidden>
+  <main data-ecran="attente" hidden>
     <p class="bienvenue">Tu es dans la salle</p>
     <p id="mon-pseudo" class="mon-pseudo"></p>
     <p id="est-hote" hidden>Tu es l'hôte 👑</p>
+    <button id="bouton-lancer" hidden>Lancer la partie</button>
+  </main>
+
+  <main data-ecran="repondre" hidden>
+    <div class="boutons-choix">
+      <button class="choix choix-0" data-choix="0" aria-label="Triangle rouge"></button>
+      <button class="choix choix-1" data-choix="1" aria-label="Losange bleu"></button>
+      <button class="choix choix-2" data-choix="2" aria-label="Rond jaune"></button>
+      <button class="choix choix-3" data-choix="3" aria-label="Carré vert"></button>
+    </div>
+  </main>
+
+  <main data-ecran="reponse_envoyee" hidden>
+    <div id="choix-envoye" class="choix"></div>
+    <p>Réponse envoyée, regarde la TV</p>
+  </main>
+
+  <main data-ecran="resultat" hidden>
+    <p id="resultat" class="gros-texte"></p>
+    <p>Score : <strong id="score-resultat"></strong></p>
+    <button id="bouton-suivant" hidden>Suivant</button>
+  </main>
+
+  <main data-ecran="fin" hidden>
+    <p class="gros-texte">Partie terminée</p>
+    <p>Ton score : <strong id="score-fin"></strong></p>
   </main>
 
   <script src="/socket.io/socket.io.js"></script>

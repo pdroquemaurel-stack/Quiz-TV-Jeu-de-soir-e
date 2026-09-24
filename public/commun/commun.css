@@ -13,6 +13,16 @@ body {
   display: none !important;
 }
 
+/* Réponses : toujours une forme en plus de la couleur. */
+.choix-0 { background: #E21B3C; }
+.choix-1 { background: #1368CE; }
+.choix-2 { background: #FFC400; }
+.choix-3 { background: #26890C; }
+.choix-0::before { content: '▲'; }
+.choix-1::before { content: '◆'; }
+.choix-2::before { content: '●'; }
+.choix-3::before { content: '■'; }
+
 .pastille {
   display: inline-block;
   width: 1em;

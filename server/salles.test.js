@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  COULEURS_JOUEURS, ajouterJoueur, creerSalle, retirerJoueur, trouverSalle,
+  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, creerSalle, retirerJoueur,
+  trouverHoteParSocket, trouverSalle,
 } from './salles.js';
 
 test('le code de salle fait 4 lettres et deux salles ont des codes différents', () => {
@@ -62,6 +63,31 @@ test('un 11e joueur est refusé, sauf si un joueur est déconnecté', () => {
 
   salle.joueurs[3].connecte = false;
   assert.ok(ajouterJoueur(salle, 'J11', 's11').joueur);
+});
+
+test('seul le socket de l\'hôte est reconnu comme hôte', () => {
+  const salle = creerSalle('tv');
+  const { joueur: hote } = ajouterJoueur(salle, 'Hôte', 'socket-hote');
+  ajouterJoueur(salle, 'Autre', 'socket-autre');
+
+  assert.equal(trouverHoteParSocket('socket-hote').joueur, hote);
+  assert.equal(trouverHoteParSocket('socket-autre'), null);
+  assert.equal(trouverHoteParSocket('socket-inconnu'), null);
+});
+
+test('il faut 2 joueurs connectés pour lancer, 1 seul en mode développeur', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'A', 's1');
+  assert.equal(assezDeJoueurs(salle), false);
+
+  process.env.MODE_DEV = '1';
+  assert.equal(assezDeJoueurs(salle), true);
+  delete process.env.MODE_DEV;
+
+  const { joueur: b } = ajouterJoueur(salle, 'B', 's2');
+  assert.equal(assezDeJoueurs(salle), true);
+  b.connecte = false;
+  assert.equal(assezDeJoueurs(salle), false);
 });
 
 test('si l\'hôte part, le rôle passe au joueur arrivé le plus tôt', () => {

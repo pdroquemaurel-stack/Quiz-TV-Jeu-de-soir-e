@@ -5,9 +5,12 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import {
-  ajouterJoueur, creerSalle, erreur, retirerJoueur,
-  trouverJoueurParSocket, trouverSalle, vueJoueur,
+  assezDeJoueurs, ajouterJoueur, creerSalle, erreur, retirerJoueur,
+  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
+import {
+  demarrerPartie, enregistrerReponse, passerALaSuite, reveler, tousOntRepondu,
+} from './modes/quiz.js';
 
 const dossierPublic = fileURLToPath(new URL('../public', import.meta.url));
 
@@ -26,8 +29,11 @@ export function demarrerServeur(port) {
 
   const lienJoueur = (code) => `${urlPublique(serveurHttp.address().port)}/joueur?code=${code}`;
 
-  function diffuserSalle(salle) {
-    io.to(salle.tvSocketId).emit('salle:etat', { ...salle, urlJoueur: lienJoueur(salle.code) });
+  function diffuser(salle) {
+    io.to(salle.tvSocketId).emit('salle:etat', { ...vueTv(salle), urlJoueur: lienJoueur(salle.code) });
+    for (const joueur of salle.joueurs) {
+      io.to(joueur.socketId).emit('joueur:etat', vueJoueur(salle, joueur));
+    }
   }
 
   app.get('/tv', (req, res) => res.sendFile('tv/index.html', { root: dossierPublic }));
@@ -44,7 +50,7 @@ export function demarrerServeur(port) {
   io.on('connection', (socket) => {
     // Reconnexion à l'ancienne salle : tranche 6. Pour l'instant, toujours une nouvelle salle.
     socket.on('tv:creer', () => {
-      diffuserSalle(creerSalle(socket.id));
+      diffuser(creerSalle(socket.id));
     });
 
     socket.on('joueur:rejoindre', (donnees = {}) => {
@@ -55,8 +61,32 @@ export function demarrerServeur(port) {
       if (resultat.erreur) return socket.emit('erreur', resultat.erreur);
 
       salle.derniereActiviteA = Date.now();
-      socket.emit('joueur:etat', vueJoueur(salle, resultat.joueur));
-      diffuserSalle(salle);
+      diffuser(salle);
+    });
+
+    socket.on('hote:lancer', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve) return;
+      const { salle } = trouve;
+      if (salle.etat !== 'lobby' || !assezDeJoueurs(salle)) return;
+      demarrerPartie(salle);
+      diffuser(salle);
+    });
+
+    socket.on('joueur:repondre', (choix) => {
+      const trouve = trouverJoueurParSocket(socket.id);
+      if (!trouve) return;
+      const { salle, joueur } = trouve;
+      if (!enregistrerReponse(salle, joueur.id, choix)) return;
+      if (tousOntRepondu(salle)) reveler(salle);
+      diffuser(salle);
+    });
+
+    socket.on('hote:suivant', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || trouve.salle.etat !== 'revelation') return;
+      passerALaSuite(trouve.salle);
+      diffuser(trouve.salle);
     });
 
     // Provisoire (tranche 2) : retrait immédiat. Délai de 10 s et reconnexion : tranche 6.
@@ -65,10 +95,9 @@ export function demarrerServeur(port) {
       if (!trouve) return;
       const { salle, joueur } = trouve;
       retirerJoueur(salle, joueur.id);
-      diffuserSalle(salle);
-      for (const autre of salle.joueurs) {
-        io.to(autre.socketId).emit('joueur:etat', vueJoueur(salle, autre));
-      }
+      // Le joueur parti ne doit pas bloquer la manche.
+      if (tousOntRepondu(salle)) reveler(salle);
+      diffuser(salle);
     });
   });
 
