@@ -5,8 +5,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import {
-  assezDeJoueurs, ajouterJoueur, creerSalle, erreur, retirerJoueur, synchroniserMinuteur,
-  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
+  assezDeJoueurs, ajouterJoueur, creerSalle, deconnecterJoueur, deconnecterTv, erreur,
+  reconnecterJoueur, reconnecterTv, synchroniserMinuteur, trouverHoteParSocket,
+  trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
 import {
   demarrerPartie, enregistrerReponse, passerALaSuite, reveler, tousOntRepondu,
@@ -25,15 +26,19 @@ function urlPublique(port) {
 export function demarrerServeur(port) {
   const app = express();
   const serveurHttp = createServer(app);
-  const io = new Server(serveurHttp);
+  // Une coupure réelle (4G perdue, écran verrouillé) est détectée en 20 s au plus,
+  // au lieu de 45 s avec les réglages par défaut.
+  const io = new Server(serveurHttp, { pingInterval: 10000, pingTimeout: 10000 });
 
   const lienJoueur = (code) => `${urlPublique(serveurHttp.address().port)}/joueur?code=${code}`;
 
   function diffuser(salle) {
     synchroniserMinuteur(salle, diffuser);
-    io.to(salle.tvSocketId).emit('salle:etat', { ...vueTv(salle), urlJoueur: lienJoueur(salle.code) });
+    if (salle.tvSocketId) {
+      io.to(salle.tvSocketId).emit('salle:etat', { ...vueTv(salle), urlJoueur: lienJoueur(salle.code) });
+    }
     for (const joueur of salle.joueurs) {
-      io.to(joueur.socketId).emit('joueur:etat', vueJoueur(salle, joueur));
+      if (joueur.connecte) io.to(joueur.socketId).emit('joueur:etat', vueJoueur(salle, joueur));
     }
   }
 
@@ -57,19 +62,20 @@ export function demarrerServeur(port) {
   app.use(express.static(dossierPublic));
 
   io.on('connection', (socket) => {
-    // Reconnexion à l'ancienne salle : tranche 6. Pour l'instant, toujours une nouvelle salle.
-    socket.on('tv:creer', () => {
-      diffuser(creerSalle(socket.id));
+    // Sans code ni jeton valides, une nouvelle salle est créée.
+    socket.on('tv:creer', (donnees = {}) => {
+      diffuser(reconnecterTv(donnees.code, donnees.jetonTv, socket.id) ?? creerSalle(socket.id));
     });
 
+    // Un id connu dans la salle : reconnexion. Sinon : nouveau joueur.
     socket.on('joueur:rejoindre', (donnees = {}) => {
       const salle = trouverSalle(donnees.code);
       if (!salle) return socket.emit('erreur', erreur('salle_introuvable'));
 
-      const resultat = ajouterJoueur(salle, donnees.pseudo, socket.id);
-      if (resultat.erreur) return socket.emit('erreur', resultat.erreur);
-
-      salle.derniereActiviteA = Date.now();
+      if (!reconnecterJoueur(salle, donnees.id, socket.id)) {
+        const resultat = ajouterJoueur(salle, donnees.pseudo, socket.id);
+        if (resultat.erreur) return socket.emit('erreur', resultat.erreur);
+      }
       diffuser(salle);
     });
 
@@ -105,12 +111,13 @@ export function demarrerServeur(port) {
       lancerPartie(salle);
     });
 
-    // Provisoire (tranche 2) : retrait immédiat. Délai de 10 s et reconnexion : tranche 6.
+    // Un socket remplacé par une reconnexion n'est plus retrouvé : on l'ignore.
     socket.on('disconnect', () => {
+      deconnecterTv(socket.id);
       const trouve = trouverJoueurParSocket(socket.id);
       if (!trouve) return;
       const { salle, joueur } = trouve;
-      retirerJoueur(salle, joueur.id);
+      deconnecterJoueur(salle, joueur, diffuser);
       // Le joueur parti ne doit pas bloquer la manche.
       if (tousOntRepondu(salle)) reveler(salle);
       diffuser(salle);

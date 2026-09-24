@@ -234,6 +234,24 @@ test('fin anticipée : un joueur arrivé en cours de manche n\'est pas attendu',
   assert.equal(tousOntRepondu(salle), true);
 });
 
+test('arrivée en cours de manche : 0 point, attend la question suivante, puis joue', () => {
+  const { salle, paul, lea } = sallePrete();
+  const { joueur: tardif } = ajouterJoueur(salle, 'Tardif', 's3');
+  assert.equal(tardif.score, 0);
+  assert.equal(vueJoueur(salle, tardif).ecran, 'attente_question');
+  assert.equal(enregistrerReponse(salle, tardif.id, 0), false);
+
+  enregistrerReponse(salle, paul.id, 0);
+  enregistrerReponse(salle, lea.id, 1);
+  assert.equal(tousOntRepondu(salle), true);
+  reveler(salle);
+  assert.equal(vueJoueur(salle, tardif).ecran, 'attente_question');
+
+  passerALaSuite(salle);
+  assert.equal(vueJoueur(salle, tardif).ecran, 'repondre');
+  assert.equal(enregistrerReponse(salle, tardif.id, 0), true);
+});
+
 test('les questions s\'enchaînent puis on arrive au podium', () => {
   const { salle } = sallePrete();
   for (let i = 1; i < NOMBRE_QUESTIONS; i++) {

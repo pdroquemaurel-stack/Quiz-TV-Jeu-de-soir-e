@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/joueur/joueur.css">
 </head>
 <body>
+  <p id="bandeau-reconnexion" class="bandeau" hidden>Reconnexion…</p>
+
   <main data-ecran="rejoindre">
     <h1>Quiz TV</h1>
     <form id="formulaire">
@@ -38,6 +40,11 @@
     </div>
   </main>
 
+  <main data-ecran="attente_question" hidden>
+    <p class="gros-texte">En attente de la prochaine question</p>
+    <p>Regarde la TV</p>
+  </main>
+
   <main data-ecran="reponse_envoyee" hidden>
     <div id="choix-envoye" class="choix"></div>
     <p>Réponse envoyée, regarde la TV</p>
@@ -56,6 +63,12 @@
     <p>Ton score : <strong id="score-fin"></strong></p>
     <button id="bouton-rejouer" hidden>Rejouer</button>
   </main>
+
+  <!-- Visible seulement avec ?dev : simule une coupure réseau. -->
+  <div id="outils-dev" class="outils-dev" hidden>
+    <button data-couper="5000">Couper la connexion 5 s</button>
+    <button data-couper="15000">Couper 15 s</button>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/joueur/joueur.js"></script>

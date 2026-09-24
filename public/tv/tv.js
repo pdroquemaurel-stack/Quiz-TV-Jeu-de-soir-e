@@ -1,7 +1,12 @@
 const socket = io();
 
+// sessionStorage : un rechargement ou une coupure retrouve la salle,
+// un nouvel onglet (ou l'app relancée) en crée une nouvelle.
 socket.on('connect', () => {
-  socket.emit('tv:creer');
+  socket.emit('tv:creer', {
+    code: sessionStorage.getItem('codeSalle'),
+    jetonTv: sessionStorage.getItem('jetonTv'),
+  });
 });
 
 const affichages = {
@@ -14,10 +19,22 @@ const affichages = {
 let intervalleChrono = null;
 
 socket.on('salle:etat', (salle) => {
+  sessionStorage.setItem('codeSalle', salle.code);
+  sessionStorage.setItem('jetonTv', salle.jetonTv);
   clearInterval(intervalleChrono);
   afficherEcran(salle.etat);
+  afficherQrCoin(salle);
   affichages[salle.etat](salle);
 });
+
+// Petit QR code dans un coin pendant la partie, pour les retardataires.
+function afficherQrCoin(salle) {
+  document.getElementById('qr-coin').hidden = salle.etat === 'lobby';
+  document.getElementById('code-coin').textContent = salle.code;
+  const qr = document.getElementById('qr-coin-image');
+  const srcQr = `/qr/${salle.code}.svg`;
+  if (qr.getAttribute('src') !== srcQr) qr.src = srcQr;
+}
 
 function afficherEcran(nom) {
   for (const ecran of document.querySelectorAll('main')) {
@@ -40,7 +57,12 @@ function ligneJoueur(joueur, hoteId) {
   const ligne = document.createElement('li');
   ligne.append(pastille(joueur.couleur), ' ', joueur.pseudo);
   if (joueur.id === hoteId) ligne.append(' 👑');
+  griserSiDeconnecte(ligne, joueur);
   return ligne;
+}
+
+function griserSiDeconnecte(element, joueur) {
+  if (!joueur.connecte) element.classList.add('deconnecte');
 }
 
 function pastille(couleur) {
@@ -64,6 +86,7 @@ function afficherQuestion(salle) {
     ...joueursAyantRepondu.map((joueur) => {
       const element = document.createElement('li');
       element.append(pastille(joueur.couleur), ' ', joueur.pseudo);
+      griserSiDeconnecte(element, joueur);
       return element;
     }),
   );
@@ -129,5 +152,6 @@ function ligneClassement(ligne, gain) {
   element.append(
     `${ligne.rang}. `, pastille(ligne.couleur), ' ', ligne.pseudo, ' — ', ligne.score, ' ', points,
   );
+  griserSiDeconnecte(element, ligne);
   return element;
 }

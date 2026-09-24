@@ -75,9 +75,15 @@ function questionCourante(salle) {
   return salle.etatMode.questions[salle.etatMode.indexQuestion];
 }
 
+// Seuls les joueurs attendus jouent la manche en cours : les autres attendent la suivante.
+function participe(salle, joueurId) {
+  return salle.etatMode.attendus.includes(joueurId);
+}
+
 // Renvoie true si la réponse est acceptée.
 export function enregistrerReponse(salle, joueurId, choix) {
-  if (salle.etat !== 'question' || salle.etatMode.reponses[joueurId]) return false;
+  if (salle.etat !== 'question' || !participe(salle, joueurId)) return false;
+  if (salle.etatMode.reponses[joueurId]) return false;
   if (!Number.isInteger(choix) || choix < 0 || choix >= NOMBRE_CHOIX) return false;
   salle.etatMode.reponses[joueurId] = { choix, recuA: Date.now() };
   return true;
@@ -168,12 +174,14 @@ export function classement(salle) {
       pseudo: joueur.pseudo,
       couleur: joueur.couleur,
       score: joueur.score,
+      connecte: joueur.connecte,
       rang: rangDe(salle, joueur),
       points: pointsGagnes(salle, joueur.id),
     }));
 }
 
 export function vueJoueurQuiz(salle, joueur) {
+  if (salle.etat !== 'podium' && !participe(salle, joueur.id)) return { ecran: 'attente_question' };
   if (salle.etat === 'question') {
     const reponse = salle.etatMode.reponses[joueur.id];
     return reponse ? { ecran: 'reponse_envoyee', choix: reponse.choix } : { ecran: 'repondre' };

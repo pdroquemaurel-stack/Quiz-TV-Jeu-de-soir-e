@@ -1,20 +1,63 @@
 const socket = io();
 const parametres = new URLSearchParams(location.search);
+const modeDev = parametres.has('dev');
 // Avec ?dev, chaque onglet est un joueur distinct.
-const stockage = parametres.has('dev') ? sessionStorage : localStorage;
+const stockage = modeDev ? sessionStorage : localStorage;
+const codeUrl = (parametres.get('code') || '').toUpperCase();
 
 const formulaire = document.getElementById('formulaire');
 const champCode = document.getElementById('code');
 const champPseudo = document.getElementById('pseudo');
 const messageErreur = document.getElementById('message-erreur');
+const bandeau = document.getElementById('bandeau-reconnexion');
 
-champCode.value = (parametres.get('code') || '').toUpperCase();
+// Code de la salle qu'on essaie de rejoindre, mémorisé une fois dedans.
+let codeEnCours = '';
+
+champCode.value = codeUrl;
+champPseudo.value = stockage.getItem('pseudo') || '';
+
+// On reprend sa place seulement si on revient dans la même salle
+// (un QR code d'une autre salle l'emporte sur le souvenir).
+function salleMemorisee() {
+  const code = stockage.getItem('codeSalle');
+  if (!code || (codeUrl && codeUrl !== code)) return null;
+  return { code, pseudo: stockage.getItem('pseudo'), id: stockage.getItem('idJoueur') };
+}
+
+function oublierSalle() {
+  for (const cle of ['codeSalle', 'pseudo', 'idJoueur']) stockage.removeItem(cle);
+}
+
+// À chaque (re)connexion du socket, y compris au chargement de la page.
+socket.on('connect', () => {
+  bandeau.hidden = true;
+  const memoire = salleMemorisee();
+  if (!memoire) return;
+  codeEnCours = memoire.code;
+  socket.emit('joueur:rejoindre', memoire);
+});
+
+socket.on('disconnect', () => {
+  bandeau.hidden = false;
+});
 
 formulaire.addEventListener('submit', (evenement) => {
   evenement.preventDefault();
   messageErreur.hidden = true;
-  socket.emit('joueur:rejoindre', { code: champCode.value, pseudo: champPseudo.value });
+  codeEnCours = champCode.value.trim().toUpperCase();
+  socket.emit('joueur:rejoindre', { code: codeEnCours, pseudo: champPseudo.value });
 });
+
+if (modeDev) {
+  document.getElementById('outils-dev').hidden = false;
+  for (const bouton of document.querySelectorAll('[data-couper]')) {
+    bouton.addEventListener('click', () => {
+      socket.disconnect();
+      setTimeout(() => socket.connect(), Number(bouton.dataset.couper));
+    });
+  }
+}
 
 document.getElementById('bouton-lancer').addEventListener('click', () => {
   socket.emit('hote:lancer');
@@ -35,12 +78,15 @@ for (const bouton of document.querySelectorAll('[data-choix]')) {
 }
 
 socket.on('erreur', (erreur) => {
+  if (erreur.code === 'salle_introuvable') oublierSalle();
+  afficherEcran('rejoindre');
   messageErreur.textContent = erreur.message;
   messageErreur.hidden = false;
 });
 
 const affichages = {
   attente: afficherAttente,
+  attente_question: () => {},
   repondre: () => {},
   reponse_envoyee: afficherReponseEnvoyee,
   resultat: afficherResultat,
@@ -49,6 +95,8 @@ const affichages = {
 
 socket.on('joueur:etat', (vue) => {
   stockage.setItem('idJoueur', vue.id);
+  stockage.setItem('codeSalle', codeEnCours);
+  stockage.setItem('pseudo', vue.pseudo);
   document.body.style.background = vue.couleur;
   afficherEcran(vue.ecran);
   affichages[vue.ecran](vue);

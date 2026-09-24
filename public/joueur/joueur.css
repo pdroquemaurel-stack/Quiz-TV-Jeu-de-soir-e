@@ -88,3 +88,33 @@ main[data-ecran="repondre"] {
   font-size: 2.5rem;
   font-weight: bold;
 }
+
+.bandeau {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 12px;
+  background: #1b1340;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.outils-dev {
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.outils-dev button {
+  flex: 1;
+  font-size: 0.9rem;
+  padding: 8px;
+  opacity: 0.8;
+}

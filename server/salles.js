@@ -2,6 +2,8 @@ import { randomBytes } from 'node:crypto';
 import { avancer, echeance, vueJoueurQuiz, vueTvQuiz } from './modes/quiz.js';
 
 export const JOUEURS_MAX = 10;
+export const DELAI_ABSENCE_MS = 10000;
+export const DELAI_FERMETURE_MS = 30 * 60 * 1000;
 const PSEUDO_MAX = 12;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -20,7 +22,24 @@ const ERREURS = {
 export const salles = {};
 
 // Hors de la salle, pour ne pas partir dans salle:etat.
+// Clés : « CODE:etape », « CODE:absence:idJoueur », « CODE:fermeture ».
 const minuteurs = new Map();
+
+function programmer(cle, delaiMs, action) {
+  annuler(cle);
+  const minuteur = setTimeout(() => {
+    minuteurs.delete(cle);
+    action();
+  }, delaiMs);
+  minuteurs.set(cle, minuteur);
+}
+
+function annuler(cle) {
+  clearTimeout(minuteurs.get(cle));
+  minuteurs.delete(cle);
+}
+
+const cleAbsence = (salle, id) => `${salle.code}:absence:${id}`;
 
 export function erreur(code) {
   return { code, message: ERREURS[code] };
@@ -68,9 +87,12 @@ export function assezDeJoueurs(salle) {
   return joueursConnectes(salle).length >= minimum;
 }
 
-function premiereCouleurLibre(salle) {
+// Plus de couleur libre (11e joueur pendant qu'un autre est déconnecté) :
+// on reprend celle d'un joueur déconnecté.
+function couleurPourNouveauJoueur(salle) {
   const prises = salle.joueurs.map((joueur) => joueur.couleur);
-  return COULEURS_JOUEURS.find((couleur) => !prises.includes(couleur));
+  const libre = COULEURS_JOUEURS.find((couleur) => !prises.includes(couleur));
+  return libre ?? salle.joueurs.find((joueur) => !joueur.connecte).couleur;
 }
 
 // Renvoie { joueur } ou { erreur }.
@@ -89,23 +111,96 @@ export function ajouterJoueur(salle, pseudoSaisi, socketId) {
   const joueur = {
     id: 'j_' + randomBytes(4).toString('hex'),
     pseudo,
-    couleur: premiereCouleurLibre(salle),
+    couleur: couleurPourNouveauJoueur(salle),
     score: 0,
     connecte: true,
     socketId,
     arriveeA: Date.now(),
   };
   salle.joueurs.push(joueur);
-  if (salle.hoteId === null) salle.hoteId = joueur.id;
+  verifierHote(salle);
+  surveillerFermeture(salle);
   return { joueur };
 }
 
+// Renvoie le joueur, ou null si cet id n'est pas (ou plus) dans la salle.
+export function reconnecterJoueur(salle, id, socketId) {
+  const joueur = salle.joueurs.find((j) => j.id === id);
+  if (!joueur) return null;
+  joueur.connecte = true;
+  joueur.socketId = socketId;
+  annuler(cleAbsence(salle, id));
+  verifierHote(salle);
+  surveillerFermeture(salle);
+  return joueur;
+}
+
+// Au bout de 10 s d'absence : retrait en salle d'attente, sinon transfert de l'hôte.
+export function deconnecterJoueur(salle, joueur, quandChange) {
+  joueur.connecte = false;
+  joueur.socketId = null;
+  programmer(cleAbsence(salle, joueur.id), DELAI_ABSENCE_MS, () => {
+    if (salle.etat === 'lobby') retirerJoueur(salle, joueur.id);
+    else if (salle.hoteId === joueur.id) transfererHote(salle);
+    quandChange(salle);
+  });
+  surveillerFermeture(salle);
+}
+
 export function retirerJoueur(salle, id) {
+  annuler(cleAbsence(salle, id));
   salle.joueurs = salle.joueurs.filter((joueur) => joueur.id !== id);
   if (salle.hoteId === id) {
-    const plusAncien = [...salle.joueurs].sort((a, b) => a.arriveeA - b.arriveeA)[0];
-    salle.hoteId = plusAncien ? plusAncien.id : null;
+    salle.hoteId = null;
+    transfererHote(salle);
   }
+}
+
+// Le rôle passe au joueur connecté arrivé le plus tôt. S'il n'y en a aucun, rien ne change.
+export function transfererHote(salle) {
+  const successeur = joueursConnectes(salle)
+    .filter((joueur) => joueur.id !== salle.hoteId)
+    .sort((a, b) => a.arriveeA - b.arriveeA)[0];
+  if (successeur) salle.hoteId = successeur.id;
+}
+
+// À chaque arrivée : on désigne un hôte s'il n'y en a pas, ou si l'hôte est absent
+// depuis plus de 10 s (son minuteur d'absence est alors écoulé).
+function verifierHote(salle) {
+  const hote = salle.joueurs.find((joueur) => joueur.id === salle.hoteId);
+  const absentTropLongtemps = hote && !hote.connecte && !minuteurs.has(cleAbsence(salle, hote.id));
+  if (!hote || absentTropLongtemps) transfererHote(salle);
+}
+
+// Renvoie la salle si le jeton est le bon, sinon null.
+export function reconnecterTv(code, jetonTv, socketId) {
+  const salle = trouverSalle(code);
+  if (!salle || !jetonTv || salle.jetonTv !== jetonTv) return null;
+  salle.tvSocketId = socketId;
+  surveillerFermeture(salle);
+  return salle;
+}
+
+export function deconnecterTv(socketId) {
+  const salle = Object.values(salles).find((s) => s.tvSocketId === socketId);
+  if (!salle) return;
+  salle.tvSocketId = null;
+  surveillerFermeture(salle);
+}
+
+// Fermeture après 30 min sans aucune connexion, ni TV ni joueur.
+function surveillerFermeture(salle) {
+  salle.derniereActiviteA = Date.now();
+  const cle = `${salle.code}:fermeture`;
+  if (salle.tvSocketId || joueursConnectes(salle).length > 0) return annuler(cle);
+  if (!minuteurs.has(cle)) programmer(cle, DELAI_FERMETURE_MS, () => fermerSalle(salle));
+}
+
+export function fermerSalle(salle) {
+  for (const cle of [...minuteurs.keys()]) {
+    if (cle.startsWith(`${salle.code}:`)) annuler(cle);
+  }
+  delete salles[salle.code];
 }
 
 export function trouverJoueurParSocket(socketId) {
@@ -126,18 +221,16 @@ export function trouverHoteParSocket(socketId) {
 // Programme le passage à l'étape suivante à l'échéance donnée par le mode.
 // L'échéance est une heure fixe : resynchroniser ne décale jamais le chrono.
 export function synchroniserMinuteur(salle, quandAvance) {
-  clearTimeout(minuteurs.get(salle.code));
-  minuteurs.delete(salle.code);
+  const cle = `${salle.code}:etape`;
+  annuler(cle);
 
   const fin = echeance(salle);
   if (fin === null) return;
 
-  const minuteur = setTimeout(() => {
-    minuteurs.delete(salle.code);
+  programmer(cle, Math.max(0, fin - Date.now()), () => {
     avancer(salle);
     quandAvance(salle);
-  }, Math.max(0, fin - Date.now()));
-  minuteurs.set(salle.code, minuteur);
+  });
 }
 
 export function vueTv(salle) {

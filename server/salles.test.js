@@ -62,7 +62,9 @@ test('un 11e joueur est refusé, sauf si un joueur est déconnecté', () => {
   assert.equal(ajouterJoueur(salle, 'J11', 's11').erreur.code, 'salle_pleine');
 
   salle.joueurs[3].connecte = false;
-  assert.ok(ajouterJoueur(salle, 'J11', 's11').joueur);
+  const { joueur } = ajouterJoueur(salle, 'J11', 's11');
+  // Plus de couleur libre : il reprend celle du joueur déconnecté.
+  assert.equal(joueur.couleur, salle.joueurs[3].couleur);
 });
 
 test('seul le socket de l\'hôte est reconnu comme hôte', () => {
