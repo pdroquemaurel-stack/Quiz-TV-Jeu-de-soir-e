@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import {
-  assezDeJoueurs, ajouterJoueur, creerSalle, erreur, retirerJoueur,
+  assezDeJoueurs, ajouterJoueur, creerSalle, erreur, retirerJoueur, synchroniserMinuteur,
   trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
 import {
@@ -30,6 +30,7 @@ export function demarrerServeur(port) {
   const lienJoueur = (code) => `${urlPublique(serveurHttp.address().port)}/joueur?code=${code}`;
 
   function diffuser(salle) {
+    synchroniserMinuteur(salle, diffuser);
     io.to(salle.tvSocketId).emit('salle:etat', { ...vueTv(salle), urlJoueur: lienJoueur(salle.code) });
     for (const joueur of salle.joueurs) {
       io.to(joueur.socketId).emit('joueur:etat', vueJoueur(salle, joueur));
@@ -87,6 +88,15 @@ export function demarrerServeur(port) {
       if (!trouve || trouve.salle.etat !== 'revelation') return;
       passerALaSuite(trouve.salle);
       diffuser(trouve.salle);
+    });
+
+    socket.on('hote:rejouer', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve) return;
+      const { salle } = trouve;
+      if (salle.etat !== 'podium' || !assezDeJoueurs(salle)) return;
+      demarrerPartie(salle);
+      diffuser(salle);
     });
 
     // Provisoire (tranche 2) : retrait immédiat. Délai de 10 s et reconnexion : tranche 6.

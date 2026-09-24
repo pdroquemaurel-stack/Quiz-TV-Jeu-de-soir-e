@@ -46,12 +46,15 @@
   <main data-ecran="resultat" hidden>
     <p id="resultat" class="gros-texte"></p>
     <p>Score : <strong id="score-resultat"></strong></p>
+    <p>Rang : <strong id="rang-resultat"></strong></p>
     <button id="bouton-suivant" hidden>Suivant</button>
   </main>
 
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
+    <p>Rang final : <strong id="rang-fin"></strong></p>
     <p>Ton score : <strong id="score-fin"></strong></p>
+    <button id="bouton-rejouer" hidden>Rejouer</button>
   </main>
 
   <script src="/socket.io/socket.io.js"></script>

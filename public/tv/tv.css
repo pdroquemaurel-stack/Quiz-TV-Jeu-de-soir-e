@@ -101,6 +101,20 @@ h1 {
   gap: 40px;
 }
 
+.chrono {
+  float: right;
+  margin: 0;
+  font-size: 96px;
+  font-weight: bold;
+}
+
+.podium {
+  list-style: none;
+  padding: 0;
+  font-size: 72px;
+  font-weight: bold;
+}
+
 .classement {
   font-size: 44px;
   columns: 2;

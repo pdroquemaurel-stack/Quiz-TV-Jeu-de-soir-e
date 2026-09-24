@@ -24,6 +24,10 @@ document.getElementById('bouton-suivant').addEventListener('click', () => {
   socket.emit('hote:suivant');
 });
 
+document.getElementById('bouton-rejouer').addEventListener('click', () => {
+  socket.emit('hote:rejouer');
+});
+
 for (const bouton of document.querySelectorAll('[data-choix]')) {
   bouton.addEventListener('click', () => {
     socket.emit('joueur:repondre', Number(bouton.dataset.choix));
@@ -73,9 +77,18 @@ function afficherResultat(vue) {
     ? `Bonne réponse, +${vue.points}`
     : 'Raté';
   document.getElementById('score-resultat').textContent = vue.score;
+  document.getElementById('rang-resultat').textContent = texteRang(vue.rang);
   document.getElementById('bouton-suivant').hidden = !vue.estHote;
 }
 
 function afficherFin(vue) {
+  document.getElementById('rang-fin').textContent = texteRang(vue.rang);
   document.getElementById('score-fin').textContent = vue.score;
+  const boutonRejouer = document.getElementById('bouton-rejouer');
+  boutonRejouer.hidden = !vue.estHote;
+  boutonRejouer.disabled = !vue.assezDeJoueurs;
+}
+
+function texteRang(rang) {
+  return rang === 1 ? '1er' : `${rang}e`;
 }

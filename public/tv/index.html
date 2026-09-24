@@ -22,6 +22,7 @@
 
   <main data-ecran="question" hidden>
     <p class="numero" id="numero-question"></p>
+    <p class="chrono" id="chrono"></p>
     <h1 id="texte-question"></h1>
     <ol class="reponses" id="reponses-question"></ol>
     <ul class="ont-repondu" id="ont-repondu"></ul>
@@ -36,7 +37,9 @@
 
   <main data-ecran="podium" hidden>
     <h1>Partie terminée</h1>
+    <ol class="podium" id="podium"></ol>
     <ol class="classement" id="classement-podium"></ol>
+    <p class="attente">L'hôte peut relancer</p>
   </main>
 
   <script src="/socket.io/socket.io.js"></script>

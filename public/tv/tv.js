@@ -11,7 +11,10 @@ const affichages = {
   podium: afficherPodium,
 };
 
+let intervalleChrono = null;
+
 socket.on('salle:etat', (salle) => {
+  clearInterval(intervalleChrono);
   afficherEcran(salle.etat);
   affichages[salle.etat](salle);
 });
@@ -48,8 +51,9 @@ function pastille(couleur) {
 }
 
 function afficherQuestion(salle) {
-  const { numero, total, question, ontRepondu } = salle.etatMode;
+  const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
   document.getElementById('numero-question').textContent = `${numero}/${total}`;
+  lancerChrono(tempsRestantMs);
   document.getElementById('texte-question').textContent = question.texte;
   document.getElementById('reponses-question').replaceChildren(
     ...question.reponses.map((texte, index) => caseReponse(texte, index)),
@@ -63,6 +67,17 @@ function afficherQuestion(salle) {
       return element;
     }),
   );
+}
+
+// Simple affichage : c'est le serveur qui décide de la fin de la manche.
+function lancerChrono(tempsRestantMs) {
+  const fin = Date.now() + tempsRestantMs;
+  const element = document.getElementById('chrono');
+  const afficher = () => {
+    element.textContent = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+  };
+  afficher();
+  intervalleChrono = setInterval(afficher, 250);
 }
 
 function caseReponse(texte, index) {
@@ -95,9 +110,14 @@ function afficherRevelation(salle) {
   );
 }
 
+// Tous les joueurs de rang 3 ou mieux : parfois plus de 3 avec les ex æquo.
 function afficherPodium(salle) {
+  const { classement } = salle.etatMode;
+  document.getElementById('podium').replaceChildren(
+    ...classement.filter((ligne) => ligne.rang <= 3).map((ligne) => ligneClassement(ligne, '')),
+  );
   document.getElementById('classement-podium').replaceChildren(
-    ...salle.etatMode.classement.map((ligne) => ligneClassement(ligne, '')),
+    ...classement.map((ligne) => ligneClassement(ligne, '')),
   );
 }
 
@@ -106,6 +126,8 @@ function ligneClassement(ligne, gain) {
   const points = document.createElement('span');
   points.className = 'gain';
   points.textContent = gain;
-  element.append(pastille(ligne.couleur), ' ', ligne.pseudo, ' — ', ligne.score, ' ', points);
+  element.append(
+    `${ligne.rang}. `, pastille(ligne.couleur), ' ', ligne.pseudo, ' — ', ligne.score, ' ', points,
+  );
   return element;
 }

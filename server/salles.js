@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { vueJoueurQuiz, vueTvQuiz } from './modes/quiz.js';
+import { avancer, echeance, vueJoueurQuiz, vueTvQuiz } from './modes/quiz.js';
 
 export const JOUEURS_MAX = 10;
 const PSEUDO_MAX = 12;
@@ -18,6 +18,9 @@ const ERREURS = {
 };
 
 export const salles = {};
+
+// Hors de la salle, pour ne pas partir dans salle:etat.
+const minuteurs = new Map();
 
 export function erreur(code) {
   return { code, message: ERREURS[code] };
@@ -120,6 +123,23 @@ export function trouverHoteParSocket(socketId) {
   return trouve;
 }
 
+// Programme le passage à l'étape suivante à l'échéance donnée par le mode.
+// L'échéance est une heure fixe : resynchroniser ne décale jamais le chrono.
+export function synchroniserMinuteur(salle, quandAvance) {
+  clearTimeout(minuteurs.get(salle.code));
+  minuteurs.delete(salle.code);
+
+  const fin = echeance(salle);
+  if (fin === null) return;
+
+  const minuteur = setTimeout(() => {
+    minuteurs.delete(salle.code);
+    avancer(salle);
+    quandAvance(salle);
+  }, Math.max(0, fin - Date.now()));
+  minuteurs.set(salle.code, minuteur);
+}
+
 export function vueTv(salle) {
   return { ...salle, etatMode: vueTvQuiz(salle) };
 }
@@ -134,5 +154,8 @@ export function vueJoueur(salle, joueur) {
     estHote: salle.hoteId === joueur.id,
   };
   if (salle.etat === 'lobby') return { ...vue, assezDeJoueurs: assezDeJoueurs(salle) };
+  if (salle.etat === 'podium') {
+    return { ...vue, ...vueJoueurQuiz(salle, joueur), assezDeJoueurs: assezDeJoueurs(salle) };
+  }
   return { ...vue, ...vueJoueurQuiz(salle, joueur) };
 }
