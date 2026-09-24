@@ -1,34 +1,13 @@
+import { readFileSync } from 'node:fs';
+
 const NOMBRE_CHOIX = 4;
+export const NOMBRE_QUESTIONS = 10;
 export const DUREE_QUESTION_MS = 20000;
 export const DUREE_REVELATION_MS = 8000;
 
-// Provisoire : remplacées par questions.json en tranche 5.
-export const QUESTIONS_PROVISOIRES = [
-  {
-    id: 'q0001',
-    texte: "Quelle est la capitale de l'Australie ?",
-    reponses: ['Sydney', 'Canberra', 'Melbourne', 'Perth'],
-    bonneReponse: 1,
-    categorie: 'geographie',
-    difficulte: 2,
-  },
-  {
-    id: 'q0002',
-    texte: 'Combien de pattes a une araignée ?',
-    reponses: ['Six', 'Dix', 'Douze', 'Huit'],
-    bonneReponse: 3,
-    categorie: 'nature',
-    difficulte: 1,
-  },
-  {
-    id: 'q0003',
-    texte: 'Qui a peint « La Joconde » ?',
-    reponses: ['Léonard de Vinci', 'Michel-Ange', 'Raphaël', 'Botticelli'],
-    bonneReponse: 0,
-    categorie: 'art',
-    difficulte: 1,
-  },
-];
+export const banqueQuestions = JSON.parse(
+  readFileSync(new URL('../../data/questions.json', import.meta.url), 'utf8'),
+);
 
 // points = arrondi(1000 - 500 × t / 20), avec t en secondes, borné entre 0 et 20 s.
 export function calculerPoints(dureeMs) {
@@ -36,9 +15,48 @@ export function calculerPoints(dureeMs) {
   return Math.round(1000 - (500 * t) / 20);
 }
 
+// Mélange de Fisher-Yates, sur une copie.
+function melanger(liste) {
+  const copie = [...liste];
+  for (let i = copie.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copie[i], copie[j]] = [copie[j], copie[i]];
+  }
+  return copie;
+}
+
+// Copie de la question avec les réponses dans un nouvel ordre,
+// et bonneReponse qui pointe toujours vers la même réponse.
+export function melangerReponses(question) {
+  const ordre = melanger([0, 1, 2, 3]);
+  return {
+    ...question,
+    reponses: ordre.map((index) => question.reponses[index]),
+    bonneReponse: ordre.indexOf(question.bonneReponse),
+  };
+}
+
+// Les questions jamais vues d'abord, au hasard. S'il n'y en a pas assez,
+// on complète avec les déjà vues, les plus anciennes d'abord.
+export function tirerQuestions(banque, questionsVues, nombre) {
+  const inedites = melanger(banque.filter((question) => !questionsVues.includes(question.id)));
+  const dejaVues = questionsVues
+    .map((id) => banque.find((question) => question.id === id))
+    .filter(Boolean);
+  return [...inedites, ...dejaVues].slice(0, nombre);
+}
+
+// questionsVues reste dans l'ordre chronologique : une question revue passe en fin de liste.
+function noterQuestionsVues(salle, questions) {
+  const ids = questions.map((question) => question.id);
+  salle.questionsVues = [...salle.questionsVues.filter((id) => !ids.includes(id)), ...ids];
+}
+
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  salle.etatMode = { questions: [...QUESTIONS_PROVISOIRES] };
+  const questions = tirerQuestions(banqueQuestions, salle.questionsVues, NOMBRE_QUESTIONS);
+  noterQuestionsVues(salle, questions);
+  salle.etatMode = { questions: questions.map(melangerReponses) };
   demarrerQuestion(salle, 0);
 }
 

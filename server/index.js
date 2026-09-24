@@ -37,7 +37,15 @@ export function demarrerServeur(port) {
     }
   }
 
-  app.get('/tv', (req, res) => res.sendFile('tv/index.html', { root: dossierPublic }));
+  // Le journal des questions tirées permet de vérifier à l'œil qu'aucune ne se répète.
+  function lancerPartie(salle) {
+    demarrerPartie(salle);
+    const ids = salle.etatMode.questions.map((question) => question.id);
+    console.log(`Salle ${salle.code}, questions tirées : ${ids.join(' ')}`);
+    diffuser(salle);
+  }
+
+  app.get('/tv',(req, res) => res.sendFile('tv/index.html', { root: dossierPublic }));
   app.get('/joueur', (req, res) => res.sendFile('joueur/index.html', { root: dossierPublic }));
   app.get('/sante', (req, res) => res.json({ ok: true }));
   app.get('/qr/:code.svg', async (req, res) => {
@@ -70,8 +78,7 @@ export function demarrerServeur(port) {
       if (!trouve) return;
       const { salle } = trouve;
       if (salle.etat !== 'lobby' || !assezDeJoueurs(salle)) return;
-      demarrerPartie(salle);
-      diffuser(salle);
+      lancerPartie(salle);
     });
 
     socket.on('joueur:repondre', (choix) => {
@@ -95,8 +102,7 @@ export function demarrerServeur(port) {
       if (!trouve) return;
       const { salle } = trouve;
       if (salle.etat !== 'podium' || !assezDeJoueurs(salle)) return;
-      demarrerPartie(salle);
-      diffuser(salle);
+      lancerPartie(salle);
     });
 
     // Provisoire (tranche 2) : retrait immédiat. Délai de 10 s et reconnexion : tranche 6.

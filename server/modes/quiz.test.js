@@ -2,8 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle, synchroniserMinuteur, vueJoueur, vueTv } from '../salles.js';
 import {
-  QUESTIONS_PROVISOIRES, avancer, calculerPoints, classement, demarrerPartie, echeance,
-  enregistrerReponse, passerALaSuite, reveler, tousOntRepondu,
+  NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, classement, demarrerPartie,
+  echeance, enregistrerReponse, melangerReponses, passerALaSuite, reveler, tirerQuestions,
+  tousOntRepondu,
 } from './quiz.js';
 
 function sallePrete() {
@@ -92,6 +93,92 @@ test('le téléphone reçoit son rang au résultat et à la fin', () => {
   assert.equal(vueJoueur(salle, lea).rang, 2);
 });
 
+// --- Tirage des questions ---
+
+function banqueFictive(nombre) {
+  return Array.from({ length: nombre }, (_, i) => ({ id: `q${String(i + 1).padStart(4, '0')}` }));
+}
+
+const idsDe = (questions) => questions.map((question) => question.id);
+
+test('mélange : bonneReponse pointe toujours vers la même réponse', () => {
+  const question = {
+    id: 'q0042',
+    texte: "Quelle est la capitale de l'Australie ?",
+    reponses: ['Sydney', 'Canberra', 'Melbourne', 'Perth'],
+    bonneReponse: 1,
+    categorie: 'geographie',
+    difficulte: 2,
+  };
+  const ordresVus = new Set();
+  for (let i = 0; i < 500; i++) {
+    const melangee = melangerReponses(question);
+    assert.equal(melangee.reponses[melangee.bonneReponse], 'Canberra');
+    assert.deepEqual([...melangee.reponses].sort(), [...question.reponses].sort());
+    ordresVus.add(melangee.reponses.join('|'));
+  }
+  // Les 24 ordres possibles finissent tous par sortir.
+  assert.equal(ordresVus.size, 24);
+  assert.deepEqual(question.reponses, ['Sydney', 'Canberra', 'Melbourne', 'Perth']);
+  assert.equal(question.bonneReponse, 1);
+});
+
+test('tirage : le nombre demandé, sans doublon', () => {
+  const tirees = tirerQuestions(banqueFictive(12), [], 10);
+  assert.equal(tirees.length, 10);
+  assert.equal(new Set(idsDe(tirees)).size, 10);
+});
+
+test('tirage : inédites d\'abord, puis les déjà vues les plus anciennes', () => {
+  const banque = banqueFictive(12);
+  // Vues dans cet ordre : q0005 est la plus ancienne. Inédites : q0011 et q0012.
+  const vues = ['q0005', 'q0001', 'q0002', 'q0003', 'q0004', 'q0006', 'q0007', 'q0008', 'q0009', 'q0010'];
+  const ids = idsDe(tirerQuestions(banque, vues, 10));
+  assert.deepEqual(ids.slice(0, 2).sort(), ['q0011', 'q0012']);
+  assert.deepEqual(ids.slice(2), vues.slice(0, 8));
+});
+
+test('la banque contient assez de questions pour une partie', () => {
+  assert.ok(banqueQuestions.length >= NOMBRE_QUESTIONS);
+});
+
+test('parties successives : aucune question répétée tant qu\'il reste des inédites', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  const nombreParties = Math.floor(banqueQuestions.length / NOMBRE_QUESTIONS);
+  const toutes = [];
+  for (let i = 0; i < nombreParties; i++) {
+    demarrerPartie(salle);
+    toutes.push(...idsDe(salle.etatMode.questions));
+  }
+  assert.equal(new Set(toutes).size, nombreParties * NOMBRE_QUESTIONS);
+  assert.deepEqual(salle.questionsVues, toutes);
+});
+
+test('banque épuisée : une question revue passe en fin de questionsVues', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  const nombreParties = Math.floor(banqueQuestions.length / NOMBRE_QUESTIONS) + 1;
+  for (let i = 0; i < nombreParties; i++) demarrerPartie(salle);
+
+  const derniere = idsDe(salle.etatMode.questions);
+  assert.equal(new Set(derniere).size, NOMBRE_QUESTIONS);
+  assert.equal(new Set(salle.questionsVues).size, salle.questionsVues.length);
+  assert.equal(salle.questionsVues.length, banqueQuestions.length);
+  assert.deepEqual(salle.questionsVues.slice(-NOMBRE_QUESTIONS), derniere);
+});
+
+test('les questions d\'une partie ont leurs réponses mélangées sans perdre la bonne', () => {
+  const { salle } = sallePrete();
+  for (const question of salle.etatMode.questions) {
+    const originale = banqueQuestions.find((q) => q.id === question.id);
+    assert.equal(
+      question.reponses[question.bonneReponse],
+      originale.reponses[originale.bonneReponse],
+    );
+  }
+});
+
 // --- Déroulé d'une manche ---
 
 test('demarrerPartie passe à la 1re question et remet les scores à zéro', () => {
@@ -103,7 +190,7 @@ test('demarrerPartie passe à la 1re question et remet les scores à zéro', () 
 
   assert.equal(salle.etat, 'question');
   assert.equal(salle.etatMode.indexQuestion, 0);
-  assert.equal(salle.etatMode.questions.length, QUESTIONS_PROVISOIRES.length);
+  assert.equal(salle.etatMode.questions.length, NOMBRE_QUESTIONS);
   assert.deepEqual(salle.etatMode.reponses, {});
   assert.deepEqual(salle.etatMode.attendus, [joueur.id]);
   assert.equal(typeof salle.etatMode.debutQuestionA, 'number');
@@ -149,7 +236,7 @@ test('fin anticipée : un joueur arrivé en cours de manche n\'est pas attendu',
 
 test('les questions s\'enchaînent puis on arrive au podium', () => {
   const { salle } = sallePrete();
-  for (let i = 1; i < QUESTIONS_PROVISOIRES.length; i++) {
+  for (let i = 1; i < NOMBRE_QUESTIONS; i++) {
     reveler(salle);
     passerALaSuite(salle);
     assert.equal(salle.etat, 'question');
@@ -216,10 +303,13 @@ test('minuteur : question suivante 8 s après la révélation, puis podium sans 
   assert.equal(salle.etat, 'question');
   assert.equal(salle.etatMode.indexQuestion, 1);
 
-  // Il reste 2 questions, soit 2 × (20 s + 8 s) jusqu'au podium.
-  // On avance étape par étape : un seul gros tick ne déclenche pas
-  // les minuteurs créés pendant ce tick.
-  for (const duree of [20000, 8000, 20000]) t.mock.timers.tick(duree);
+  // On avance étape par étape jusqu'à la révélation de la dernière question :
+  // un seul gros tick ne déclenche pas les minuteurs créés pendant ce tick.
+  for (let i = 1; i < NOMBRE_QUESTIONS - 1; i++) {
+    t.mock.timers.tick(20000);
+    t.mock.timers.tick(8000);
+  }
+  t.mock.timers.tick(20000);
   assert.equal(salle.etat, 'revelation');
   t.mock.timers.tick(8000);
   assert.equal(salle.etat, 'podium');
@@ -278,10 +368,11 @@ test('minuteur : « Suivant » annule l\'enchaînement automatique en cours', (t
 test('pendant la question, la TV ne reçoit ni la bonne réponse ni les questions suivantes', () => {
   const { salle } = sallePrete();
   const texteVue = JSON.stringify(vueTv(salle));
+  const { questions } = salle.etatMode;
 
   assert.ok(!texteVue.includes('bonneReponse'));
-  assert.ok(texteVue.includes(QUESTIONS_PROVISOIRES[0].texte));
-  assert.ok(!texteVue.includes(QUESTIONS_PROVISOIRES[1].texte));
+  assert.ok(texteVue.includes(JSON.stringify(questions[0].texte)));
+  assert.ok(!texteVue.includes(JSON.stringify(questions[1].texte)));
 });
 
 test('la TV reçoit le temps restant mesuré par le serveur', (t) => {
@@ -324,9 +415,7 @@ test('l\'écran du téléphone suit l\'état de la manche', (t) => {
   assert.equal(vuePaul.points, 1000);
   assert.equal(vueJoueur(salle, lea).juste, false);
 
-  passerALaSuite(salle);
-  passerALaSuite(salle);
-  passerALaSuite(salle);
+  for (let i = 0; i < NOMBRE_QUESTIONS; i++) passerALaSuite(salle);
   assert.equal(vueJoueur(salle, paul).ecran, 'fin');
   assert.equal(typeof vueJoueur(salle, paul).assezDeJoueurs, 'boolean');
 });

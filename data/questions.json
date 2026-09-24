@@ -1,0 +1,1602 @@
+[
+  {
+    "id": "q0001",
+    "texte": "Quel est le plus long fleuve de France ?",
+    "reponses": ["La Seine", "La Loire", "Le Rhône", "La Garonne"],
+    "bonneReponse": 1,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0002",
+    "texte": "Quelle est la capitale de l'Australie ?",
+    "reponses": ["Sydney", "Melbourne", "Canberra", "Perth"],
+    "bonneReponse": 2,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0003",
+    "texte": "Quel est le plus grand océan du monde ?",
+    "reponses": ["L'océan Pacifique", "L'océan Atlantique", "L'océan Indien", "L'océan Arctique"],
+    "bonneReponse": 0,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0004",
+    "texte": "Dans quel pays se trouve la ville de Marrakech ?",
+    "reponses": ["L'Algérie", "La Tunisie", "L'Égypte", "Le Maroc"],
+    "bonneReponse": 3,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0005",
+    "texte": "Quel est le plus haut sommet des Alpes ?",
+    "reponses": ["Le Cervin", "Le mont Blanc", "Le mont Rose", "L'Eiger"],
+    "bonneReponse": 1,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0006",
+    "texte": "Quelle est la capitale du Canada ?",
+    "reponses": ["Toronto", "Montréal", "Vancouver", "Ottawa"],
+    "bonneReponse": 3,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0007",
+    "texte": "Quel est le plus grand pays du monde par sa superficie ?",
+    "reponses": ["Le Canada", "La Russie", "La Chine", "Les États-Unis"],
+    "bonneReponse": 1,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0008",
+    "texte": "Quel est le plus grand désert chaud du monde ?",
+    "reponses": ["Le Sahara", "Le Gobi", "Le Kalahari", "L'Atacama"],
+    "bonneReponse": 0,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0009",
+    "texte": "Quel pays est entièrement enclavé à l'intérieur de l'Afrique du Sud ?",
+    "reponses": ["Le Botswana", "La Namibie", "Le Lesotho", "Le Zimbabwe"],
+    "bonneReponse": 2,
+    "categorie": "geographie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0010",
+    "texte": "Quelle est la capitale de la Nouvelle-Zélande ?",
+    "reponses": ["Auckland", "Wellington", "Christchurch", "Dunedin"],
+    "bonneReponse": 1,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0011",
+    "texte": "Quel fleuve traverse Budapest ?",
+    "reponses": ["Le Rhin", "L'Elbe", "La Vistule", "Le Danube"],
+    "bonneReponse": 3,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0012",
+    "texte": "Quelle est la capitale du Brésil ?",
+    "reponses": ["Brasília", "Rio de Janeiro", "São Paulo", "Salvador"],
+    "bonneReponse": 0,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0013",
+    "texte": "Quel est le pays le plus peuplé d'Afrique ?",
+    "reponses": ["L'Éthiopie", "L'Égypte", "Le Nigeria", "La RD Congo"],
+    "bonneReponse": 2,
+    "categorie": "geographie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0014",
+    "texte": "Quel détroit sépare l'Espagne du Maroc ?",
+    "reponses": ["Le Bosphore", "Le détroit de Gibraltar", "Le détroit de Messine", "Le détroit d'Ormuz"],
+    "bonneReponse": 1,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0015",
+    "texte": "Quelle chaîne de montagnes sépare la France de l'Espagne ?",
+    "reponses": ["Les Alpes", "Le Jura", "Les Vosges", "Les Pyrénées"],
+    "bonneReponse": 3,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0016",
+    "texte": "Dans quel océan se trouve l'île de La Réunion ?",
+    "reponses": ["L'océan Atlantique", "L'océan Indien", "L'océan Pacifique", "L'océan Austral"],
+    "bonneReponse": 1,
+    "categorie": "geographie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0017",
+    "texte": "Quel est le plus haut sommet du monde ?",
+    "reponses": ["Le K2", "L'Aconcagua", "L'Everest", "Le Kangchenjunga"],
+    "bonneReponse": 2,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0018",
+    "texte": "Avec combien de pays la France métropolitaine a-t-elle une frontière terrestre ?",
+    "reponses": ["6", "7", "8", "9"],
+    "bonneReponse": 2,
+    "categorie": "geographie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0019",
+    "texte": "Quel est le plus grand lac d'Afrique ?",
+    "reponses": ["Le lac Tanganyika", "Le lac Malawi", "Le lac Tchad", "Le lac Victoria"],
+    "bonneReponse": 3,
+    "categorie": "geographie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0020",
+    "texte": "Dans quelle ville se trouve la Sagrada Família ?",
+    "reponses": ["Barcelone", "Madrid", "Séville", "Valence"],
+    "bonneReponse": 0,
+    "categorie": "geographie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0021",
+    "texte": "En quelle année a eu lieu la prise de la Bastille ?",
+    "reponses": ["1792", "1789", "1776", "1815"],
+    "bonneReponse": 1,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0022",
+    "texte": "Quel roi de France était surnommé « le Roi-Soleil » ?",
+    "reponses": ["Louis XVI", "Louis XIII", "Louis XIV", "François Ier"],
+    "bonneReponse": 2,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0023",
+    "texte": "En quelle année l'homme a-t-il marché sur la Lune pour la première fois ?",
+    "reponses": ["1965", "1972", "1961", "1969"],
+    "bonneReponse": 3,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0024",
+    "texte": "Quelle reine d'Égypte fut la compagne de Jules César puis de Marc Antoine ?",
+    "reponses": ["Cléopâtre", "Néfertiti", "Hatchepsout", "Néfertari"],
+    "bonneReponse": 0,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0025",
+    "texte": "En quelle année est tombé le mur de Berlin ?",
+    "reponses": ["1991", "1989", "1985", "1961"],
+    "bonneReponse": 1,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0026",
+    "texte": "Quel navigateur a atteint l'Amérique en 1492 ?",
+    "reponses": ["Vasco de Gama", "Magellan", "Christophe Colomb", "Amerigo Vespucci"],
+    "bonneReponse": 2,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0027",
+    "texte": "Quelle bataille de 1815 marque la défaite finale de Napoléon ?",
+    "reponses": ["Austerlitz", "Iéna", "Trafalgar", "Waterloo"],
+    "bonneReponse": 3,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0028",
+    "texte": "Qui a été le premier président de la Ve République ?",
+    "reponses": ["Charles de Gaulle", "Georges Pompidou", "René Coty", "Vincent Auriol"],
+    "bonneReponse": 0,
+    "categorie": "histoire",
+    "difficulte": 1
+  },
+  {
+    "id": "q0029",
+    "texte": "En quelle année a commencé la Première Guerre mondiale ?",
+    "reponses": ["1912", "1914", "1916", "1918"],
+    "bonneReponse": 1,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0030",
+    "texte": "Quelle ville était la capitale de l'Empire byzantin ?",
+    "reponses": ["Rome", "Athènes", "Constantinople", "Alexandrie"],
+    "bonneReponse": 2,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0031",
+    "texte": "Quel roi de France a été guillotiné en 1793 ?",
+    "reponses": ["Louis XV", "Charles X", "Louis XVIII", "Louis XVI"],
+    "bonneReponse": 3,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0032",
+    "texte": "Qui a rédigé l'essentiel de la Déclaration d'indépendance américaine ?",
+    "reponses": ["Thomas Jefferson", "George Washington", "Benjamin Franklin", "John Adams"],
+    "bonneReponse": 0,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0033",
+    "texte": "Quelle civilisation a bâti le Machu Picchu ?",
+    "reponses": ["Les Aztèques", "Les Incas", "Les Mayas", "Les Olmèques"],
+    "bonneReponse": 1,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0034",
+    "texte": "En quelle année les Françaises ont-elles voté pour la première fois ?",
+    "reponses": ["1936", "1919", "1945", "1958"],
+    "bonneReponse": 2,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0035",
+    "texte": "Quel pharaon est célèbre pour son tombeau découvert presque intact en 1922 ?",
+    "reponses": ["Ramsès II", "Khéops", "Akhenaton", "Toutânkhamon"],
+    "bonneReponse": 3,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0036",
+    "texte": "Quelle guerre a opposé la France et l'Angleterre de 1337 à 1453 ?",
+    "reponses": ["La guerre de Cent Ans", "La guerre de Trente Ans", "La guerre de Sept Ans", "La guerre des Deux-Roses"],
+    "bonneReponse": 0,
+    "categorie": "histoire",
+    "difficulte": 2
+  },
+  {
+    "id": "q0037",
+    "texte": "En quelle année Henri IV a-t-il signé l'édit de Nantes ?",
+    "reponses": ["1685", "1598", "1572", "1515"],
+    "bonneReponse": 1,
+    "categorie": "histoire",
+    "difficulte": 3
+  },
+  {
+    "id": "q0038",
+    "texte": "Quel roi des Francs a été baptisé à Reims par saint Remi ?",
+    "reponses": ["Charlemagne", "Pépin le Bref", "Clovis", "Charles Martel"],
+    "bonneReponse": 2,
+    "categorie": "histoire",
+    "difficulte": 3
+  },
+  {
+    "id": "q0039",
+    "texte": "Qui fut le dernier tsar de Russie ?",
+    "reponses": ["Alexandre III", "Pierre le Grand", "Alexandre II", "Nicolas II"],
+    "bonneReponse": 3,
+    "categorie": "histoire",
+    "difficulte": 3
+  },
+  {
+    "id": "q0040",
+    "texte": "En quelle année l'ONU a-t-elle été fondée ?",
+    "reponses": ["1945", "1919", "1948", "1950"],
+    "bonneReponse": 0,
+    "categorie": "histoire",
+    "difficulte": 3
+  },
+  {
+    "id": "q0041",
+    "texte": "Quelle planète est surnommée « la planète rouge » ?",
+    "reponses": ["Jupiter", "Mars", "Vénus", "Mercure"],
+    "bonneReponse": 1,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0042",
+    "texte": "Quelle est la formule chimique de l'eau ?",
+    "reponses": ["CO2", "O2", "H2O", "H2O2"],
+    "bonneReponse": 2,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0043",
+    "texte": "Combien de planètes compte le Système solaire ?",
+    "reponses": ["9", "7", "10", "8"],
+    "bonneReponse": 3,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0044",
+    "texte": "Quelle est la planète la plus proche du Soleil ?",
+    "reponses": ["Mercure", "Vénus", "Mars", "La Terre"],
+    "bonneReponse": 0,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0045",
+    "texte": "Quel organe pompe le sang dans le corps humain ?",
+    "reponses": ["Le foie", "Le cœur", "Les poumons", "Les reins"],
+    "bonneReponse": 1,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0046",
+    "texte": "À quelle température l'eau bout-elle au niveau de la mer ?",
+    "reponses": ["90 °C", "120 °C", "100 °C", "80 °C"],
+    "bonneReponse": 2,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0047",
+    "texte": "Quelle est la plus grande planète du Système solaire ?",
+    "reponses": ["Saturne", "Neptune", "Uranus", "Jupiter"],
+    "bonneReponse": 3,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0048",
+    "texte": "Quel gaz les plantes absorbent-elles pour la photosynthèse ?",
+    "reponses": ["Le dioxyde de carbone", "L'oxygène", "L'azote", "L'hélium"],
+    "bonneReponse": 0,
+    "categorie": "sciences",
+    "difficulte": 1
+  },
+  {
+    "id": "q0049",
+    "texte": "Quel est le symbole chimique de l'or ?",
+    "reponses": ["Or", "Au", "Ag", "Go"],
+    "bonneReponse": 1,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0050",
+    "texte": "Combien d'os compte le squelette d'un adulte ?",
+    "reponses": ["186", "226", "206", "256"],
+    "bonneReponse": 2,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0051",
+    "texte": "Qui a formulé la théorie de la relativité ?",
+    "reponses": ["Isaac Newton", "Niels Bohr", "Max Planck", "Albert Einstein"],
+    "bonneReponse": 3,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0052",
+    "texte": "Quelle est la vitesse approximative de la lumière dans le vide ?",
+    "reponses": ["300 000 km/s", "30 000 km/s", "3 000 km/s", "3 millions de km/s"],
+    "bonneReponse": 0,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0053",
+    "texte": "Quel scientifique a découvert la pénicilline ?",
+    "reponses": ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Robert Koch"],
+    "bonneReponse": 1,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0054",
+    "texte": "Quel est le plus grand organe du corps humain ?",
+    "reponses": ["Le foie", "Le cerveau", "La peau", "L'intestin"],
+    "bonneReponse": 2,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0055",
+    "texte": "Combien de chromosomes contient une cellule humaine ordinaire ?",
+    "reponses": ["23", "44", "48", "46"],
+    "bonneReponse": 3,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0056",
+    "texte": "Quel élément chimique a pour symbole Fe ?",
+    "reponses": ["Le fer", "Le fluor", "Le francium", "Le plomb"],
+    "bonneReponse": 0,
+    "categorie": "sciences",
+    "difficulte": 2
+  },
+  {
+    "id": "q0057",
+    "texte": "Quel est l'élément chimique le plus abondant dans l'Univers ?",
+    "reponses": ["L'hélium", "L'hydrogène", "L'oxygène", "Le carbone"],
+    "bonneReponse": 1,
+    "categorie": "sciences",
+    "difficulte": 3
+  },
+  {
+    "id": "q0058",
+    "texte": "Quelle scientifique a reçu un prix Nobel de physique et un de chimie ?",
+    "reponses": ["Rosalind Franklin", "Irène Joliot-Curie", "Marie Curie", "Lise Meitner"],
+    "bonneReponse": 2,
+    "categorie": "sciences",
+    "difficulte": 3
+  },
+  {
+    "id": "q0059",
+    "texte": "Quelle est l'unité de mesure de la résistance électrique ?",
+    "reponses": ["Le volt", "L'ampère", "Le watt", "L'ohm"],
+    "bonneReponse": 3,
+    "categorie": "sciences",
+    "difficulte": 3
+  },
+  {
+    "id": "q0060",
+    "texte": "Combien de temps met la lumière du Soleil pour atteindre la Terre ?",
+    "reponses": ["Environ 8 minutes", "Environ 8 secondes", "Environ 1 heure", "Environ 8 heures"],
+    "bonneReponse": 0,
+    "categorie": "sciences",
+    "difficulte": 3
+  },
+  {
+    "id": "q0061",
+    "texte": "Quel est le plus grand animal du monde ?",
+    "reponses": ["L'éléphant d'Afrique", "La baleine bleue", "Le requin-baleine", "La girafe"],
+    "bonneReponse": 1,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0062",
+    "texte": "Combien de pattes a une araignée ?",
+    "reponses": ["6", "10", "8", "12"],
+    "bonneReponse": 2,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0063",
+    "texte": "Quel est le plus rapide des animaux terrestres ?",
+    "reponses": ["Le lion", "L'antilope", "Le lévrier", "Le guépard"],
+    "bonneReponse": 3,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0064",
+    "texte": "Comment appelle-t-on le petit de la vache ?",
+    "reponses": ["Le veau", "Le poulain", "L'agneau", "Le chevreau"],
+    "bonneReponse": 0,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0065",
+    "texte": "Quel oiseau est le symbole de la paix ?",
+    "reponses": ["Le cygne", "La colombe", "L'aigle", "Le moineau"],
+    "bonneReponse": 1,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0066",
+    "texte": "De quoi se nourrit principalement le panda géant ?",
+    "reponses": ["D'eucalyptus", "De poissons", "De bambou", "De fruits"],
+    "bonneReponse": 2,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0067",
+    "texte": "Quel animal porte ses petits dans une poche ventrale ?",
+    "reponses": ["Le paresseux", "Le tatou", "Le lémurien", "Le kangourou"],
+    "bonneReponse": 3,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0068",
+    "texte": "Quel arbre produit des glands ?",
+    "reponses": ["Le chêne", "Le hêtre", "Le châtaignier", "Le noyer"],
+    "bonneReponse": 0,
+    "categorie": "nature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0069",
+    "texte": "Combien de cœurs possède une pieuvre ?",
+    "reponses": ["1", "3", "2", "4"],
+    "bonneReponse": 1,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0070",
+    "texte": "Quel est le seul mammifère capable de voler activement ?",
+    "reponses": ["L'écureuil volant", "Le colugo", "La chauve-souris", "Le phalanger volant"],
+    "bonneReponse": 2,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0071",
+    "texte": "Quel oiseau pond les plus gros œufs ?",
+    "reponses": ["L'émeu", "Le casoar", "Le cygne", "L'autruche"],
+    "bonneReponse": 3,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0072",
+    "texte": "Combien de temps dure environ la gestation d'une éléphante ?",
+    "reponses": ["Environ 22 mois", "Environ 9 mois", "Environ 12 mois", "Environ 36 mois"],
+    "bonneReponse": 0,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0073",
+    "texte": "Quelle fleur est le symbole des Pays-Bas ?",
+    "reponses": ["La rose", "La tulipe", "Le coquelicot", "La lavande"],
+    "bonneReponse": 1,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0074",
+    "texte": "Comment appelle-t-on la transformation de la chenille en papillon ?",
+    "reponses": ["La mue", "La germination", "La métamorphose", "La mitose"],
+    "bonneReponse": 2,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0075",
+    "texte": "Lequel de ces animaux est un amphibien ?",
+    "reponses": ["Le lézard", "La tortue", "Le serpent", "La grenouille"],
+    "bonneReponse": 3,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0076",
+    "texte": "Quel est le plus grand félin du monde ?",
+    "reponses": ["Le tigre", "Le lion", "Le jaguar", "Le léopard"],
+    "bonneReponse": 0,
+    "categorie": "nature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0077",
+    "texte": "Quel oiseau est capable de voler en marche arrière ?",
+    "reponses": ["Le martin-pêcheur", "Le colibri", "L'hirondelle", "Le faucon crécerelle"],
+    "bonneReponse": 1,
+    "categorie": "nature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0078",
+    "texte": "En combien de compartiments se divise l'estomac d'une vache ?",
+    "reponses": ["2", "3", "4", "6"],
+    "bonneReponse": 2,
+    "categorie": "nature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0079",
+    "texte": "Quel mammifère marin est surnommé « la licorne des mers » ?",
+    "reponses": ["Le béluga", "Le dugong", "Le lamantin", "Le narval"],
+    "bonneReponse": 3,
+    "categorie": "nature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0080",
+    "texte": "Lequel de ces mammifères pond des œufs ?",
+    "reponses": ["L'ornithorynque", "Le tatou", "Le pangolin", "Le paresseux"],
+    "bonneReponse": 0,
+    "categorie": "nature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0081",
+    "texte": "Qui a peint « La Joconde » ?",
+    "reponses": ["Michel-Ange", "Léonard de Vinci", "Raphaël", "Botticelli"],
+    "bonneReponse": 1,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0082",
+    "texte": "Qui a écrit « Les Misérables » ?",
+    "reponses": ["Émile Zola", "Alexandre Dumas", "Victor Hugo", "Honoré de Balzac"],
+    "bonneReponse": 2,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0083",
+    "texte": "Qui a écrit « Le Petit Prince » ?",
+    "reponses": ["Jules Verne", "Albert Camus", "Marcel Pagnol", "Antoine de Saint-Exupéry"],
+    "bonneReponse": 3,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0084",
+    "texte": "Dans quel musée est exposée « La Joconde » ?",
+    "reponses": ["Le Louvre", "Le musée d'Orsay", "Le Prado", "Les Offices"],
+    "bonneReponse": 0,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0085",
+    "texte": "Qui a écrit « Roméo et Juliette » ?",
+    "reponses": ["Molière", "William Shakespeare", "Jean Racine", "Charles Dickens"],
+    "bonneReponse": 1,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0086",
+    "texte": "Quel peintre s'est tranché une partie de l'oreille ?",
+    "reponses": ["Paul Gauguin", "Claude Monet", "Vincent van Gogh", "Pablo Picasso"],
+    "bonneReponse": 2,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0087",
+    "texte": "Qui a écrit « Vingt mille lieues sous les mers » ?",
+    "reponses": ["H. G. Wells", "Victor Hugo", "Alexandre Dumas", "Jules Verne"],
+    "bonneReponse": 3,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0088",
+    "texte": "Qui a écrit « Les Trois Mousquetaires » ?",
+    "reponses": ["Alexandre Dumas", "Victor Hugo", "Théophile Gautier", "Eugène Sue"],
+    "bonneReponse": 0,
+    "categorie": "art-litterature",
+    "difficulte": 1
+  },
+  {
+    "id": "q0089",
+    "texte": "Qui a peint « Guernica » ?",
+    "reponses": ["Salvador Dalí", "Pablo Picasso", "Joan Miró", "Francisco de Goya"],
+    "bonneReponse": 1,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0090",
+    "texte": "Qui a sculpté « Le Penseur » ?",
+    "reponses": ["Camille Claudel", "Michel-Ange", "Auguste Rodin", "Aristide Maillol"],
+    "bonneReponse": 2,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0091",
+    "texte": "Qui a écrit « L'Étranger » ?",
+    "reponses": ["Jean-Paul Sartre", "André Gide", "Boris Vian", "Albert Camus"],
+    "bonneReponse": 3,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0092",
+    "texte": "À quel mouvement pictural appartient Claude Monet ?",
+    "reponses": ["L'impressionnisme", "Le cubisme", "Le surréalisme", "Le fauvisme"],
+    "bonneReponse": 0,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0093",
+    "texte": "Qui a écrit « Madame Bovary » ?",
+    "reponses": ["Stendhal", "Gustave Flaubert", "Guy de Maupassant", "Émile Zola"],
+    "bonneReponse": 1,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0094",
+    "texte": "Qui a peint le plafond de la chapelle Sixtine ?",
+    "reponses": ["Raphaël", "Léonard de Vinci", "Michel-Ange", "Le Caravage"],
+    "bonneReponse": 2,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0095",
+    "texte": "Dans quelle pièce de Molière trouve-t-on Harpagon ?",
+    "reponses": ["Le Misanthrope", "Tartuffe", "Le Malade imaginaire", "L'Avare"],
+    "bonneReponse": 3,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0096",
+    "texte": "Quelle romancière a créé le détective Hercule Poirot ?",
+    "reponses": ["Agatha Christie", "Mary Higgins Clark", "P. D. James", "Fred Vargas"],
+    "bonneReponse": 0,
+    "categorie": "art-litterature",
+    "difficulte": 2
+  },
+  {
+    "id": "q0097",
+    "texte": "Qui a peint « La Liberté guidant le peuple » ?",
+    "reponses": ["Jacques-Louis David", "Eugène Delacroix", "Théodore Géricault", "Gustave Courbet"],
+    "bonneReponse": 1,
+    "categorie": "art-litterature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0098",
+    "texte": "Qui a écrit « À la recherche du temps perdu » ?",
+    "reponses": ["André Gide", "Paul Valéry", "Marcel Proust", "Louis-Ferdinand Céline"],
+    "bonneReponse": 2,
+    "categorie": "art-litterature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0099",
+    "texte": "Quel peintre a réalisé « La Jeune Fille à la perle » ?",
+    "reponses": ["Rembrandt", "Frans Hals", "Jan Steen", "Johannes Vermeer"],
+    "bonneReponse": 3,
+    "categorie": "art-litterature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0100",
+    "texte": "Quel poète a écrit « Les Fleurs du mal » ?",
+    "reponses": ["Charles Baudelaire", "Arthur Rimbaud", "Paul Verlaine", "Stéphane Mallarmé"],
+    "bonneReponse": 0,
+    "categorie": "art-litterature",
+    "difficulte": 3
+  },
+  {
+    "id": "q0101",
+    "texte": "Comment s'appelle le jeune sorcier à la cicatrice en forme d'éclair ?",
+    "reponses": ["Ron Weasley", "Harry Potter", "Drago Malefoy", "Neville Londubat"],
+    "bonneReponse": 1,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0102",
+    "texte": "Dans « Le Roi lion », comment s'appelle le lionceau héros du film ?",
+    "reponses": ["Mufasa", "Scar", "Simba", "Nala"],
+    "bonneReponse": 2,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0103",
+    "texte": "Quel film de James Cameron raconte le naufrage d'un paquebot en 1912 ?",
+    "reponses": ["Abyss", "Avatar", "Poséidon", "Titanic"],
+    "bonneReponse": 3,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0104",
+    "texte": "Dans « Star Wars », qui est le père de Luke Skywalker ?",
+    "reponses": ["Dark Vador", "Obi-Wan Kenobi", "Yoda", "L'empereur Palpatine"],
+    "bonneReponse": 0,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0105",
+    "texte": "Comment s'appelle le cow-boy de « Toy Story » ?",
+    "reponses": ["Buzz l'Éclair", "Woody", "Rex", "Monsieur Patate"],
+    "bonneReponse": 1,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0106",
+    "texte": "Quel acteur incarne Jack Sparrow dans « Pirates des Caraïbes » ?",
+    "reponses": ["Orlando Bloom", "Brad Pitt", "Johnny Depp", "Leonardo DiCaprio"],
+    "bonneReponse": 2,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0107",
+    "texte": "Quel personnage de dessin animé vit dans un ananas sous la mer ?",
+    "reponses": ["Nemo", "Ariel", "Flipper", "Bob l'éponge"],
+    "bonneReponse": 3,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0108",
+    "texte": "Quel est le nom de l'agent secret 007 ?",
+    "reponses": ["James Bond", "Jason Bourne", "Ethan Hunt", "Jack Ryan"],
+    "bonneReponse": 0,
+    "categorie": "cinema-tv",
+    "difficulte": 1
+  },
+  {
+    "id": "q0109",
+    "texte": "Qui a réalisé « Les Dents de la mer » ?",
+    "reponses": ["George Lucas", "Steven Spielberg", "Ridley Scott", "Martin Scorsese"],
+    "bonneReponse": 1,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0110",
+    "texte": "Dans quelle ville se déroule la série « Friends » ?",
+    "reponses": ["Los Angeles", "Chicago", "New York", "Boston"],
+    "bonneReponse": 2,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0111",
+    "texte": "Quelle actrice joue Amélie Poulain ?",
+    "reponses": ["Marion Cotillard", "Sophie Marceau", "Juliette Binoche", "Audrey Tautou"],
+    "bonneReponse": 3,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0112",
+    "texte": "Comment s'appelle le petit robot nettoyeur du film Pixar de 2008 ?",
+    "reponses": ["WALL-E", "R2-D2", "Baymax", "Robby"],
+    "bonneReponse": 0,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0113",
+    "texte": "Quel film français de 2011 raconte l'amitié entre Philippe et Driss ?",
+    "reponses": ["Bienvenue chez les Ch'tis", "Intouchables", "Le Dîner de cons", "Les Visiteurs"],
+    "bonneReponse": 1,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0114",
+    "texte": "Dans « Le Seigneur des anneaux », qui porte l'Anneau jusqu'au Mordor ?",
+    "reponses": ["Aragorn", "Gandalf", "Frodon", "Legolas"],
+    "bonneReponse": 2,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0115",
+    "texte": "Quelle série met en scène les familles Stark et Lannister ?",
+    "reponses": ["The Witcher", "Vikings", "The Crown", "Game of Thrones"],
+    "bonneReponse": 3,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0116",
+    "texte": "Dans quelle ville vit la famille Simpson ?",
+    "reponses": ["Springfield", "Shelbyville", "Quahog", "South Park"],
+    "bonneReponse": 0,
+    "categorie": "cinema-tv",
+    "difficulte": 2
+  },
+  {
+    "id": "q0117",
+    "texte": "Qui a réalisé « Le Fabuleux Destin d'Amélie Poulain » ?",
+    "reponses": ["Luc Besson", "Jean-Pierre Jeunet", "Jacques Audiard", "François Ozon"],
+    "bonneReponse": 1,
+    "categorie": "cinema-tv",
+    "difficulte": 3
+  },
+  {
+    "id": "q0118",
+    "texte": "Quel prix récompense le meilleur film au Festival de Cannes ?",
+    "reponses": ["L'Ours d'or", "Le Lion d'or", "La Palme d'or", "Le César"],
+    "bonneReponse": 2,
+    "categorie": "cinema-tv",
+    "difficulte": 3
+  },
+  {
+    "id": "q0119",
+    "texte": "Quel acteur joue le commissaire Juve dans « Fantômas » (1964) ?",
+    "reponses": ["Jean Marais", "Bourvil", "Jean Gabin", "Louis de Funès"],
+    "bonneReponse": 3,
+    "categorie": "cinema-tv",
+    "difficulte": 3
+  },
+  {
+    "id": "q0120",
+    "texte": "Dans quel pays a été tournée la trilogie « Le Seigneur des anneaux » ?",
+    "reponses": ["La Nouvelle-Zélande", "L'Australie", "L'Islande", "L'Irlande"],
+    "bonneReponse": 0,
+    "categorie": "cinema-tv",
+    "difficulte": 3
+  },
+  {
+    "id": "q0121",
+    "texte": "Quel chanteur était surnommé « le King » ?",
+    "reponses": ["Michael Jackson", "Elvis Presley", "Frank Sinatra", "Johnny Cash"],
+    "bonneReponse": 1,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0122",
+    "texte": "Quel chanteur était surnommé « le roi de la pop » ?",
+    "reponses": ["Prince", "Elvis Presley", "Michael Jackson", "Freddie Mercury"],
+    "bonneReponse": 2,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0123",
+    "texte": "De quel pays vient le groupe ABBA ?",
+    "reponses": ["La Norvège", "Le Danemark", "La Finlande", "La Suède"],
+    "bonneReponse": 3,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0124",
+    "texte": "Combien de cordes a une guitare classique ?",
+    "reponses": ["6", "4", "5", "7"],
+    "bonneReponse": 0,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0125",
+    "texte": "De quel instrument jouait Frédéric Chopin ?",
+    "reponses": ["Le violon", "Le piano", "Le violoncelle", "La flûte"],
+    "bonneReponse": 1,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0126",
+    "texte": "Quel groupe a chanté « Bohemian Rhapsody » ?",
+    "reponses": ["The Beatles", "Pink Floyd", "Queen", "The Rolling Stones"],
+    "bonneReponse": 2,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0127",
+    "texte": "Quelle chanteuse a rendu célèbre « La Vie en rose » ?",
+    "reponses": ["Dalida", "Barbara", "Juliette Gréco", "Édith Piaf"],
+    "bonneReponse": 3,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0128",
+    "texte": "De quelle ville anglaise viennent les Beatles ?",
+    "reponses": ["Liverpool", "Londres", "Manchester", "Birmingham"],
+    "bonneReponse": 0,
+    "categorie": "musique",
+    "difficulte": 1
+  },
+  {
+    "id": "q0129",
+    "texte": "Quel compositeur, devenu sourd, a écrit l'« Ode à la joie » ?",
+    "reponses": ["Wolfgang Amadeus Mozart", "Ludwig van Beethoven", "Jean-Sébastien Bach", "Joseph Haydn"],
+    "bonneReponse": 1,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0130",
+    "texte": "Combien de touches compte un piano standard ?",
+    "reponses": ["76", "96", "88", "104"],
+    "bonneReponse": 2,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0131",
+    "texte": "Quel compositeur a écrit « Les Quatre Saisons » ?",
+    "reponses": ["Jean-Sébastien Bach", "Georg Friedrich Haendel", "Joseph Haydn", "Antonio Vivaldi"],
+    "bonneReponse": 3,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0132",
+    "texte": "Quel chanteur interprète « Allumer le feu » ?",
+    "reponses": ["Johnny Hallyday", "Eddy Mitchell", "Michel Sardou", "Jacques Dutronc"],
+    "bonneReponse": 0,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0133",
+    "texte": "Qui a écrit et chanté « Ne me quitte pas » ?",
+    "reponses": ["Charles Aznavour", "Jacques Brel", "Georges Brassens", "Léo Ferré"],
+    "bonneReponse": 1,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0134",
+    "texte": "Quel duo français a sorti l'album « Random Access Memories » ?",
+    "reponses": ["Justice", "Air", "Daft Punk", "Cassius"],
+    "bonneReponse": 2,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0135",
+    "texte": "Quelle chanteuse britannique interprète « Rolling in the Deep » ?",
+    "reponses": ["Amy Winehouse", "Dua Lipa", "Lily Allen", "Adele"],
+    "bonneReponse": 3,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0136",
+    "texte": "Combien de musiciens compte un quatuor ?",
+    "reponses": ["4", "3", "5", "6"],
+    "bonneReponse": 0,
+    "categorie": "musique",
+    "difficulte": 2
+  },
+  {
+    "id": "q0137",
+    "texte": "Quel compositeur a écrit l'opéra « Carmen » ?",
+    "reponses": ["Giuseppe Verdi", "Georges Bizet", "Giacomo Puccini", "Jules Massenet"],
+    "bonneReponse": 1,
+    "categorie": "musique",
+    "difficulte": 3
+  },
+  {
+    "id": "q0138",
+    "texte": "Quel compositeur a écrit le « Boléro » ?",
+    "reponses": ["Claude Debussy", "Erik Satie", "Maurice Ravel", "Camille Saint-Saëns"],
+    "bonneReponse": 2,
+    "categorie": "musique",
+    "difficulte": 3
+  },
+  {
+    "id": "q0139",
+    "texte": "Qui a composé l'opéra « La Flûte enchantée » ?",
+    "reponses": ["Ludwig van Beethoven", "Richard Wagner", "Joseph Haydn", "Wolfgang Amadeus Mozart"],
+    "bonneReponse": 3,
+    "categorie": "musique",
+    "difficulte": 3
+  },
+  {
+    "id": "q0140",
+    "texte": "À quel âge Mozart est-il mort ?",
+    "reponses": ["35 ans", "27 ans", "42 ans", "56 ans"],
+    "bonneReponse": 0,
+    "categorie": "musique",
+    "difficulte": 3
+  },
+  {
+    "id": "q0141",
+    "texte": "Combien de joueurs compte une équipe de football sur le terrain ?",
+    "reponses": ["10", "11", "9", "12"],
+    "bonneReponse": 1,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0142",
+    "texte": "Tous les combien d'années ont lieu les Jeux olympiques d'été ?",
+    "reponses": ["2 ans", "3 ans", "4 ans", "5 ans"],
+    "bonneReponse": 2,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0143",
+    "texte": "Dans quel sport utilise-t-on un volant ?",
+    "reponses": ["Le tennis", "Le squash", "Le tennis de table", "Le badminton"],
+    "bonneReponse": 3,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0144",
+    "texte": "Quel pays a gagné la Coupe du monde de football 1998 ?",
+    "reponses": ["La France", "Le Brésil", "L'Italie", "L'Allemagne"],
+    "bonneReponse": 0,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0145",
+    "texte": "Combien d'anneaux figurent sur le drapeau olympique ?",
+    "reponses": ["4", "5", "6", "7"],
+    "bonneReponse": 1,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0146",
+    "texte": "Dans quel sport marque-t-on des essais ?",
+    "reponses": ["Le handball", "Le football", "Le rugby", "Le basket-ball"],
+    "bonneReponse": 2,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0147",
+    "texte": "Quel tournoi de tennis se joue sur terre battue à Paris ?",
+    "reponses": ["Wimbledon", "L'US Open", "L'Open d'Australie", "Roland-Garros"],
+    "bonneReponse": 3,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0148",
+    "texte": "De quelle couleur est le maillot du leader du Tour de France ?",
+    "reponses": ["Jaune", "Vert", "Blanc", "À pois rouges"],
+    "bonneReponse": 0,
+    "categorie": "sport",
+    "difficulte": 1
+  },
+  {
+    "id": "q0149",
+    "texte": "Quelle est la distance officielle d'un marathon ?",
+    "reponses": ["40 km", "42,195 km", "42 km", "45,195 km"],
+    "bonneReponse": 1,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0150",
+    "texte": "Dans quelle ville ont eu lieu les Jeux olympiques d'été de 2012 ?",
+    "reponses": ["Pékin", "Rio de Janeiro", "Londres", "Athènes"],
+    "bonneReponse": 2,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0151",
+    "texte": "Quel sprinteur a couru le 100 m en 9,58 s en 2009 ?",
+    "reponses": ["Asafa Powell", "Yohan Blake", "Carl Lewis", "Usain Bolt"],
+    "bonneReponse": 3,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0152",
+    "texte": "Combien de sets faut-il gagner pour remporter un match masculin de Grand Chelem ?",
+    "reponses": ["3", "2", "4", "5"],
+    "bonneReponse": 0,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0153",
+    "texte": "Au golf, comment appelle-t-on un trou joué en un coup de moins que le par ?",
+    "reponses": ["Un eagle", "Un birdie", "Un bogey", "Un albatros"],
+    "bonneReponse": 1,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0154",
+    "texte": "Dans quel sport Teddy Riner s'est-il illustré ?",
+    "reponses": ["La lutte", "La boxe", "Le judo", "Le karaté"],
+    "bonneReponse": 2,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0155",
+    "texte": "Combien de joueurs compte une équipe de volley-ball sur le terrain ?",
+    "reponses": ["5", "7", "8", "6"],
+    "bonneReponse": 3,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0156",
+    "texte": "Au tennis, comment appelle-t-on le score de 40-40 ?",
+    "reponses": ["Égalité", "Avantage", "Jeu blanc", "Balle de set"],
+    "bonneReponse": 0,
+    "categorie": "sport",
+    "difficulte": 2
+  },
+  {
+    "id": "q0157",
+    "texte": "En quelle année ont eu lieu les premiers Jeux olympiques modernes ?",
+    "reponses": ["1900", "1896", "1908", "1924"],
+    "bonneReponse": 1,
+    "categorie": "sport",
+    "difficulte": 3
+  },
+  {
+    "id": "q0158",
+    "texte": "Quel Français est à l'origine des Jeux olympiques modernes ?",
+    "reponses": ["Jules Rimet", "Henri Desgrange", "Pierre de Coubertin", "Jean Bouin"],
+    "bonneReponse": 2,
+    "categorie": "sport",
+    "difficulte": 3
+  },
+  {
+    "id": "q0159",
+    "texte": "Quel pays a remporté la première Coupe du monde de football, en 1930 ?",
+    "reponses": ["Le Brésil", "L'Argentine", "L'Italie", "L'Uruguay"],
+    "bonneReponse": 3,
+    "categorie": "sport",
+    "difficulte": 3
+  },
+  {
+    "id": "q0160",
+    "texte": "Combien de cases compte un échiquier ?",
+    "reponses": ["64", "49", "81", "100"],
+    "bonneReponse": 0,
+    "categorie": "sport",
+    "difficulte": 3
+  },
+  {
+    "id": "q0161",
+    "texte": "De quel pays la paella est-elle originaire ?",
+    "reponses": ["L'Italie", "L'Espagne", "Le Portugal", "Le Mexique"],
+    "bonneReponse": 1,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0162",
+    "texte": "Quel est l'ingrédient principal du guacamole ?",
+    "reponses": ["La tomate", "Le concombre", "L'avocat", "Le poivron"],
+    "bonneReponse": 2,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0163",
+    "texte": "Quel fromage garnit traditionnellement une pizza margherita ?",
+    "reponses": ["Le parmesan", "La ricotta", "Le gorgonzola", "La mozzarella"],
+    "bonneReponse": 3,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0164",
+    "texte": "De quelle région française la choucroute est-elle la spécialité ?",
+    "reponses": ["L'Alsace", "La Bretagne", "La Provence", "La Normandie"],
+    "bonneReponse": 0,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0165",
+    "texte": "Avec quel fruit fabrique-t-on le cidre ?",
+    "reponses": ["La poire", "La pomme", "Le raisin", "La cerise"],
+    "bonneReponse": 1,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0166",
+    "texte": "De quel pays les sushis sont-ils la spécialité ?",
+    "reponses": ["La Chine", "La Corée du Sud", "Le Japon", "La Thaïlande"],
+    "bonneReponse": 2,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0167",
+    "texte": "Avec l'huile, quel est l'ingrédient de base de la mayonnaise ?",
+    "reponses": ["Le lait", "La crème", "Le beurre", "Le jaune d'œuf"],
+    "bonneReponse": 3,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0168",
+    "texte": "De quel pays les nems sont-ils originaires ?",
+    "reponses": ["Le Vietnam", "La Chine", "Le Japon", "La Thaïlande"],
+    "bonneReponse": 0,
+    "categorie": "gastronomie",
+    "difficulte": 1
+  },
+  {
+    "id": "q0169",
+    "texte": "Quelle épice donne traditionnellement sa couleur jaune à la paella ?",
+    "reponses": ["Le curcuma", "Le safran", "Le paprika", "Le cumin"],
+    "bonneReponse": 1,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0170",
+    "texte": "Avec quelle farine prépare-t-on les galettes bretonnes salées ?",
+    "reponses": ["Le blé", "Le maïs", "Le sarrasin", "Le seigle"],
+    "bonneReponse": 2,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0171",
+    "texte": "Quel fromage est indispensable à une tartiflette ?",
+    "reponses": ["Le comté", "La raclette", "Le beaufort", "Le reblochon"],
+    "bonneReponse": 3,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0172",
+    "texte": "Quel est l'ingrédient principal du houmous ?",
+    "reponses": ["Les pois chiches", "Les lentilles", "Les haricots blancs", "Les fèves"],
+    "bonneReponse": 0,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0173",
+    "texte": "Quel pays est le premier producteur mondial de café ?",
+    "reponses": ["La Colombie", "Le Brésil", "Le Vietnam", "L'Éthiopie"],
+    "bonneReponse": 1,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0174",
+    "texte": "À partir de quelle plante fabrique-t-on la tequila ?",
+    "reponses": ["Le cactus", "La canne à sucre", "L'agave", "Le maïs"],
+    "bonneReponse": 2,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0175",
+    "texte": "Quelle pâtisserie en forme de couronne porte le nom d'une course cycliste ?",
+    "reponses": ["Le saint-honoré", "Le fraisier", "L'opéra", "Le paris-brest"],
+    "bonneReponse": 3,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0176",
+    "texte": "Quel alcool est à la base du mojito ?",
+    "reponses": ["Le rhum", "La vodka", "La tequila", "Le gin"],
+    "bonneReponse": 0,
+    "categorie": "gastronomie",
+    "difficulte": 2
+  },
+  {
+    "id": "q0177",
+    "texte": "Quel fromage bleu est affiné dans des caves de l'Aveyron ?",
+    "reponses": ["Le bleu d'Auvergne", "Le roquefort", "La fourme d'Ambert", "Le gorgonzola"],
+    "bonneReponse": 1,
+    "categorie": "gastronomie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0178",
+    "texte": "De quel pays le gouda est-il originaire ?",
+    "reponses": ["La Belgique", "Le Danemark", "Les Pays-Bas", "La Suisse"],
+    "bonneReponse": 2,
+    "categorie": "gastronomie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0179",
+    "texte": "Quel légume est la base du baba ganoush ?",
+    "reponses": ["La courgette", "Le poivron", "La betterave", "L'aubergine"],
+    "bonneReponse": 3,
+    "categorie": "gastronomie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0180",
+    "texte": "Quel gâteau breton est réputé pour être très riche en beurre ?",
+    "reponses": ["Le kouign-amann", "Le far", "Le clafoutis", "Le cannelé"],
+    "bonneReponse": 0,
+    "categorie": "gastronomie",
+    "difficulte": 3
+  },
+  {
+    "id": "q0181",
+    "texte": "Combien de jours compte une année bissextile ?",
+    "reponses": ["365", "366", "364", "367"],
+    "bonneReponse": 1,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0182",
+    "texte": "Quel est le contraire de « généreux » ?",
+    "reponses": ["Gentil", "Riche", "Avare", "Timide"],
+    "bonneReponse": 2,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0183",
+    "texte": "Combien de lettres compte l'alphabet français ?",
+    "reponses": ["24", "25", "28", "26"],
+    "bonneReponse": 3,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0184",
+    "texte": "Combien de côtés a un hexagone ?",
+    "reponses": ["6", "5", "7", "8"],
+    "bonneReponse": 0,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0185",
+    "texte": "Quelle couleur obtient-on en mélangeant du bleu et du jaune ?",
+    "reponses": ["Le violet", "Le vert", "L'orange", "Le marron"],
+    "bonneReponse": 1,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0186",
+    "texte": "Combien de zéros compte un million ?",
+    "reponses": ["5", "7", "6", "9"],
+    "bonneReponse": 2,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0187",
+    "texte": "Comment appelle-t-on la femelle du cheval ?",
+    "reponses": ["La génisse", "La brebis", "La laie", "La jument"],
+    "bonneReponse": 3,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0188",
+    "texte": "Quelle langue parle-t-on au Brésil ?",
+    "reponses": ["Le portugais", "L'espagnol", "Le brésilien", "L'italien"],
+    "bonneReponse": 0,
+    "categorie": "langue-divers",
+    "difficulte": 1
+  },
+  {
+    "id": "q0189",
+    "texte": "Combien de minutes compte une journée ?",
+    "reponses": ["1 240", "1 440", "1 600", "1 080"],
+    "bonneReponse": 1,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0190",
+    "texte": "Que signifie « poser un lapin » ?",
+    "reponses": ["Faire une gaffe", "Mentir", "Ne pas venir à un rendez-vous", "Partir sans payer"],
+    "bonneReponse": 2,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0191",
+    "texte": "Quel est le pluriel de « bijou » ?",
+    "reponses": ["Des bijous", "Des bijoues", "Des bijoix", "Des bijoux"],
+    "bonneReponse": 3,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0192",
+    "texte": "En chiffres romains, que vaut la lettre L ?",
+    "reponses": ["50", "100", "500", "1 000"],
+    "bonneReponse": 0,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0193",
+    "texte": "Que signifie « avoir le cafard » ?",
+    "reponses": ["Avoir peur", "Être déprimé", "Être malade", "Avoir faim"],
+    "bonneReponse": 1,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0194",
+    "texte": "Comment appelle-t-on un mot qui se lit dans les deux sens, comme « kayak » ?",
+    "reponses": ["Une anagramme", "Un homonyme", "Un palindrome", "Un acronyme"],
+    "bonneReponse": 2,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0195",
+    "texte": "Que signifie « tomber dans les pommes » ?",
+    "reponses": ["Se tromper", "Tomber amoureux", "Faire une chute", "S'évanouir"],
+    "bonneReponse": 3,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0196",
+    "texte": "Combien de degrés mesure un angle droit ?",
+    "reponses": ["90", "45", "180", "100"],
+    "bonneReponse": 0,
+    "categorie": "langue-divers",
+    "difficulte": 2
+  },
+  {
+    "id": "q0197",
+    "texte": "Quel nombre s'écrit MCMXC en chiffres romains ?",
+    "reponses": ["1940", "1990", "2090", "1910"],
+    "bonneReponse": 1,
+    "categorie": "langue-divers",
+    "difficulte": 3
+  },
+  {
+    "id": "q0198",
+    "texte": "Comment appelle-t-on un polygone à 12 côtés ?",
+    "reponses": ["Un décagone", "Un ennéagone", "Un dodécagone", "Un hendécagone"],
+    "bonneReponse": 2,
+    "categorie": "langue-divers",
+    "difficulte": 3
+  },
+  {
+    "id": "q0199",
+    "texte": "Que signifie « faire chou blanc » ?",
+    "reponses": ["Rougir de honte", "Faire la cuisine", "Rester neutre", "Échouer"],
+    "bonneReponse": 3,
+    "categorie": "langue-divers",
+    "difficulte": 3
+  },
+  {
+    "id": "q0200",
+    "texte": "Quelle est la lettre la plus fréquente dans les textes en français ?",
+    "reponses": ["Le E", "Le A", "Le S", "Le I"],
+    "bonneReponse": 0,
+    "categorie": "langue-divers",
+    "difficulte": 3
+  }
+]
