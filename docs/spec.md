@@ -146,7 +146,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 {
   "id": "j_8f3k2a",
   "pseudo": "Paul",
-  "couleur": "#FF8C1A",
+  "couleur": 1,
   "score": 2740,
   "connecte": true,
   "socketId": "aXc91...",
@@ -154,7 +154,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`id` est généré par le serveur et mémorisé dans le navigateur du téléphone : c'est lui qui permet la reconnexion. `socketId` change à chaque reconnexion. `arriveeA` sert à choisir le prochain hôte.
+`id` est généré par le serveur et mémorisé dans le navigateur du téléphone : c'est lui qui permet la reconnexion. `couleur` est un numéro de 1 à 10 : la teinte réelle est définie dans le CSS (`--joueur-1` à `--joueur-10`, voir « Couleurs »). `socketId` change à chaque reconnexion. `arriveeA` sert à choisir le prochain hôte.
 
 ### Salle
 
@@ -194,7 +194,7 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `joueur:repondre` | téléphone → serveur | index du choix |
 | `hote:suivant` | téléphone de l'hôte → serveur | rien |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien |
-| `hote:terminer` | téléphone de l'hôte → serveur | rien (tranche 7 : arrête la partie et passe au podium) |
+| `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie pendant une question ou une révélation et passe au podium. |
 | `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. |
 | `joueur:etat` | serveur → un téléphone | vue personnalisée : écran à afficher, a déjà répondu, résultat, rang, est hôte |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
@@ -231,31 +231,33 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 
 ### Couleurs
 
-Proposition, à valider sur la vraie TV à la tranche 7. Les réponses ne sont jamais identifiées par la couleur seule : la forme les distingue toujours.
+Ambiance « Pop et coloré » (choisie à la tranche 7) : fond crème à pois, gros contours foncés, relief par une bordure basse épaisse, police Fredoka hébergée dans le dépôt. Toutes les couleurs sont des variables dans `public/commun/theme.css` : changer d'ambiance revient à modifier ce seul fichier. Les réponses ne sont jamais identifiées par la couleur seule : la forme (dessinée en SVG) les distingue toujours.
+
+Fond `#FFF1CC`, texte et contours `#1B1035`, accent `#FF4F8B`.
 
 Réponses :
 
 | Forme | Couleur |
 |---|---|
-| ▲ | Rouge `#E21B3C` |
-| ◆ | Bleu `#1368CE` |
-| ● | Jaune `#FFC400` |
-| ■ | Vert `#26890C` |
+| ▲ | Rouge `#F2353F` |
+| ◆ | Bleu `#2F6BFF` |
+| ● | Jaune `#FFC01F` (forme et texte foncés) |
+| ■ | Vert `#17A34A` |
 
-Joueurs, attribués dans cet ordre (première couleur libre) :
+Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoie que le numéro.
 
 | # | Couleur |
 |---|---|
-| 1 | Orange `#FF8C1A` |
-| 2 | Rose `#FF5CA8` |
-| 3 | Violet `#9B5DE5` |
-| 4 | Cyan `#00C2D1` |
-| 5 | Menthe `#3DDC97` |
-| 6 | Citron vert `#B5E61D` |
-| 7 | Brun `#A0522D` |
-| 8 | Blanc `#F1F1F1` |
-| 9 | Bleu ciel `#8EC5FF` |
-| 10 | Gris `#8A8F98` |
+| 1 | Orange `#FF7A00` |
+| 2 | Rose `#FF4FA0` |
+| 3 | Violet `#8A4DFF` |
+| 4 | Cyan `#00B4C6` |
+| 5 | Menthe `#19C37D` |
+| 6 | Citron vert `#8BC000` |
+| 7 | Brun `#9A5B34` |
+| 8 | Encre `#1B1035` |
+| 9 | Bleu ciel `#3E9BFF` |
+| 10 | Gris `#7B8190` |
 
 ## Contraintes techniques
 

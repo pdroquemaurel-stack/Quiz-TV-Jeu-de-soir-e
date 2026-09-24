@@ -1,5 +1,18 @@
 const socket = io();
 
+// La page est conçue en 1920×1080 : on la réduit ou l'agrandit en bloc pour tenir
+// entière dans la fenêtre, centrée et sans déformation.
+function ajusterEchelle() {
+  const echelle = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  const decalageX = (window.innerWidth - 1920 * echelle) / 2;
+  const decalageY = (window.innerHeight - 1080 * echelle) / 2;
+  document.getElementById('scene').style.transform =
+    `translate(${decalageX}px, ${decalageY}px) scale(${echelle})`;
+}
+
+ajusterEchelle();
+window.addEventListener('resize', ajusterEchelle);
+
 // sessionStorage : un rechargement ou une coupure retrouve la salle,
 // un nouvel onglet (ou l'app relancée) en crée une nouvelle.
 socket.on('connect', () => {
@@ -18,22 +31,32 @@ const affichages = {
 
 let intervalleChrono = null;
 
+// Étape affichée (« question:3 »…). Tant qu'elle ne change pas, on ne reconstruit
+// pas la question et les réponses, pour ne pas rejouer leurs animations d'arrivée.
+let etapeAffichee = '';
+
 socket.on('salle:etat', (salle) => {
   sessionStorage.setItem('codeSalle', salle.code);
   sessionStorage.setItem('jetonTv', salle.jetonTv);
+  const etape = `${salle.etat}:${salle.etatMode.numero ?? ''}`;
+  const nouvelleEtape = etape !== etapeAffichee;
+  etapeAffichee = etape;
   clearInterval(intervalleChrono);
   afficherEcran(salle.etat);
   afficherQrCoin(salle);
-  affichages[salle.etat](salle);
+  affichages[salle.etat](salle, nouvelleEtape);
 });
 
 // Petit QR code dans un coin pendant la partie, pour les retardataires.
 function afficherQrCoin(salle) {
   document.getElementById('qr-coin').hidden = salle.etat === 'lobby';
   document.getElementById('code-coin').textContent = salle.code;
-  const qr = document.getElementById('qr-coin-image');
-  const srcQr = `/qr/${salle.code}.svg`;
-  if (qr.getAttribute('src') !== srcQr) qr.src = srcQr;
+  afficherQr(document.getElementById('qr-coin-image'), salle.code);
+}
+
+function afficherQr(image, code) {
+  const srcQr = `/qr/${code}.svg`;
+  if (image.getAttribute('src') !== srcQr) image.src = srcQr;
 }
 
 function afficherEcran(nom) {
@@ -44,21 +67,36 @@ function afficherEcran(nom) {
 
 function afficherLobby(salle) {
   document.getElementById('code').textContent = salle.code;
-  document.getElementById('url').textContent = salle.urlJoueur.replace(/^https?:\/\//, '');
-  const qr = document.getElementById('qr');
-  const srcQr = `/qr/${salle.code}.svg`;
-  if (qr.getAttribute('src') !== srcQr) qr.src = srcQr;
-
-  const liste = document.getElementById('liste-joueurs');
-  liste.replaceChildren(...salle.joueurs.map((joueur) => ligneJoueur(joueur, salle.hoteId)));
+  // URL courte : sans le protocole ni le code (affiché en grand juste dessous).
+  // Si elle est trop longue, elle passe à la ligne avant « /joueur ».
+  const url = salle.urlJoueur.replace(/^https?:\/\//, '').replace(/\?.*$/, '');
+  const coupure = url.lastIndexOf('/');
+  document.getElementById('url').replaceChildren(
+    url.slice(0, coupure), document.createElement('wbr'), url.slice(coupure),
+  );
+  afficherQr(document.getElementById('qr'), salle.code);
+  remplirEtiquettes(
+    document.getElementById('liste-joueurs'),
+    salle.joueurs.map((joueur) => etiquetteJoueur(joueur, joueur.id === salle.hoteId)),
+  );
 }
 
-function ligneJoueur(joueur, hoteId) {
-  const ligne = document.createElement('li');
-  ligne.append(pastille(joueur.couleur), ' ', joueur.pseudo);
-  if (joueur.id === hoteId) ligne.append(' 👑');
-  griserSiDeconnecte(ligne, joueur);
-  return ligne;
+function etiquetteJoueur(joueur, estHote) {
+  const element = document.createElement('li');
+  element.dataset.id = joueur.id;
+  element.append(pastille(joueur.couleur), texte('pseudo', joueur.pseudo));
+  if (estHote) element.append(forme('couronne'));
+  griserSiDeconnecte(element, joueur);
+  return element;
+}
+
+// Seules les étiquettes qui n'étaient pas encore affichées arrivent en rebond.
+function remplirEtiquettes(liste, etiquettes) {
+  const dejaAffiches = [...liste.children].map((element) => element.dataset.id);
+  for (const etiquette of etiquettes) {
+    if (!dejaAffiches.includes(etiquette.dataset.id)) etiquette.classList.add('nouveau');
+  }
+  liste.replaceChildren(...etiquettes);
 }
 
 function griserSiDeconnecte(element, joueur) {
@@ -68,28 +106,42 @@ function griserSiDeconnecte(element, joueur) {
 function pastille(couleur) {
   const element = document.createElement('span');
   element.className = 'pastille';
-  element.style.background = couleur;
+  element.style.setProperty('--couleur', `var(--joueur-${couleur})`);
   return element;
 }
 
-function afficherQuestion(salle) {
+function forme(classes) {
+  const element = document.createElement('span');
+  element.className = `forme ${classes}`;
+  return element;
+}
+
+function afficherQuestion(salle, nouvelleEtape) {
   const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
-  document.getElementById('numero-question').textContent = `${numero}/${total}`;
+  if (nouvelleEtape) {
+    document.getElementById('numero-question').textContent = `Question ${numero}/${total}`;
+    document.getElementById('texte-question').textContent = question.texte;
+    document.getElementById('reponses-question').replaceChildren(
+      ...question.reponses.map((texte, index) => caseReponse(texte, index)),
+    );
+    viderBarreTemps(tempsRestantMs);
+    document.getElementById('ont-repondu').replaceChildren();
+  }
   lancerChrono(tempsRestantMs);
-  document.getElementById('texte-question').textContent = question.texte;
-  document.getElementById('reponses-question').replaceChildren(
-    ...question.reponses.map((texte, index) => caseReponse(texte, index)),
-  );
 
   const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  document.getElementById('ont-repondu').replaceChildren(
-    ...joueursAyantRepondu.map((joueur) => {
-      const element = document.createElement('li');
-      element.append(pastille(joueur.couleur), ' ', joueur.pseudo);
-      griserSiDeconnecte(element, joueur);
-      return element;
-    }),
+  remplirEtiquettes(
+    document.getElementById('ont-repondu'),
+    joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
   );
+}
+
+// La barre se vide en même temps que le temps restant mesuré par le serveur.
+function viderBarreTemps(tempsRestantMs) {
+  const barre = document.getElementById('barre-temps');
+  barre.style.animation = 'none';
+  void barre.offsetWidth;
+  barre.style.animation = `vider ${tempsRestantMs}ms linear forwards`;
 }
 
 // Simple affichage : c'est le serveur qui décide de la fin de la manche.
@@ -97,7 +149,9 @@ function lancerChrono(tempsRestantMs) {
   const fin = Date.now() + tempsRestantMs;
   const element = document.getElementById('chrono');
   const afficher = () => {
-    element.textContent = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+    const secondes = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+    element.textContent = secondes;
+    element.classList.toggle('urgent', secondes <= 5);
   };
   afficher();
   intervalleChrono = setInterval(afficher, 250);
@@ -105,53 +159,74 @@ function lancerChrono(tempsRestantMs) {
 
 function caseReponse(texte, index) {
   const element = document.createElement('li');
-  element.className = `choix-${index}`;
-  element.append(' ', texte);
+  element.className = `choix-${index} fond-choix-${index}`;
+  const libelle = document.createElement('span');
+  libelle.className = 'texte';
+  libelle.textContent = texte;
+  element.append(forme(''), libelle);
   return element;
 }
 
-function afficherRevelation(salle) {
+function afficherRevelation(salle, nouvelleEtape) {
   const { numero, total, question, bonneReponse, nombreParChoix, classement } = salle.etatMode;
-  document.getElementById('numero-revelation').textContent = `${numero}/${total}`;
-  document.getElementById('texte-revelation').textContent = question.texte;
-  document.getElementById('reponses-revelation').replaceChildren(
-    ...question.reponses.map((texte, index) => {
-      const element = caseReponse(texte, index);
-      element.classList.add(index === bonneReponse ? 'bonne' : 'mauvaise');
-      const nombre = document.createElement('span');
-      nombre.className = 'nombre';
-      nombre.textContent = nombreParChoix[index];
-      element.append(nombre);
-      return element;
-    }),
-  );
+  if (nouvelleEtape) {
+    document.getElementById('numero-revelation').textContent = `Question ${numero}/${total}`;
+    document.getElementById('texte-revelation').textContent = question.texte;
+    document.getElementById('reponses-revelation').replaceChildren(
+      ...question.reponses.map((texte, index) => {
+        const element = caseReponse(texte, index);
+        const estBonne = index === bonneReponse;
+        element.classList.add(estBonne ? 'bonne' : 'mauvaise');
+        if (estBonne) element.append(forme('coche'));
+        const nombre = document.createElement('span');
+        nombre.className = 'nombre';
+        nombre.textContent = nombreParChoix[index];
+        element.append(nombre);
+        return element;
+      }),
+    );
+  }
   document.getElementById('classement-revelation').replaceChildren(
-    ...classement.map((ligne) => {
-      const gain = ligne.points > 0 ? `+${ligne.points}` : '✗';
-      return ligneClassement(ligne, gain);
-    }),
+    ...classement.map((ligne) => ligneClassement(ligne, true)),
   );
 }
 
-// Tous les joueurs de rang 3 ou mieux : parfois plus de 3 avec les ex æquo.
+// Tous les joueurs de rang 3 ou mieux : les ex æquo partagent la même marche.
 function afficherPodium(salle) {
   const { classement } = salle.etatMode;
-  document.getElementById('podium').replaceChildren(
-    ...classement.filter((ligne) => ligne.rang <= 3).map((ligne) => ligneClassement(ligne, '')),
-  );
+  for (const rang of [1, 2, 3]) {
+    const noms = classement.filter((ligne) => ligne.rang === rang).map((ligne) => {
+      const element = document.createElement('li');
+      element.append(pastille(ligne.couleur), ligne.pseudo);
+      griserSiDeconnecte(element, ligne);
+      return element;
+    });
+    const liste = document.getElementById(`podium-${rang}`);
+    liste.replaceChildren(...noms);
+    liste.parentElement.classList.toggle('vide', noms.length === 0);
+  }
   document.getElementById('classement-podium').replaceChildren(
-    ...classement.map((ligne) => ligneClassement(ligne, '')),
+    ...classement.map((ligne) => ligneClassement(ligne, false)),
   );
 }
 
-function ligneClassement(ligne, gain) {
+function ligneClassement(ligne, avecGain) {
   const element = document.createElement('li');
-  const points = document.createElement('span');
-  points.className = 'gain';
-  points.textContent = gain;
-  element.append(
-    `${ligne.rang}. `, pastille(ligne.couleur), ' ', ligne.pseudo, ' — ', ligne.score, ' ', points,
-  );
+  const rang = texte('rang', `${ligne.rang}.`);
+  const pseudo = texte('pseudo', ligne.pseudo);
+  element.append(rang, pastille(ligne.couleur), pseudo, texte('score', ligne.score));
+  if (avecGain) {
+    const gain = texte('gain', ligne.points > 0 ? `+${ligne.points}` : '✗');
+    if (ligne.points === 0) gain.classList.add('zero');
+    element.append(gain);
+  }
   griserSiDeconnecte(element, ligne);
+  return element;
+}
+
+function texte(classe, contenu) {
+  const element = document.createElement('span');
+  element.className = classe;
+  element.textContent = contenu;
   return element;
 }

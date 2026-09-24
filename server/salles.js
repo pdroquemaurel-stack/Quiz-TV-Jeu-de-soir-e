@@ -7,10 +7,8 @@ export const DELAI_FERMETURE_MS = 30 * 60 * 1000;
 const PSEUDO_MAX = 12;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-export const COULEURS_JOUEURS = [
-  '#FF8C1A', '#FF5CA8', '#9B5DE5', '#00C2D1', '#3DDC97',
-  '#B5E61D', '#A0522D', '#F1F1F1', '#8EC5FF', '#8A8F98',
-];
+// Numéros de couleur : la teinte réelle est dans public/commun/theme.css (--joueur-N).
+export const COULEURS_JOUEURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const ERREURS = {
   salle_introuvable: 'Salle introuvable',

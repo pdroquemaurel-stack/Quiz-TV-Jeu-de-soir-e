@@ -1,0 +1,31 @@
+/* Ambiance « Pop et coloré ». Pour changer d'ambiance, on ne modifie que ce fichier. */
+:root {
+  --fond: #FFF1CC;
+  --pois: #F7DFA0;
+  --panneau: #FFFFFF;
+  --texte: #1B1035;
+  --texte-doux: #6B5F80;
+  --contour: #1B1035;
+  --accent: #FF4F8B;
+  --piste: #F3D98C;
+  --juste: #17A34A;
+  --rate: #F2353F;
+
+  /* Réponses : ▲ ◆ ● ■, toujours avec leur forme. */
+  --choix-0: #F2353F; --texte-choix-0: #FFFFFF;
+  --choix-1: #2F6BFF; --texte-choix-1: #FFFFFF;
+  --choix-2: #FFC01F; --texte-choix-2: #1B1035;
+  --choix-3: #17A34A; --texte-choix-3: #FFFFFF;
+
+  /* Joueurs : le serveur envoie le numéro (couleur: 3 → --joueur-3). */
+  --joueur-1: #FF7A00;
+  --joueur-2: #FF4FA0;
+  --joueur-3: #8A4DFF;
+  --joueur-4: #00B4C6;
+  --joueur-5: #19C37D;
+  --joueur-6: #8BC000;
+  --joueur-7: #9A5B34;
+  --joueur-8: #1B1035;
+  --joueur-9: #3E9BFF;
+  --joueur-10: #7B8190;
+}

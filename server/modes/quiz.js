@@ -116,6 +116,14 @@ export function passerALaSuite(salle) {
   else salle.etat = 'podium';
 }
 
+// Arrêt par l'hôte : une question en cours n'est pas comptée, car les points
+// ne sont ajoutés qu'à la révélation. Renvoie true si la partie a été terminée.
+export function terminerPartie(salle) {
+  if (salle.etat !== 'question' && salle.etat !== 'revelation') return false;
+  salle.etat = 'podium';
+  return true;
+}
+
 // Heure à laquelle l'étape en cours se termine d'elle-même, ou null.
 export function echeance(salle) {
   if (salle.etat === 'question') return salle.etatMode.debutQuestionA + DUREE_QUESTION_MS;

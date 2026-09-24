@@ -1,66 +1,221 @@
+/* Page TV : conçue en 1920×1080, texte de 40 px minimum (lisible à 3 mètres). */
+
 body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 1920px;
   height: 1080px;
   overflow: hidden;
+  transform-origin: 0 0;
   font-size: 40px;
 }
 
-main[data-ecran="lobby"] {
-  display: flex;
+main {
   height: 100%;
-  padding: 80px;
-  gap: 120px;
+  padding: 40px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.rejoindre {
+/* Tout est dimensionné pour tenir en 1080 px : aucun bloc ne se fait comprimer. */
+main > * {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.titre {
+  font-size: 72px;
+}
+
+.attente {
+  color: var(--texte-doux);
+  font-size: 48px;
+  animation: clignoter 2.4s ease-in-out infinite;
+}
+
+/* Contour épais et relief par une bordure basse plus large (pas d'ombre). */
+.carte-rejoindre,
+.question,
+.reponses li,
+.etiquettes li,
+.classement li,
+.socle,
+.qr-coin {
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+}
+
+/* ---------- Salle d'attente ---------- */
+
+main[data-ecran="lobby"] {
+  flex-direction: row;
+  align-items: center;
+  gap: 80px;
+}
+
+.carte-rejoindre {
+  width: 680px;
+  padding: 40px;
+  border-radius: 40px;
+  background: var(--panneau);
   text-align: center;
 }
 
-#qr {
-  width: 600px;
-  height: 600px;
-  background: #fff;
-  border-radius: 24px;
+.carte-rejoindre .qr {
+  display: block;
+  width: 560px;
+  height: 560px;
+  margin: 0 auto;
+}
+
+.carte-rejoindre p {
+  margin: 16px 0 0;
+}
+
+.url {
+  font-size: 40px;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+
+.code {
+  font-size: 56px;
 }
 
 .code strong {
   font-size: 120px;
-  letter-spacing: 12px;
+  letter-spacing: 16px;
+  color: var(--accent);
 }
 
 .joueurs {
   flex: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
 }
 
-#liste-joueurs {
-  list-style: none;
-  padding: 0;
+.joueurs .etiquettes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
   font-size: 56px;
-  columns: 2;
 }
 
-#liste-joueurs li {
-  margin-bottom: 24px;
+/* ---------- Étiquettes de joueurs (salle d'attente, « a répondu ») ---------- */
+
+.etiquettes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.attente {
-  opacity: 0.7;
+.etiquettes li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 8px 28px 8px 16px;
+  border-radius: 60px;
+  background: var(--panneau);
 }
 
-main[data-ecran="question"],
-main[data-ecran="revelation"],
-main[data-ecran="podium"] {
-  height: 100%;
-  padding: 60px 80px;
+.etiquettes .couronne {
+  font-size: 0.9em;
+}
+
+.nouveau {
+  animation: rebondir 450ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+.deconnecte {
+  opacity: 0.35;
+}
+
+/* ---------- Question ---------- */
+
+.tv-haut {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  min-height: 130px;
 }
 
 .numero {
   margin: 0;
-  opacity: 0.7;
+  padding: 6px 30px;
+  font-size: 48px;
+  color: #fff;
+  background: var(--accent);
+  border: 5px solid var(--contour);
+  border-radius: 16px;
+  transform: rotate(-3deg);
 }
 
-h1 {
+.barre-temps {
+  flex: 1;
+  height: 28px;
+  overflow: hidden;
+  border: 4px solid var(--contour);
+  border-radius: 14px;
+  background: var(--piste);
+}
+
+.barre-temps-remplie {
+  height: 100%;
+  background: var(--accent);
+}
+
+/* Durée posée en JavaScript à partir du temps restant envoyé par le serveur. */
+@keyframes vider {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+.chrono {
+  width: 130px;
+  height: 130px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  background: var(--panneau);
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 50%;
+}
+
+.chrono.urgent {
+  background: var(--accent);
+  color: #fff;
+  animation: trembler 500ms ease-in-out infinite;
+}
+
+/* La plus longue question de la banque tient sur 2 lignes à 64 px. */
+.question {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 60px;
+  text-align: center;
   font-size: 64px;
+  line-height: 1.15;
+  background: var(--panneau);
+  border-radius: 32px;
 }
 
 .reponses {
@@ -68,82 +223,246 @@ h1 {
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  font-size: 48px;
+  gap: 28px;
 }
 
 .reponses li {
-  padding: 32px;
-  border-radius: 16px;
+  height: 150px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 32px;
+  padding: 0 40px;
+  font-size: 56px;
+  line-height: 1.1;
+  border-radius: 28px;
 }
 
-.reponses .mauvaise {
-  opacity: 0.3;
+.reponses .forme {
+  width: 76px;
+  height: 76px;
 }
 
-.reponses .bonne {
-  outline: 8px solid #fff;
+.reponses .texte {
+  flex: 1;
 }
 
-.reponses .nombre {
-  margin-left: auto;
-  font-weight: bold;
+/* Arrivée des réponses l'une après l'autre. */
+.reponses li {
+  animation: rebondir 550ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
 }
+.reponses li:nth-child(1) { animation-delay: 150ms; }
+.reponses li:nth-child(2) { animation-delay: 250ms; }
+.reponses li:nth-child(3) { animation-delay: 350ms; }
+.reponses li:nth-child(4) { animation-delay: 450ms; }
 
+/* 10 joueurs sur 2 lignes au plus, à gauche du petit QR code du coin.
+   Un pseudo trop long est coupé avec « … ». */
 .ont-repondu {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 40px;
+  margin-top: auto;
+  padding-right: 220px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.chrono {
-  float: right;
-  margin: 0;
-  font-size: 96px;
-  font-weight: bold;
-}
-
-.podium {
-  list-style: none;
-  padding: 0;
-  font-size: 72px;
-  font-weight: bold;
-}
-
-.classement {
-  font-size: 44px;
-  columns: 2;
-}
-
-.classement .gain {
-  opacity: 0.7;
-}
-
-.deconnecte {
-  opacity: 0.35;
+.pseudo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .qr-coin {
-  position: fixed;
+  position: absolute;
   right: 40px;
   bottom: 40px;
+  padding: 10px 10px 4px;
+  border-width: 5px;
+  border-bottom-width: 12px;
+  border-radius: 20px;
+  background: var(--panneau);
   text-align: center;
 }
 
-.qr-coin img {
-  width: 180px;
-  height: 180px;
-  background: #fff;
-  border-radius: 12px;
+.qr-coin .qr {
+  display: block;
+  width: 140px;
+  height: 140px;
 }
 
 .qr-coin p {
-  margin: 8px 0 0;
+  margin: 0;
   letter-spacing: 6px;
-  font-weight: bold;
+}
+
+/* ---------- Révélation ---------- */
+
+main[data-ecran="revelation"] .tv-haut {
+  min-height: 0;
+}
+
+main[data-ecran="revelation"] .question {
+  height: 150px;
+  font-size: 48px;
+}
+
+main[data-ecran="revelation"] .reponses li {
+  height: 130px;
+  font-size: 48px;
+  line-height: 1;
+  animation: none;
+}
+
+main[data-ecran="revelation"] .reponses .forme {
+  width: 60px;
+  height: 60px;
+}
+
+.reponses .mauvaise {
+  opacity: 0.35;
+}
+
+.reponses .bonne {
+  border-width: 10px;
+  border-bottom-width: 18px;
+  animation: rebondir 550ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+.nombre {
+  min-width: 80px;
+  height: 80px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 5px solid var(--contour);
+  border-radius: 40px;
+  background: var(--panneau);
+  color: var(--texte);
+}
+
+.coche {
+  --masque: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M8 54 L22 40 L40 58 L78 16 L92 30 L40 86 Z'/%3E%3C/svg%3E");
+  width: 64px;
+  height: 64px;
+}
+
+/* ---------- Classement (révélation et podium) ---------- */
+
+/* Lecture en colonnes : 1 à 5 à gauche, 6 à 10 à droite. */
+.classement {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: repeat(5, auto);
+  grid-auto-flow: column;
+  gap: 8px 40px;
+  /* Place laissée au petit QR code du coin. */
+  padding-right: 220px;
+  font-size: 40px;
+}
+
+.classement li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  border-width: 4px;
+  border-bottom-width: 8px;
+  border-radius: 20px;
+  background: var(--panneau);
+}
+
+.classement .rang {
+  min-width: 70px;
+}
+
+.classement .pseudo {
+  flex: 1;
+}
+
+.gain {
+  min-width: 130px;
+  text-align: center;
+  padding: 0 14px;
+  border-radius: 30px;
+  color: #fff;
+  background: var(--juste);
+}
+
+.gain.zero {
+  background: var(--texte-doux);
+}
+
+/* À la révélation, le classement arrive après la bonne réponse. */
+main[data-ecran="revelation"] .classement {
+  animation: apparaitre 400ms 1.5s both;
+}
+
+/* ---------- Podium ---------- */
+
+main[data-ecran="podium"] {
+  align-items: center;
+  gap: 20px;
+}
+
+.podium {
+  height: 400px;
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+}
+
+.marche {
+  width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: rebondir 600ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+.marche-3 { animation-delay: 200ms; }
+.marche-2 { animation-delay: 500ms; }
+.marche-1 { animation-delay: 900ms; }
+
+/* Les ex æquo partagent la même marche. */
+.noms {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  font-size: 48px;
+}
+
+.noms li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.socle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  border-radius: 24px 24px 0 0;
+  background: var(--panneau);
+}
+
+.marche-1 .socle { height: 200px; background: var(--choix-2); }
+.marche-2 .socle { height: 150px; }
+.marche-3 .socle { height: 110px; }
+
+.marche.vide {
+  visibility: hidden;
+}
+
+main[data-ecran="podium"] .classement {
+  width: 100%;
+  animation: apparaitre 400ms 1.5s both;
 }

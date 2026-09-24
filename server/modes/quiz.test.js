@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle, synchroniserMinuteur, vueJoueur, vueTv } from '../salles.js';
 import {
   NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, classement, demarrerPartie,
-  echeance, enregistrerReponse, melangerReponses, passerALaSuite, reveler, tirerQuestions,
-  tousOntRepondu,
+  echeance, enregistrerReponse, melangerReponses, passerALaSuite, reveler, terminerPartie,
+  tirerQuestions, tousOntRepondu,
 } from './quiz.js';
 
 function sallePrete() {
@@ -293,6 +293,59 @@ test('rejouer : scores à zéro et retour à la 1re question', () => {
 
   assert.equal(salle.etat, 'question');
   assert.equal(salle.etatMode.indexQuestion, 0);
+  assert.equal(paul.score, 0);
+});
+
+// --- Arrêt par l'hôte ---
+
+test('terminer pendant une question : podium, et la manche en cours ne compte pas', (t) => {
+  simulerTemps(t);
+  const { salle, paul, lea } = sallePrete();
+  reveler(salle);
+  passerALaSuite(salle);
+  paul.score = 1500;
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+
+  assert.equal(terminerPartie(salle), true);
+
+  assert.equal(salle.etat, 'podium');
+  assert.equal(paul.score, 1500);
+  assert.equal(lea.score, 0);
+  assert.equal(echeance(salle), null);
+  assert.equal(vueJoueur(salle, paul).ecran, 'fin');
+});
+
+test('terminer pendant une révélation : les points de la manche révélée sont gardés', () => {
+  const { salle, paul } = sallePrete();
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+  reveler(salle);
+  const scoreRevele = paul.score;
+
+  assert.equal(terminerPartie(salle), true);
+
+  assert.equal(salle.etat, 'podium');
+  assert.equal(paul.score, scoreRevele);
+  assert.ok(scoreRevele > 0);
+});
+
+test('terminer est sans effet en salle d\'attente et au podium', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  assert.equal(terminerPartie(salle), false);
+  assert.equal(salle.etat, 'lobby');
+
+  salle.etat = 'podium';
+  assert.equal(terminerPartie(salle), false);
+});
+
+test('rejouer fonctionne après un arrêt par l\'hôte', () => {
+  const { salle, paul } = sallePrete();
+  paul.score = 800;
+  terminerPartie(salle);
+
+  demarrerPartie(salle);
+
+  assert.equal(salle.etat, 'question');
   assert.equal(paul.score, 0);
 });
 

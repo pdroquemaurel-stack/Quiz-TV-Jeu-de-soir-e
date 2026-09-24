@@ -1,11 +1,106 @@
-main {
+/* Page téléphone : portrait, utilisable d'une main (actions principales en bas). */
+
+body {
   min-height: 100vh;
-  padding: 24px;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  font-size: 22px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
+  padding: 20px;
   text-align: center;
 }
+
+main > p {
+  margin: 0;
+}
+
+/* Deux cales centrent le contenu dans l'espace laissé au-dessus du bouton du bas. */
+main:not([data-ecran="repondre"])::before,
+main:not([data-ecran="repondre"])::after {
+  content: '';
+  flex: 1;
+}
+
+main::after {
+  order: 1;
+}
+
+.titre {
+  margin: 0 0 16px;
+  font-size: 56px;
+}
+
+.gros-texte {
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.discret {
+  color: var(--texte-doux);
+}
+
+/* Contour épais et relief par une bordure basse plus large (pas d'ombre). */
+.carte,
+.bouton,
+.choix,
+.carte-resultat {
+  border: 4px solid var(--contour);
+  border-bottom-width: 10px;
+}
+
+.carte {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 28px;
+  background: var(--panneau);
+}
+
+/* ---------- Boutons ---------- */
+
+.bouton {
+  width: 100%;
+  max-width: 420px;
+  min-height: 72px;
+  padding: 12px;
+  border-radius: 24px;
+  font-size: 28px;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bouton:active,
+.choix:active {
+  transform: translateY(6px);
+  border-bottom-width: 4px;
+}
+
+.bouton:disabled {
+  opacity: 0.4;
+  transform: none;
+  border-bottom-width: 10px;
+}
+
+.bouton.danger { background: var(--rate); }
+.bouton.secondaire { background: var(--panneau); color: var(--texte); }
+
+/* Sous le pouce. */
+.en-bas {
+  order: 2;
+}
+
+/* ---------- Rejoindre ---------- */
 
 form {
   display: flex;
@@ -20,74 +115,123 @@ label {
   text-align: left;
 }
 
-input,
-button {
-  font-size: 1.4rem;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
+input {
+  height: 64px;
+  padding: 0 16px;
+  font-size: 28px;
+  color: var(--texte);
+  background: var(--fond);
+  border: 4px solid var(--contour);
+  border-radius: 18px;
 }
 
 #code {
   text-transform: uppercase;
-  letter-spacing: 6px;
-}
-
-button {
-  background: #fff;
-  color: #1b1340;
-  font-weight: bold;
+  letter-spacing: 10px;
 }
 
 .erreur {
-  color: #ff8a8a;
-  font-weight: bold;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  color: #fff;
+  background: var(--rate);
 }
 
-button:disabled {
-  opacity: 0.4;
+/* ---------- En-tête et attente ---------- */
+
+.entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 0;
+  font-size: 24px;
 }
 
-main:not([data-ecran="rejoindre"]) {
-  color: #1b1340;
-  font-size: 1.4rem;
+.pseudo-entete {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.gros-texte {
-  font-size: 2.2rem;
-  font-weight: bold;
+.bouton-terminer {
+  padding: 8px 14px;
+  font-size: 18px;
+  color: var(--texte);
+  background: var(--panneau);
+  border: 3px solid var(--contour);
+  border-radius: 14px;
 }
+
+.grande-pastille {
+  font-size: 120px;
+  margin: 12px 0;
+}
+
+#est-hote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Répondre : 4 boutons sur tout l'écran ---------- */
 
 main[data-ecran="repondre"] {
-  padding: 12px;
+  padding: 14px;
+  align-items: stretch;
 }
 
 .boutons-choix {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
 
 .choix {
-  color: #fff;
-  font-size: 4rem;
-  border-radius: 16px;
-}
-
-#choix-envoye {
-  width: 8rem;
-  height: 8rem;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 28px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.mon-pseudo {
-  font-size: 2.5rem;
-  font-weight: bold;
+.choix .forme {
+  width: 96px;
+  height: 96px;
 }
+
+.choix-envoye {
+  width: 180px;
+  height: 180px;
+  margin-bottom: 16px;
+}
+
+/* ---------- Résultat et fin ---------- */
+
+.carte-resultat {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 16px;
+  padding: 28px 16px;
+  border-radius: 28px;
+  font-size: 36px;
+  color: #fff;
+  background: var(--rate);
+}
+
+.carte-resultat.juste {
+  background: var(--juste);
+}
+
+.rang-fin {
+  font-size: 96px;
+  color: var(--accent);
+}
+
+/* ---------- Bandeau de reconnexion et confirmation ---------- */
 
 .bandeau {
   position: fixed;
@@ -95,26 +239,56 @@ main[data-ecran="repondre"] {
   left: 0;
   right: 0;
   margin: 0;
-  padding: 12px;
-  background: #1b1340;
-  color: #fff;
+  padding: 14px;
+  z-index: 2;
   text-align: center;
-  font-weight: bold;
-  z-index: 1;
+  color: #fff;
+  background: var(--accent);
+  border-bottom: 4px solid var(--contour);
 }
 
-.outils-dev {
+.point {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  animation: clignoter 1s ease-in-out infinite;
+}
+
+.voile {
   position: fixed;
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  background: rgba(27, 16, 53, 0.6);
+}
+
+.boite {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.boite p {
+  margin: 0;
+}
+
+/* ---------- Outils ?dev ---------- */
+
+.outils-dev {
   display: flex;
   gap: 8px;
+  padding: 0 8px 8px;
 }
 
 .outils-dev button {
   flex: 1;
-  font-size: 0.9rem;
-  padding: 8px;
-  opacity: 0.8;
+  padding: 6px;
+  font-size: 14px;
+  opacity: 0.7;
 }

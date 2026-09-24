@@ -10,7 +10,7 @@ import {
   trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
 import {
-  demarrerPartie, enregistrerReponse, passerALaSuite, reveler, tousOntRepondu,
+  demarrerPartie, enregistrerReponse, passerALaSuite, reveler, terminerPartie, tousOntRepondu,
 } from './modes/quiz.js';
 
 const dossierPublic = fileURLToPath(new URL('../public', import.meta.url));
@@ -100,6 +100,12 @@ export function demarrerServeur(port) {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || trouve.salle.etat !== 'revelation') return;
       passerALaSuite(trouve.salle);
+      diffuser(trouve.salle);
+    });
+
+    socket.on('hote:terminer', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !terminerPartie(trouve.salle)) return;
       diffuser(trouve.salle);
     });
 

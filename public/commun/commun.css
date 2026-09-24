@@ -1,32 +1,90 @@
+/* Police hébergée dans le dépôt (Fredoka, licence OFL : voir OFL.txt). */
+@font-face {
+  font-family: 'Fredoka';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/commun/fredoka.woff2') format('woff2');
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  background: #1b1340;
-  color: #fff;
+  font-family: 'Fredoka', 'Arial Rounded MT Bold', sans-serif;
+  font-weight: 600;
+  background: radial-gradient(circle, var(--pois) 0 6px, transparent 7px) 0 0 / 48px 48px, var(--fond);
+  color: var(--texte);
+}
+
+h1, h2, strong, button, input {
+  font-family: inherit;
+  font-weight: inherit;
 }
 
 [hidden] {
   display: none !important;
 }
 
-/* Réponses : toujours une forme en plus de la couleur. */
-.choix-0 { background: #E21B3C; }
-.choix-1 { background: #1368CE; }
-.choix-2 { background: #FFC400; }
-.choix-3 { background: #26890C; }
-.choix-0::before { content: '▲'; }
-.choix-1::before { content: '◆'; }
-.choix-2::before { content: '●'; }
-.choix-3::before { content: '■'; }
+/* Formes des réponses, dessinées en SVG pour un rendu identique partout.
+   Le masque découpe la forme dans currentColor. */
+.forme {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  -webkit-mask: var(--masque) center / contain no-repeat;
+  mask: var(--masque) center / contain no-repeat;
+}
 
+.choix-0 { --masque: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,8 96,90 4,90'/%3E%3C/svg%3E"); }
+.choix-1 { --masque: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,2 98,50 50,98 2,50'/%3E%3C/svg%3E"); }
+.choix-2 { --masque: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46'/%3E%3C/svg%3E"); }
+.choix-3 { --masque: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='8' width='84' height='84' rx='6'/%3E%3C/svg%3E"); }
+
+.fond-choix-0 { background: var(--choix-0); color: var(--texte-choix-0); }
+.fond-choix-1 { background: var(--choix-1); color: var(--texte-choix-1); }
+.fond-choix-2 { background: var(--choix-2); color: var(--texte-choix-2); }
+.fond-choix-3 { background: var(--choix-3); color: var(--texte-choix-3); }
+
+.couronne {
+  --masque: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M6 82 L12 26 L34 52 L50 14 L66 52 L88 26 L94 82 Z'/%3E%3C/svg%3E");
+  color: var(--contour);
+}
+
+/* La couleur vient de style="--couleur: var(--joueur-N)". */
 .pastille {
   display: inline-block;
+  flex: none;
   width: 1em;
   height: 1em;
   border-radius: 50%;
-  vertical-align: middle;
+  border: 0.1em solid var(--contour);
+  background: var(--couleur);
+}
+
+/* Animations simples pour le Mi TV Stick : opacité et déplacement seulement.
+   Sans « to », l'animation finit sur l'opacité propre à l'élément (joueur grisé…). */
+@keyframes rebondir {
+  from { opacity: 0; transform: translateY(-60px); }
+}
+
+@keyframes apparaitre {
+  from { opacity: 0; }
+}
+
+@keyframes trembler {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@keyframes clignoter {
+  50% { opacity: 0.2; }
+}
+
+.rebond {
+  animation: rebondir 550ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
 }

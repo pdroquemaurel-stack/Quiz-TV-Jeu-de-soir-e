@@ -4,15 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quiz TV — Joueur</title>
+  <link rel="preload" href="/commun/fredoka.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/commun/theme.css">
   <link rel="stylesheet" href="/commun/commun.css">
   <link rel="stylesheet" href="/joueur/joueur.css">
 </head>
 <body>
-  <p id="bandeau-reconnexion" class="bandeau" hidden>Reconnexion…</p>
+  <p id="bandeau-reconnexion" class="bandeau" hidden><span class="point"></span> Reconnexion…</p>
+
+  <header id="entete" class="entete" hidden>
+    <span id="ma-pastille" class="pastille"></span>
+    <span id="mon-pseudo-entete" class="pseudo-entete"></span>
+    <button id="bouton-terminer" class="bouton-terminer" hidden>Terminer</button>
+  </header>
 
   <main data-ecran="rejoindre">
-    <h1>Quiz TV</h1>
-    <form id="formulaire">
+    <h1 class="titre rebond">Quiz TV</h1>
+    <form id="formulaire" class="carte">
       <label>Code de la salle
         <input id="code" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" required>
       </label>
@@ -20,49 +28,62 @@
         <input id="pseudo" type="text" maxlength="12" autocomplete="off" required>
       </label>
       <p id="message-erreur" class="erreur" hidden></p>
-      <button type="submit">Entrer</button>
+      <button type="submit" class="bouton">Entrer</button>
     </form>
   </main>
 
   <main data-ecran="attente" hidden>
-    <p class="bienvenue">Tu es dans la salle</p>
-    <p id="mon-pseudo" class="mon-pseudo"></p>
-    <p id="est-hote" hidden>Tu es l'hôte 👑</p>
-    <button id="bouton-lancer" hidden>Lancer la partie</button>
+    <p>Tu es dans la salle</p>
+    <span id="grande-pastille" class="pastille grande-pastille rebond"></span>
+    <p id="mon-pseudo" class="gros-texte"></p>
+    <p id="est-hote" hidden><span class="forme couronne"></span> Tu es l'hôte</p>
+    <p id="attente-hote" class="discret">En attente que l'hôte lance</p>
+    <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
   </main>
 
   <main data-ecran="repondre" hidden>
     <div class="boutons-choix">
-      <button class="choix choix-0" data-choix="0" aria-label="Triangle rouge"></button>
-      <button class="choix choix-1" data-choix="1" aria-label="Losange bleu"></button>
-      <button class="choix choix-2" data-choix="2" aria-label="Rond jaune"></button>
-      <button class="choix choix-3" data-choix="3" aria-label="Carré vert"></button>
+      <button class="choix choix-0 fond-choix-0" data-choix="0" aria-label="Triangle rouge"><span class="forme"></span></button>
+      <button class="choix choix-1 fond-choix-1" data-choix="1" aria-label="Losange bleu"><span class="forme"></span></button>
+      <button class="choix choix-2 fond-choix-2" data-choix="2" aria-label="Rond jaune"><span class="forme"></span></button>
+      <button class="choix choix-3 fond-choix-3" data-choix="3" aria-label="Carré vert"><span class="forme"></span></button>
     </div>
   </main>
 
   <main data-ecran="attente_question" hidden>
     <p class="gros-texte">En attente de la prochaine question</p>
-    <p>Regarde la TV</p>
+    <p class="discret">Regarde la TV</p>
   </main>
 
   <main data-ecran="reponse_envoyee" hidden>
-    <div id="choix-envoye" class="choix"></div>
-    <p>Réponse envoyée, regarde la TV</p>
+    <div id="choix-envoye" class="choix choix-envoye rebond"><span class="forme"></span></div>
+    <p class="gros-texte">Réponse envoyée</p>
+    <p class="discret">Regarde la TV</p>
   </main>
 
   <main data-ecran="resultat" hidden>
-    <p id="resultat" class="gros-texte"></p>
+    <p id="resultat" class="carte-resultat rebond"></p>
     <p>Score : <strong id="score-resultat"></strong></p>
     <p>Rang : <strong id="rang-resultat"></strong></p>
-    <button id="bouton-suivant" hidden>Suivant</button>
+    <button id="bouton-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
-    <p>Rang final : <strong id="rang-fin"></strong></p>
+    <p id="rang-fin" class="rang-fin rebond"></p>
     <p>Ton score : <strong id="score-fin"></strong></p>
-    <button id="bouton-rejouer" hidden>Rejouer</button>
+    <button id="bouton-rejouer" class="bouton en-bas" hidden>Rejouer</button>
   </main>
+
+  <!-- Confirmation avant d'arrêter la partie, contre les appuis accidentels. -->
+  <div id="confirmation" class="voile" hidden>
+    <div class="carte boite rebond">
+      <p class="gros-texte">Terminer la partie maintenant ?</p>
+      <p class="discret">On passe directement au podium.</p>
+      <button id="confirmer-terminer" class="bouton danger">Oui, terminer</button>
+      <button id="annuler-terminer" class="bouton secondaire">Annuler</button>
+    </div>
+  </div>
 
   <!-- Visible seulement avec ?dev : simule une coupure réseau. -->
   <div id="outils-dev" class="outils-dev" hidden>
