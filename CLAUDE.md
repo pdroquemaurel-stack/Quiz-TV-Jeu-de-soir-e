@@ -30,9 +30,11 @@ public/
 data/questions.json
 data/estimation.json
 data/qui-de-nous.json
+data/undercover.json
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
+scripts/verifier-undercover.js
 android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
@@ -46,6 +48,7 @@ docs/modes/        # une mini-spec par mode de jeu
 - `node scripts/verifier-questions.js` : vérifie le format de `questions.json`
 - `node scripts/verifier-estimation.js` : vérifie le format de `estimation.json`
 - `node scripts/verifier-qui-de-nous.js` : vérifie le format de `qui-de-nous.json`
+- `node scripts/verifier-undercover.js` : vérifie le format de `undercover.json`
 
 ## Règles d'architecture (non négociables)
 
