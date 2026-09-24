@@ -107,7 +107,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 
 | Ordre | Mode | Joueurs | Résumé |
 |---|---|---|---|
-| 1 | **Estimation** | 3 à 10 | Une question à réponse numérique (« Combien de km entre Casablanca et Paris ? »). Chacun saisit un nombre, le plus proche gagne. |
+| 1 | **Estimation** (disponible, voir `docs/modes/estimation.md`) | 3 à 10 | Une question à réponse numérique (« Combien de km entre Casablanca et Paris ? »). Chacun saisit un nombre, le plus proche gagne. |
 | 2 | **Qui de nous ?** | 4 à 10 | « Qui est le plus susceptible de rater son avion ? ». Chacun vote pour un joueur, la TV affiche les résultats. |
 | 3 | **Undercover** | 4 à 10 | Chacun reçoit un mot secret sur son téléphone, un joueur a un mot légèrement différent. Tours de description à voix haute, puis vote pour démasquer l'intrus. |
 | 4 | **Même réponse** | 3 à 10 | « Cite un fruit rouge ». On marque des points si on donne la même réponse que d'autres joueurs. |

@@ -131,17 +131,15 @@ function forme(classes) {
 }
 
 // La barre se vide en même temps que le temps restant mesuré par le serveur.
-function viderBarreTemps(tempsRestantMs) {
-  const barre = document.getElementById('barre-temps');
+function viderBarreTemps(barre, tempsRestantMs) {
   barre.style.animation = 'none';
   void barre.offsetWidth;
   barre.style.animation = `vider ${tempsRestantMs}ms linear forwards`;
 }
 
 // Simple affichage : c'est le serveur qui décide de la fin de la manche.
-function lancerChrono(tempsRestantMs) {
+function lancerChrono(element, tempsRestantMs) {
   const fin = Date.now() + tempsRestantMs;
-  const element = document.getElementById('chrono');
   const afficher = () => {
     const secondes = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
     element.textContent = secondes;

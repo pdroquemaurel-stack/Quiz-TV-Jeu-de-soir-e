@@ -186,7 +186,7 @@ test('choix du mode : un mode grisé est refusé, puis accepté quand le compte 
 
 test('choix du mode : mode inconnu, mode à venir ou valeur bizarre refusés', () => {
   const { salle } = salleAvec(10);
-  for (const id of ['inconnu', 'estimation', 'bluff', 'toString', '__proto__', null, 3]) {
+  for (const id of ['inconnu', 'undercover', 'bluff', 'toString', '__proto__', null, 3]) {
     assert.equal(choisirMode(salle, id), false, String(id));
   }
   assert.equal(salle.mode, 'quiz');
@@ -239,7 +239,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
   assert.deepEqual(
     liste.slice(1).map((m) => [m.id, m.disponible, m.bientot]),
     [
-      ['estimation', false, true], ['qui-de-nous', false, true], ['undercover', false, true],
+      ['estimation', false, false], ['qui-de-nous', false, true], ['undercover', false, true],
       ['meme-reponse', false, true], ['bluff', false, true],
     ],
   );

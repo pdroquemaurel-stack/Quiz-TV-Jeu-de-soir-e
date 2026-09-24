@@ -353,3 +353,46 @@ main[data-ecran="quiz-repondre"] {
   font-size: 14px;
   opacity: 0.7;
 }
+
+/* ---------- Estimation ---------- */
+
+.saisie-nombre {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.champ-nombre {
+  flex: 1;
+  min-width: 0;
+  height: 88px;
+  font-size: 44px;
+  text-align: center;
+  background: var(--panneau);
+  border-bottom-width: 10px;
+}
+
+.unite-saisie {
+  font-size: 28px;
+}
+
+.unite-saisie:empty {
+  display: none;
+}
+
+.apercu-nombre {
+  min-height: 1.4em;
+  color: var(--texte-doux);
+}
+
+.nombre-envoye {
+  margin: 8px 0;
+  font-size: 44px;
+  color: var(--accent);
+}
+
+.apercu-nombre.erreur {
+  color: #fff;
+}

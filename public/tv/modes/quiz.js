@@ -8,10 +8,10 @@ function afficherQuestionQuiz(salle, nouvelleEtape) {
     document.getElementById('reponses-question').replaceChildren(
       ...question.reponses.map((texte, index) => caseReponse(texte, index)),
     );
-    viderBarreTemps(tempsRestantMs);
+    viderBarreTemps(document.getElementById('barre-temps'), tempsRestantMs);
     document.getElementById('ont-repondu').replaceChildren();
   }
-  lancerChrono(tempsRestantMs);
+  lancerChrono(document.getElementById('chrono'), tempsRestantMs);
 
   const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
   remplirEtiquettes(

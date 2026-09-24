@@ -70,6 +70,30 @@
     <button id="bouton-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="estimation-repondre" hidden>
+    <p class="discret">Ta réponse</p>
+    <div class="saisie-nombre">
+      <input id="champ-nombre" class="champ-nombre" inputmode="numeric" autocomplete="off" enterkeyhint="done" maxlength="20" aria-label="Ton nombre">
+      <span id="unite-saisie" class="unite-saisie"></span>
+    </div>
+    <p id="apercu-nombre" class="apercu-nombre"></p>
+    <button id="bouton-valider-nombre" class="bouton en-bas" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="estimation-reponse_envoyee" hidden>
+    <p class="gros-texte">Réponse envoyée</p>
+    <p id="nombre-envoye" class="nombre-envoye rebond"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="estimation-resultat" hidden>
+    <p id="resultat-estimation" class="carte-resultat rebond"></p>
+    <p id="detail-estimation" class="discret"></p>
+    <p>Score : <strong id="score-estimation"></strong></p>
+    <p>Rang : <strong id="rang-estimation"></strong></p>
+    <button id="bouton-suivant-estimation" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -98,5 +122,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="/joueur/joueur.js"></script>
   <script src="/joueur/modes/quiz.js"></script>
+  <script src="/joueur/modes/estimation.js"></script>
 </body>
 </html>

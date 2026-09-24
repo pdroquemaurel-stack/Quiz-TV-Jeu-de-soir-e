@@ -21,12 +21,15 @@ server/
   modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
   modes/commun.js   # tirage, classement, joueurs attendus : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
+  modes/estimation.js # mode Estimation (docs/modes/estimation.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   commun/           # CSS et JS partagés
 data/questions.json
+data/estimation.json
 scripts/verifier-questions.js
+scripts/verifier-estimation.js
 android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
@@ -38,6 +41,7 @@ docs/modes/        # une mini-spec par mode de jeu
 - `npm run dev` : lance le serveur en rechargement auto (`node --watch`)
 - `npm test` : tests avec `node:test`
 - `node scripts/verifier-questions.js` : vérifie le format de `questions.json`
+- `node scripts/verifier-estimation.js` : vérifie le format de `estimation.json`
 
 ## Règles d'architecture (non négociables)
 

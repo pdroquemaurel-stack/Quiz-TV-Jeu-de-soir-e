@@ -49,6 +49,31 @@
       <ol class="classement" id="classement-revelation"></ol>
     </main>
 
+    <main data-ecran="estimation-question" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="estimation-numero-question"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="estimation-barre-temps"></div></div>
+        <p class="chrono" id="estimation-chrono"></p>
+      </div>
+      <h1 class="question rebond" id="estimation-texte-question"></h1>
+      <p class="unite-attendue rebond" id="estimation-unite"></p>
+      <ul class="etiquettes ont-repondu" id="estimation-ont-repondu"></ul>
+    </main>
+
+    <main data-ecran="estimation-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="estimation-numero-revelation"></p>
+      </div>
+      <div class="estimation-entete">
+        <h1 class="question" id="estimation-texte-revelation"></h1>
+        <p class="bonne-estimation rebond" id="estimation-bonne-reponse"></p>
+      </div>
+      <div class="estimation-listes">
+        <ol class="estimations" id="estimation-liste"></ol>
+        <ol class="classement classement-colonne" id="estimation-classement"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
       <div class="podium">
@@ -70,5 +95,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="/tv/tv.js"></script>
   <script src="/tv/modes/quiz.js"></script>
+  <script src="/tv/modes/estimation.js"></script>
 </body>
 </html>
