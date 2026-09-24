@@ -31,15 +31,29 @@ let intervalleChrono = null;
 // pas la question et les réponses, pour ne pas rejouer leurs animations d'arrivée.
 let etapeAffichee = '';
 
+// Aucun son au premier état reçu après le chargement : un rechargement ne rejoue rien.
+// Ensuite, un seul son par état reçu : le premier demandé (le lancement passe avant
+// le « ding » de la première question).
+let premierEtatRecu = true;
+let sonDejaJoue = false;
+
+function sonner(nom) {
+  if (premierEtatRecu || sonDejaJoue) return;
+  sonDejaJoue = true;
+  jouerSon(nom);
+}
+
 socket.on('salle:etat', (salle) => {
   sessionStorage.setItem('codeSalle', salle.code);
   sessionStorage.setItem('jetonTv', salle.jetonTv);
   const { phase = '', numero = '' } = salle.etatMode;
   const etape = `${salle.etat}:${phase}:${numero}`;
   const nouvelleEtape = etape !== etapeAffichee;
+  const etatPrecedent = etapeAffichee.split(':')[0];
   etapeAffichee = etape;
   clearInterval(intervalleChrono);
   afficherQrCoin(salle);
+  jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape);
   if (salle.etat === 'partie') {
     afficherEcran(`${salle.mode}-${phase}`);
     modesTv[salle.mode][phase](salle, nouvelleEtape);
@@ -50,7 +64,17 @@ socket.on('salle:etat', (salle) => {
     afficherEcran('lobby');
     afficherLobby(salle);
   }
+  premierEtatRecu = false;
 });
+
+function jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape) {
+  sonDejaJoue = false;
+  if (salle.etat === 'lobby') lancerMusique();
+  else arreterMusique();
+  if (!nouvelleEtape) return;
+  if (salle.etat === 'partie' && etatPrecedent !== 'partie') sonner('lancement');
+  if (salle.etat === 'podium') sonner('podium');
+}
 
 // Petit QR code dans un coin pendant la partie, pour les retardataires.
 function afficherQrCoin(salle) {
@@ -80,10 +104,11 @@ function afficherLobby(salle) {
     url.slice(0, coupure), document.createElement('wbr'), url.slice(coupure),
   );
   afficherQr(document.getElementById('qr'), salle.code);
-  remplirEtiquettes(
+  const arrivees = remplirEtiquettes(
     document.getElementById('liste-joueurs'),
     salle.joueurs.map((joueur) => etiquetteJoueur(joueur, joueur.id === salle.hoteId)),
   );
+  if (arrivees > 0) sonner('arrivee');
   afficherModeChoisi(salle.modeChoisi);
 }
 
@@ -105,12 +130,13 @@ function etiquetteJoueur(joueur, estHote) {
 }
 
 // Seules les étiquettes qui n'étaient pas encore affichées arrivent en rebond.
+// Renvoie leur nombre, pour jouer un son à l'arrivée d'un joueur ou d'une réponse.
 function remplirEtiquettes(liste, etiquettes) {
   const dejaAffiches = [...liste.children].map((element) => element.dataset.id);
-  for (const etiquette of etiquettes) {
-    if (!dejaAffiches.includes(etiquette.dataset.id)) etiquette.classList.add('nouveau');
-  }
+  const nouvelles = etiquettes.filter((etiquette) => !dejaAffiches.includes(etiquette.dataset.id));
+  for (const etiquette of nouvelles) etiquette.classList.add('nouveau');
   liste.replaceChildren(...etiquettes);
+  return nouvelles.length;
 }
 
 function griserSiDeconnecte(element, joueur) {
@@ -137,11 +163,20 @@ function viderBarreTemps(barre, tempsRestantMs) {
   barre.style.animation = `vider ${tempsRestantMs}ms linear forwards`;
 }
 
+// Seconde affichée par le chrono : chaque état reçu relance lancerChrono,
+// et une même seconde ne doit pas faire deux fois tic-tac.
+let secondeAffichee = null;
+
 // Simple affichage : c'est le serveur qui décide de la fin de la manche.
+// Le tic-tac suit l'affichage, même après un rechargement.
 function lancerChrono(element, tempsRestantMs) {
   const fin = Date.now() + tempsRestantMs;
   const afficher = () => {
     const secondes = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+    if (secondes !== secondeAffichee && secondes >= 1 && secondes <= 5) {
+      jouerSon('tictac', { dernier: secondes === 1 });
+    }
+    secondeAffichee = secondes;
     element.textContent = secondes;
     element.classList.toggle('urgent', secondes <= 5);
   };

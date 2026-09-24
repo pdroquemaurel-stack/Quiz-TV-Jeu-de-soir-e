@@ -10,6 +10,7 @@ function avecUnite(nombre, unite) {
 function afficherQuestionEstimation(salle, nouvelleEtape) {
   const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
   if (nouvelleEtape) {
+    sonner('etape');
     document.getElementById('estimation-numero-question').textContent = `Question ${numero}/${total}`;
     document.getElementById('estimation-texte-question').textContent = question.texte;
     document.getElementById('estimation-unite').textContent =
@@ -20,10 +21,11 @@ function afficherQuestionEstimation(salle, nouvelleEtape) {
   lancerChrono(document.getElementById('estimation-chrono'), tempsRestantMs);
 
   const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  remplirEtiquettes(
+  const reponses = remplirEtiquettes(
     document.getElementById('estimation-ont-repondu'),
     joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
   );
+  if (reponses > 0) sonner('reponse');
 }
 
 function afficherRevelationEstimation(salle, nouvelleEtape) {
@@ -31,6 +33,7 @@ function afficherRevelationEstimation(salle, nouvelleEtape) {
     numero, total, question, bonneReponse, estimations, sansReponse, classement,
   } = salle.etatMode;
   if (nouvelleEtape) {
+    sonner('revelation');
     document.getElementById('estimation-numero-revelation').textContent = `Question ${numero}/${total}`;
     document.getElementById('estimation-texte-revelation').textContent = question.texte;
     document.getElementById('estimation-bonne-reponse').textContent =

@@ -3,6 +3,7 @@
 function afficherQuestionQuiz(salle, nouvelleEtape) {
   const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
   if (nouvelleEtape) {
+    sonner('etape');
     document.getElementById('numero-question').textContent = `Question ${numero}/${total}`;
     document.getElementById('texte-question').textContent = question.texte;
     document.getElementById('reponses-question').replaceChildren(
@@ -14,10 +15,11 @@ function afficherQuestionQuiz(salle, nouvelleEtape) {
   lancerChrono(document.getElementById('chrono'), tempsRestantMs);
 
   const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  remplirEtiquettes(
+  const reponses = remplirEtiquettes(
     document.getElementById('ont-repondu'),
     joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
   );
+  if (reponses > 0) sonner('reponse');
 }
 
 function caseReponse(texte, index) {
@@ -33,6 +35,7 @@ function caseReponse(texte, index) {
 function afficherRevelationQuiz(salle, nouvelleEtape) {
   const { numero, total, question, bonneReponse, nombreParChoix, classement } = salle.etatMode;
   if (nouvelleEtape) {
+    sonner('revelation');
     document.getElementById('numero-revelation').textContent = `Question ${numero}/${total}`;
     document.getElementById('texte-revelation').textContent = question.texte;
     document.getElementById('reponses-revelation').replaceChildren(

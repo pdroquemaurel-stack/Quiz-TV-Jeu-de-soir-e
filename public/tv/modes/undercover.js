@@ -30,8 +30,9 @@ function etiquetteRole(joueur, role) {
   return element;
 }
 
-function afficherDescriptionUndercover(salle) {
+function afficherDescriptionUndercover(salle, nouvelleEtape) {
   const { ordreParole, elimines, composition } = salle.etatMode;
+  if (nouvelleEtape) sonner('etape');
   afficherNumeroUndercover('uc-numero-description', salle.etatMode);
   document.getElementById('uc-composition').textContent = texteComposition(composition);
   document.getElementById('uc-ordre').replaceChildren(...ordreParole.map((id, index) => {
@@ -50,6 +51,7 @@ function afficherDescriptionUndercover(salle) {
 function afficherVoteUndercover(salle, nouvelleEtape) {
   const { departage, ontVote, tempsRestantMs } = salle.etatMode;
   if (nouvelleEtape) {
+    sonner('etape');
     afficherNumeroUndercover('uc-numero-vote', salle.etatMode);
     const pseudos = (departage ?? []).map((id) => joueurUndercover(salle, id).pseudo);
     document.getElementById('uc-titre-vote').textContent = departage
@@ -60,10 +62,11 @@ function afficherVoteUndercover(salle, nouvelleEtape) {
   }
   lancerChrono(document.getElementById('uc-chrono'), tempsRestantMs);
   const joueursAyantVote = salle.joueurs.filter((joueur) => ontVote.includes(joueur.id));
-  remplirEtiquettes(
+  const votes = remplirEtiquettes(
     document.getElementById('uc-ont-vote'),
     joueursAyantVote.map((joueur) => etiquetteJoueur(joueur, false)),
   );
+  if (votes > 0) sonner('reponse');
 }
 
 const REVELATIONS = {
@@ -72,10 +75,12 @@ const REVELATIONS = {
   mister_white: "C'était Mister White !",
 };
 
-function afficherEliminationUndercover(salle) {
+// Sans éliminé (égalité, aucun vote), pas de son : le vote ou le tour suivant joue le sien.
+function afficherEliminationUndercover(salle, nouvelleEtape) {
   const {
     elimine, exAequo, departage, votes,
   } = salle.etatMode;
+  if (nouvelleEtape && elimine) sonner('revelation');
   const pseudoDe = (id) => joueurUndercover(salle, id).pseudo;
   afficherNumeroUndercover('uc-numero-elimination', salle.etatMode);
   const verdict = document.getElementById('uc-verdict');
@@ -101,8 +106,9 @@ function afficherEliminationUndercover(salle) {
   }));
 }
 
-function afficherDevinetteUndercover(salle) {
+function afficherDevinetteUndercover(salle, nouvelleEtape) {
   const { devinette, tempsRestantMs } = salle.etatMode;
+  if (nouvelleEtape) sonner('etape');
   const joueur = joueurUndercover(salle, devinette.misterWhite);
   afficherNumeroUndercover('uc-numero-devinette', salle.etatMode);
   document.getElementById('uc-mister-white').replaceChildren(
@@ -112,6 +118,8 @@ function afficherDevinetteUndercover(salle) {
   chrono.hidden = devinette.resultatConnu;
   const proposition = document.getElementById('uc-proposition');
   const resultat = document.getElementById('uc-resultat-devinette');
+  // Le résultat arrive dans la même étape : on le repère à son apparition à l'écran.
+  if (resultat.hidden && devinette.resultatConnu) sonner(devinette.trouve ? 'victoire' : 'rate');
   resultat.hidden = !devinette.resultatConnu;
   if (!devinette.resultatConnu) {
     lancerChrono(chrono, tempsRestantMs);
@@ -131,10 +139,11 @@ const GAGNANTS = {
   mister_white: 'Mister White gagne !',
 };
 
-function afficherFinMancheUndercover(salle) {
+function afficherFinMancheUndercover(salle, nouvelleEtape) {
   const {
     gagnant, motCivils, motUndercover, roles, classement,
   } = salle.etatMode;
+  if (nouvelleEtape) sonner('victoire');
   afficherNumeroUndercover('uc-numero-fin', salle.etatMode);
   document.getElementById('uc-gagnant').textContent = GAGNANTS[gagnant];
   document.getElementById('uc-mot-civils').textContent = motCivils;

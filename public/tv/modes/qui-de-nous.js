@@ -4,6 +4,7 @@
 function afficherVoteQuiDeNous(salle, nouvelleEtape) {
   const { numero, total, question, ontVote, tempsRestantMs } = salle.etatMode;
   if (nouvelleEtape) {
+    sonner('etape');
     document.getElementById('qdn-numero-vote').textContent = `Question ${numero}/${total}`;
     document.getElementById('qdn-texte-vote').textContent = question.texte;
     viderBarreTemps(document.getElementById('qdn-barre-temps'), tempsRestantMs);
@@ -12,10 +13,11 @@ function afficherVoteQuiDeNous(salle, nouvelleEtape) {
   lancerChrono(document.getElementById('qdn-chrono'), tempsRestantMs);
 
   const joueursAyantVote = salle.joueurs.filter((joueur) => ontVote.includes(joueur.id));
-  remplirEtiquettes(
+  const votes = remplirEtiquettes(
     document.getElementById('qdn-ont-vote'),
     joueursAyantVote.map((joueur) => etiquetteJoueur(joueur, false)),
   );
+  if (votes > 0) sonner('reponse');
 }
 
 function afficherResultatsQuiDeNous(salle, nouvelleEtape) {
@@ -24,6 +26,7 @@ function afficherResultatsQuiDeNous(salle, nouvelleEtape) {
   } = salle.etatMode;
   const joueurDe = (id) => salle.joueurs.find((joueur) => joueur.id === id);
   if (nouvelleEtape) {
+    sonner('revelation');
     document.getElementById('qdn-numero-resultats').textContent = `Question ${numero}/${total}`;
     document.getElementById('qdn-texte-resultats').textContent = question.texte;
     afficherElus(elus.map(joueurDe));
