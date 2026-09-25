@@ -105,13 +105,20 @@ main[data-ecran="lobby"] {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 40px;
+  gap: 24px;
+}
+
+/* Espacements serrés et sans marges : 10 joueurs, le mode, le format et les réglages
+   du quiz tiennent dans les 1080 px. */
+.joueurs > .titre,
+.joueurs > .attente {
+  margin: 0;
 }
 
 .joueurs .etiquettes {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 24px;
+  gap: 16px;
   font-size: 56px;
 }
 

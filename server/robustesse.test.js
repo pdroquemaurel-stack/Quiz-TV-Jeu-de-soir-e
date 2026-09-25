@@ -46,7 +46,7 @@ test('reconnexion : même pseudo, même score, même couleur, nouveau socket, sa
   assert.equal(b.connecte, false);
   t.mock.timers.tick(60000);
 
-  const revenu = reconnecterJoueur(salle, b.id, 'sB2');
+  const revenu = reconnecterJoueur(salle, b.id, b.cle, 'sB2');
   assert.equal(revenu, b);
   assert.equal(revenu.pseudo, 'B');
   assert.equal(revenu.score, 2740);
@@ -59,8 +59,31 @@ test('reconnexion : même pseudo, même score, même couleur, nouveau socket, sa
 test('reconnexion : un id inconnu dans la salle est refusé', () => {
   const salle = creerSalle('tv');
   ajouterJoueur(salle, 'A', 'sA');
-  assert.equal(reconnecterJoueur(salle, 'j_inconnu', 's2'), null);
-  assert.equal(reconnecterJoueur(salle, undefined, 's2'), null);
+  assert.equal(reconnecterJoueur(salle, 'j_inconnu', 'c_x', 's2'), null);
+  assert.equal(reconnecterJoueur(salle, undefined, 'c_x', 's2'), null);
+});
+
+test('reconnexion : sans la bonne clé, refusée, et le vrai joueur garde sa place', () => {
+  const salle = creerSalle('tv');
+  const { joueur: lea } = ajouterJoueur(salle, 'Léa', 'sLea');
+  const { joueur: autre } = ajouterJoueur(salle, 'Autre', 'sAutre');
+
+  assert.equal(reconnecterJoueur(salle, lea.id, undefined, 'sIntrus'), null);
+  assert.equal(reconnecterJoueur(salle, lea.id, '', 'sIntrus'), null);
+  assert.equal(reconnecterJoueur(salle, lea.id, autre.cle, 'sIntrus'), null);
+  assert.equal(lea.socketId, 'sLea');
+  assert.equal(salle.hoteId, lea.id);
+
+  assert.equal(reconnecterJoueur(salle, lea.id, lea.cle, 'sLea2'), lea);
+  assert.equal(lea.socketId, 'sLea2');
+});
+
+test('clé de reconnexion : 16 octets aléatoires, propre à chaque joueur', () => {
+  const salle = creerSalle('tv');
+  const { joueur: a } = ajouterJoueur(salle, 'A', 'sA');
+  const { joueur: b } = ajouterJoueur(salle, 'B', 'sB');
+  assert.match(a.cle, /^c_[0-9a-f]{32}$/);
+  assert.notEqual(a.cle, b.cle);
 });
 
 // --- Salle d'attente ---
@@ -86,7 +109,7 @@ test('salle d\'attente : un joueur revenu avant 10 s n\'est pas retiré', (t) =>
 
   deconnecterJoueur(salle, c, espion());
   t.mock.timers.tick(5000);
-  reconnecterJoueur(salle, c.id, 'sC2');
+  reconnecterJoueur(salle, c.id, c.cle, 'sC2');
   t.mock.timers.tick(60000);
 
   assert.ok(trouverJoueur(salle, c.id));
@@ -146,7 +169,7 @@ test('salle d\'attente : un joueur gardé qui revient retrouve ses points globau
 
   deconnecterJoueur(salle, c, espion());
   t.mock.timers.tick(60000);
-  const revenu = reconnecterJoueur(salle, c.id, 'sC2');
+  const revenu = reconnecterJoueur(salle, c.id, c.cle, 'sC2');
 
   assert.equal(revenu, c);
   assert.equal(revenu.connecte, true);
@@ -208,7 +231,7 @@ test('hôte : sans successeur à 10 s, le rôle passe au premier joueur qui se r
   deconnecterJoueur(salle, c, espion());
   deconnecterJoueur(salle, a, espion());
   t.mock.timers.tick(60000);
-  reconnecterJoueur(salle, c.id, 'sC2');
+  reconnecterJoueur(salle, c.id, c.cle, 'sC2');
 
   assert.equal(salle.hoteId, c.id);
 });
@@ -220,7 +243,7 @@ test('hôte : l\'ancien hôte qui revient ne récupère pas le rôle', (t) => {
 
   deconnecterJoueur(salle, a, espion());
   t.mock.timers.tick(DELAI_ABSENCE_MS);
-  reconnecterJoueur(salle, a.id, 'sA2');
+  reconnecterJoueur(salle, a.id, a.cle, 'sA2');
 
   assert.equal(salle.hoteId, b.id);
 });
@@ -232,7 +255,7 @@ test('hôte : revenu avant 10 s, il reste l\'hôte', (t) => {
 
   deconnecterJoueur(salle, a, espion());
   t.mock.timers.tick(5000);
-  reconnecterJoueur(salle, a.id, 'sA2');
+  reconnecterJoueur(salle, a.id, a.cle, 'sA2');
   t.mock.timers.tick(60000);
 
   assert.equal(salle.hoteId, a.id);
@@ -275,7 +298,7 @@ test('fermeture : une reconnexion annule la fermeture prévue', (t) => {
 
   toutDeconnecter(salle);
   t.mock.timers.tick(20 * 60 * 1000);
-  reconnecterJoueur(salle, b.id, 'sB2');
+  reconnecterJoueur(salle, b.id, b.cle, 'sB2');
   t.mock.timers.tick(60 * 60 * 1000);
 
   assert.equal(trouverSalle(salle.code), salle);

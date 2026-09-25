@@ -8,7 +8,7 @@ import { journaliser, journaliserErreur } from './journal.js';
 import {
   assezDeJoueurs, ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle,
   deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, etapeCourante, nouvelleAventure,
-  passerApresPodium, peutRejouer, reconnecterJoueur, reconnecterTv, statistiques,
+  passerApresPodium, peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, statistiques,
   synchroniserMinuteur, terminerPartie, trouverHoteParSocket, trouverJoueurParSocket, trouverSalle,
   vueJoueur, vueTv,
 } from './salles.js';
@@ -61,7 +61,8 @@ export function demarrerServeur(port) {
     const dejaVues = new Set(salle.questionsVues);
     demarrerPartie(salle);
     const nouvelles = salle.questionsVues.filter((id) => !dejaVues.has(id));
-    journaliser(salle.code, `tirages inédits : ${nouvelles.join(' ')} (${salle.questionsVues.length} vus dans la salle)`);
+    const choix = modes[salle.mode].vueReglages?.(salle).resume;
+    journaliser(salle.code, `tirages inédits${choix ? ` [${choix}]` : ''} : ${nouvelles.join(' ')} (${salle.questionsVues.length} vus dans la salle)`);
     diffuser(salle);
   }
 
@@ -95,16 +96,17 @@ export function demarrerServeur(port) {
       diffuser(reconnecterTv(code, jetonTv, socket.id) ?? creerSalle(socket.id));
     });
 
-    // Un id connu dans la salle : reconnexion. Sinon : nouveau joueur.
+    // Un id connu dans la salle, avec sa clé : reconnexion. Sinon : nouveau joueur
+    // (une clé fausse mène donc à « Pseudo déjà pris », et le vrai joueur garde sa place).
     surEvenement('joueur:rejoindre', (donnees) => {
-      const { code, id, pseudo } = donnees ?? {};
+      const { code, id, cle, pseudo } = donnees ?? {};
       const salle = trouverSalle(code);
       if (!salle) return socket.emit('erreur', erreur('salle_introuvable'));
 
       // Ce socket joue déjà dans la salle (double appui sur « Entrer ») : pas de 2e joueur.
       if (trouverJoueurParSocket(socket.id)?.salle === salle) return diffuser(salle);
 
-      if (!reconnecterJoueur(salle, id, socket.id)) {
+      if (!reconnecterJoueur(salle, id, cle, socket.id)) {
         const resultat = ajouterJoueur(salle, pseudo, socket.id);
         if (resultat.erreur) return socket.emit('erreur', resultat.erreur);
       }
@@ -139,6 +141,13 @@ export function demarrerServeur(port) {
     surEvenement('hote:configurer', (format) => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !configurerFormat(trouve.salle, format)) return;
+      diffuser(trouve.salle);
+    });
+
+    // Thèmes et difficulté du quiz, en salle d'attente.
+    surEvenement('hote:reglerMode', (reglages) => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !reglerMode(trouve.salle, reglages)) return;
       diffuser(trouve.salle);
     });
 

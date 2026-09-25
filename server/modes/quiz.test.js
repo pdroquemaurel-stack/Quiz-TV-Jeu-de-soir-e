@@ -1,14 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  DUREE_PODIUM_MS, ajouterJoueur, creerSalle, demarrerPartie, synchroniserMinuteur, terminerPartie,
-  vueJoueur, vueTv,
+  DUREE_PODIUM_MS, ajouterJoueur, creerSalle, demarrerPartie, reglerMode, synchroniserMinuteur,
+  terminerPartie, vueJoueur, vueTv,
 } from '../salles.js';
+import { CATEGORIES } from '../../scripts/verifier-questions.js';
 import { tousOntRepondu } from './commun.js';
 import {
-  DUREE_TRANSITION_MS, NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, calculerPrix,
-  classement, echeance, enregistrerReponse, melangerReponses, passerALaSuite, reponseLaPlusRapide,
-  reveler, suivant, tirerQuestionsEquilibrees, verifierFinAnticipee,
+  DUREE_TRANSITION_MS, LIBELLES_CATEGORIE, NIVEAUX, NOMBRE_QUESTIONS, avancer, banqueQuestions,
+  calculerPoints, calculerPrix, classement, echeance, enregistrerReponse, melangerReponses,
+  passerALaSuite, reglagesParDefaut, reponseLaPlusRapide, reveler, suivant, tirerQuestionsEquilibrees,
+  validerReglages, verifierFinAnticipee,
 } from './quiz.js';
 
 function sallePrete() {
@@ -183,6 +185,119 @@ test('tirage équilibré : les questions jamais vues passent avant l\'équilibre
   // Les 10 inédites sont toutes difficiles et de la même catégorie : on les prend quand même.
   const questions = tirerQuestionsEquilibrees(banque, vues);
   assert.deepEqual(idsDe(questions).sort(), banque.slice(0, 10).map((question) => question.id).sort());
+});
+
+// --- Thèmes et difficulté choisis par l'hôte (tranche 22) ---
+
+test('chaque catégorie de la banque et du script de vérification a un libellé', () => {
+  assert.deepEqual(Object.keys(LIBELLES_CATEGORIE).sort(), [...CATEGORIES].sort());
+  for (const question of banqueQuestions) assert.ok(LIBELLES_CATEGORIE[question.categorie], question.id);
+});
+
+test('tirage filtré : « Cinéma, facile » donne 10 questions de cinéma, aucune difficile', () => {
+  const reglages = { categories: ['cinema-tv'], difficulte: 'facile' };
+  for (let i = 0; i < 1000; i++) {
+    const questions = tirerQuestionsEquilibrees(banqueQuestions, [], reglages);
+    assert.equal(new Set(idsDe(questions)).size, NOMBRE_QUESTIONS);
+    assert.deepEqual(compterPar(questions, 'categorie'), { 'cinema-tv': 10 });
+    assert.deepEqual(compterPar(questions, 'difficulte'), { 1: 6, 2: 4 });
+  }
+});
+
+test('tirage filtré : chaque niveau suit sa répartition, sur tous les thèmes', () => {
+  for (const [difficulte, { repartition }] of Object.entries(NIVEAUX)) {
+    for (let i = 0; i < 200; i++) {
+      const questions = tirerQuestionsEquilibrees(banqueQuestions, [], { ...reglagesParDefaut(), difficulte });
+      assert.deepEqual(compterPar(questions, 'difficulte'), repartition, difficulte);
+      assert.ok(Object.values(compterPar(questions, 'categorie')).every((nombre) => nombre <= 2), difficulte);
+    }
+  }
+});
+
+test('tirage filtré : le plafond par catégorie suit le nombre de thèmes choisis', () => {
+  const plafonds = [[['sport', 'musique'], 5], [['sport', 'musique', 'histoire'], 4]];
+  for (const [categories, plafond] of plafonds) {
+    for (let i = 0; i < 300; i++) {
+      const questions = tirerQuestionsEquilibrees(banqueQuestions, [], { categories, difficulte: 'normal' });
+      const parCategorie = compterPar(questions, 'categorie');
+      assert.ok(Object.keys(parCategorie).every((categorie) => categories.includes(categorie)));
+      assert.ok(Object.values(parCategorie).every((nombre) => nombre <= plafond), categories.join());
+    }
+  }
+});
+
+// Banque fictive : 12 questions faciles de sport, 12 de musique (moyennes et difficiles).
+const banqueFictive = [
+  ...Array.from({ length: 12 }, (_, i) => ({ id: `s${i}`, categorie: 'sport', difficulte: 1 })),
+  ...Array.from({ length: 12 }, (_, i) => ({ id: `m${i}`, categorie: 'musique', difficulte: 2 + (i % 2) })),
+];
+
+test('tirage filtré : inédites du choix épuisées, on revoit ses questions les plus anciennes', () => {
+  const reglages = { categories: ['sport'], difficulte: 'facile' };
+  // s0 à s8 vues (s0 la plus ancienne), m0 à m9 jamais vues mais hors du choix.
+  const vues = ['s0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'];
+  const questions = idsDe(tirerQuestionsEquilibrees(banqueFictive, vues, reglages));
+  assert.deepEqual(questions.sort(), ['s0', 's1', 's10', 's11', 's2', 's3', 's4', 's5', 's6', 's9']);
+});
+
+test('tirage filtré : un choix trop petit donne quand même 10 questions, d\'abord dans ses thèmes', () => {
+  const reglages = { categories: ['sport', 'musique'], difficulte: 'difficile' };
+  // 12 questions de musique moyennes ou difficiles : assez. En facile, seulement les 12 de sport.
+  assert.equal(tirerQuestionsEquilibrees(banqueFictive, [], reglages).length, 10);
+  const seulSport = tirerQuestionsEquilibrees(banqueFictive, [], { categories: ['sport'], difficulte: 'difficile' });
+  assert.deepEqual(compterPar(seulSport, 'categorie'), { sport: 10 });
+  // 6 questions de sport en tout : on complète avec d'autres thèmes.
+  const complete = tirerQuestionsEquilibrees(banqueFictive.slice(6), [], { categories: ['sport'], difficulte: 'facile' });
+  assert.equal(new Set(idsDe(complete)).size, 10);
+  assert.deepEqual(compterPar(complete, 'categorie'), { sport: 6, musique: 4 });
+});
+
+test('réglages : seuls des thèmes connus, au moins un, et un niveau connu', () => {
+  assert.deepEqual(
+    validerReglages({ categories: ['sport', 'cinema-tv', 'sport'], difficulte: 'facile' }),
+    { categories: ['cinema-tv', 'sport'], difficulte: 'facile' },
+  );
+  for (const donnees of [
+    null, 42, {}, { categories: [], difficulte: 'facile' }, { categories: ['inconnue'], difficulte: 'facile' },
+    { categories: 'sport', difficulte: 'facile' }, { categories: ['sport'], difficulte: 'extreme' },
+    { categories: ['sport'], difficulte: 'toString' }, { categories: ['toString'], difficulte: 'normal' },
+  ]) {
+    assert.equal(validerReglages(donnees), null, JSON.stringify(donnees));
+  }
+});
+
+test('réglages : choisis en salle d\'attente seulement, gardés d\'une partie à l\'autre', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  const cinemaFacile = { categories: ['cinema-tv'], difficulte: 'facile' };
+  assert.equal(reglerMode(salle, { categories: [], difficulte: 'facile' }), false);
+  assert.equal(reglerMode(salle, cinemaFacile), true);
+  assert.equal(vueTv(salle).reglages.resume, 'Cinéma et TV · Facile');
+
+  for (let partie = 0; partie < 2; partie++) {
+    demarrerPartie(salle);
+    assert.equal(reglerMode(salle, reglagesParDefaut()), false);
+    assert.ok(salle.etatMode.questions.every((question) => question.categorie === 'cinema-tv'));
+    assert.ok(salle.etatMode.questions.every((question) => question.difficulte < 3));
+    terminerPartie(salle);
+    salle.etat = 'tableau';
+  }
+});
+
+test('réglages : le nombre d\'inédites baisse à chaque partie, et le résumé reste court', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  const avant = vueJoueur(salle, salle.joueurs[0]).reglages;
+  assert.equal(avant.resume, 'Tous les thèmes · Normal');
+  assert.equal(avant.inedites, banqueQuestions.length);
+  demarrerPartie(salle);
+  terminerPartie(salle);
+  salle.etat = 'lobby';
+  assert.equal(vueJoueur(salle, salle.joueurs[0]).reglages.inedites, banqueQuestions.length - NOMBRE_QUESTIONS);
+  reglerMode(salle, { categories: ['sport', 'musique', 'histoire'], difficulte: 'difficile' });
+  assert.equal(vueTv(salle).reglages.resume, '3 thèmes · Difficile');
+  reglerMode(salle, { categories: ['sport', 'musique'], difficulte: 'normal' });
+  assert.equal(vueTv(salle).reglages.resume, 'Musique + Sport · Normal');
 });
 
 test('les questions d\'une partie ont leurs réponses mélangées sans perdre la bonne', () => {

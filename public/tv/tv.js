@@ -146,6 +146,9 @@ function afficherLobby(salle) {
   if (arrivees > 0) sonner('arrivee');
   afficherModeChoisi(salle.modeChoisi);
   document.getElementById('format-tv').textContent = texteFormat(salle.format);
+  const reglages = document.getElementById('reglages-tv');
+  reglages.hidden = !salle.reglages;
+  if (salle.reglages) reglages.textContent = `Questions : ${salle.reglages.resume}`;
 }
 
 function texteFormat(format) {

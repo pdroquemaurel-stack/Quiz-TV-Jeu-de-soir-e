@@ -40,7 +40,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 1. **Création de la salle.** À l'ouverture de l'app, la TV demande une salle au serveur. Elle affiche un grand QR code, le code de salle en 4 lettres et la liste des joueurs (vide).
 2. **Arrivée des joueurs.** Chaque joueur scanne le QR code (ou tape le code), saisit un pseudo et apparaît sur la TV avec sa couleur. Le premier arrivé devient l'hôte (couronne sur la TV).
-3. **Lancement.** L'hôte choisit le mode et le format (« Petite partie » ou « Aventure », voir « Format et médailles »), puis voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
+3. **Lancement.** L'hôte choisit le mode et le format (« Petite partie » ou « Aventure », voir « Format et médailles »), et pour le quiz les thèmes et la difficulté des questions, puis voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
 4. **Question.** La TV annonce d'abord « Question 5/10 » et la catégorie pendant 2,5 s (les téléphones affichent « Regarde la TV »), puis affiche la question, les 4 réponses (couleur + forme), le chrono de 20 s et qui a déjà répondu. Les téléphones affichent 4 gros boutons. Un joueur répond une seule fois, sans changer d'avis.
 5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, la réponse la plus rapide (« ⚡ Léa en 1,8 s »), puis le classement : les scores montent et une flèche ▲▼ montre qui a gagné ou perdu des places. Chaque téléphone affiche « Bonne réponse, +740 », « Raté » ou « Pas de réponse ».
 6. **Enchaînement.** Passage automatique après 8 s. L'hôte peut accélérer avec « Suivant ».
@@ -60,11 +60,12 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 ### Joueur
 - Rejoindre par QR code ou par saisie du code
 - Pseudo unique de 1 à 12 caractères, couleur attribuée automatiquement (voir « Couleurs »)
-- Reconnexion automatique avec conservation du pseudo et du score
+- Reconnexion automatique avec conservation du pseudo et du score, grâce à une clé secrète remise au seul téléphone
 - Écran maintenu allumé pendant la partie (Wake Lock)
 
 ### Partie de quiz
 - 10 questions tirées au hasard, sans répétition dans la salle, et équilibrées : 4 faciles, 4 moyennes et 2 difficiles, au plus 2 par catégorie. Les questions jamais vues passent avant cet équilibre, qui est assoupli quand la banque est épuisée
+- Thèmes (un ou plusieurs, ou tous) et difficulté (Facile, Normal, Difficile) choisis par l'hôte en salle d'attente
 - QCM à 4 choix, chrono de 20 s, points dégressifs selon la rapidité
 - Révélation, classement intermédiaire, podium final avec médailles, tableau des points globaux, « Rejouer »
 
@@ -75,14 +76,14 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 - En réserve avec l'APK : touche Retour = « Quitter ? », touche OK = recréer une salle
 
 ### Contenu
-- Fichier JSON d'environ 200 questions en français, texte uniquement, relues à la main
+- Fichier JSON d'environ 300 questions en français, en 11 catégories dont `maths-logique`, texte uniquement, relues à la main. Un tiers environ porte sur la culture populaire et l'actualité depuis 2010
 
 ## Hors périmètre
 
 Ces éléments sont volontairement repoussés. Le modèle de données ne doit pas les empêcher.
 
 - Les modes de jeu autres que les six déjà en place (Quiz et les cinq modes des tranches 11 à 15) : La réplique est prévue à la tranche 23, les autres sont dans « Plus tard »
-- Le choix d'un thème ou d'une difficulté (les champs existent déjà dans les questions) : prévu à la tranche 22
+- Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz
 - Les questions avec image, son ou vidéo
 - Les sons sur les téléphones, et la musique en dehors de la salle d'attente
 - Le jeu à distance, hors de la pièce de la TV
@@ -98,6 +99,8 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 ### Quiz culture générale (MVP)
 
 - Une partie compte 10 questions. Chaque question est un QCM à 4 choix avec une seule bonne réponse.
+- **Thèmes et difficulté**, choisis par l'hôte en salle d'attente (par défaut : tous les thèmes, Normal). Le niveau fixe la répartition des 10 questions : Facile = 6 faciles et 4 moyennes, Normal = 4 faciles, 4 moyennes et 2 difficiles, Difficile = 5 moyennes et 5 difficiles. Au plus 2 questions par catégorie, ou davantage si l'hôte a choisi peu de thèmes (10 divisé par le nombre de thèmes, arrondi au-dessus). Le téléphone de l'hôte affiche le nombre de questions jamais vues pour son choix.
+- **Tirage** : d'abord les questions jamais vues du choix de l'hôte, puis ses questions déjà vues (les plus anciennes d'abord). Si le choix compte moins de 10 questions, on complète avec les thèmes choisis toutes difficultés confondues, puis avec toute la banque. Une partie a donc toujours 10 questions.
 - Chaque joueur a 20 s pour répondre, en une seule réponse définitive.
 - Une mauvaise réponse ou une absence de réponse rapporte 0 point.
 - Une bonne réponse rapporte entre 1000 et 500 points selon la rapidité :
@@ -146,7 +149,8 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | Joueur déconnecté pendant une partie | Grisé sur la TV, garde son score et son pseudo (réservé), ne bloque pas la manche. Jamais supprimé pendant une partie. |
 | Joueur déconnecté en salle d'attente | S'il n'a encore ni point global ni médaille : retiré de la salle après 10 s de déconnexion. Sinon (par exemple après « Changer de format ») : jamais retiré, grisé, il garde ses points globaux et ses médailles, comme au tableau. |
 | Joueur déconnecté au podium, au tableau ou au grand gagnant | Comme pendant une partie : jamais retiré, garde ses points globaux et ses médailles. |
-| Joueur qui revient | Retrouve pseudo et score grâce à son identifiant mémorisé, et reprend à l'écran en cours. |
+| Joueur qui revient | Retrouve pseudo et score grâce à son identifiant et sa clé mémorisés, et reprend à l'écran en cours. |
+| Reconnexion avec l'identifiant d'un autre joueur, sans sa clé | Refusée : traitée comme une nouvelle arrivée (« Pseudo déjà pris » ou pseudo invalide). Le vrai joueur garde sa place, sa connexion et son rôle d'hôte. |
 | Joueur retiré de la salle d'attente qui revient | Réinscrit automatiquement avec son pseudo mémorisé, comme un nouveau joueur. Si ce pseudo a été pris entre-temps, il revient au formulaire avec « Pseudo déjà pris ». |
 | Hôte déconnecté plus de 10 s | Dans tous les états, le rôle passe au joueur connecté arrivé le plus tôt (`arriveeA`). Si aucun autre joueur n'est connecté, l'hôte ne change pas, et le rôle passe au premier joueur qui se connecte ensuite. L'ancien hôte ne récupère pas le rôle à son retour. En salle d'attente, l'hôte seul est retiré comme les autres, et le prochain joueur qui arrive devient l'hôte. |
 | Arrivée en cours de partie | Acceptée avec 0 point, joue à partir de la question suivante. Le QR code reste visible dans un coin. Il en va de même pour un joueur déconnecté au début d'une manche qui revient pendant celle-ci. |
@@ -158,7 +162,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | Moins de 2 joueurs connectés en cours de partie | La partie continue. |
 | TV rechargée ou coupée | La TV se reconnecte à sa salle et reprend l'état en cours. |
 | Serveur redémarré | Partie perdue. La TV recrée une salle et les joueurs voient « Salle introuvable ». |
-| Plus assez de questions inédites | On réautorise les questions déjà vues, en commençant par les plus anciennes. |
+| Plus assez de questions inédites | On réautorise les questions déjà vues, en commençant par les plus anciennes. Avec un choix de thèmes et de difficulté, on reste dans ce choix tant qu'il compte 10 questions (voir « Tirage »). |
 
 ## Format des données
 
@@ -177,13 +181,14 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`bonneReponse` est l'index de la bonne réponse (de 0 à 3). L'ordre d'affichage est mélangé à chaque tirage, et `bonneReponse` est alors recalculé pour pointer vers la même réponse. Un test automatique vérifie ce recalcul. La `difficulte` va de 1 (facile) à 3 (difficile).
+`bonneReponse` est l'index de la bonne réponse (de 0 à 3). L'ordre d'affichage est mélangé à chaque tirage, et `bonneReponse` est alors recalculé pour pointer vers la même réponse. Un test automatique vérifie ce recalcul. La `difficulte` va de 1 (facile) à 3 (difficile). La `categorie` est l'une des 11 du script de vérification : `geographie`, `histoire`, `sciences`, `nature`, `art-litterature`, `cinema-tv`, `musique`, `sport`, `gastronomie`, `langue-divers`, `maths-logique`. Chacune a un libellé, annoncé par l'écran de transition (« Maths et logique »).
 
 ### Joueur
 
 ```json
 {
   "id": "j_8f3k2a",
+  "cle": "c_4e1a9b...",
   "pseudo": "Paul",
   "couleur": 1,
   "score": 2740,
@@ -195,7 +200,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`score` est celui de la partie en cours, remis à 0 à chaque lancement. `pointsGlobaux` et `medailles` s'accumulent de partie en partie (voir « Format et médailles »). `id` est généré par le serveur et mémorisé dans le navigateur du téléphone : c'est lui qui permet la reconnexion. `couleur` est un numéro de 1 à 10 : la teinte réelle est définie dans le CSS (`--joueur-1` à `--joueur-10`, voir « Couleurs »). `socketId` change à chaque reconnexion. `arriveeA` sert à choisir le prochain hôte.
+`score` est celui de la partie en cours, remis à 0 à chaque lancement. `pointsGlobaux` et `medailles` s'accumulent de partie en partie (voir « Format et médailles »). `id` est généré par le serveur et mémorisé dans le navigateur du téléphone. Il est public : les listes de candidats de Qui de nous ? et d'Undercover l'envoient à tous les téléphones. `cle` est un secret aléatoire (16 octets) généré avec lui, remis au seul téléphone du joueur (dans son `joueur:etat`) et mémorisé à côté de l'`id` : la reconnexion exige les deux. La TV et les autres joueurs ne reçoivent jamais la clé. `couleur` est un numéro de 1 à 10 : la teinte réelle est définie dans le CSS (`--joueur-1` à `--joueur-10`, voir « Couleurs »). `socketId` change à chaque reconnexion. `arriveeA` sert à choisir le prochain hôte.
 
 ### Salle
 
@@ -215,6 +220,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "grandGagnantId": null,
   "debutPodiumA": 1758641100000,
   "medaillesPartie": { "j_8f3k2a": "or" },
+  "reglagesMode": { "quiz": { "categories": ["cinema-tv"], "difficulte": "facile" } },
   "etatMode": {
     "phase": "question",
     "questions": ["...10 questions tirées..."],
@@ -230,6 +236,8 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 
 `format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
+`reglagesMode` range les réglages choisis par l'hôte pour chaque mode, par id de mode. Seul le quiz en a (thèmes et difficulté) : le mode les valide et les lit, le code commun les range sans les lire. Ils sont gardés d'une partie à l'autre, comme le format.
+
 `jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
 ### Événements Socket.IO
@@ -239,17 +247,18 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | Événement | Sens | Contenu |
 |---|---|---|
 | `tv:creer` | TV → serveur | code et `jetonTv` de l'ancienne salle, facultatifs, pour s'y reconnecter. Sans jeton valide, une nouvelle salle est créée. |
-| `joueur:rejoindre` | téléphone → serveur | code, pseudo, id mémorisé éventuel |
+| `joueur:rejoindre` | téléphone → serveur | code, pseudo, id et clé mémorisés éventuels. Sans la clé de cet id, pas de reconnexion : c'est une nouvelle arrivée. |
 | `hote:lancer` | téléphone de l'hôte → serveur | rien |
 | `joueur:repondre` | téléphone → serveur | la réponse, interprétée par le mode : index du choix (Quiz, vote du bluff), nombre entier (Estimation), texte (Même réponse, bluff en saisie, devinette de Mister White), `id` d'un joueur (Qui de nous ?, vote d'Undercover). Le détail et les refus sont dans la mini-spec de chaque mode. |
 | `hote:suivant` | téléphone de l'hôte → serveur | `{ etape }` : l'étape affichée par le téléphone (reçue dans `joueur:etat`). Si ce n'est plus l'étape en cours (double appui, chrono écoulé entre-temps), l'action est ignorée. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
 | `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
+| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, difficulte }` pour le quiz : une liste non vide de catégories connues, et `facile`, `normal` ou `difficile`. Accepté seulement en salle d'attente, pour un mode qui a des réglages. |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant : retour en salle d'attente. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
-| `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. Hors partie, aussi `tableau` (joueurs triés par points globaux, avec rang, médailles et `ecartAuLeader`), `departage` et `pointsMedaille`. |
-| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie), `etape` (la même chaîne que l'étape repérée par la TV, `etat:phase:numero`, à renvoyer avec `hote:suivant`). Hors partie, aussi `format` et `pointsGlobaux` ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
+| `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. Hors partie, aussi `tableau` (joueurs triés par points globaux, avec rang, médailles et `ecartAuLeader`), `departage`, `pointsMedaille` et `reglages` (voir `joueur:etat`). Jamais la `cle` d'un joueur. |
+| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie), `etape` (la même chaîne que l'étape repérée par la TV, `etat:phase:numero`, à renvoyer avec `hote:suivant`). Toujours sa propre `cle`. Hors partie, aussi `format`, `pointsGlobaux` et `reglages` (pour le quiz : thèmes et difficulté choisis, leur résumé « Cinéma et TV · Facile », le nombre de questions jamais vues pour ce choix et les options proposées ; `null` pour un mode sans réglages) ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
 
 Ni le téléphone ni la TV ne reçoivent la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.
@@ -263,7 +272,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Connexion | « Connexion au serveur… » en plein écran tant que la page n'a jamais été connectée, puis en bandeau lors d'une coupure, avec nouvelle tentative automatique (tranche 18, voir Contraintes techniques) |
-| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), format (« Petite partie » ou « Aventure — 5 points pour gagner »), « En attente que l'hôte lance » |
+| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), format (« Petite partie » ou « Aventure — 5 points pour gagner »), en quiz « Questions : Cinéma et TV · Facile », « En attente que l'hôte lance ». 10 joueurs tiennent dans l'écran |
 | Question | Numéro (3/10), texte, 4 réponses (couleur + forme ▲ ◆ ● ■), chrono, pastilles des joueurs ayant répondu, petit QR code dans un coin |
 | Révélation | Bonne réponse mise en avant, nombre de réponses par choix, qui a eu juste, puis classement avec les points gagnés |
 | Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3) avec leur médaille, classement complet dessous avec « 🥇 +3 / 🥈 +2 / 🥉 +1 », « Points globaux dans un instant » |
@@ -276,7 +285,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Rejoindre | Code pré-rempli depuis le QR code, champ pseudo, bouton « Entrer », messages d'erreur |
-| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : « Petite partie » / « Aventure » (et en aventure le réglage − / + de l'objectif), un bouton par mode (grisé s'il manque des joueurs ; « Bientôt » pour un mode annoncé mais pas encore codé, listé dans `modesAVenir` du registre des modes, vide aujourd'hui : l'affichage « Bientôt » est gardé pour les prochains modes), puis « Lancer la partie » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » et le format |
+| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : « Petite partie » / « Aventure » (et en aventure le réglage − / + de l'objectif), un bouton par mode (grisé s'il manque des joueurs ; « Bientôt » pour un mode annoncé mais pas encore codé, listé dans `modesAVenir` du registre des modes, vide aujourd'hui : l'affichage « Bientôt » est gardé pour les prochains modes), en quiz « Questions : Tous les thèmes · Normal » avec « Changer », qui ouvre le choix des thèmes (« Tous », un ou plusieurs) et du niveau, avec le nombre de questions jamais vues, puis « Lancer la partie » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … », le format et en quiz les questions choisies |
 | Répondre | 4 gros boutons couleur + forme, sans texte, qui occupent tout l'écran |
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
 | Résultat | « Bonne réponse, +740 », « Raté » ou « Pas de réponse », rang actuel. Le bouton touché est marqué dès l'appui, avant la réponse du serveur. Pour l'hôte : bouton « Suivant » |
@@ -371,8 +380,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène).
-- **À venir**, après l'audit (`AUDIT.md`) : **10 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions).
+- **À venir**, après l'audit (`AUDIT.md`) : **10 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -486,10 +495,10 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : partie de quiz à 4 sur la vraie TV (navigateur du stick) : chaque question est précédée de sa catégorie ; le podium révèle le 3e, le 2e puis le 1er ; les scores montent au classement ; chaque révélation affiche la réponse la plus rapide (« ⚡ Léa en 1,8 s ») ; l'écran de fin montre au moins 3 « prix » justes, vérifiés à la main sur la partie jouée ; aucune saccade visible sur le stick.*
 
-- **22. Contenu et choix des questions.** Plus de questions, plus variées, choisies selon le groupe, et une reconnexion impossible à usurper.
-  - Environ 100 questions récentes et de culture populaire, relues à la main, plus une catégorie `maths-logique` (C2).
-  - Choix du thème et de la difficulté par l'hôte en salle d'attente, comme le format (F2).
-  - Clé secrète de reconnexion, remise au seul téléphone, distincte de l'`id` public (T2).
+- **22. Contenu et choix des questions.** ✅ Terminée. Plus de questions, plus variées, choisies selon le groupe, et une reconnexion impossible à usurper.
+  - 100 questions relues à la main (q0201 à q0300) : 80 récentes et de culture populaire, 20 de la nouvelle catégorie `maths-logique`, soit 300 en tout. `scripts/verifier-questions.js` contrôle en plus les espaces, le « ? » final, la bonne réponse écrite dans la question, les propositions mélangées et le stock de chaque thème par niveau (C2).
+  - Choix des thèmes et du niveau (Facile, Normal, Difficile) par l'hôte en salle d'attente, comme le format, affiché sur la TV : événement `hote:reglerMode`, champ `reglagesMode`, règles dans « Quiz culture générale » (F2).
+  - Clé secrète de reconnexion (`cle`), remise au seul téléphone, distincte de l'`id` public, jamais envoyée à la TV ni aux autres joueurs (T2).
 
   *Test : `node scripts/verifier-questions.js` passe. 3 parties d'affilée sans répétition, où les nouvelles questions apparaissent (journal des tirages). En salle d'attente, l'hôte choisit « Cinéma, facile » : 10 questions de cinéma, aucune de difficulté 3. En Qui de nous ?, un onglet qui envoie `joueur:rejoindre` avec l'`id` d'un autre joueur (lu dans la console) est refusé, et ce joueur garde sa place. Test automatique : une reconnexion sans la bonne clé est refusée.*
 

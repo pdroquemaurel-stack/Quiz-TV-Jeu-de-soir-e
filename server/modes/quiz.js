@@ -15,18 +15,26 @@ export const DUREE_TRANSITION_MS = 2500;
 export const DUREE_QUESTION_MS = 20000;
 export const DUREE_REVELATION_MS = 8000;
 
-// Annoncée par l'écran de transition avant chaque question.
-const LIBELLES_CATEGORIE = {
-  'art-litterature': 'Art et littérature',
-  'cinema-tv': 'Cinéma et TV',
-  gastronomie: 'Gastronomie',
+// Annoncée par l'écran de transition avant chaque question, et proposée à l'hôte.
+export const LIBELLES_CATEGORIE = {
   geographie: 'Géographie',
   histoire: 'Histoire',
-  'langue-divers': 'Langue et divers',
-  musique: 'Musique',
-  nature: 'Nature',
   sciences: 'Sciences',
+  nature: 'Nature',
+  'art-litterature': 'Art et littérature',
+  'cinema-tv': 'Cinéma et TV',
+  musique: 'Musique',
   sport: 'Sport',
+  gastronomie: 'Gastronomie',
+  'langue-divers': 'Langue et divers',
+  'maths-logique': 'Maths et logique',
+};
+
+// Niveaux proposés à l'hôte : nombre de questions de chaque difficulté (1 à 3) dans une partie.
+export const NIVEAUX = {
+  facile: { libelle: 'Facile', repartition: { 1: 6, 2: 4 } },
+  normal: { libelle: 'Normal', repartition: { 1: 4, 2: 4, 3: 2 } },
+  difficile: { libelle: 'Difficile', repartition: { 2: 5, 3: 5 } },
 };
 
 export const banqueQuestions = JSON.parse(
@@ -50,26 +58,88 @@ export function melangerReponses(question) {
   };
 }
 
-// Une partie vise 4 questions faciles, 4 moyennes et 2 difficiles.
-const REPARTITION = { 1: 4, 2: 4, 3: 2 };
+// ---------- Réglages de l'hôte : thèmes et difficulté ----------
+
+export function reglagesParDefaut() {
+  return { categories: Object.keys(LIBELLES_CATEGORIE), difficulte: 'normal' };
+}
+
+// Renvoie des réglages propres (catégories dans l'ordre de la liste), ou null.
+export function validerReglages(donnees) {
+  const { categories, difficulte } = donnees ?? {};
+  if (!Array.isArray(categories) || !Object.hasOwn(NIVEAUX, difficulte)) return null;
+  if (categories.length === 0 || !categories.every((id) => Object.hasOwn(LIBELLES_CATEGORIE, id))) {
+    return null;
+  }
+  const ordonnees = Object.keys(LIBELLES_CATEGORIE).filter((id) => categories.includes(id));
+  return { categories: ordonnees, difficulte };
+}
+
+function reglagesDe(salle) {
+  return salle.reglagesMode?.quiz ?? reglagesParDefaut();
+}
+
+// « Tous les thèmes · Normal », « Cinéma et TV · Facile », « 4 thèmes · Difficile ».
+function resumerReglages({ categories, difficulte }) {
+  const toutes = categories.length === Object.keys(LIBELLES_CATEGORIE).length;
+  let themes = `${categories.length} thèmes`;
+  if (toutes) themes = 'Tous les thèmes';
+  else if (categories.length <= 2) themes = categories.map((id) => LIBELLES_CATEGORIE[id]).join(' + ');
+  return `${themes} · ${NIVEAUX[difficulte].libelle}`;
+}
+
+const dansLesThemes = (reglages) => (question) => reglages.categories.includes(question.categorie);
+const dansLeChoix = (reglages) => (question) => dansLesThemes(reglages)(question)
+  && Object.hasOwn(NIVEAUX[reglages.difficulte].repartition, question.difficulte);
+
+export function compterInedites(banque, questionsVues, reglages) {
+  return banque.filter((question) => dansLeChoix(reglages)(question) && !questionsVues.includes(question.id)).length;
+}
+
+// Public : ni question ni réponse, seulement le choix et le nombre de questions jamais vues.
+export function vueReglages(salle) {
+  const reglages = reglagesDe(salle);
+  return {
+    ...reglages,
+    resume: resumerReglages(reglages),
+    inedites: compterInedites(banqueQuestions, salle.questionsVues, reglages),
+    options: {
+      categories: Object.entries(LIBELLES_CATEGORIE).map(([id, libelle]) => ({ id, libelle })),
+      difficultes: Object.entries(NIVEAUX).map(([id, { libelle }]) => ({ id, libelle })),
+    },
+  };
+}
+
+// ---------- Tirage ----------
+
+// Au plus 2 questions par catégorie, davantage quand l'hôte a choisi peu de thèmes.
 const MAX_PAR_CATEGORIE = 2;
 
-// Les questions jamais vues passent avant l'équilibre : on ne revoit une question
-// que si la banque est épuisée. Dans chaque groupe, on assouplit les règles
-// l'une après l'autre (difficulté, puis catégorie) jusqu'à avoir 10 questions.
-export function tirerQuestionsEquilibrees(banque, questionsVues) {
+// Groupes, dans l'ordre : les inédites du choix de l'hôte, puis ses déjà vues
+// (les plus anciennes d'abord). Si le choix ne compte pas 10 questions : les thèmes
+// choisis toutes difficultés confondues, puis toute la banque. Dans chaque groupe,
+// on assouplit les règles l'une après l'autre (difficulté, puis catégorie).
+export function tirerQuestionsEquilibrees(banque, questionsVues, reglages = reglagesParDefaut()) {
+  const { repartition } = NIVEAUX[reglages.difficulte];
+  const maxParCategorie = Math.max(MAX_PAR_CATEGORIE, Math.ceil(NOMBRE_QUESTIONS / reglages.categories.length));
   const ordre = tirerQuestions(banque, questionsVues, banque.length);
-  const inedites = ordre.filter((question) => !questionsVues.includes(question.id));
+  const choix = ordre.filter(dansLeChoix(reglages));
+  const groupes = [
+    choix.filter((question) => !questionsVues.includes(question.id)),
+    choix,
+    ordre.filter(dansLesThemes(reglages)),
+    ordre,
+  ];
   const choisies = [];
   const combien = (champ, valeur) => choisies.filter((question) => question[champ] === valeur).length;
-  const categorieLibre = (question) => combien('categorie', question.categorie) < MAX_PAR_CATEGORIE;
-  const difficulteLibre = (question) => combien('difficulte', question.difficulte) < REPARTITION[question.difficulte];
+  const categorieLibre = (question) => combien('categorie', question.categorie) < maxParCategorie;
+  const difficulteLibre = (question) => combien('difficulte', question.difficulte) < (repartition[question.difficulte] ?? 0);
   const regles = [
     (question) => categorieLibre(question) && difficulteLibre(question),
     categorieLibre,
     () => true,
   ];
-  for (const groupe of [inedites, ordre]) {
+  for (const groupe of groupes) {
     for (const regle of regles) {
       for (const question of groupe) {
         if (choisies.length === NOMBRE_QUESTIONS) break;
@@ -82,7 +152,7 @@ export function tirerQuestionsEquilibrees(banque, questionsVues) {
 
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const questions = tirerQuestionsEquilibrees(banqueQuestions, salle.questionsVues);
+  const questions = tirerQuestionsEquilibrees(banqueQuestions, salle.questionsVues, reglagesDe(salle));
   noterQuestionsVues(salle, questions);
   salle.etatMode = { questions: questions.map(melangerReponses), historique: [] };
   demarrerTransition(salle, 0);

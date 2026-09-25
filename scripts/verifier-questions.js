@@ -3,13 +3,16 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const CATEGORIES = [
   'geographie', 'histoire', 'sciences', 'nature', 'art-litterature',
-  'cinema-tv', 'musique', 'sport', 'gastronomie', 'langue-divers',
+  'cinema-tv', 'musique', 'sport', 'gastronomie', 'langue-divers', 'maths-logique',
 ];
 export const LONGUEUR_MAX_TEXTE = 110;
 export const LONGUEUR_MAX_REPONSE = 30;
+const NOMBRE_QUESTIONS = 10;
 const CHAMPS = ['id', 'texte', 'reponses', 'bonneReponse', 'categorie', 'difficulte'];
 
 const texteNonVide = (valeur) => typeof valeur === 'string' && valeur.trim() !== '';
+// Espace au début, à la fin, ou deux espaces d'affilée.
+const espacesEnTrop = (texte) => texte !== texte.trim() || /\s{2}/.test(texte);
 
 // Renvoie la liste des problèmes d'une question, sans tenir compte des autres.
 function erreursQuestion(question) {
@@ -24,7 +27,8 @@ function erreursQuestion(question) {
   if (!texteNonVide(question.texte)) erreurs.push('texte vide ou absent');
   else if (question.texte.length > LONGUEUR_MAX_TEXTE) {
     erreurs.push(`texte trop long (${question.texte.length} > ${LONGUEUR_MAX_TEXTE})`);
-  }
+  } else if (espacesEnTrop(question.texte)) erreurs.push('espaces en trop dans le texte');
+  else if (!question.texte.endsWith('?')) erreurs.push('le texte doit finir par « ? »');
 
   const { reponses } = question;
   if (!Array.isArray(reponses) || reponses.length !== 4) {
@@ -34,6 +38,8 @@ function erreursQuestion(question) {
   } else {
     const trop = reponses.filter((reponse) => reponse.length > LONGUEUR_MAX_REPONSE);
     if (trop.length) erreurs.push(`réponse(s) trop longue(s) : ${trop.join(' / ')}`);
+    const espacees = reponses.filter(espacesEnTrop);
+    if (espacees.length) erreurs.push(`espaces en trop dans : ${espacees.join(' / ')}`);
     const distinctes = new Set(reponses.map((reponse) => reponse.trim().toLowerCase()));
     if (distinctes.size !== 4) erreurs.push('réponses en double');
   }
@@ -86,6 +92,13 @@ const MOTS_COURANTS = new Set([
   'principal', 'ingredient', 'traditionnellement', 'couleur', 'interprete', 'chanteur',
   'chanteuse', 'acteur', 'peintre', 'groupe', 'decouvert', 'scientifique', 'capable', 'mesure',
   'marque',
+  // Mots banals ou à double sens (« chaîne » de montagnes et de restaurants, « tournée »
+  // d'un chanteur et d'un film) : ils rapprochaient des questions sans sujet commun.
+  'affrontent', 'album', 'artiste', 'autrice', 'breaking', 'britannique', 'chaine', 'chimie',
+  'civilisation', 'classique', 'deroule', 'devant', 'devenu', 'elles', 'enfants', 'entre',
+  'entreprise', 'fondee', 'garcon', 'independance', 'jeune', 'lance', 'marche', 'mondial',
+  'nicolas', 'partie', 'piece', 'premiers', 'produit', 'quitte', 'record', 'remplace', 'robot',
+  'scene', 'signe', 'somme', 'souvent', 'thomas', 'tournee', 'unite',
 ]);
 
 function sansAccents(texte) {
@@ -131,6 +144,51 @@ export function pairesVoisines(liste) {
   return paires;
 }
 
+// ---------- Autres alertes à relire ----------
+
+const estUnNombre = (reponse) => /^[\d\s.,]+%?$/.test(reponse.trim());
+
+// Renvoie [{ id, raison }] : bonne réponse écrite dans la question,
+// ou propositions qui mélangent nombres et mots.
+export function alertesQuestions(liste) {
+  const alertes = [];
+  for (const question of liste) {
+    const bonne = sansAccents(question.reponses[question.bonneReponse]);
+    const motEntier = new RegExp(`(^|[^a-z0-9])${bonne.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`);
+    if (bonne.length >= 4 && motEntier.test(sansAccents(question.texte))) {
+      alertes.push({ id: question.id, raison: 'la bonne réponse est écrite dans la question' });
+    }
+    const nombres = question.reponses.filter(estUnNombre).length;
+    if (nombres > 0 && nombres < 4) {
+      alertes.push({ id: question.id, raison: 'propositions mélangées, nombres et mots' });
+    }
+  }
+  return alertes;
+}
+
+// Pour chaque thème seul et chaque niveau (NIVEAUX du quiz), le nombre de questions
+// du choix, s'il est sous 10 : l'hôte reverrait des questions dès la 1re partie.
+export function stocksInsuffisants(liste, niveaux) {
+  const manques = [];
+  for (const categorie of CATEGORIES) {
+    for (const [niveau, { repartition }] of Object.entries(niveaux)) {
+      const nombre = liste.filter((question) => question.categorie === categorie
+        && Object.hasOwn(repartition, question.difficulte)).length;
+      if (nombre < NOMBRE_QUESTIONS) manques.push({ categorie, niveau, nombre });
+    }
+  }
+  return manques;
+}
+
+// Une ligne par catégorie : « cinema-tv        23 = 10 / 9 / 4 ».
+function tableauCategories(liste) {
+  return CATEGORIES.map((categorie) => {
+    const siennes = liste.filter((question) => question.categorie === categorie);
+    const parDifficulte = [1, 2, 3].map((d) => siennes.filter((question) => question.difficulte === d).length);
+    return `  ${categorie.padEnd(16)} ${String(siennes.length).padStart(3)} = ${parDifficulte.join(' / ')}`;
+  }).join('\n');
+}
+
 function compter(liste, champ) {
   const totaux = {};
   for (const question of liste) totaux[question[champ]] = (totaux[question[champ]] ?? 0) + 1;
@@ -155,12 +213,26 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     process.exit(1);
   }
   console.log(`${liste.length} questions OK`);
-  console.log(`Par catégorie : ${compter(liste, 'categorie')}`);
+  console.log(`Par catégorie (faciles / moyennes / difficiles) :\n${tableauCategories(liste)}`);
   console.log(`Par difficulté : ${compter(liste, 'difficulte')}`);
 
   const voisines = pairesVoisines(liste);
   if (voisines.length) {
     console.log(`\nAttention, ${voisines.length} paire(s) voisine(s) à relire (elles peuvent tomber dans la même partie) :`);
     for (const { ids, raison } of voisines) console.log(`  ${ids.join(' / ')} : ${raison}`);
+  }
+
+  const alertes = alertesQuestions(liste);
+  if (alertes.length) {
+    console.log(`\nAttention, ${alertes.length} question(s) à relire :`);
+    for (const { id, raison } of alertes) console.log(`  ${id} : ${raison}`);
+  }
+
+  // Chargé seulement maintenant : quiz.js lit questions.json dès son import.
+  const { NIVEAUX } = await import('../server/modes/quiz.js');
+  const manques = stocksInsuffisants(liste, NIVEAUX);
+  if (manques.length) {
+    console.log(`\nAttention, ${manques.length} choix de l'hôte sous ${NOMBRE_QUESTIONS} questions (un seul thème) :`);
+    for (const { categorie, niveau, nombre } of manques) console.log(`  ${categorie}, ${niveau} : ${nombre}`);
   }
 }

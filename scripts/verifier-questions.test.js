@@ -1,7 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { pairesVoisines, verifierQuestions } from './verifier-questions.js';
+import { NIVEAUX } from '../server/modes/quiz.js';
+import {
+  alertesQuestions, pairesVoisines, stocksInsuffisants, verifierQuestions,
+} from './verifier-questions.js';
 
 function questionValide(modifications = {}) {
   return {
@@ -38,6 +41,13 @@ test('id au mauvais format', () => {
 test('texte vide ou trop long', () => {
   erreurAttendue({ texte: '  ' }, 'texte vide');
   erreurAttendue({ texte: 'a'.repeat(111) }, 'texte trop long');
+});
+
+test('espaces en trop et texte qui ne finit pas par « ? »', () => {
+  erreurAttendue({ texte: " Quelle est la capitale de l'Australie ?" }, 'espaces en trop');
+  erreurAttendue({ texte: "Quelle est la capitale  de l'Australie ?" }, 'espaces en trop');
+  erreurAttendue({ texte: "Quelle est la capitale de l'Australie" }, '« ? »');
+  erreurAttendue({ reponses: ['Sydney ', 'Canberra', 'Melbourne', 'Perth'] }, 'espaces en trop dans : Sydney');
 });
 
 test('nombre de réponses différent de 4', () => {
@@ -104,9 +114,47 @@ test('paires voisines : 2 propositions identiques sont signalées, sauf des nomb
   assert.deepEqual(idsVoisines(liste), ['q0001/q0002']);
 });
 
+test('paires voisines : un mot banal partagé ne rapproche pas deux questions', () => {
+  const liste = [
+    questionValide({ id: 'q0001', texte: 'Quel pays est devenu le plus peuplé ?', reponses: ['Inde', 'Chine', 'Japon', 'Laos'], bonneReponse: 0 }),
+    questionValide({ id: 'q0002', texte: 'Quel compositeur est devenu sourd ?', reponses: ['Bach', 'Liszt', 'Verdi', 'Satie'], bonneReponse: 0 }),
+  ];
+  assert.deepEqual(idsVoisines(liste), []);
+});
+
 test('paires voisines : les paires connues de la banque sont signalées', () => {
   const trouvees = idsVoisines(banque);
   for (const paire of ['q0081/q0084', 'q0111/q0117', 'q0121/q0122', 'q0161/q0169', 'q0043/q0047', 'q0082/q0088', 'q0095/q0182']) {
     assert.ok(trouvees.includes(paire), `${paire} attendue`);
   }
+});
+
+// --- Autres alertes (tranche 22) ---
+
+test('alerte : bonne réponse écrite dans la question, en mot entier seulement', () => {
+  const liste = [
+    questionValide({ id: 'q0001', texte: 'Combien de musiciens dans un quatuor à cordes ?', reponses: ['Quatuor', 'Trio', 'Duo', 'Octuor'], bonneReponse: 0 }),
+    questionValide({ id: 'q0002', texte: 'Quelle est la lettre la plus fréquente en français ?', reponses: ['Le E', 'Le A', 'Le S', 'Le I'], bonneReponse: 0 }),
+  ];
+  assert.deepEqual(alertesQuestions(liste), [{ id: 'q0001', raison: 'la bonne réponse est écrite dans la question' }]);
+});
+
+test('alerte : propositions qui mélangent nombres et mots', () => {
+  const liste = [
+    questionValide({ id: 'q0001', reponses: ['12', '15', 'Aucun', '20'], bonneReponse: 0 }),
+    questionValide({ id: 'q0002', reponses: ['1 000', '2,5', '50 %', '7'], bonneReponse: 0 }),
+  ];
+  assert.deepEqual(alertesQuestions(liste).map(({ id }) => id), ['q0001']);
+});
+
+test('alerte : thème seul sous 10 questions pour un niveau', () => {
+  const liste = Array.from({ length: 12 }, (_, i) => questionValide({
+    id: `q${String(i).padStart(4, '0')}`, categorie: 'sport', difficulte: i < 8 ? 1 : 3,
+  }));
+  const sport = stocksInsuffisants(liste, NIVEAUX).filter(({ categorie }) => categorie === 'sport');
+  // Facile : 8 faciles. Normal : 12. Difficile : 4 difficiles.
+  assert.deepEqual(sport, [
+    { categorie: 'sport', niveau: 'facile', nombre: 8 },
+    { categorie: 'sport', niveau: 'difficile', nombre: 4 },
+  ]);
 });

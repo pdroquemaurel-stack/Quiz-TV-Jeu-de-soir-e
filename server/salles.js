@@ -83,6 +83,8 @@ export function creerSalle(tvSocketId) {
     grandGagnantId: null,
     debutPodiumA: null,
     medaillesPartie: {},
+    // Réglages de chaque mode (thèmes du quiz…), rangés par id de mode et jamais lus ici.
+    reglagesMode: {},
     etatMode: {},
   };
   salles[salle.code] = salle;
@@ -143,6 +145,22 @@ export function configurerFormat(salle, format) {
   if (!Number.isInteger(objectif) || objectif < OBJECTIF_MIN || objectif > OBJECTIF_MAX) return false;
   salle.format = { type, objectif };
   return true;
+}
+
+// Réglages du mode choisis par l'hôte en salle d'attente (thèmes et difficulté du quiz).
+// Le mode les valide. Renvoie true s'ils sont acceptés.
+export function reglerMode(salle, donnees) {
+  const mode = modeDe(salle);
+  if (salle.etat !== 'lobby' || !mode.validerReglages) return false;
+  const reglages = mode.validerReglages(donnees);
+  if (!reglages) return false;
+  salle.reglagesMode[salle.mode] = reglages;
+  return true;
+}
+
+// Ce que les écrans montrent des réglages du mode, ou null si le mode n'en a pas.
+function vueReglages(salle) {
+  return modeDe(salle).vueReglages?.(salle) ?? null;
 }
 
 // Lancer ou rejouer : le mode tire son contenu et démarre la première manche.
@@ -219,6 +237,8 @@ export function ajouterJoueur(salle, pseudoSaisi, socketId) {
 
   const joueur = {
     id: 'j_' + randomBytes(4).toString('hex'),
+    // Secret remis à ce seul téléphone : l'id est public (listes de candidats), la clé non.
+    cle: 'c_' + randomBytes(16).toString('hex'),
     pseudo,
     couleur: couleurPourNouveauJoueur(salle),
     score: 0,
@@ -235,10 +255,15 @@ export function ajouterJoueur(salle, pseudoSaisi, socketId) {
   return { joueur };
 }
 
-// Renvoie le joueur, ou null si cet id n'est pas (ou plus) dans la salle.
-export function reconnecterJoueur(salle, id, socketId) {
+// Renvoie le joueur, ou null si cet id n'est pas (ou plus) dans la salle,
+// ou si la clé secrète n'est pas la sienne.
+export function reconnecterJoueur(salle, id, cle, socketId) {
   const joueur = salle.joueurs.find((j) => j.id === id);
   if (!joueur) return null;
+  if (!cle || joueur.cle !== cle) {
+    journaliser(salle.code, `reconnexion refusée pour ${joueur.id} (clé invalide)`);
+    return null;
+  }
   joueur.connecte = true;
   joueur.socketId = socketId;
   journaliser(salle.code, `retour ${joueur.pseudo} (${joueursConnectes(salle).length} connectés)`);
@@ -381,12 +406,15 @@ export function etapeCourante(salle) {
 }
 
 export function vueTv(salle) {
-  const vue = { ...salle, etatMode: modeDe(salle).vueTv(salle) };
+  // La clé de chaque joueur ne part jamais vers la TV.
+  const joueurs = salle.joueurs.map(({ cle, ...joueur }) => joueur);
+  const vue = { ...salle, joueurs, etatMode: modeDe(salle).vueTv(salle) };
   if (salle.etat === 'partie') return vue;
   const { id, nom, regleCourte, joueursMin } = modeDe(salle);
   return {
     ...vue,
     modeChoisi: { id, nom, regleCourte, joueursMin, assezDeJoueurs: assezDeJoueurs(salle) },
+    reglages: vueReglages(salle),
     pointsMedaille: POINTS_MEDAILLE,
     tableau: classementGlobal(salle.joueurs),
     departage: salle.format.type === 'aventure' && estDepartage(salle.joueurs, salle.format.objectif),
@@ -399,6 +427,7 @@ export function vueJoueur(salle, joueur) {
     ecran: 'attente',
     mode: salle.mode,
     id: joueur.id,
+    cle: joueur.cle,
     pseudo: joueur.pseudo,
     couleur: joueur.couleur,
     score: joueur.score,
@@ -414,6 +443,7 @@ export function vueJoueur(salle, joueur) {
     modeChoisi: modeDe(salle).nom,
     assezDeJoueurs: assezDeJoueurs(salle),
     format: salle.format,
+    reglages: vueReglages(salle),
     pointsGlobaux: joueur.pointsGlobaux,
   };
   if (estHote) horsPartie.modes = listeModes(salle);

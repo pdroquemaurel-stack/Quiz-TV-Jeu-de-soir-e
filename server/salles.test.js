@@ -391,7 +391,7 @@ test('points globaux : un nouveau venu part de 0, un joueur reconnecté garde le
   const { joueur: nouveau } = ajouterJoueur(salle, 'Nouveau', 's9');
   assert.deepEqual([nouveau.pointsGlobaux, nouveau.medailles], [0, { or: 0, argent: 0, bronze: 0 }]);
   deconnecterJoueur(salle, a, () => {});
-  reconnecterJoueur(salle, a.id, 's1-bis');
+  reconnecterJoueur(salle, a.id, a.cle, 's1-bis');
   assert.equal(vueJoueur(salle, a).pointsGlobaux, 3);
   fermerSalle(salle);
 });

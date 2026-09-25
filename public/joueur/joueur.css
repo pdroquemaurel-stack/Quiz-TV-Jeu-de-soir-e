@@ -586,6 +586,40 @@ main[data-ecran="quiz-repondre"] {
   display: none;
 }
 
+/* ---------- Thèmes et difficulté du quiz (hôte) ---------- */
+
+.bouton-reglages {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 8px;
+}
+
+.bouton-reglages[hidden] {
+  display: none;
+}
+
+/* Le panneau défile si le téléphone est trop petit pour les 12 boutons. */
+.boite-reglages {
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.choix-reglages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.choix-reglages.trois-colonnes {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.choix-reglages .bouton-mode {
+  min-height: 48px;
+}
+
 .medaille-fin {
   margin-top: 8px;
   font-size: 28px;
