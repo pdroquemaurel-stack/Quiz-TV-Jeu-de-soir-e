@@ -1,6 +1,6 @@
 # Quiz TV
 
-Jeu de soirée entre amis : la TV (app Android TV = simple WebView) héberge une salle de jeu, les joueurs la rejoignent en scannant un QR code et jouent depuis une page web sur leur téléphone.
+Jeu de soirée entre amis : la TV (page web ouverte dans le navigateur du Mi TV Stick) héberge une salle de jeu, les joueurs la rejoignent en scannant un QR code et jouent depuis une page web sur leur téléphone.
 
 **La spec complète du MVP est dans `docs/spec.md`. Lis la section concernée avant de commencer chaque tranche.**
 
@@ -8,7 +8,7 @@ Jeu de soirée entre amis : la TV (app Android TV = simple WebView) héberge une
 
 - Serveur : Node.js + Express + Socket.IO (ES modules, `"type": "module"`)
 - Pages TV et joueur : HTML/CSS/JS vanilla, sans framework, sans build
-- App TV : coquille Kotlin minimale (WebView plein écran), dans `android-tv/`
+- TV : la page `/tv`, ouverte dans un navigateur installé sur le Mi TV Stick 4K. L'APK (coquille Kotlin, dossier `android-tv/`) est en réserve (tranche 9)
 - Hébergement : Render (offre gratuite)
 - Aucune base de données : toutes les salles vivent en mémoire
 
@@ -44,7 +44,6 @@ scripts/verifier-qui-de-nous.js
 scripts/verifier-undercover.js
 scripts/verifier-meme-reponse.js
 scripts/verifier-bluff.js
-android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -87,7 +86,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - **Une tranche à la fois** (voir « Tranches de développement » dans la spec). Ne code rien qui appartient à une tranche suivante ou au hors-périmètre.
 - Commence chaque tranche par un plan, que je valide avant tout code.
 - La logique pure (calcul des points, classement avec ex æquo, tirage des questions) a des tests automatiques.
-- Jusqu'à la tranche 9, la TV est un onglet de navigateur en 1920x1080.
+- Pendant le développement, la TV est un onglet de navigateur en 1920x1080 ; en soirée, c'est le navigateur du stick.
 - Quand le code d'une tranche est prêt, lance les tests automatiques.
 - Donne-moi ensuite des instructions pas à pas pour faire moi-même le test de la spec : quoi lancer, quelles URL ouvrir, quoi faire, et ce que je dois observer.
 - Attends mon retour. Ne commite jamais sans m'avoir demandé explicitement « Je peux commiter ? ».

@@ -99,8 +99,8 @@ Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pen
 
 Les navigateurs refusent de jouer un son tant que l'utilisateur n'a pas interagi avec la page.
 
-- **Navigateur du PC (jusqu'à la tranche 9)** : tant que le son est bloqué, la TV affiche un petit bandeau discret « Cliquez pour activer le son » en bas de l'écran, sans masquer le QR code ni le code de la salle. Un clic n'importe où sur la page ou une touche du clavier débloque le son et fait disparaître le bandeau. Si le navigateur autorise le son d'emblée, le bandeau n'apparaît jamais.
-- **APK (tranche 9)** : la coquille Kotlin autorise la WebView à jouer du son sans geste (`mediaPlaybackRequiresUserGesture = false`). Si le son reste bloqué malgré tout, le bandeau s'affiche et la touche OK de la télécommande le débloque (elle arrive à la page comme une touche du clavier).
+- **Navigateur (celui du PC, ou celui du stick en soirée tant que l'APK est en réserve)** : tant que le son est bloqué, la TV affiche un petit bandeau discret « Cliquez pour activer le son » en bas de l'écran, sans masquer le QR code ni le code de la salle. Un clic n'importe où sur la page ou une touche du clavier débloque le son et fait disparaître le bandeau. Sur le stick, c'est la touche OK de la télécommande qui doit le débloquer : à vérifier pendant la soirée test (tranche 10). Si le navigateur autorise le son d'emblée, le bandeau n'apparaît jamais.
+- **APK (tranche 9, en réserve)** : la coquille Kotlin autorise la WebView à jouer du son sans geste (`mediaPlaybackRequiresUserGesture = false`). Si le son reste bloqué malgré tout, le bandeau s'affiche et la touche OK de la télécommande le débloque (elle arrive à la page comme une touche du clavier).
 - Les sons demandés pendant que le son est bloqué sont simplement perdus, sauf la musique, qui démarre au déblocage si l'on est encore en salle d'attente.
 
 ## Planche de sons
