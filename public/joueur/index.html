@@ -51,6 +51,10 @@
         <button id="objectif-plus" class="bouton-mode">+</button>
       </div>
     </div>
+    <p id="reglages-choisis" class="discret" hidden></p>
+    <button id="bouton-reglages" class="bouton-mode bouton-reglages en-bas" hidden>
+      <span id="resume-reglages"></span><small>Changer</small>
+    </button>
     <div class="choix-modes en-bas" hidden></div>
     <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
   </main>
@@ -273,6 +277,16 @@
   </main>
 
   <!-- Confirmation avant d'arrêter la partie, contre les appuis accidentels. -->
+  <div id="panneau-reglages" class="voile" hidden>
+    <div class="carte boite boite-reglages">
+      <p class="gros-texte">Questions</p>
+      <div id="choix-themes" class="choix-reglages"></div>
+      <div id="choix-difficulte" class="choix-reglages trois-colonnes"></div>
+      <p id="inedites-reglages" class="discret"></p>
+      <button id="fermer-reglages" class="bouton">OK</button>
+    </div>
+  </div>
+
   <div id="confirmation" class="voile" hidden>
     <div class="carte boite rebond">
       <p class="gros-texte">Terminer la partie maintenant ?</p>

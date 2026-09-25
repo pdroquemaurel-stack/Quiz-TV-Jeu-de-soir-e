@@ -58,7 +58,8 @@ const derniereVue = (client) => client.evenements.filter(([nom]) => nom === 'jou
 // Les messages d'un même socket sont traités dans l'ordre : quand cette reconnexion
 // renvoie l'état, tout ce que le client a envoyé avant a été traité.
 async function synchroniser(client, salle) {
-  client.emettre('joueur:rejoindre', { code: salle.code, id: derniereVue(client).id });
+  const { id, cle } = derniereVue(client);
+  client.emettre('joueur:rejoindre', { code: salle.code, id, cle });
   await attendre(client, 'joueur:etat');
 }
 
@@ -175,11 +176,11 @@ test('seul l\'hôte peut choisir le mode', async (t) => {
   await attendre(hote, 'joueur:etat');
   autre.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Autre' });
   await attendre(autre, 'joueur:etat');
-  const idAutre = autre.evenements.at(-1)[1].id;
+  const { id: idAutre, cle: cleAutre } = autre.evenements.at(-1)[1];
 
   autre.emettre('hote:choisirMode', 'fictif');
   // Sa reconnexion provoque une diffusion : quand elle arrive, son choix a été traité.
-  autre.emettre('joueur:rejoindre', { code: salle.code, id: idAutre });
+  autre.emettre('joueur:rejoindre', { code: salle.code, id: idAutre, cle: cleAutre });
   await attendre(autre, 'joueur:etat');
   assert.equal(salle.mode, 'quiz');
 
@@ -198,7 +199,8 @@ test('seul l\'hôte peut choisir le mode', async (t) => {
 
 const EVENEMENTS = [
   'tv:creer', 'joueur:rejoindre', 'joueur:repondre', 'hote:lancer', 'hote:choisirMode',
-  'hote:configurer', 'hote:suivant', 'hote:terminer', 'hote:rejouer', 'hote:changerFormat',
+  'hote:configurer', 'hote:reglerMode', 'hote:suivant', 'hote:terminer', 'hote:rejouer',
+  'hote:changerFormat',
 ];
 const DONNEES_MALFORMEES = [null, 42, [], {}, 'texte', { code: {}, pseudo: [], id: 1, etape: 7 }];
 // Envoyés par l'hôte, ceux-là changeraient l'état pour de bon : seul un non-hôte les envoie.
@@ -253,10 +255,15 @@ test('chaque action hote:* est refusée à un non-hôte', { timeout: 10000 }, as
   const { salle, clients: [hote, autre] } = await ouvrirSalle(t, ['Hôte', 'Autre']);
 
   autre.emettre('hote:configurer', { type: 'aventure', objectif: 5 });
+  autre.emettre('hote:reglerMode', { categories: ['sport'], difficulte: 'facile' });
   autre.emettre('hote:lancer');
   await synchroniser(autre, salle);
   assert.equal(salle.etat, 'lobby');
   assert.equal(salle.format.type, 'petite');
+  assert.equal(derniereVue(autre).reglages.resume, 'Tous les thèmes · Normal');
+  hote.emettre('hote:reglerMode', { categories: ['sport'], difficulte: 'facile' });
+  await synchroniser(hote, salle);
+  assert.equal(derniereVue(hote).reglages.resume, 'Sport · Facile');
 
   hote.emettre('hote:lancer');
   await attendreQue(() => salle.etat === 'partie' && salle.etatMode.phase === 'question');
@@ -297,6 +304,66 @@ test('double « Entrer » puis autre pseudo depuis le même socket : un seul jou
 
   assert.deepEqual(salle.joueurs.map((joueur) => joueur.pseudo), ['Hôte', 'Paul']);
   assert.ok(!paul.evenements.some(([nom]) => nom === 'erreur'));
+});
+
+// --- Clé de reconnexion (tranche 22) ---
+
+test('un intrus qui envoie l\'id d\'un autre joueur est refusé, et ce joueur garde sa place', { timeout: 5000 }, async (t) => {
+  const { port, salle, clients } = await ouvrirSalle(t, ['Léa', 'Autre']);
+  const [lea] = clients;
+  const idLea = derniereVue(lea).id;
+  const intrus = await connecterClient(port);
+  clients.push(intrus);
+
+  intrus.emettre('joueur:rejoindre', { code: salle.code, id: idLea });
+  await attendre(intrus, 'erreur');
+  intrus.emettre('joueur:rejoindre', { code: salle.code, id: idLea, cle: 'c_devinee', pseudo: 'Léa' });
+  await attendre(intrus, 'erreur');
+
+  assert.deepEqual(intrus.evenements.map(([nom, { code }]) => [nom, code]), [
+    ['erreur', 'pseudo_invalide'], ['erreur', 'pseudo_pris'],
+  ]);
+  const vraieLea = salle.joueurs.find((joueur) => joueur.id === idLea);
+  assert.equal(vraieLea.connecte, true);
+  assert.equal(salle.hoteId, idLea);
+  assert.equal(salle.joueurs.length, 2);
+  await synchroniser(lea, salle);
+  assert.equal(derniereVue(lea).estHote, true);
+});
+
+test('dans chaque mode, la clé d\'un joueur ne part ni vers la TV ni vers les autres', { timeout: 10000 }, async (t) => {
+  const { port, salle, clients } = await ouvrirSalle(t, ['A', 'B', 'C', 'D']);
+  const joueurs = [...clients];
+  const [hote] = joueurs;
+  const tv = await connecterClient(port);
+  clients.push(tv);
+  tv.emettre('tv:creer', { code: salle.code, jetonTv: salle.jetonTv });
+  await attendre(tv, 'salle:etat');
+
+  for (const id of Object.keys(modes)) {
+    hote.emettre('hote:choisirMode', id);
+    await attendre(hote, 'joueur:etat');
+    hote.emettre(salle.etat === 'lobby' ? 'hote:lancer' : 'hote:rejouer');
+    await attendre(hote, 'joueur:etat');
+    hote.emettre('hote:terminer');
+    await attendre(hote, 'joueur:etat');
+    hote.emettre('hote:suivant', { etape: derniereVue(hote).etape });
+    await attendre(hote, 'joueur:etat');
+    assert.equal(salle.etat, 'tableau', id);
+  }
+  // Une dernière diffusion, reçue par la TV : tout ce qui précède l'a été aussi.
+  const recusParTv = tv.evenements.length;
+  await synchroniser(hote, salle);
+  await attendreQue(() => tv.evenements.length > recusParTv);
+
+  const recu = (client) => JSON.stringify(client.evenements);
+  for (const joueur of salle.joueurs) {
+    assert.ok(!recu(tv).includes(joueur.cle), 'TV');
+    for (const client of joueurs) {
+      const sienne = derniereVue(client).id === joueur.id;
+      assert.equal(recu(client).includes(joueur.cle), sienne, joueur.pseudo);
+    }
+  }
 });
 
 // Chaque question est précédée de 2,5 s de transition : 10 questions prennent 25 s.
