@@ -28,23 +28,28 @@ server/
   modes/undercover.js # mode Undercover (docs/modes/undercover.md)
   modes/meme-reponse.js # mode Même réponse (docs/modes/meme-reponse.md)
   modes/bluff.js    # mode Le bluff (docs/modes/bluff.md)
+  modes/legende.js  # mode La légende (docs/modes/legende.md), à venir
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   tv/sons.js        # sons et musique synthétisés par la TV (docs/sons.md)
   commun/           # CSS et JS partagés
+  gifs/             # vidéos MP4 de La légende (<id Imgflip>.mp4, 1 Mo max)
 data/questions.json
 data/estimation.json
 data/qui-de-nous.json
 data/undercover.json
 data/meme-reponse.json
 data/bluff.json
+data/legende.json
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
 scripts/verifier-undercover.js
 scripts/verifier-meme-reponse.js
 scripts/verifier-bluff.js
+scripts/verifier-legende.js
+scripts/telecharger-gifs.py  # complète data/legende.json depuis Imgflip (Python + requests)
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -61,6 +66,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-undercover.js` : vérifie le format de `undercover.json`
 - `node scripts/verifier-meme-reponse.js` : vérifie le format de `meme-reponse.json`
 - `node scripts/verifier-bluff.js` : vérifie le format de `bluff.json`
+- `node scripts/verifier-legende.js` : vérifie `legende.json` et les vidéos de `public/gifs/`
+- `py scripts/telecharger-gifs.py` (après `pip install requests`) : ajoute des GIF Imgflip au catalogue de La légende
 
 ## Règles d'architecture (non négociables)
 
