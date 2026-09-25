@@ -1,5 +1,12 @@
 // Écrans du quiz sur la TV. Les outils communs (pastille, chrono…) viennent de tv.js.
 
+// « Question 5/10 » puis la catégorie, qui glisse en très grand.
+function afficherTransitionQuiz(salle) {
+  const { numero, total, categorie } = salle.etatMode;
+  document.getElementById('numero-transition').textContent = `Question ${numero}/${total}`;
+  document.getElementById('categorie-transition').textContent = categorie;
+}
+
 function afficherQuestionQuiz(salle, nouvelleEtape) {
   const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
   if (nouvelleEtape) {
@@ -33,7 +40,10 @@ function caseReponse(texte, index) {
 }
 
 function afficherRevelationQuiz(salle, nouvelleEtape) {
-  const { numero, total, question, bonneReponse, nombreParChoix, classement } = salle.etatMode;
+  const {
+    numero, total, question, bonneReponse, nombreParChoix, classement, plusRapide,
+  } = salle.etatMode;
+  afficherPlusRapide(salle, plusRapide);
   if (nouvelleEtape) {
     sonner('revelation');
     document.getElementById('numero-revelation').textContent = `Question ${numero}/${total}`;
@@ -57,7 +67,70 @@ function afficherRevelationQuiz(salle, nouvelleEtape) {
   );
 }
 
+// « ⚡ Léa en 1,8 s » : la bonne réponse reçue la première.
+function afficherPlusRapide(salle, plusRapide) {
+  const element = document.getElementById('plus-rapide');
+  const joueur = plusRapide && salle.joueurs.find((autre) => autre.id === plusRapide.id);
+  element.hidden = !joueur;
+  if (joueur) element.textContent = `⚡ ${joueur.pseudo} en ${secondes(plusRapide.dureeMs)} s`;
+}
+
+// 1800 → « 1,8 ».
+function secondes(dureeMs) {
+  return (dureeMs / 1000).toFixed(1).replace('.', ',');
+}
+
+// ---------- Prix de fin de partie ----------
+
+const PRIX = {
+  eclair: { emoji: '⚡', titre: 'Éclair', detail: (prix) => `${secondes(prix.dureeMs)} s` },
+  serie: { emoji: '🔥', titre: 'En série', detail: (prix) => `${prix.longueur} d'affilée` },
+  solo: {
+    emoji: '🦄',
+    titre: 'Solo',
+    detail: (prix) => (prix.fois > 1 ? `unique bonne réponse ×${prix.fois}` : 'unique bonne réponse'),
+  },
+  piege: {
+    emoji: '🪤',
+    titre: 'Question piège',
+    detail: (prix) => (prix.rates === prix.sur ? "personne n'a trouvé" : `${prix.rates} ratés sur ${prix.sur}`),
+  },
+  suspense: { emoji: '⏳', titre: 'Suspense', detail: (prix) => `réponse à ${secondes(prix.dureeMs)} s` },
+  lune: { emoji: '🌙', titre: 'Dans la lune', detail: (prix) => `${prix.fois} sans réponse` },
+};
+
+// Les prix remplacent le classement du podium au bout de quelques secondes (CSS).
+function completerPodiumQuiz(salle) {
+  const { prix } = salle.etatMode;
+  const liste = document.getElementById('prix-podium');
+  liste.hidden = !prix || prix.length === 0;
+  if (liste.hidden) return;
+  liste.replaceChildren(...prix.map((unPrix) => cartePrix(salle, unPrix)));
+}
+
+function cartePrix(salle, prix) {
+  const { emoji, titre, detail } = PRIX[prix.type];
+  const carte = document.createElement('li');
+  const haut = document.createElement('p');
+  haut.className = 'haut-prix';
+  haut.append(texte('titre-prix', `${emoji} ${titre}`), texte('detail-prix', detail(prix)));
+  const laureat = prix.type === 'piege'
+    ? texte('question-prix', prix.texte)
+    : texte('laureat-prix', nomsDe(salle, prix.ids));
+  carte.append(haut, laureat);
+  return carte;
+}
+
+// « Léa », « Léa et Tom », « Léa, Tom et Zoé ».
+function nomsDe(salle, ids) {
+  const pseudos = ids.map((id) => salle.joueurs.find((joueur) => joueur.id === id).pseudo);
+  if (pseudos.length === 1) return pseudos[0];
+  return `${pseudos.slice(0, -1).join(', ')} et ${pseudos[pseudos.length - 1]}`;
+}
+
 modesTv.quiz = {
+  transition: afficherTransitionQuiz,
   question: afficherQuestionQuiz,
   revelation: afficherRevelationQuiz,
+  completerPodium: completerPodiumQuiz,
 };

@@ -19,6 +19,7 @@ function afficherResultatQuiz(vue) {
   if (vue.juste) resultat.textContent = `Bonne réponse, +${vue.points}`;
   else resultat.textContent = vue.aRepondu ? 'Raté' : 'Pas de réponse';
   resultat.classList.toggle('juste', vue.juste);
+  document.getElementById('plus-rapide-resultat').hidden = !vue.plusRapide;
   document.getElementById('score-resultat').textContent = vue.score;
   document.getElementById('rang-resultat').textContent = texteRang(vue.rang);
   document.getElementById('bouton-suivant').hidden = !vue.estHote;

@@ -17,7 +17,7 @@ stateDiagram-v2
     [*] --> lobby: app TV ouverte
     lobby --> partie: l'hôte lance (≥ 2 joueurs)
     partie --> podium: après la 10e question, ou l'hôte termine (médailles attribuées)
-    podium --> tableau: après 15 s ou « Suivant »
+    podium --> tableau: après 20 s ou « Suivant »
     podium --> grandGagnant: idem, en aventure, si un seul joueur en tête a atteint l'objectif
     tableau --> partie: « Partie suivante » / « Rejouer » (≥ 2 joueurs)
     tableau --> lobby: « Changer de format » (points globaux gardés)
@@ -29,9 +29,10 @@ Phases du quiz pendant la partie :
 
 ```mermaid
 stateDiagram-v2
-    [*] --> question
+    [*] --> transition
+    transition --> question: après 2,5 s
     question --> revelation: tous ont répondu ou 20 s
-    revelation --> question: après 8 s ou « Suivant »
+    revelation --> transition: après 8 s ou « Suivant »
     revelation --> [*]: après la 10e question
 ```
 
@@ -40,11 +41,11 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 1. **Création de la salle.** À l'ouverture de l'app, la TV demande une salle au serveur. Elle affiche un grand QR code, le code de salle en 4 lettres et la liste des joueurs (vide).
 2. **Arrivée des joueurs.** Chaque joueur scanne le QR code (ou tape le code), saisit un pseudo et apparaît sur la TV avec sa couleur. Le premier arrivé devient l'hôte (couronne sur la TV).
 3. **Lancement.** L'hôte choisit le mode et le format (« Petite partie » ou « Aventure », voir « Format et médailles »), puis voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
-4. **Question.** La TV affiche la question, les 4 réponses (couleur + forme), le chrono de 20 s et qui a déjà répondu. Les téléphones affichent 4 gros boutons. Un joueur répond une seule fois, sans changer d'avis.
-5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, puis le classement. Chaque téléphone affiche « Bonne réponse, +740 », « Raté » ou « Pas de réponse ».
+4. **Question.** La TV annonce d'abord « Question 5/10 » et la catégorie pendant 2,5 s (les téléphones affichent « Regarde la TV »), puis affiche la question, les 4 réponses (couleur + forme), le chrono de 20 s et qui a déjà répondu. Les téléphones affichent 4 gros boutons. Un joueur répond une seule fois, sans changer d'avis.
+5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, la réponse la plus rapide (« ⚡ Léa en 1,8 s »), puis le classement : les scores montent et une flèche ▲▼ montre qui a gagné ou perdu des places. Chaque téléphone affiche « Bonne réponse, +740 », « Raté » ou « Pas de réponse ».
 6. **Enchaînement.** Passage automatique après 8 s. L'hôte peut accélérer avec « Suivant ».
-7. **Fin.** Après 10 questions, la TV affiche le podium avec les médailles et les téléphones le rang de chacun.
-8. **Tableau.** Après 15 s (ou « Suivant » de l'hôte), la TV affiche les points globaux. En aventure, si un seul joueur en tête a atteint l'objectif, c'est l'écran du grand gagnant à la place.
+7. **Fin.** Après 10 questions, la TV affiche le podium avec les médailles, en révélant le 3e, puis le 2e, puis le 1er, et les téléphones le rang de chacun. En quiz, les prix de la partie remplacent ensuite le classement (voir « Prix de fin de partie »).
+8. **Tableau.** Après 20 s (ou « Suivant » de l'hôte), la TV affiche les points globaux. En aventure, si un seul joueur en tête a atteint l'objectif, c'est l'écran du grand gagnant à la place.
 9. **Rejouer.** L'hôte appuie sur « Partie suivante » (aventure) ou « Rejouer » (petite partie), actif dès 2 joueurs connectés : mêmes joueurs, scores remis à zéro, points globaux gardés, nouvelles questions jamais vues dans cette salle.
 
 ## Fonctionnalités du MVP
@@ -106,6 +107,17 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
   Ici, `t` est le temps écoulé en secondes, mesuré par le serveur à la réception de la réponse. On n'utilise jamais l'horloge du téléphone.
 - **Fin anticipée** : la manche se termine dès que tous les joueurs attendus ont répondu, ou à 20 s. Les joueurs attendus sont ceux qui étaient connectés au début de la manche et qui le sont encore. Un joueur arrivé en cours de manche n'est pas attendu. Si un joueur attendu se déconnecte, on vérifie à nouveau si tous les autres ont répondu.
 - Classement par score total. En cas d'égalité, les joueurs partagent le même rang, sans départage, et le rang suivant est sauté : 1, 1, 3.
+- **Transition** : avant chaque question, 2,5 s pour annoncer son numéro et sa catégorie. Le chrono de 20 s et le calcul des points ne partent qu'au début de la question. Aucune réponse n'est acceptée pendant la transition, et les joueurs attendus sont ceux connectés au début de la question.
+- **Réponse la plus rapide** : à chaque révélation, la TV nomme la bonne réponse reçue la première, et le téléphone de ce joueur l'indique. À égalité à la milliseconde, la première enregistrée. Aucun point en plus.
+- **Prix de fin de partie** : au podium, 4 prix au plus, dans cet ordre, seulement s'ils sont mérités. À égalité, tous les ex æquo le reçoivent. Un joueur qui a quitté la salle n'en reçoit aucun.
+  - ⚡ Éclair : la bonne réponse la plus rapide de la partie.
+  - 🔥 En série : la plus longue suite de bonnes réponses d'affilée, 3 au moins. Une question non jouée coupe la série.
+  - 🦄 Solo : le plus de fois seule bonne réponse d'une question jouée par 3 joueurs ou plus.
+  - 🪤 Question piège : la question la plus ratée (une absence de réponse compte comme ratée), si moins de la moitié des joueurs l'ont trouvée.
+  - ⏳ Suspense : la bonne réponse la plus tardive, après 15 s, si ce n'est pas aussi celle de l'éclair.
+  - 🌙 Dans la lune : le plus de questions sans réponse, 2 au moins.
+
+  Un joueur attendu qui s'est déconnecté sans répondre n'est pas compté dans la question.
 
 ### Format et médailles (tous les modes)
 
@@ -214,7 +226,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`etat` vaut `lobby`, `partie`, `podium`, `tableau` ou `grandGagnant`. Pendant une partie, `etatMode.phase` vaut `question` ou `revelation` pour le quiz. `etatMode.attendus` liste les `id` des joueurs attendus pour la manche en cours (voir « Fin anticipée ») : tous les modes l'utilisent, via `server/modes/commun.js`. Les timers (20 s, 8 s, 15 s de podium, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
+`etat` vaut `lobby`, `partie`, `podium`, `tableau` ou `grandGagnant`. Pendant une partie, `etatMode.phase` vaut `transition`, `question` ou `revelation` pour le quiz. `etatMode.attendus` liste les `id` des joueurs attendus pour la manche en cours (voir « Fin anticipée ») : tous les modes l'utilisent, via `server/modes/commun.js`. Les timers (2,5 s de transition, 20 s, 8 s, 20 s de podium, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
 
 `format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
@@ -359,8 +371,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité).
-- **À venir**, après l'audit (`AUDIT.md`) : **10 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène).
+- **À venir**, après l'audit (`AUDIT.md`) : **10 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -465,12 +477,12 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : en 4G, un appui sur une réponse marque le bouton immédiatement (et vibre sur Android). Une question sans réponse affiche « Pas de réponse ». Une Estimation terminée à la 1re question puis relancée montre un champ vide. Après une aventure, « Changer de format », puis verrouillage d'un téléphone 1 min : au déverrouillage, le joueur est toujours là avec ses points globaux. Test automatique : sur 1 000 tirages, jamais plus de 2 questions de la même catégorie ni plus de 2 difficiles. `node scripts/verifier-questions.js` signale les paires voisines connues (par exemple q0081 / q0084, La Joconde).*
 
-- **21. Mise en scène.** Donner à la TV le rythme d'un jeu télévisé et des moments forts à chaque partie.
-  - Écran de transition avec la catégorie avant chaque question, compté dans l'échéance du serveur (AMB1).
-  - Podium échelonné : 3e, puis 2e, puis 1er (AMB2).
-  - Compteur de score animé au classement, avec flèches de changement de rang (AMB3).
-  - Réponse la plus rapide mise en avant à chaque révélation (MEC7).
-  - Statistiques de fin de partie : le plus rapide, la meilleure série, la question la plus ratée… (F4).
+- **21. Mise en scène.** ✅ Terminée. Donner à la TV le rythme d'un jeu télévisé et des moments forts à chaque partie.
+  - Écran de transition de 2,5 s avec la catégorie avant chaque question, compté dans l'échéance du serveur (AMB1) : phase `transition` du quiz.
+  - Podium échelonné, 3e puis 2e puis 1er à 1 s d'écart, fanfare calée sur le 1er, pour tous les modes (AMB2). Le podium dure 20 s.
+  - Compteur de score animé au classement, avec flèches ▲▼ de changement de rang (`rangAvant`), pour tous les modes (AMB3).
+  - Réponse la plus rapide mise en avant à chaque révélation, sur la TV et le téléphone concerné (MEC7).
+  - Prix de fin de partie du quiz, qui remplacent le classement du podium (F4) : règles dans « Prix de fin de partie », fonction pure `calculerPrix` testée.
 
   *Test : partie de quiz à 4 sur la vraie TV (navigateur du stick) : chaque question est précédée de sa catégorie ; le podium révèle le 3e, le 2e puis le 1er ; les scores montent au classement ; chaque révélation affiche la réponse la plus rapide (« ⚡ Léa en 1,8 s ») ; l'écran de fin montre au moins 3 « prix » justes, vérifiés à la main sur la partie jouée ; aucune saccade visible sur le stick.*
 

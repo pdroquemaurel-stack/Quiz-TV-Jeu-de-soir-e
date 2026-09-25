@@ -60,6 +60,32 @@ test('classement : tout le monde à 0 est premier ex æquo', () => {
   assert.deepEqual(classement(salle, aucunPoint).map((l) => l.rang), [1, 1]);
 });
 
+test('classement : rangAvant, le rang avant les points de la manche, avec ex æquo', () => {
+  const salle = creerSalle('tv');
+  const { joueur: a } = ajouterJoueur(salle, 'A', 's1');
+  const { joueur: b } = ajouterJoueur(salle, 'B', 's2');
+  const { joueur: c } = ajouterJoueur(salle, 'C', 's3');
+  // Avant la manche : A 2000, B 1000, C 1000. C gagne 1500 et passe en tête.
+  a.score = 2000;
+  b.score = 1000;
+  c.score = 2500;
+  const points = { [a.id]: 0, [b.id]: 0, [c.id]: 1500 };
+
+  const lignes = classement(salle, (_, id) => points[id]);
+  assert.deepEqual(lignes.map((l) => [l.pseudo, l.rangAvant, l.rang]), [
+    ['C', 2, 1], ['A', 1, 2], ['B', 2, 3],
+  ]);
+});
+
+test('classement : rangAvant est null tant que personne n\'avait de points', () => {
+  const salle = creerSalle('tv');
+  const { joueur: a } = ajouterJoueur(salle, 'A', 's1');
+  ajouterJoueur(salle, 'B', 's2');
+  a.score = 900;
+  const lignes = classement(salle, (_, id) => (id === a.id ? 900 : 0));
+  assert.deepEqual(lignes.map((l) => l.rangAvant), [null, null]);
+});
+
 // --- Tirage des questions ---
 
 function banqueFictive(nombre) {

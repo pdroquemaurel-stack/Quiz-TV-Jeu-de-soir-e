@@ -305,6 +305,12 @@ main[data-ecran="quiz-repondre"] {
   background: var(--juste);
 }
 
+.plus-rapide-resultat {
+  margin: 0 0 16px;
+  font-size: 28px;
+  color: var(--texte);
+}
+
 .rang-fin {
   font-size: 96px;
   color: var(--accent);

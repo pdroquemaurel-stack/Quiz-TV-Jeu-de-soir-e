@@ -90,7 +90,18 @@ export function rangDe(salle, joueur) {
 
 // Le tri est stable : à égalité, l'ordre d'arrivée est conservé.
 // pointsGagnes(salle, joueurId) donne les points de la manche, propres au mode.
+// rangAvant : le rang avant ces points, pour les flèches ▲▼ de la TV. null tant que
+// tout le monde était à 0 : il n'y avait pas encore de classement.
 export function classement(salle, pointsGagnes) {
+  const scoreAvant = new Map(
+    salle.joueurs.map((joueur) => [joueur.id, joueur.score - pointsGagnes(salle, joueur.id)]),
+  );
+  const personneNAvaitDePoints = [...scoreAvant.values()].every((score) => score === 0);
+  const rangAvant = (joueur) => {
+    if (personneNAvaitDePoints) return null;
+    const monScore = scoreAvant.get(joueur.id);
+    return 1 + [...scoreAvant.values()].filter((score) => score > monScore).length;
+  };
   return [...salle.joueurs]
     .sort((a, b) => b.score - a.score)
     .map((joueur) => ({
@@ -100,6 +111,7 @@ export function classement(salle, pointsGagnes) {
       score: joueur.score,
       connecte: joueur.connecte,
       rang: rangDe(salle, joueur),
+      rangAvant: rangAvant(joueur),
       points: pointsGagnes(salle, joueur.id),
     }));
 }
