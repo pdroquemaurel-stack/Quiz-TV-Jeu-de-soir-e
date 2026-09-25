@@ -359,8 +359,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité).
-- **À venir**, après l'audit (`AUDIT.md`) : **19 → 10 → 20 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité).
+- **À venir**, après l'audit (`AUDIT.md`) : **10 → 20 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -442,7 +442,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : `npm test` passe avec les nouveaux tests. Sur Render, TV dans le navigateur du stick : (1) depuis la console d'un onglet joueur, `socket.emit('joueur:rejoindre', null)` → les autres joueurs continuent de jouer et l'heure de démarrage de `/sante` n'a pas changé ; (2) double appui très rapide sur « Suivant » à la 10e révélation → le podium reste affiché 15 s ; en Undercover, double appui à l'élimination → le tour de description s'affiche ; (3) double appui sur « Entrer » puis changement de pseudo → la TV ne montre qu'un seul joueur, et la manche suivante se termine dès que tout le monde a répondu ; (4) lobby ouvert 20 min sans action → l'écran de la TV est resté allumé et la partie se lance sans attendre le réveil du serveur ; (5) redéploiement manuel pendant une partie → la TV affiche « Connexion au serveur… » puis une nouvelle salle, les téléphones affichent le message de redémarrage avec un champ code vide, et les logs Render montrent l'enchaînement complet (arrivées, partie, redémarrage).*
 
-- **19. Lisibilité TV et accessibilité.** Chaque texte de la TV se lit depuis le canapé, y compris par un joueur daltonien.
+- **19. Lisibilité TV et accessibilité.** ✅ Terminée. Chaque texte de la TV se lit depuis le canapé, y compris par un joueur daltonien.
   - Aucun texte de la TV sous 40 px (TV1) : pour tenir 10 joueurs, on réduit le contenu plutôt que la taille (2 colonnes, pseudos tronqués, classement limité avec « et N autres »).
   - Pastilles seules du bluff remplacées par des pastilles avec l'initiale du pseudo, de 40 px au moins (TV2).
   - Joueur déconnecté lisible : moins transparent, avec un signe qui ne dépend pas de la seule transparence (TV3, A4).
