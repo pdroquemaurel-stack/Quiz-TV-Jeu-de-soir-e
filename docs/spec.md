@@ -371,8 +371,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité).
-- **À venir**, après l'audit (`AUDIT.md`) : **10 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène).
+- **À venir**, après l'audit (`AUDIT.md`) : **10 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -477,12 +477,12 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : en 4G, un appui sur une réponse marque le bouton immédiatement (et vibre sur Android). Une question sans réponse affiche « Pas de réponse ». Une Estimation terminée à la 1re question puis relancée montre un champ vide. Après une aventure, « Changer de format », puis verrouillage d'un téléphone 1 min : au déverrouillage, le joueur est toujours là avec ses points globaux. Test automatique : sur 1 000 tirages, jamais plus de 2 questions de la même catégorie ni plus de 2 difficiles. `node scripts/verifier-questions.js` signale les paires voisines connues (par exemple q0081 / q0084, La Joconde).*
 
-- **21. Mise en scène.** Donner à la TV le rythme d'un jeu télévisé et des moments forts à chaque partie.
-  - Écran de transition avec la catégorie avant chaque question, compté dans l'échéance du serveur (AMB1).
-  - Podium échelonné : 3e, puis 2e, puis 1er (AMB2).
-  - Compteur de score animé au classement, avec flèches de changement de rang (AMB3).
-  - Réponse la plus rapide mise en avant à chaque révélation (MEC7).
-  - Statistiques de fin de partie : le plus rapide, la meilleure série, la question la plus ratée… (F4).
+- **21. Mise en scène.** ✅ Terminée. Donner à la TV le rythme d'un jeu télévisé et des moments forts à chaque partie.
+  - Écran de transition de 2,5 s avec la catégorie avant chaque question, compté dans l'échéance du serveur (AMB1) : phase `transition` du quiz.
+  - Podium échelonné, 3e puis 2e puis 1er à 1 s d'écart, fanfare calée sur le 1er, pour tous les modes (AMB2). Le podium dure 20 s.
+  - Compteur de score animé au classement, avec flèches ▲▼ de changement de rang (`rangAvant`), pour tous les modes (AMB3).
+  - Réponse la plus rapide mise en avant à chaque révélation, sur la TV et le téléphone concerné (MEC7).
+  - Prix de fin de partie du quiz, qui remplacent le classement du podium (F4) : règles dans « Prix de fin de partie », fonction pure `calculerPrix` testée.
 
   *Test : partie de quiz à 4 sur la vraie TV (navigateur du stick) : chaque question est précédée de sa catégorie ; le podium révèle le 3e, le 2e puis le 1er ; les scores montent au classement ; chaque révélation affiche la réponse la plus rapide (« ⚡ Léa en 1,8 s ») ; l'écran de fin montre au moins 3 « prix » justes, vérifiés à la main sur la partie jouée ; aucune saccade visible sur le stick.*
 
