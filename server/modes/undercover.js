@@ -1,8 +1,8 @@
 // Mode Undercover (docs/modes/undercover.md).
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, listerAttendus, melanger, noterQuestionsVues, participe,
-  phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
+  classement as classementCommun, listerAttendus, melanger, normaliser, noterQuestionsVues,
+  participe, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 import { compterVotes, trouverElus } from './qui-de-nous.js';
 
@@ -21,24 +21,12 @@ export const POINTS_CIVIL = 1000;
 export const POINTS_INFILTRE = 2000;
 export const LONGUEUR_MAX_PROPOSITION = 30;
 
-// Lue au premier lancement seulement : scripts/verifier-undercover.js importe ce fichier
-// pour normaliser(), et doit pouvoir signaler lui-même un fichier illisible.
+// Lue au premier lancement seulement.
 let banque = null;
 
 export function banqueUndercover() {
   banque ??= JSON.parse(readFileSync(new URL('../../data/undercover.json', import.meta.url), 'utf8'));
   return banque;
-}
-
-// Forme comparable d'un mot : minuscules, sans accents, espaces réduits.
-// Sert à juger la proposition de Mister White et à vérifier data/undercover.json.
-export function normaliser(texte) {
-  return texte
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, ' ');
 }
 
 // ---------- Règles pures ----------

@@ -24,6 +24,7 @@ server/
   modes/estimation.js # mode Estimation (docs/modes/estimation.md)
   modes/qui-de-nous.js # mode Qui de nous ? (docs/modes/qui-de-nous.md)
   modes/undercover.js # mode Undercover (docs/modes/undercover.md)
+  modes/meme-reponse.js # mode Même réponse (docs/modes/meme-reponse.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -33,10 +34,12 @@ data/questions.json
 data/estimation.json
 data/qui-de-nous.json
 data/undercover.json
+data/meme-reponse.json
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
 scripts/verifier-undercover.js
+scripts/verifier-meme-reponse.js
 android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
@@ -52,6 +55,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-estimation.js` : vérifie le format de `estimation.json`
 - `node scripts/verifier-qui-de-nous.js` : vérifie le format de `qui-de-nous.json`
 - `node scripts/verifier-undercover.js` : vérifie le format de `undercover.json`
+- `node scripts/verifier-meme-reponse.js` : vérifie le format de `meme-reponse.json`
 
 ## Règles d'architecture (non négociables)
 

@@ -5,6 +5,16 @@ export function phaseEnCours(salle) {
   return salle.etat === 'partie' ? salle.etatMode.phase : null;
 }
 
+// Forme comparable d'un texte saisi : minuscules, sans accents, espaces réduits.
+export function normaliser(texte) {
+  return texte
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
 // Mélange de Fisher-Yates, sur une copie.
 export function melanger(liste) {
   const copie = [...liste];

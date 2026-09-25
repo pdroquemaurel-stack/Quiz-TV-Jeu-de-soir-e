@@ -7,7 +7,7 @@ import {
 import { modes, modesAVenir } from './index.js';
 import {
   NOMBRE_MANCHES, avancer, composition, distribuerRoles, echeance, enregistrerReponse, motTrouve,
-  normaliser, suivant, tirerOrdreParole, vainqueur, verifierFinAnticipee,
+  suivant, tirerOrdreParole, vainqueur, verifierFinAnticipee,
 } from './undercover.js';
 import { NOMBRE_QUESTIONS as NOMBRE_QUESTIONS_QUIZ } from './quiz.js';
 
@@ -144,7 +144,6 @@ test('devinette : casse, accents et variantes acceptés, mot de l\'undercover re
   for (const proposition of ['Plage', 'PLAGE', ' plâge ', 'plages']) assert.ok(motTrouve(proposition, plage), proposition);
   assert.ok(!motTrouve('Piscine', plage));
   assert.ok(!motTrouve('Pla', plage));
-  assert.equal(normaliser('Écharpe'), 'echarpe');
 });
 
 // --- Déroulé d'une manche ---

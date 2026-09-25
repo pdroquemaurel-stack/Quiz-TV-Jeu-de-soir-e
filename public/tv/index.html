@@ -158,6 +158,35 @@
       </div>
     </main>
 
+    <main data-ecran="meme-reponse-saisie" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="mr-numero-saisie"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="mr-barre-temps"></div></div>
+        <p class="chrono" id="mr-chrono"></p>
+      </div>
+      <h1 class="question rebond" id="mr-texte-saisie"></h1>
+      <p class="consigne-vote">Tapez votre réponse sur votre téléphone</p>
+      <ul class="etiquettes ont-repondu" id="mr-ont-repondu"></ul>
+    </main>
+
+    <main data-ecran="meme-reponse-resultats" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="mr-numero-resultats"></p>
+      </div>
+      <div class="qdn-entete">
+        <h1 class="question" id="mr-texte-resultats"></h1>
+        <p class="elus rebond" id="mr-verdict"></p>
+      </div>
+      <div class="qdn-listes">
+        <div class="mr-reponses">
+          <ol class="mr-groupes" id="mr-groupes"></ol>
+          <div class="mr-ligne" id="mr-seuls"><span class="mr-titre-ligne">Seuls :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="mr-absents"><span class="mr-titre-ligne">Pas de réponse :</span><ul class="etiquettes"></ul></div>
+        </div>
+        <ol class="classement classement-colonne" id="mr-classement"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
       <p class="plus-designe" id="plus-designe" hidden></p>
@@ -186,5 +215,6 @@
   <script src="/tv/modes/estimation.js"></script>
   <script src="/tv/modes/qui-de-nous.js"></script>
   <script src="/tv/modes/undercover.js"></script>
+  <script src="/tv/modes/meme-reponse.js"></script>
 </body>
 </html>

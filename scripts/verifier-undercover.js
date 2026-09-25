@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { normaliser } from '../server/modes/undercover.js';
+import { normaliser } from '../server/modes/commun.js';
 
 const CHAMPS_PAIRE = ['id', 'mots'];
 const CHAMPS_MOT = ['mot', 'variantes'];

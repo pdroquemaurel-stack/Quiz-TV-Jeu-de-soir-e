@@ -78,6 +78,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Mister White cherche le mot (`devinette`) | `etape` |
 | | Résultat de la devinette (`devinette.resultatConnu` passe à vrai, dans la même étape) | `victoire` s'il a trouvé, `rate` sinon (proposition fausse ou pas de proposition) |
 | | Fin de manche, quel que soit le camp gagnant | `victoire` |
+| Même réponse | Nouvelle question | `etape` |
+| | Un joueur répond (`ontRepondu` s'allonge) | `reponse` |
+| | Résultats | `revelation`, ou `victoire` en cas d'unanimité |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

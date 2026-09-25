@@ -186,7 +186,7 @@ test('choix du mode : un mode grisé est refusé, puis accepté quand le compte 
 
 test('choix du mode : mode inconnu, mode à venir ou valeur bizarre refusés', () => {
   const { salle } = salleAvec(10);
-  for (const id of ['inconnu', 'meme-reponse', 'bluff', 'toString', '__proto__', null, 3]) {
+  for (const id of ['inconnu', 'bluff', 'toString', '__proto__', null, 3]) {
     assert.equal(choisirMode(salle, id), false, String(id));
   }
   assert.equal(salle.mode, 'quiz');
@@ -240,7 +240,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
     liste.slice(1).map((m) => [m.id, m.disponible, m.bientot]),
     [
       ['estimation', false, false], ['qui-de-nous', false, false], ['undercover', false, false],
-      ['meme-reponse', false, true], ['bluff', false, true],
+      ['meme-reponse', false, false], ['bluff', false, true],
     ],
   );
   assert.equal(vueJoueur(salle, autre).modes, undefined);

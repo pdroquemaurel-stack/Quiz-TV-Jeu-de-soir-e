@@ -177,6 +177,28 @@
     <button class="bouton en-bas bouton-hote-uc" hidden></button>
   </main>
 
+  <main data-ecran="meme-reponse-repondre" hidden>
+    <p id="mr-numero" class="discret"></p>
+    <p id="mr-question" class="gros-texte"></p>
+    <input id="mr-champ" class="champ-mot" type="text" maxlength="30" autocomplete="off" enterkeyhint="done" aria-label="Ta réponse">
+    <button id="mr-valider" class="bouton en-bas" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="meme-reponse-reponse_envoyee" hidden>
+    <p class="gros-texte">Tu as répondu</p>
+    <p id="mr-texte-envoye" class="nombre-envoye rebond"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="meme-reponse-resultat" hidden>
+    <p id="mr-resultat" class="carte-resultat rebond"></p>
+    <p id="mr-en-tete" class="gros-texte" hidden>Réponse la plus donnée !</p>
+    <p id="mr-rattachement" class="discret"></p>
+    <p>Score : <strong id="mr-score"></strong></p>
+    <p>Rang : <strong id="mr-rang"></strong></p>
+    <button id="mr-suivant" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -208,5 +230,6 @@
   <script src="/joueur/modes/estimation.js"></script>
   <script src="/joueur/modes/qui-de-nous.js"></script>
   <script src="/joueur/modes/undercover.js"></script>
+  <script src="/joueur/modes/meme-reponse.js"></script>
 </body>
 </html>

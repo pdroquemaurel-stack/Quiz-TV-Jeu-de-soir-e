@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle } from '../salles.js';
-import { classement, tirerQuestions } from './commun.js';
+import { classement, normaliser, tirerQuestions } from './commun.js';
 import { modes, modesAVenir } from './index.js';
 
 // --- Registre des modes ---
@@ -79,4 +79,12 @@ test('tirage : inédites d\'abord, puis les déjà vues les plus anciennes', () 
   const ids = idsDe(tirerQuestions(banque, vues, 10));
   assert.deepEqual(ids.slice(0, 2).sort(), ['q0011', 'q0012']);
   assert.deepEqual(ids.slice(2), vues.slice(0, 8));
+});
+
+// --- Saisies libres ---
+
+test('normaliser : casse, accents et espaces ignorés', () => {
+  for (const texte of ['PISCINE', 'piscine', 'Piscíne', '  piscine  ']) assert.equal(normaliser(texte), 'piscine', texte);
+  assert.equal(normaliser('Écharpe'), 'echarpe');
+  assert.equal(normaliser('pomme   de  terre'), 'pomme de terre');
 });

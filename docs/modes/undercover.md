@@ -254,7 +254,7 @@ Règles de rédaction :
 - pas deux paires identiques, dans un ordre ou dans l'autre (« Café / Thé » = « Thé / Café ») ;
 - nombre total de paires affiché.
 
-La normalisation (minuscules, accents retirés, espaces réduits) est une petite fonction exportée par `server/modes/undercover.js` et utilisée aussi par le script, pour que les deux comparent de la même façon.
+La normalisation (minuscules, accents retirés, espaces réduits) est la fonction `normaliser` de `server/modes/commun.js` (d'abord écrite dans `undercover.js`, déplacée à la tranche 14), utilisée aussi par le script, pour que les deux comparent de la même façon.
 
 Le tirage réutilise `tirerQuestions` et `noterQuestionsVues` de `commun.js` (une paire a un `id` comme une question) : `questionsVues` reste une seule liste pour la salle.
 
