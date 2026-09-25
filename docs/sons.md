@@ -82,6 +82,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | Même réponse | Nouvelle question | `etape` |
 | | Un joueur répond (`ontRepondu` s'allonge) | `reponse` |
 | | Résultats | `revelation`, ou `victoire` en cas d'unanimité |
+| Le bluff | Nouvelle question, début du vote | `etape` |
+| | Un bluff ou un vote arrive (`ontRepondu` s'allonge) | `reponse` |
+| | Révélation | `victoire` si tous les votants ont trouvé, `rate` si aucun, sinon `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

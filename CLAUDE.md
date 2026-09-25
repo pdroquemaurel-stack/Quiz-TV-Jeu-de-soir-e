@@ -26,6 +26,7 @@ server/
   modes/qui-de-nous.js # mode Qui de nous ? (docs/modes/qui-de-nous.md)
   modes/undercover.js # mode Undercover (docs/modes/undercover.md)
   modes/meme-reponse.js # mode Même réponse (docs/modes/meme-reponse.md)
+  modes/bluff.js    # mode Le bluff (docs/modes/bluff.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -36,11 +37,13 @@ data/estimation.json
 data/qui-de-nous.json
 data/undercover.json
 data/meme-reponse.json
+data/bluff.json
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
 scripts/verifier-undercover.js
 scripts/verifier-meme-reponse.js
+scripts/verifier-bluff.js
 android-tv/
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
@@ -57,6 +60,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-qui-de-nous.js` : vérifie le format de `qui-de-nous.json`
 - `node scripts/verifier-undercover.js` : vérifie le format de `undercover.json`
 - `node scripts/verifier-meme-reponse.js` : vérifie le format de `meme-reponse.json`
+- `node scripts/verifier-bluff.js` : vérifie le format de `bluff.json`
 
 ## Règles d'architecture (non négociables)
 

@@ -17,6 +17,28 @@ export function normaliser(texte) {
     .replace(/\s+/g, ' ');
 }
 
+// Forme comparable d'une réponse libre (Même réponse, Le bluff) : en plus de normaliser,
+// ponctuation, article en tête et pluriel simple ignorés.
+const ARTICLE_EN_TETE = /^(de la|le|la|les|l|un|une|des|du|d) (?=.)/;
+
+// « Fraises » → « fraise », « Choux » → « chou ». Les mots de 3 lettres restent tels quels (« bus »).
+function retirerPluriel(mot) {
+  return mot.length > 3 && /[sx]$/.test(mot) ? mot.slice(0, -1) : mot;
+}
+
+// Deux réponses de même clé sont la même réponse. Clé vide : réponse invalide (« !!! »).
+export function cleReponse(texte) {
+  return normaliser(texte)
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(ARTICLE_EN_TETE, '')
+    .split(' ')
+    .map(retirerPluriel)
+    .join(' ');
+}
+
 // Mélange de Fisher-Yates, sur une copie.
 export function melanger(liste) {
   const copie = [...liste];

@@ -1,7 +1,7 @@
 // Mode Même réponse (docs/modes/meme-reponse.md).
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, listerAttendus, normaliser, noterQuestionsVues, participe,
+  classement as classementCommun, cleReponse, listerAttendus, noterQuestionsVues, participe,
   passerAuPodium, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
@@ -18,7 +18,7 @@ export const BONUS_EN_TETE = 300;
 export const LONGUEUR_MAX_REPONSE = 30;
 
 // Lue au premier lancement seulement : scripts/verifier-meme-reponse.js importe ce fichier
-// pour cleReponse(), et doit pouvoir signaler lui-même un fichier illisible.
+// pour ses constantes, et doit pouvoir signaler lui-même un fichier illisible.
 let banque = null;
 
 export function banqueMemeReponse() {
@@ -27,26 +27,6 @@ export function banqueMemeReponse() {
 }
 
 // ---------- Règles pures ----------
-
-const ARTICLE_EN_TETE = /^(de la|le|la|les|l|un|une|des|du|d) (?=.)/;
-
-// « Fraises » → « fraise », « Choux » → « chou ». Les mots de 3 lettres restent tels quels (« bus »).
-function retirerPluriel(mot) {
-  return mot.length > 3 && /[sx]$/.test(mot) ? mot.slice(0, -1) : mot;
-}
-
-// Deux réponses de même clé sont la même réponse. Clé vide : réponse invalide (« !!! »).
-export function cleReponse(texte) {
-  return normaliser(texte)
-    .replace(/œ/g, 'oe')
-    .replace(/æ/g, 'ae')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim()
-    .replace(ARTICLE_EN_TETE, '')
-    .split(' ')
-    .map(retirerPluriel)
-    .join(' ');
-}
 
 // Clé de chaque forme connue (réponse ou variante) → libellé de sa réponse connue.
 function libellesConnus(question) {

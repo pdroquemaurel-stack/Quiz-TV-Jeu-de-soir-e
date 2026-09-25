@@ -6,7 +6,7 @@ import {
 } from '../salles.js';
 import { modes, modesAVenir } from './index.js';
 import {
-  NOMBRE_QUESTIONS, banqueMemeReponse, cleReponse, enregistrerReponse, formerGroupes,
+  NOMBRE_QUESTIONS, banqueMemeReponse, enregistrerReponse, formerGroupes,
   montrerResultats, passerALaSuite, pointsDuGroupe, suivant, verifierFinAnticipee,
 } from './meme-reponse.js';
 import { NOMBRE_QUESTIONS as NOMBRE_QUESTIONS_ESTIMATION } from './estimation.js';
@@ -70,36 +70,6 @@ test('choix du mode : refusé à 2 joueurs, accepté à 3', () => {
   assert.equal(choisirMode(salle, 'meme-reponse'), false);
   ajouterJoueur(salle, 'C', 'C');
   assert.equal(choisirMode(salle, 'meme-reponse'), true);
-});
-
-// --- Clé ---
-
-test('clé : casse, accents, espaces, ponctuation et tirets ignorés', () => {
-  for (const texte of ['FRAISE', 'fraise', ' fraise ', 'Fraise !', 'fräise']) assert.equal(cleReponse(texte), 'fraise', texte);
-  assert.equal(cleReponse('Pâté'), 'pate');
-  assert.equal(cleReponse('Coca-Cola'), cleReponse('coca   cola'));
-  assert.equal(cleReponse('Qui est-ce ?'), 'qui est ce');
-});
-
-test('clé : article en tête retiré', () => {
-  assert.equal(cleReponse('Les fraises'), 'fraise');
-  assert.equal(cleReponse('l\'ananas'), cleReponse('ananas'));
-  assert.equal(cleReponse('de la purée'), 'puree');
-  assert.equal(cleReponse('une pomme'), 'pomme');
-  assert.equal(cleReponse('Un'), 'un');
-});
-
-test('clé : pluriel simple retiré, mots de 3 lettres gardés', () => {
-  assert.equal(cleReponse('Fraises'), 'fraise');
-  assert.equal(cleReponse('Choux'), 'chou');
-  assert.equal(cleReponse('haricots verts'), cleReponse('haricot vert'));
-  assert.equal(cleReponse('bus'), 'bus');
-});
-
-test('clé : pas de tolérance aux fautes, clé vide sans lettre ni chiffre', () => {
-  assert.notEqual(cleReponse('canard'), cleReponse('canari'));
-  assert.equal(cleReponse('!!!'), '');
-  assert.equal(cleReponse('Œuf'), 'oeuf');
 });
 
 // --- Groupes et points ---

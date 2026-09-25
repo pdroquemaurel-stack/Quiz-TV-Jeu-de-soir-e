@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle } from '../salles.js';
-import { classement, normaliser, tirerQuestions } from './commun.js';
+import {
+  classement, cleReponse, normaliser, tirerQuestions,
+} from './commun.js';
 import { modes, modesAVenir } from './index.js';
 
 // --- Registre des modes ---
@@ -87,4 +89,34 @@ test('normaliser : casse, accents et espaces ignorés', () => {
   for (const texte of ['PISCINE', 'piscine', 'Piscíne', '  piscine  ']) assert.equal(normaliser(texte), 'piscine', texte);
   assert.equal(normaliser('Écharpe'), 'echarpe');
   assert.equal(normaliser('pomme   de  terre'), 'pomme de terre');
+});
+
+// --- Clé des réponses libres ---
+
+test('clé : casse, accents, espaces, ponctuation et tirets ignorés', () => {
+  for (const texte of ['FRAISE', 'fraise', ' fraise ', 'Fraise !', 'fräise']) assert.equal(cleReponse(texte), 'fraise', texte);
+  assert.equal(cleReponse('Pâté'), 'pate');
+  assert.equal(cleReponse('Coca-Cola'), cleReponse('coca   cola'));
+  assert.equal(cleReponse('Qui est-ce ?'), 'qui est ce');
+});
+
+test('clé : article en tête retiré', () => {
+  assert.equal(cleReponse('Les fraises'), 'fraise');
+  assert.equal(cleReponse('l\'ananas'), cleReponse('ananas'));
+  assert.equal(cleReponse('de la purée'), 'puree');
+  assert.equal(cleReponse('une pomme'), 'pomme');
+  assert.equal(cleReponse('Un'), 'un');
+});
+
+test('clé : pluriel simple retiré, mots de 3 lettres gardés', () => {
+  assert.equal(cleReponse('Fraises'), 'fraise');
+  assert.equal(cleReponse('Choux'), 'chou');
+  assert.equal(cleReponse('haricots verts'), cleReponse('haricot vert'));
+  assert.equal(cleReponse('bus'), 'bus');
+});
+
+test('clé : pas de tolérance aux fautes, clé vide sans lettre ni chiffre', () => {
+  assert.notEqual(cleReponse('canard'), cleReponse('canari'));
+  assert.equal(cleReponse('!!!'), '');
+  assert.equal(cleReponse('Œuf'), 'oeuf');
 });

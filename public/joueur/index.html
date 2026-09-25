@@ -211,6 +211,40 @@
     <button id="mr-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="bluff-ecrire" hidden>
+    <p id="bl-numero" class="discret"></p>
+    <p id="bl-question" class="gros-texte"></p>
+    <p class="discret">Invente une fausse réponse crédible, avec son article s'il en faut un (le, la, du, des…)</p>
+    <input id="bl-champ" class="champ-mot" type="text" maxlength="30" autocomplete="off" enterkeyhint="done" aria-label="Ton bluff">
+    <button id="bl-valider" class="bouton en-bas" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="bluff-bluff_envoye" hidden>
+    <p class="gros-texte">Ton bluff</p>
+    <p id="bl-bluff-envoye" class="nombre-envoye rebond"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="bluff-voter" hidden>
+    <p class="gros-texte">Laquelle est la vraie ?</p>
+    <p id="bl-question-vote" class="discret"></p>
+    <div id="bl-choix" class="bl-choix"></div>
+  </main>
+
+  <main data-ecran="bluff-vote_envoye" hidden>
+    <p class="gros-texte">Tu as choisi</p>
+    <p id="bl-vote-envoye" class="nombre-envoye rebond"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="bluff-resultat" hidden>
+    <p id="bl-verite" class="carte-resultat rebond"></p>
+    <p id="bl-bluff" class="gros-texte"></p>
+    <p>Score : <strong id="bl-score"></strong></p>
+    <p>Rang : <strong id="bl-rang"></strong></p>
+    <button id="bl-suivant" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -260,5 +294,6 @@
   <script src="/joueur/modes/qui-de-nous.js"></script>
   <script src="/joueur/modes/undercover.js"></script>
   <script src="/joueur/modes/meme-reponse.js"></script>
+  <script src="/joueur/modes/bluff.js"></script>
 </body>
 </html>

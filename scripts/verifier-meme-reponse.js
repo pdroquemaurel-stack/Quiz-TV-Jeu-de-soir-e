@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { LONGUEUR_MAX_REPONSE, cleReponse } from '../server/modes/meme-reponse.js';
+import { cleReponse } from '../server/modes/commun.js';
+import { LONGUEUR_MAX_REPONSE } from '../server/modes/meme-reponse.js';
 import { LONGUEUR_MAX_TEXTE } from './verifier-questions.js';
 
 const CHAMPS_QUESTION = ['id', 'texte', 'reponses'];

@@ -5,7 +5,7 @@ import {
   creerSalle, demarrerPartie, deconnecterJoueur, fermerSalle, nouvelleAventure, passerApresPodium,
   peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
-import { modes } from './modes/index.js';
+import { modes, modesAVenir } from './modes/index.js';
 
 test('le code de salle fait 4 lettres et deux salles ont des codes différents', () => {
   const a = creerSalle('tv1');
@@ -163,6 +163,14 @@ function avecModeFictif(t) {
   t.after(() => delete modes.fictif);
 }
 
+// Mode prévu fictif (« Bientôt »), retiré de modesAVenir à la fin du test.
+function avecModeAVenir(t) {
+  modesAVenir.push({
+    id: 'futur', nom: 'Futur', regleCourte: 'Pour les tests.', joueursMin: 2,
+  });
+  t.after(() => modesAVenir.pop());
+}
+
 function salleAvec(nombre) {
   const salle = creerSalle('tv');
   const joueurs = [];
@@ -185,9 +193,10 @@ test('choix du mode : un mode grisé est refusé, puis accepté quand le compte 
   assert.equal(salle.mode, 'fictif');
 });
 
-test('choix du mode : mode inconnu, mode à venir ou valeur bizarre refusés', () => {
+test('choix du mode : mode inconnu, mode à venir ou valeur bizarre refusés', (t) => {
+  avecModeAVenir(t);
   const { salle } = salleAvec(10);
-  for (const id of ['inconnu', 'bluff', 'toString', '__proto__', null, 3]) {
+  for (const id of ['inconnu', 'futur', 'toString', '__proto__', null, 3]) {
     assert.equal(choisirMode(salle, id), false, String(id));
   }
   assert.equal(salle.mode, 'quiz');
@@ -235,7 +244,8 @@ test('choix du mode : avec MODE_DEV=1, un seul joueur suffit pour tous les modes
   assert.equal(choisirMode(salle, 'fictif'), true);
 });
 
-test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à venir grisés', () => {
+test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à venir grisés', (t) => {
+  avecModeAVenir(t);
   const { salle, joueurs: [hote, autre] } = salleAvec(2);
   const { modes: liste, modeChoisi } = vueJoueur(salle, hote);
   assert.equal(modeChoisi, 'Quiz');
@@ -244,7 +254,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
     liste.slice(1).map((m) => [m.id, m.disponible, m.bientot]),
     [
       ['estimation', false, false], ['qui-de-nous', false, false], ['undercover', false, false],
-      ['meme-reponse', false, false], ['bluff', false, true],
+      ['meme-reponse', false, false], ['bluff', false, false], ['futur', false, true],
     ],
   );
   assert.equal(vueJoueur(salle, autre).modes, undefined);

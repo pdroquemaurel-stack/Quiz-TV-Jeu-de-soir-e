@@ -188,6 +188,48 @@
       </div>
     </main>
 
+    <main data-ecran="bluff-saisie" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="bl-numero-saisie"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="bl-barre-temps-saisie"></div></div>
+        <p class="chrono" id="bl-chrono-saisie"></p>
+      </div>
+      <h1 class="question rebond" id="bl-texte-saisie"></h1>
+      <p class="consigne-vote">Invente une fausse réponse, avec son article (le, la, du…)</p>
+      <ul class="etiquettes ont-repondu" id="bl-ont-ecrit"></ul>
+    </main>
+
+    <main data-ecran="bluff-vote" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="bl-numero-vote"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="bl-barre-temps-vote"></div></div>
+        <p class="chrono" id="bl-chrono-vote"></p>
+      </div>
+      <h1 class="question" id="bl-texte-vote"></h1>
+      <ol class="bl-propositions" id="bl-propositions"></ol>
+      <p class="consigne-vote">Trouve la vraie réponse !</p>
+      <ul class="etiquettes ont-repondu" id="bl-ont-vote"></ul>
+    </main>
+
+    <main data-ecran="bluff-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="bl-numero-revelation"></p>
+      </div>
+      <div class="qdn-entete">
+        <h1 class="question" id="bl-texte-revelation"></h1>
+        <p class="elus rebond" id="bl-verdict"></p>
+      </div>
+      <div class="qdn-listes">
+        <div class="mr-reponses">
+          <ol class="bl-cartes" id="bl-cartes"></ol>
+          <div class="mr-ligne" id="bl-personne-ny-a-cru"><span class="mr-titre-ligne">Personne n'y a cru :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="bl-sans-bluff"><span class="mr-titre-ligne">Pas de bluff :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="bl-sans-vote"><span class="mr-titre-ligne">Pas de vote :</span><ul class="etiquettes"></ul></div>
+        </div>
+        <ol class="classement classement-colonne" id="bl-classement"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
       <p class="plus-designe" id="plus-designe" hidden></p>
@@ -234,5 +276,6 @@
   <script src="/tv/modes/qui-de-nous.js"></script>
   <script src="/tv/modes/undercover.js"></script>
   <script src="/tv/modes/meme-reponse.js"></script>
+  <script src="/tv/modes/bluff.js"></script>
 </body>
 </html>
