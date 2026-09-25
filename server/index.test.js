@@ -259,7 +259,7 @@ test('chaque action hote:* est refusée à un non-hôte', { timeout: 10000 }, as
   assert.equal(salle.format.type, 'petite');
 
   hote.emettre('hote:lancer');
-  await attendreQue(() => salle.etat === 'partie');
+  await attendreQue(() => salle.etat === 'partie' && salle.etatMode.phase === 'question');
   hote.emettre('joueur:repondre', 0);
   autre.emettre('joueur:repondre', 0);
   await attendreQue(() => salle.etatMode.phase === 'revelation');
@@ -299,7 +299,8 @@ test('double « Entrer » puis autre pseudo depuis le même socket : un seul jou
   assert.ok(!paul.evenements.some(([nom]) => nom === 'erreur'));
 });
 
-test('double « Suivant » à la 10e révélation du quiz : le podium n\'est pas sauté', { timeout: 10000 }, async (t) => {
+// Chaque question est précédée de 2,5 s de transition : 10 questions prennent 25 s.
+test('double « Suivant » à la 10e révélation du quiz : le podium n\'est pas sauté', { timeout: 40000 }, async (t) => {
   const { salle, clients } = await ouvrirSalle(t, ['Hôte', 'Autre']);
   const [hote] = clients;
   hote.emettre('hote:lancer');

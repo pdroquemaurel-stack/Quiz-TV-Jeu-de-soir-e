@@ -9,7 +9,7 @@ import { modes, modesAVenir } from './modes/index.js';
 export const JOUEURS_MAX = 10;
 export const DELAI_ABSENCE_MS = 10000;
 export const DELAI_FERMETURE_MS = 30 * 60 * 1000;
-export const DUREE_PODIUM_MS = 15000;
+export const DUREE_PODIUM_MS = 20000;
 export const OBJECTIF_MIN = 3;
 export const OBJECTIF_MAX = 15;
 const PSEUDO_MAX = 12;

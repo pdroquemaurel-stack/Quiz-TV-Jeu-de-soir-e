@@ -202,6 +202,37 @@ main[data-ecran="lobby"] {
   --masque-pause: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='14' y='8' width='26' height='84' rx='6'/%3E%3Crect x='60' y='8' width='26' height='84' rx='6'/%3E%3C/svg%3E");
 }
 
+/* ---------- Transition avant une question du quiz ---------- */
+
+main[data-ecran="quiz-transition"] {
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+}
+
+main[data-ecran="quiz-transition"] .numero {
+  font-size: 72px;
+}
+
+/* La catégorie arrive de la droite, dépasse un peu puis se pose. */
+.categorie-transition {
+  max-width: 1600px;
+  padding: 40px 100px;
+  text-align: center;
+  font-size: 140px;
+  line-height: 1.1;
+  color: var(--accent);
+  background: var(--panneau);
+  border: 8px solid var(--contour);
+  border-bottom-width: 18px;
+  border-radius: 48px;
+  animation: glisser 700ms 200ms cubic-bezier(0.3, 1.3, 0.6, 1) both;
+}
+
+@keyframes glisser {
+  from { opacity: 0; transform: translateX(900px); }
+}
+
 /* ---------- Question ---------- */
 
 .tv-haut {
@@ -454,9 +485,35 @@ main[data-ecran="quiz-revelation"] .reponses .forme {
   background: var(--texte-doux);
 }
 
+/* Changement de rang depuis la manche précédente : la forme compte autant que la couleur. */
+.fleche {
+  flex: none;
+  width: 40px;
+  text-align: center;
+}
+
+.fleche.monte {
+  color: var(--juste);
+}
+
+.fleche.descend {
+  color: var(--rate);
+}
+
 /* À la révélation, le classement arrive après la bonne réponse. */
 main[data-ecran="quiz-revelation"] .classement {
   animation: apparaitre 400ms 1.5s both;
+}
+
+/* « ⚡ Léa en 1,8 s », à côté du numéro, en même temps que la bonne réponse. */
+.plus-rapide {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 56px;
+  animation: apparaitre 400ms 600ms both;
 }
 
 /* ---------- Podium ---------- */
@@ -482,9 +539,10 @@ main[data-ecran="podium"] {
   animation: rebondir 600ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
 }
 
-.marche-3 { animation-delay: 200ms; }
-.marche-2 { animation-delay: 500ms; }
-.marche-1 { animation-delay: 900ms; }
+/* 3e, puis 2e, puis 1er, à 1 s d'écart. Le son « podium » est calé sur le 1er (tv.js). */
+.marche-3 { animation-delay: 500ms; }
+.marche-2 { animation-delay: 1.5s; }
+.marche-1 { animation-delay: 2.5s; }
 
 /* Les ex æquo partagent la même marche. */
 .noms {
@@ -522,9 +580,88 @@ main[data-ecran="podium"] {
   visibility: hidden;
 }
 
-main[data-ecran="podium"] .classement {
+/* Le classement et les prix se partagent la même place, l'un après l'autre. */
+.bas-podium {
   width: 100%;
-  animation: apparaitre 400ms 1.5s both;
+  display: grid;
+}
+
+.bas-podium > * {
+  grid-area: 1 / 1;
+}
+
+main[data-ecran="podium"] .classement {
+  animation: apparaitre 400ms 3.5s both;
+}
+
+/* Avec des prix (quiz), le classement s'efface à 11 s pour leur laisser la place. */
+.prix-podium:not([hidden]) + .classement {
+  animation: apparaitre 400ms 3.5s both, disparaitre 400ms 11s forwards;
+}
+
+@keyframes disparaitre {
+  to { opacity: 0; }
+}
+
+/* Prix de fin de partie : 2 colonnes, 2 lignes au plus. */
+.prix-podium {
+  list-style: none;
+  margin: 0;
+  padding: 0 220px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-content: start;
+  gap: 20px 40px;
+}
+
+.prix-podium li {
+  padding: 6px 24px;
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 28px;
+  background: var(--panneau);
+  animation: rebondir 550ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+.prix-podium li:nth-child(1) { animation-delay: 11.4s; }
+.prix-podium li:nth-child(2) { animation-delay: 11.6s; }
+.prix-podium li:nth-child(3) { animation-delay: 11.8s; }
+.prix-podium li:nth-child(4) { animation-delay: 12s; }
+
+.haut-prix {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 40px;
+}
+
+.titre-prix {
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.detail-prix {
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.laureat-prix {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 48px;
+}
+
+/* La question piège tient sur 2 lignes, coupée avec « … » si elle est plus longue. */
+.question-prix {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 40px;
+  line-height: 1.2;
 }
 
 /* ---------- Estimation ---------- */

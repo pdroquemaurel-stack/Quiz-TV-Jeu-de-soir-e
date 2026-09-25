@@ -1,14 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ajouterJoueur, creerSalle, demarrerPartie, synchroniserMinuteur, terminerPartie, vueJoueur,
-  vueTv,
+  DUREE_PODIUM_MS, ajouterJoueur, creerSalle, demarrerPartie, synchroniserMinuteur, terminerPartie,
+  vueJoueur, vueTv,
 } from '../salles.js';
 import { tousOntRepondu } from './commun.js';
 import {
-  NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, classement, echeance,
-  enregistrerReponse, melangerReponses, passerALaSuite, reveler, tirerQuestionsEquilibrees,
-  verifierFinAnticipee,
+  DUREE_TRANSITION_MS, NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, calculerPrix,
+  classement, echeance, enregistrerReponse, melangerReponses, passerALaSuite, reponseLaPlusRapide,
+  reveler, suivant, tirerQuestionsEquilibrees, verifierFinAnticipee,
 } from './quiz.js';
 
 function sallePrete() {
@@ -16,7 +16,14 @@ function sallePrete() {
   const { joueur: paul } = ajouterJoueur(salle, 'Paul', 's1');
   const { joueur: lea } = ajouterJoueur(salle, 'Léa', 's2');
   demarrerPartie(salle);
+  avancer(salle);
   return { salle, paul, lea };
+}
+
+// Question suivante, sans attendre la fin de l'écran de transition.
+function questionSuivante(salle) {
+  passerALaSuite(salle);
+  if (salle.etat === 'partie') avancer(salle);
 }
 
 // Temps simulé : Date.now() part de 0 et n'avance qu'avec t.mock.timers.tick().
@@ -29,7 +36,7 @@ function quandAvance(salle) {
   synchroniserMinuteur(salle, quandAvance);
 }
 
-// « question », « revelation » pendant une partie, sinon l'état de la salle.
+// « transition », « question », « revelation » pendant une partie, sinon l'état de la salle.
 const etape = (salle) => (salle.etat === 'partie' ? salle.etatMode.phase : salle.etat);
 
 const bonneReponse = (salle) => salle.etatMode.questions[salle.etatMode.indexQuestion].bonneReponse;
@@ -191,16 +198,20 @@ test('les questions d\'une partie ont leurs réponses mélangées sans perdre la
 
 // --- Déroulé d'une manche ---
 
-test('demarrerPartie passe à la 1re question et remet les scores à zéro', () => {
+test('demarrerPartie passe à la transition de la 1re question et remet les scores à zéro', () => {
   const salle = creerSalle('tv');
   const { joueur } = ajouterJoueur(salle, 'Paul', 's1');
   joueur.score = 500;
 
   demarrerPartie(salle);
 
-  assert.equal(etape(salle), 'question');
+  assert.equal(etape(salle), 'transition');
   assert.equal(salle.etatMode.indexQuestion, 0);
   assert.equal(salle.etatMode.questions.length, NOMBRE_QUESTIONS);
+  assert.equal(joueur.score, 0);
+
+  avancer(salle);
+  assert.equal(etape(salle), 'question');
   assert.deepEqual(salle.etatMode.reponses, {});
   assert.deepEqual(salle.etatMode.attendus, [joueur.id]);
   assert.equal(typeof salle.etatMode.debutQuestionA, 'number');
@@ -257,7 +268,7 @@ test('arrivée en cours de manche : 0 point, attend la question suivante, puis j
   reveler(salle);
   assert.equal(vueJoueur(salle, tardif).ecran, 'attente_question');
 
-  passerALaSuite(salle);
+  questionSuivante(salle);
   assert.equal(vueJoueur(salle, tardif).ecran, 'repondre');
   assert.equal(enregistrerReponse(salle, tardif.id, 0), true);
 });
@@ -267,8 +278,10 @@ test('les questions s\'enchaînent puis on arrive au podium', () => {
   for (let i = 1; i < NOMBRE_QUESTIONS; i++) {
     reveler(salle);
     passerALaSuite(salle);
-    assert.equal(etape(salle), 'question');
+    assert.equal(etape(salle), 'transition');
     assert.equal(salle.etatMode.indexQuestion, i);
+    avancer(salle);
+    assert.equal(etape(salle), 'question');
     assert.deepEqual(salle.etatMode.reponses, {});
   }
   reveler(salle);
@@ -276,7 +289,7 @@ test('les questions s\'enchaînent puis on arrive au podium', () => {
   assert.equal(etape(salle), 'podium');
 });
 
-test('echeance : 20 s en question, 8 s en révélation, aucune au podium', (t) => {
+test('echeance : 2,5 s en transition, 20 s en question, 8 s en révélation, aucune au podium', (t) => {
   simulerTemps(t);
   const { salle } = sallePrete();
   assert.equal(echeance(salle), 20000);
@@ -285,6 +298,11 @@ test('echeance : 20 s en question, 8 s en révélation, aucune au podium', (t) =
   avancer(salle);
   assert.equal(etape(salle), 'revelation');
   assert.equal(echeance(salle), 11000);
+
+  avancer(salle);
+  assert.equal(etape(salle), 'transition');
+  assert.equal(salle.etatMode.indexQuestion, 1);
+  assert.equal(echeance(salle), 3000 + DUREE_TRANSITION_MS);
 
   avancer(salle);
   assert.equal(etape(salle), 'question');
@@ -301,7 +319,7 @@ test('rejouer : scores à zéro et retour à la 1re question', () => {
 
   demarrerPartie(salle);
 
-  assert.equal(etape(salle), 'question');
+  assert.equal(etape(salle), 'transition');
   assert.equal(salle.etatMode.indexQuestion, 0);
   assert.equal(paul.score, 0);
 });
@@ -312,7 +330,7 @@ test('terminer pendant une question : podium, et la manche en cours ne compte pa
   simulerTemps(t);
   const { salle, paul, lea } = sallePrete();
   reveler(salle);
-  passerALaSuite(salle);
+  questionSuivante(salle);
   paul.score = 1500;
   enregistrerReponse(salle, paul.id, bonneReponse(salle));
 
@@ -355,7 +373,7 @@ test('rejouer fonctionne après un arrêt par l\'hôte', () => {
 
   demarrerPartie(salle);
 
-  assert.equal(etape(salle), 'question');
+  assert.equal(etape(salle), 'transition');
   assert.equal(paul.score, 0);
 });
 
@@ -372,7 +390,7 @@ test('minuteur : la révélation arrive à 20 s pile', (t) => {
   assert.equal(etape(salle), 'revelation');
 });
 
-test('minuteur : question suivante 8 s après la révélation, puis podium, et le tableau 15 s plus tard', (t) => {
+test('minuteur : transition 8 s après la révélation, question 2,5 s plus tard, puis podium et tableau', (t) => {
   simulerTemps(t);
   const { salle } = sallePrete();
   synchroniserMinuteur(salle, quandAvance);
@@ -381,20 +399,25 @@ test('minuteur : question suivante 8 s après la révélation, puis podium, et l
   t.mock.timers.tick(7999);
   assert.equal(etape(salle), 'revelation');
   t.mock.timers.tick(1);
-  assert.equal(etape(salle), 'question');
+  assert.equal(etape(salle), 'transition');
   assert.equal(salle.etatMode.indexQuestion, 1);
+  t.mock.timers.tick(DUREE_TRANSITION_MS - 1);
+  assert.equal(etape(salle), 'transition');
+  t.mock.timers.tick(1);
+  assert.equal(etape(salle), 'question');
 
   // On avance étape par étape jusqu'à la révélation de la dernière question :
   // un seul gros tick ne déclenche pas les minuteurs créés pendant ce tick.
   for (let i = 1; i < NOMBRE_QUESTIONS - 1; i++) {
     t.mock.timers.tick(20000);
     t.mock.timers.tick(8000);
+    t.mock.timers.tick(DUREE_TRANSITION_MS);
   }
   t.mock.timers.tick(20000);
   assert.equal(etape(salle), 'revelation');
   t.mock.timers.tick(8000);
   assert.equal(etape(salle), 'podium');
-  t.mock.timers.tick(14999);
+  t.mock.timers.tick(DUREE_PODIUM_MS - 1);
   assert.equal(etape(salle), 'podium');
   t.mock.timers.tick(1);
   assert.equal(etape(salle), 'tableau');
@@ -428,6 +451,8 @@ test('minuteur : fin anticipée, puis question suivante 8 s plus tard', (t) => {
   assert.equal(etape(salle), 'revelation');
 
   t.mock.timers.tick(8000);
+  assert.equal(etape(salle), 'transition');
+  t.mock.timers.tick(DUREE_TRANSITION_MS);
   assert.equal(etape(salle), 'question');
   assert.equal(salle.etatMode.indexQuestion, 1);
 });
@@ -505,4 +530,283 @@ test('l\'écran du téléphone suit l\'état de la manche', (t) => {
   for (let i = 0; i < NOMBRE_QUESTIONS; i++) passerALaSuite(salle);
   assert.equal(vueJoueur(salle, paul).ecran, 'fin');
   assert.equal(typeof vueJoueur(salle, paul).assezDeJoueurs, 'boolean');
+});
+
+// --- Transition avant chaque question ---
+
+test('transition : aucune réponse acceptée, et « Suivant » est ignoré', () => {
+  const { salle, paul } = sallePrete();
+  reveler(salle);
+  passerALaSuite(salle);
+  assert.equal(etape(salle), 'transition');
+
+  assert.equal(enregistrerReponse(salle, paul.id, bonneReponse(salle)), false);
+  verifierFinAnticipee(salle);
+  assert.equal(suivant(salle), false);
+  assert.equal(etape(salle), 'transition');
+});
+
+test('transition : les points partent du début de la question, pas de la transition', (t) => {
+  simulerTemps(t);
+  const salle = creerSalle('tv');
+  const { joueur: paul } = ajouterJoueur(salle, 'Paul', 's1');
+  ajouterJoueur(salle, 'Léa', 's2');
+  demarrerPartie(salle);
+  synchroniserMinuteur(salle, quandAvance);
+
+  t.mock.timers.tick(DUREE_TRANSITION_MS);
+  assert.equal(etape(salle), 'question');
+  assert.equal(echeance(salle), DUREE_TRANSITION_MS + 20000);
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+  reveler(salle);
+  assert.equal(paul.score, 1000);
+});
+
+test('transition : un joueur arrivé pendant la transition joue la question', () => {
+  const { salle } = sallePrete();
+  reveler(salle);
+  passerALaSuite(salle);
+  const { joueur: tardif } = ajouterJoueur(salle, 'Tardif', 's3');
+  assert.equal(vueJoueur(salle, tardif).ecran, 'attente_question');
+
+  avancer(salle);
+  assert.equal(vueJoueur(salle, tardif).ecran, 'repondre');
+  assert.equal(enregistrerReponse(salle, tardif.id, 0), true);
+});
+
+test('transition : la TV reçoit la catégorie, sans le texte ni les réponses', () => {
+  const salle = creerSalle('tv');
+  const { joueur: paul } = ajouterJoueur(salle, 'Paul', 's1');
+  demarrerPartie(salle);
+  const question = salle.etatMode.questions[0];
+  const vue = vueTv(salle).etatMode;
+
+  assert.deepEqual(Object.keys(vue).sort(), ['categorie', 'numero', 'phase', 'total']);
+  assert.equal(vue.numero, 1);
+  assert.equal(typeof vue.categorie, 'string');
+  assert.notEqual(vue.categorie, question.categorie, 'le libellé, pas l\'identifiant');
+  assert.ok(!JSON.stringify(vueTv(salle)).includes(JSON.stringify(question.texte)));
+  assert.equal(vueJoueur(salle, paul).ecran, 'attente_question');
+});
+
+test('transition : chaque catégorie de la banque a un libellé', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  demarrerPartie(salle);
+  for (const question of banqueQuestions) {
+    salle.etatMode.questions[0] = question;
+    assert.ok(vueTv(salle).etatMode.categorie, question.categorie);
+  }
+});
+
+test('transition : terminer pendant la transition mène au podium', () => {
+  const { salle, paul } = sallePrete();
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+  reveler(salle);
+  passerALaSuite(salle);
+  const score = paul.score;
+
+  assert.equal(terminerPartie(salle), true);
+  assert.equal(etape(salle), 'podium');
+  assert.equal(paul.score, score);
+});
+
+// --- Réponse la plus rapide ---
+
+test('plus rapide : la bonne réponse reçue la première, une mauvaise plus rapide ne compte pas', () => {
+  const reponses = {
+    a: { choix: 1, recuA: 1500 },
+    b: { choix: 2, recuA: 2800 },
+    c: { choix: 2, recuA: 2300 },
+  };
+  assert.deepEqual(reponseLaPlusRapide(reponses, 2, 1000), { id: 'c', dureeMs: 1300 });
+});
+
+test('plus rapide : personne n\'a trouvé, ou personne n\'a répondu', () => {
+  assert.equal(reponseLaPlusRapide({ a: { choix: 1, recuA: 1500 } }, 2, 1000), null);
+  assert.equal(reponseLaPlusRapide({}, 2, 1000), null);
+});
+
+test('plus rapide : à égalité, la première enregistrée', () => {
+  const reponses = { a: { choix: 0, recuA: 1800 }, b: { choix: 0, recuA: 1800 } };
+  assert.equal(reponseLaPlusRapide(reponses, 0, 0).id, 'a');
+});
+
+test('plus rapide : la TV et le téléphone le reçoivent à la révélation seulement', (t) => {
+  simulerTemps(t);
+  const { salle, paul, lea } = sallePrete();
+  t.mock.timers.tick(1800);
+  enregistrerReponse(salle, lea.id, bonneReponse(salle));
+  t.mock.timers.tick(500);
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+  assert.equal(vueTv(salle).etatMode.plusRapide, undefined);
+
+  reveler(salle);
+  assert.deepEqual(vueTv(salle).etatMode.plusRapide, { id: lea.id, dureeMs: 1800 });
+  assert.equal(vueJoueur(salle, lea).plusRapide, true);
+  assert.equal(vueJoueur(salle, paul).plusRapide, false);
+});
+
+// --- Prix de fin de partie ---
+
+// Une question jouée : réponses sous la forme { id: [juste, dureeMs] }.
+function questionJouee(texte, attendus, reponses = {}) {
+  return {
+    texte,
+    attendus,
+    reponses: Object.fromEntries(
+      Object.entries(reponses).map(([id, [juste, dureeMs]]) => [id, { juste, dureeMs }]),
+    ),
+  };
+}
+
+const prixDe = (prix, type) => prix.find((unPrix) => unPrix.type === type);
+
+test('prix : aucune question jouée, aucun prix', () => {
+  assert.deepEqual(calculerPrix([], ['a', 'b']), []);
+});
+
+test('prix éclair : la bonne réponse la plus rapide, même si une mauvaise était plus rapide', () => {
+  const prix = calculerPrix([
+    questionJouee('Q1', ['a', 'b'], { a: [false, 500], b: [true, 1800] }),
+    questionJouee('Q2', ['a', 'b'], { a: [true, 2500], b: [true, 3000] }),
+  ], ['a', 'b']);
+  assert.deepEqual(prixDe(prix, 'eclair'), { type: 'eclair', ids: ['b'], dureeMs: 1800 });
+});
+
+test('prix éclair : à égalité, les deux le reçoivent ; sans bonne réponse, personne', () => {
+  const egalite = calculerPrix([
+    questionJouee('Q1', ['a', 'b'], { a: [true, 1200] }),
+    questionJouee('Q2', ['a', 'b'], { b: [true, 1200] }),
+  ], ['a', 'b']);
+  assert.deepEqual(prixDe(egalite, 'eclair').ids, ['a', 'b']);
+
+  const aucune = calculerPrix([questionJouee('Q1', ['a'], { a: [false, 1000] })], ['a']);
+  assert.equal(prixDe(aucune, 'eclair'), undefined);
+});
+
+test('prix série : 3 bonnes réponses d\'affilée au moins, une question non jouée coupe la série', () => {
+  const juste = (id) => ({ [id]: [true, 5000] });
+  const historique = [
+    questionJouee('Q1', ['a', 'b'], { ...juste('a'), ...juste('b') }),
+    questionJouee('Q2', ['a', 'b'], { ...juste('a'), ...juste('b') }),
+    questionJouee('Q3', ['a'], juste('a')),
+    questionJouee('Q4', ['a', 'b'], { ...juste('a'), ...juste('b') }),
+  ];
+  assert.deepEqual(
+    prixDe(calculerPrix(historique, ['a', 'b']), 'serie'),
+    { type: 'serie', ids: ['a'], longueur: 4 },
+  );
+
+  const courte = historique.slice(0, 2);
+  assert.equal(prixDe(calculerPrix(courte, ['a', 'b']), 'serie'), undefined);
+});
+
+test('prix solo : seule bonne réponse d\'une question jouée à 3 ou plus', () => {
+  const historique = [
+    questionJouee('Q1', ['a', 'b', 'c'], { a: [true, 5000], b: [false, 4000] }),
+    questionJouee('Q2', ['a', 'b', 'c'], { a: [true, 5000], c: [false, 4000] }),
+    questionJouee('Q3', ['a', 'b', 'c'], { b: [true, 5000] }),
+    // Jouée à 2 : ne compte pas.
+    questionJouee('Q4', ['b', 'c'], { b: [true, 5000] }),
+  ];
+  assert.deepEqual(
+    prixDe(calculerPrix(historique, ['a', 'b', 'c']), 'solo'),
+    { type: 'solo', ids: ['a'], fois: 2 },
+  );
+
+  const aDeux = [questionJouee('Q1', ['a', 'b'], { a: [true, 5000] })];
+  assert.equal(prixDe(calculerPrix(aDeux, ['a', 'b']), 'solo'), undefined);
+});
+
+test('prix question piège : la plus ratée, une absence de réponse compte comme ratée', () => {
+  const historique = [
+    questionJouee('Facile', ['a', 'b', 'c', 'd'], { a: [true, 1], b: [true, 1], c: [true, 1] }),
+    questionJouee('Dure', ['a', 'b', 'c', 'd'], { a: [true, 1], b: [false, 1] }),
+    questionJouee('Piège', ['a', 'b', 'c', 'd'], { a: [false, 1], b: [false, 1] }),
+  ];
+  assert.deepEqual(prixDe(calculerPrix(historique, ['a', 'b', 'c', 'd']), 'piege'), {
+    type: 'piege', texte: 'Piège', rates: 4, sur: 4,
+  });
+});
+
+test('prix question piège : personne ne le mérite si chaque question est trouvée par la moitié', () => {
+  const historique = [
+    questionJouee('Q1', ['a', 'b', 'c', 'd'], { a: [true, 1], b: [true, 1], c: [false, 1] }),
+    questionJouee('Q2', ['a', 'b'], { a: [true, 1] }),
+  ];
+  assert.equal(prixDe(calculerPrix(historique, ['a', 'b', 'c', 'd']), 'piege'), undefined);
+});
+
+test('prix suspense : la bonne réponse la plus tardive, après 15 s seulement', () => {
+  const historique = [
+    questionJouee('Q1', ['a', 'b'], { a: [true, 2000], b: [true, 16000] }),
+    questionJouee('Q2', ['a', 'b'], { a: [true, 19600], b: [false, 19900] }),
+  ];
+  assert.deepEqual(
+    prixDe(calculerPrix(historique, ['a', 'b']), 'suspense'),
+    { type: 'suspense', ids: ['a'], dureeMs: 19600 },
+  );
+
+  const tropTot = [questionJouee('Q1', ['a', 'b'], { a: [true, 2000], b: [true, 14999] })];
+  assert.equal(prixDe(calculerPrix(tropTot, ['a', 'b']), 'suspense'), undefined);
+});
+
+test('prix suspense : une seule bonne réponse tardive ne donne pas aussi le suspense', () => {
+  const prix = calculerPrix([questionJouee('Q1', ['a', 'b'], { a: [true, 17000] })], ['a', 'b']);
+  assert.equal(prixDe(prix, 'eclair').dureeMs, 17000);
+  assert.equal(prixDe(prix, 'suspense'), undefined);
+});
+
+test('prix dans la lune : le plus de questions sans réponse, 2 au moins', () => {
+  const historique = [
+    questionJouee('Q1', ['a', 'b'], { a: [false, 1000] }),
+    questionJouee('Q2', ['a', 'b'], { a: [false, 1000] }),
+    questionJouee('Q3', ['a', 'b'], { b: [false, 1000] }),
+  ];
+  assert.deepEqual(
+    prixDe(calculerPrix(historique, ['a', 'b']), 'lune'),
+    { type: 'lune', ids: ['b'], fois: 2 },
+  );
+
+  const uneFois = historique.slice(0, 1);
+  assert.equal(prixDe(calculerPrix(uneFois, ['a', 'b']), 'lune'), undefined);
+});
+
+test('prix : 4 au plus, dans l\'ordre éclair, série, solo, piège, suspense, lune', () => {
+  const tous = ['a', 'b', 'c', 'd'];
+  const historique = [
+    questionJouee('Q1', tous, { a: [true, 1000] }),
+    questionJouee('Q2', tous, { a: [true, 16000] }),
+    questionJouee('Q3', tous, { a: [true, 3000] }),
+  ];
+  const prix = calculerPrix(historique, tous);
+  assert.deepEqual(prix.map((unPrix) => unPrix.type), ['eclair', 'serie', 'solo', 'piege']);
+});
+
+test('prix : un joueur qui a quitté la salle n\'en reçoit aucun', () => {
+  const historique = [
+    questionJouee('Q1', ['a', 'b', 'c'], { a: [true, 1000], b: [true, 3000] }),
+    questionJouee('Q2', ['a', 'b', 'c'], { a: [true, 1000] }),
+  ];
+  const prix = calculerPrix(historique, ['b', 'c']);
+  assert.deepEqual(prixDe(prix, 'eclair').ids, ['b']);
+  assert.equal(prixDe(prix, 'solo'), undefined);
+});
+
+test('prix : la partie jouée les retient, et la TV les reçoit au podium', (t) => {
+  simulerTemps(t);
+  const { salle, paul, lea } = sallePrete();
+  t.mock.timers.tick(1200);
+  enregistrerReponse(salle, paul.id, bonneReponse(salle));
+  lea.connecte = false;
+  reveler(salle);
+
+  // Léa, déconnectée sans répondre, n'est pas comptée dans la question.
+  assert.deepEqual(salle.etatMode.historique[0].attendus, [paul.id]);
+  terminerPartie(salle);
+  assert.deepEqual(
+    prixDe(vueTv(salle).etatMode.prix, 'eclair'),
+    { type: 'eclair', ids: [paul.id], dureeMs: 1200 },
+  );
 });

@@ -53,7 +53,7 @@ Pas de son de « bonne » ou « mauvaise réponse » par joueur : la TV est comm
 | Un joueur apparaît en salle d'attente | Un `id` absent de l'état précédent. Un joueur qui se reconnecte (même `id`) ne fait pas de bruit | `arrivee` |
 | La partie démarre | `salle.etat` passe de `lobby`, `tableau` ou `grandGagnant` à `partie`. Remplace le son de la première étape | `lancement` |
 | Les 5 dernières secondes d'un chrono affiché | La seconde affichée par `lancerChrono` change et vaut 5, 4, 3, 2 ou 1. Jamais deux fois la même seconde, même si `lancerChrono` est relancé par un nouvel état (une réponse arrive) | `tictac` |
-| Le podium s'affiche | `salle.etat` passe à `podium` (fin normale ou « Terminer la partie ») | `podium` |
+| Le podium s'affiche | `salle.etat` passe à `podium` (fin normale ou « Terminer la partie »). Joué 1,5 s plus tard : l'accord final tombe avec l'arrivée du 1er (tranche 21) | `podium` |
 | Le grand gagnant d'une aventure s'affiche (tranche 17) | `salle.etat` passe à `grandGagnant`. Le tableau des points globaux, lui, est silencieux | `podium` |
 
 ### Sons propres à chaque mode (`public/tv/modes/<mode>.js`)

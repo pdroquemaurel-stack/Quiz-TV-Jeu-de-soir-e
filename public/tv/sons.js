@@ -88,10 +88,11 @@ const SONS = {
   },
 };
 
-// Joue un son s'il est débloqué. Seul `tictac` a une option : `{ dernier: true }`, plus aigu.
-function jouerSon(nom, options) {
+// Joue un son s'il est débloqué. `{ dans: 1.5 }` le décale de 1,5 s (podium).
+// `tictac` a en plus `{ dernier: true }`, plus aigu.
+function jouerSon(nom, options = {}) {
   if (!sonDebloque()) return;
-  SONS[nom](contexteAudio.currentTime, options);
+  SONS[nom](contexteAudio.currentTime + (options.dans || 0), options);
 }
 
 // ---------- Musique de salle d'attente ----------

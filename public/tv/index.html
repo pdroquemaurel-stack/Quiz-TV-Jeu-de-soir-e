@@ -36,6 +36,11 @@
       </section>
     </main>
 
+    <main data-ecran="quiz-transition" hidden>
+      <p class="numero" id="numero-transition"></p>
+      <h1 class="categorie-transition" id="categorie-transition"></h1>
+    </main>
+
     <main data-ecran="quiz-question" hidden>
       <div class="tv-haut">
         <p class="numero" id="numero-question"></p>
@@ -50,6 +55,7 @@
     <main data-ecran="quiz-revelation" hidden>
       <div class="tv-haut">
         <p class="numero" id="numero-revelation"></p>
+        <p class="plus-rapide" id="plus-rapide" hidden></p>
       </div>
       <h1 class="question" id="texte-revelation"></h1>
       <ol class="reponses" id="reponses-revelation"></ol>
@@ -244,7 +250,11 @@
         <div class="marche marche-1"><ul class="noms" id="podium-1"></ul><div class="socle">1</div></div>
         <div class="marche marche-3"><ul class="noms" id="podium-3"></ul><div class="socle">3</div></div>
       </div>
-      <ol class="classement" id="classement-podium"></ol>
+      <!-- Les prix du quiz remplacent le classement au bout de quelques secondes. -->
+      <div class="bas-podium">
+        <ul class="prix-podium" id="prix-podium" hidden></ul>
+        <ol class="classement" id="classement-podium"></ol>
+      </div>
       <p class="attente">Points globaux dans un instant</p>
     </main>
 

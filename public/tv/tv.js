@@ -61,10 +61,10 @@ let etapeAffichee = '';
 let premierEtatRecu = true;
 let sonDejaJoue = false;
 
-function sonner(nom) {
+function sonner(nom, options) {
   if (premierEtatRecu || sonDejaJoue) return;
   sonDejaJoue = true;
-  jouerSon(nom);
+  jouerSon(nom, options);
 }
 
 socket.on('salle:etat', (salle) => {
@@ -76,6 +76,7 @@ socket.on('salle:etat', (salle) => {
   const etatPrecedent = etapeAffichee.split(':')[0];
   etapeAffichee = etape;
   clearInterval(intervalleChrono);
+  cancelAnimationFrame(compteurScores);
   afficherQrCoin(salle);
   jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape);
   if (salle.etat === 'partie') {
@@ -94,6 +95,7 @@ socket.on('salle:etat', (salle) => {
     afficherEcran('lobby');
     afficherLobby(salle);
   }
+  if (nouvelleEtape) lancerCompteursDeScore();
   premierEtatRecu = false;
   garderEcranAllume();
 });
@@ -104,7 +106,9 @@ function jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape) {
   else arreterMusique();
   if (!nouvelleEtape) return;
   if (salle.etat === 'partie' && etatPrecedent !== 'partie') sonner('lancement');
-  if (salle.etat === 'podium' || salle.etat === 'grandGagnant') sonner('podium');
+  // Au podium, l'accord final tombe à l'arrivée du 1er, 2,5 s après l'écran (tv.css).
+  if (salle.etat === 'podium') sonner('podium', { dans: 1.5 });
+  if (salle.etat === 'grandGagnant') sonner('podium');
 }
 
 // Petit QR code dans un coin pendant la partie, pour les retardataires.
@@ -279,8 +283,9 @@ function afficherPodium(salle) {
       return element;
     }),
   );
-  // Un mode peut ajouter une ligne au podium commun (« Le plus désigné »…).
+  // Un mode peut ajouter une ligne au podium commun (« Le plus désigné »…) ou ses prix.
   document.getElementById('plus-designe').hidden = true;
+  document.getElementById('prix-podium').hidden = true;
   const { completerPodium } = modesTv[salle.mode];
   if (completerPodium) completerPodium(salle);
 }
@@ -322,18 +327,59 @@ function remplirTableau(liste, tableau, avecEcart) {
   }));
 }
 
+// Avec le gain de la manche : flèche de changement de rang, et score qui monte
+// depuis celui d'avant la manche (lancerCompteursDeScore).
 function ligneClassement(ligne, avecGain) {
   const element = document.createElement('li');
   const rang = texte('rang', `${ligne.rang}.`);
   const pseudo = texte('pseudo', ligne.pseudo);
-  element.append(rang, pastille(ligne.couleur), pseudo, texte('score', ligne.score));
-  if (avecGain) {
-    const gain = texte('gain', ligne.points > 0 ? `+${ligne.points}` : '✗');
-    if (ligne.points === 0) gain.classList.add('zero');
-    element.append(gain);
+  const score = texte('score', ligne.score);
+  if (!avecGain) {
+    element.append(rang, pastille(ligne.couleur), pseudo, score);
+    griserSiDeconnecte(element, ligne);
+    return element;
   }
+  score.dataset.depart = ligne.score - ligne.points;
+  score.dataset.arrivee = ligne.score;
+  const gain = texte('gain', ligne.points > 0 ? `+${ligne.points}` : '✗');
+  if (ligne.points === 0) gain.classList.add('zero');
+  element.append(rang, flecheRang(ligne), pastille(ligne.couleur), pseudo, score, gain);
   griserSiDeconnecte(element, ligne);
   return element;
+}
+
+// ▲ si le joueur a gagné des places, ▼ s'il en a perdu. Rien avant le premier classement.
+function flecheRang(ligne) {
+  const fleche = texte('fleche', '');
+  if (ligne.rangAvant === null || ligne.rangAvant === ligne.rang) return fleche;
+  const monte = ligne.rang < ligne.rangAvant;
+  fleche.textContent = monte ? '▲' : '▼';
+  fleche.classList.add(monte ? 'monte' : 'descend');
+  return fleche;
+}
+
+const DUREE_COMPTEUR_MS = 1000;
+let compteurScores = null;
+
+// À une nouvelle étape, les scores du classement affiché montent jusqu'à leur valeur,
+// une fois le classement apparu (son animation-delay dans tv.css).
+function lancerCompteursDeScore() {
+  const ecran = document.querySelector('main:not([hidden])');
+  const scores = [...ecran.querySelectorAll('.classement .score[data-depart]')];
+  if (scores.length === 0) return;
+  const delai = parseFloat(getComputedStyle(scores[0].closest('.classement')).animationDelay) || 0;
+  const debut = performance.now() + delai * 1000;
+  const afficher = (maintenant) => {
+    const avancement = Math.min(1, Math.max(0, (maintenant - debut) / DUREE_COMPTEUR_MS));
+    // Rapide au début, puis ralentit en arrivant.
+    const progression = 1 - (1 - avancement) ** 3;
+    for (const score of scores) {
+      const depart = Number(score.dataset.depart);
+      score.textContent = Math.round(depart + (Number(score.dataset.arrivee) - depart) * progression);
+    }
+    if (avancement < 1) compteurScores = requestAnimationFrame(afficher);
+  };
+  compteurScores = requestAnimationFrame(afficher);
 }
 
 function texte(classe, contenu) {
