@@ -359,8 +359,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité).
-- **À venir**, après l'audit (`AUDIT.md`) : **10 → 20 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité).
+- **À venir**, après l'audit (`AUDIT.md`) : **10 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -456,7 +456,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : la soirée se déroule sans intervention technique, et on note en plus : la netteté du texte à 3 m (P4) ; l'affichage des émojis de médaille 🥇🥈🥉🏆 (P6) ; l'absence de saccades après 30 min de lobby avec musique (P2) ; si l'écran de la TV s'éteint ou non ; si la touche Retour de la télécommande quitte la page par erreur ; si la touche OK débloque bien le son (bandeau « Cliquez pour activer le son »).*
 
-- **20. Jouabilité.** Le téléphone répond tout de suite, aucun joueur ne perd ses points par accident, et les parties de quiz sont plus régulières.
+- **20. Jouabilité.** ✅ Terminée. Le téléphone répond tout de suite, aucun joueur ne perd ses points par accident, et les parties de quiz sont plus régulières.
   - Retours sur le téléphone : bouton marqué dès l'appui (TEL1), « Pas de réponse » au lieu de « Raté » (TEL3), champ d'Estimation vidé à chaque nouvelle question (TEL4), vibration à l'appui et au résultat sur Android (AMB8).
   - Points globaux gardés en salle d'attente (R4) : voir la règle dans « Cas limites ».
   - Tirage équilibré des 10 questions du quiz (F1) : environ 4 faciles, 4 moyennes et 2 difficiles, au plus 2 par catégorie, fonction pure testée.
