@@ -1064,3 +1064,72 @@ main[data-ecran="undercover-vote"] .question {
   font-size: 24px;
   cursor: pointer;
 }
+
+/* ---------- Format, tableau des points globaux et grand gagnant ---------- */
+
+.format-tv {
+  margin-top: 12px;
+  font-size: 44px;
+}
+
+main[data-ecran="tableau"],
+main[data-ecran="grandGagnant"] {
+  align-items: center;
+  gap: 12px;
+}
+
+.sous-titre-tableau {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 44px;
+  color: var(--texte-doux);
+}
+
+.departage {
+  padding: 0 32px;
+  font-size: 56px;
+  color: #fff;
+  background: var(--rate);
+  border-radius: 40px;
+}
+
+/* Une seule colonne : les médailles et l'écart prennent de la place.
+   Plus serré que le classement du podium, pour que 10 joueurs tiennent. */
+.classement.tableau-global {
+  width: 1240px;
+  padding-right: 0;
+  grid-template-columns: 1fr;
+  grid-template-rows: none;
+  grid-auto-flow: row;
+  gap: 4px;
+  animation: apparaitre 400ms 300ms both;
+}
+
+.tableau-global .medailles {
+  min-width: 300px;
+  text-align: right;
+}
+
+.tableau-global .score {
+  min-width: 150px;
+  text-align: right;
+}
+
+.tableau-global .ecart {
+  min-width: 170px;
+  text-align: right;
+  color: var(--texte-doux);
+}
+
+.grand-gagnant {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 120px;
+  color: var(--accent);
+}
+
+.noms .medaille {
+  font-size: 40px;
+}

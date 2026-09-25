@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import {
   classement as classementCommun, listerAttendus, melanger, normaliser, noterQuestionsVues,
-  participe, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
+  participe, passerAuPodium, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 import { compterVotes, trouverElus } from './qui-de-nous.js';
 
@@ -208,7 +208,7 @@ function apresDevinette(salle) {
 function apresFinManche(salle) {
   const suivante = salle.etatMode.indexManche + 1;
   if (suivante < salle.etatMode.paires.length) demarrerManche(salle, suivante);
-  else salle.etat = 'podium';
+  else passerAuPodium(salle);
 }
 
 // ---------- Contrat du mode ----------

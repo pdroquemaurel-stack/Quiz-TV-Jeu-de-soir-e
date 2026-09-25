@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import {
   classement as classementCommun, listerAttendus, noterQuestionsVues, participe, phaseEnCours,
-  rangDe, tirerQuestions, tousOntRepondu,
+  passerAuPodium, rangDe, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
 export const id = 'estimation';
@@ -93,7 +93,7 @@ export function reveler(salle) {
 export function passerALaSuite(salle) {
   const suivante = salle.etatMode.indexQuestion + 1;
   if (suivante < salle.etatMode.questions.length) demarrerQuestion(salle, suivante);
-  else salle.etat = 'podium';
+  else passerAuPodium(salle);
 }
 
 // « Suivant » de l'hôte. Renvoie true si quelque chose a changé.

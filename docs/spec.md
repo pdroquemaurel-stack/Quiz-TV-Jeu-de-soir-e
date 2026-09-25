@@ -10,15 +10,19 @@ Le code et le modèle de données doivent permettre d'ajouter ensuite d'autres m
 
 ## Déroulé d'une partie
 
-Une salle passe par 3 états communs à tous les modes, pilotés par le serveur : `lobby`, `partie` et `podium`. Pendant une partie, le mode a ses propres phases, dans `etatMode.phase`. La TV et les téléphones ne font qu'afficher l'état reçu.
+Une salle passe par 5 états communs à tous les modes, pilotés par le serveur : `lobby`, `partie`, `podium`, `tableau` et `grandGagnant`. Pendant une partie, le mode a ses propres phases, dans `etatMode.phase`. La TV et les téléphones ne font qu'afficher l'état reçu.
 
 ```mermaid
 stateDiagram-v2
     [*] --> lobby: app TV ouverte
     lobby --> partie: l'hôte lance (≥ 2 joueurs)
-    partie --> podium: après la 10e question, ou l'hôte termine
-    podium --> partie: l'hôte appuie sur « Rejouer » (≥ 2 joueurs)
-    podium --> [*]: 30 min sans connexion
+    partie --> podium: après la 10e question, ou l'hôte termine (médailles attribuées)
+    podium --> tableau: après 15 s ou « Suivant »
+    podium --> grandGagnant: idem, en aventure, si un seul joueur en tête a atteint l'objectif
+    tableau --> partie: « Partie suivante » / « Rejouer » (≥ 2 joueurs)
+    tableau --> lobby: « Changer de format » (points globaux gardés)
+    grandGagnant --> partie: « Nouvelle aventure » (points globaux remis à 0)
+    grandGagnant --> lobby: « Changer de format » (points globaux remis à 0)
 ```
 
 Phases du quiz pendant la partie :
@@ -35,12 +39,13 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 1. **Création de la salle.** À l'ouverture de l'app, la TV demande une salle au serveur. Elle affiche un grand QR code, le code de salle en 4 lettres et la liste des joueurs (vide).
 2. **Arrivée des joueurs.** Chaque joueur scanne le QR code (ou tape le code), saisit un pseudo et apparaît sur la TV avec sa couleur. Le premier arrivé devient l'hôte (couronne sur la TV).
-3. **Lancement.** L'hôte voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
+3. **Lancement.** L'hôte choisit le mode et le format (« Petite partie » ou « Aventure », voir « Format et médailles »), puis voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
 4. **Question.** La TV affiche la question, les 4 réponses (couleur + forme), le chrono de 20 s et qui a déjà répondu. Les téléphones affichent 4 gros boutons. Un joueur répond une seule fois, sans changer d'avis.
 5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, puis le classement. Chaque téléphone affiche « Bonne réponse, +740 » ou « Raté ».
 6. **Enchaînement.** Passage automatique après 8 s. L'hôte peut accélérer avec « Suivant ».
-7. **Fin.** Après 10 questions, la TV affiche le podium et les téléphones le rang de chacun.
-8. **Rejouer.** L'hôte appuie sur « Rejouer », actif dès 2 joueurs connectés : mêmes joueurs, scores remis à zéro, nouvelles questions jamais vues dans cette salle.
+7. **Fin.** Après 10 questions, la TV affiche le podium avec les médailles et les téléphones le rang de chacun.
+8. **Tableau.** Après 15 s (ou « Suivant » de l'hôte), la TV affiche les points globaux. En aventure, si un seul joueur en tête a atteint l'objectif, c'est l'écran du grand gagnant à la place.
+9. **Rejouer.** L'hôte appuie sur « Partie suivante » (aventure) ou « Rejouer » (petite partie), actif dès 2 joueurs connectés : mêmes joueurs, scores remis à zéro, points globaux gardés, nouvelles questions jamais vues dans cette salle.
 
 ## Fonctionnalités du MVP
 
@@ -60,7 +65,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 ### Partie de quiz
 - 10 questions tirées au hasard, sans répétition dans la salle
 - QCM à 4 choix, chrono de 20 s, points dégressifs selon la rapidité
-- Révélation, classement intermédiaire, podium final, « Rejouer »
+- Révélation, classement intermédiaire, podium final avec médailles, tableau des points globaux, « Rejouer »
 
 ### TV
 - App Android TV (APK) : une WebView plein écran qui charge la page TV du serveur
@@ -101,6 +106,14 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 - **Fin anticipée** : la manche se termine dès que tous les joueurs attendus ont répondu, ou à 20 s. Les joueurs attendus sont ceux qui étaient connectés au début de la manche et qui le sont encore. Un joueur arrivé en cours de manche n'est pas attendu. Si un joueur attendu se déconnecte, on vérifie à nouveau si tous les autres ont répondu.
 - Classement par score total. En cas d'égalité, les joueurs partagent le même rang, sans départage, et le rang suivant est sauté : 1, 1, 3.
 
+### Format et médailles (tous les modes)
+
+- **Format**, choisi par l'hôte en salle d'attente : « Petite partie » (par défaut) ou « Aventure », avec un objectif de 3 à 15 points globaux (5 par défaut).
+- **Médailles** à la fin de chaque partie, quel que soit le mode, y compris quand l'hôte la termine avant la fin (sur les scores du moment) : or = 3 points globaux, argent = 2, bronze = 1. Classement « olympique » : les ex æquo partagent la même médaille et le rang suivant est sauté (1, 1, 3 → or, or, bronze ; 1, 2, 2 → or, argent, argent). Un joueur à 0 point dans la partie n'a pas de médaille, même s'il est sur le podium.
+- **Points globaux** : ils s'additionnent de partie en partie dans la salle, avec le nombre de médailles de chaque sorte. « Rejouer » et « Changer de format » les gardent. Un joueur qui arrive en cours de route part de 0.
+- **Fin d'une aventure** : après les médailles, si un seul joueur a le plus de points globaux et au moins l'objectif, il est le grand gagnant. Si plusieurs joueurs sont à égalité en tête à l'objectif ou au-delà, on joue une partie de plus (« Départage ! » sur le tableau).
+- **Nouvelle aventure** (ou « Changer de format » après un grand gagnant) : points globaux, médailles et numéro de partie remis à 0, même objectif.
+
 ### Modes de jeu supplémentaires (après le MVP)
 
 Résumés seulement. Les règles détaillées de chaque mode sont écrites dans sa mini-spec (`docs/modes/`), juste avant de le coder. Le maximum reste 10 joueurs pour tous les modes.
@@ -118,7 +131,8 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | Situation | Comportement |
 |---|---|
 | Joueur déconnecté pendant une partie | Grisé sur la TV, garde son score et son pseudo (réservé), ne bloque pas la manche. Jamais supprimé pendant une partie. |
-| Joueur déconnecté en salle d'attente | Retiré de la salle après 10 s de déconnexion. |
+| Joueur déconnecté en salle d'attente | Retiré de la salle après 10 s de déconnexion, avec ses points globaux (y compris après « Changer de format »). |
+| Joueur déconnecté au podium, au tableau ou au grand gagnant | Comme pendant une partie : jamais retiré, garde ses points globaux et ses médailles. |
 | Joueur qui revient | Retrouve pseudo et score grâce à son identifiant mémorisé, et reprend à l'écran en cours. |
 | Joueur retiré de la salle d'attente qui revient | Réinscrit automatiquement avec son pseudo mémorisé, comme un nouveau joueur. Si ce pseudo a été pris entre-temps, il revient au formulaire avec « Pseudo déjà pris ». |
 | Hôte déconnecté plus de 10 s | Dans tous les états, le rôle passe au joueur connecté arrivé le plus tôt (`arriveeA`). Si aucun autre joueur n'est connecté, l'hôte ne change pas, et le rôle passe au premier joueur qui se connecte ensuite. L'ancien hôte ne récupère pas le rôle à son retour. En salle d'attente, l'hôte seul est retiré comme les autres, et le prochain joueur qui arrive devient l'hôte. |
@@ -160,13 +174,15 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "pseudo": "Paul",
   "couleur": 1,
   "score": 2740,
+  "pointsGlobaux": 7,
+  "medailles": { "or": 2, "argent": 0, "bronze": 1 },
   "connecte": true,
   "socketId": "aXc91...",
   "arriveeA": 1758641000000
 }
 ```
 
-`id` est généré par le serveur et mémorisé dans le navigateur du téléphone : c'est lui qui permet la reconnexion. `couleur` est un numéro de 1 à 10 : la teinte réelle est définie dans le CSS (`--joueur-1` à `--joueur-10`, voir « Couleurs »). `socketId` change à chaque reconnexion. `arriveeA` sert à choisir le prochain hôte.
+`score` est celui de la partie en cours, remis à 0 à chaque lancement. `pointsGlobaux` et `medailles` s'accumulent de partie en partie (voir « Format et médailles »). `id` est généré par le serveur et mémorisé dans le navigateur du téléphone : c'est lui qui permet la reconnexion. `couleur` est un numéro de 1 à 10 : la teinte réelle est définie dans le CSS (`--joueur-1` à `--joueur-10`, voir « Couleurs »). `socketId` change à chaque reconnexion. `arriveeA` sert à choisir le prochain hôte.
 
 ### Salle
 
@@ -181,6 +197,11 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "joueurs": ["...objets Joueur..."],
   "questionsVues": ["q0042", "q0107"],
   "derniereActiviteA": 1758641200000,
+  "format": { "type": "aventure", "objectif": 5 },
+  "numeroPartie": 3,
+  "grandGagnantId": null,
+  "debutPodiumA": 1758641100000,
+  "medaillesPartie": { "j_8f3k2a": "or" },
   "etatMode": {
     "phase": "question",
     "questions": ["...10 questions tirées..."],
@@ -191,7 +212,9 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`etat` vaut `lobby`, `partie` ou `podium`. Pendant une partie, `etatMode.phase` vaut `question` ou `revelation` pour le quiz. Les timers (20 s, 8 s, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
+`etat` vaut `lobby`, `partie`, `podium`, `tableau` ou `grandGagnant`. Pendant une partie, `etatMode.phase` vaut `question` ou `revelation` pour le quiz. Les timers (20 s, 8 s, 15 s de podium, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
+
+`format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
 `jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
@@ -205,12 +228,14 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `joueur:rejoindre` | téléphone → serveur | code, pseudo, id mémorisé éventuel |
 | `hote:lancer` | téléphone de l'hôte → serveur | rien |
 | `joueur:repondre` | téléphone → serveur | index du choix |
-| `hote:suivant` | téléphone de l'hôte → serveur | rien |
-| `hote:rejouer` | téléphone de l'hôte → serveur | rien. Relance le mode choisi. |
-| `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au podium, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
+| `hote:suivant` | téléphone de l'hôte → serveur | rien. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
+| `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
+| `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
+| `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant : retour en salle d'attente. |
+| `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
-| `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. |
-| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie) |
+| `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. Hors partie, aussi `tableau` (joueurs triés par points globaux, avec rang, médailles et `ecartAuLeader`), `departage` et `pointsMedaille`. |
+| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie). Hors partie, aussi `format` et `pointsGlobaux` ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
 
 Ni le téléphone ni la TV ne reçoivent la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.
@@ -224,10 +249,12 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Chargement | « Réveil du serveur… » avec nouvelle tentative automatique (voir Contraintes techniques) |
-| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), « En attente que l'hôte lance » |
+| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), format (« Petite partie » ou « Aventure — premier à 5 points »), « En attente que l'hôte lance » |
 | Question | Numéro (3/10), texte, 4 réponses (couleur + forme ▲ ◆ ● ■), chrono, pastilles des joueurs ayant répondu, petit QR code dans un coin |
 | Révélation | Bonne réponse mise en avant, nombre de réponses par choix, qui a eu juste, puis classement avec les points gagnés |
-| Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3), classement complet dessous, « Prochain mode : … », « L'hôte peut relancer » |
+| Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3) avec leur médaille, classement complet dessous avec « 🥇 +3 / 🥈 +2 / 🥉 +1 », « Points globaux dans un instant » |
+| Tableau | Joueurs triés par points globaux (rang, pseudo, médailles obtenues 🥇🥈🥉, points), « Après la partie N ». En aventure : l'objectif, l'écart au leader et « Départage ! » en cas d'égalité en tête à l'objectif. « Prochain mode : … », « L'hôte peut relancer » |
+| Grand gagnant | Nom du grand gagnant en grand, classement final de l'aventure, « L'hôte peut lancer une nouvelle aventure » |
 | Quitter ? | Boîte de confirmation déclenchée par la touche Retour |
 
 ### Téléphone (portrait)
@@ -235,11 +262,13 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Rejoindre | Code pré-rempli depuis le QR code, champ pseudo, bouton « Entrer », messages d'erreur |
-| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : un bouton par mode (grisé s'il manque des joueurs, « Bientôt » s'il n'est pas encore codé), puis « Lancer la partie » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » |
+| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : « Petite partie » / « Aventure » (et en aventure le réglage − / + de l'objectif), un bouton par mode (grisé s'il manque des joueurs, « Bientôt » s'il n'est pas encore codé), puis « Lancer la partie » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » et le format |
 | Répondre | 4 gros boutons couleur + forme, sans texte, qui occupent tout l'écran |
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
 | Résultat | « Bonne réponse, +740 » ou « Raté », rang actuel. Pour l'hôte : bouton « Suivant » |
-| Fin | Rang final et score. Pour l'hôte : les boutons de mode, puis « Rejouer » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » |
+| Fin | Rang final, score, médaille et points globaux gagnés (« 🥇 Médaille d'or, +3 » ou « Pas de médaille cette fois »). Pour l'hôte : « Suivant » |
+| Tableau | Rang et points globaux. Pour l'hôte : les boutons de mode, « Partie suivante » (aventure) ou « Rejouer » (petite partie), inactif sous le minimum du mode choisi, et « Changer de format ». Pour les autres : « Mode : … » |
+| Grand gagnant | « Tu gagnes l'aventure ! » ou « X gagne l'aventure », rang et points globaux. Pour l'hôte : « Nouvelle aventure » et « Changer de format » |
 | En attente de la prochaine question | Pour un joueur arrivé en cours de manche |
 | Reconnexion | Bandeau « Reconnexion… » quand la connexion saute |
 
@@ -320,9 +349,9 @@ Dépendance validée pour le QR code : `qrcode`.
 
 ## Tranches de développement
 
-On découpe en 16 tranches. Chacune se termine par un test concret. La TV est simulée par un onglet de navigateur jusqu'à la tranche 9.
+On découpe en 17 tranches. Chacune se termine par un test concret. La TV est simulée par un onglet de navigateur jusqu'à la tranche 9.
 
-Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14, 15** (modes de jeu), 9, 10. Les tranches 9 (APK) et 10 (soirée test) sont repoussées après les modes de jeu. Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) passe donc avant la tranche 6, pour que les tests sur vrais téléphones se fassent toujours sur le serveur en ligne. Les numéros des tranches ne changent pas.
+Ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), 9, 10. Les tranches 9 (APK) et 10 (soirée test) sont repoussées après les modes de jeu. Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) passe donc avant la tranche 6, pour que les tests sur vrais téléphones se fassent toujours sur le serveur en ligne. Les numéros des tranches ne changent pas.
 
 - **1. Squelette.** Serveur Node + Express + Socket.IO, pages `/tv` et `/joueur` vides, route `/sante`.
   *Test : un message tapé dans l'onglet joueur s'affiche dans l'onglet TV.*
@@ -373,6 +402,11 @@ Tranches :
 
 - **16. Sons.** Sons synthétisés par le navigateur (Web Audio API, aucun fichier audio) et joués par la TV seulement, musique de fond en salle d'attente, planche de sons `/tv?sons`.
   *Test : défini dans `docs/sons.md`.*
+
+### Tranche « Médailles et aventure » (réalisée après la tranche 14)
+
+- **17. Médailles, points globaux et format « Aventure ».** Choix du format en salle d'attente, médailles de fin de partie (fonction pure `attribuerMedailles` dans `server/medailles.js`, avec tests), points globaux, états `tableau` et `grandGagnant`, passage automatique du podium au tableau après 15 s. Règles dans « Format et médailles ».
+  *Test : en local avec 3 onglets `?dev`, une aventure à 3 points jusqu'au grand gagnant, en vérifiant médailles et totaux à chaque tableau ; une égalité en tête (plus simple en Même réponse) donne des médailles partagées ; un joueur coupé pendant le tableau revient avec ses points globaux ; en petite partie, « Rejouer » garde les points globaux et « Changer de format » ramène à la salle d'attente.*
 
 ### Fin du projet
 

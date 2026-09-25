@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ajouterJoueur, choisirMode, creerSalle, demarrerPartie, synchroniserMinuteur, terminerPartie,
-  vueJoueur, vueTv,
+  ajouterJoueur, choisirMode, creerSalle, demarrerPartie, passerApresPodium, synchroniserMinuteur,
+  terminerPartie, vueJoueur, vueTv,
 } from '../salles.js';
 import { modes, modesAVenir } from './index.js';
 import {
@@ -214,9 +214,11 @@ test('questionsVues : les id n… cohabitent avec q… et e…, sans répétitio
     demarrerPartie(salle);
   }
   terminerPartie(salle);
+  passerApresPodium(salle);
   choisirMode(salle, 'estimation');
   demarrerPartie(salle);
   terminerPartie(salle);
+  passerApresPodium(salle);
   choisirMode(salle, 'quiz');
   demarrerPartie(salle);
   const total = 3 * NOMBRE_QUESTIONS + NOMBRE_QUESTIONS_ESTIMATION + NOMBRE_QUESTIONS_QUIZ;
@@ -225,14 +227,16 @@ test('questionsVues : les id n… cohabitent avec q… et e…, sans répétitio
   assert.equal(salle.questionsVues.filter((id) => id.startsWith('n')).length, 3 * NOMBRE_QUESTIONS);
 });
 
-test('podium : changer de mode après une autre partie ne casse pas la vue de la TV', () => {
+test('tableau : changer de mode après une autre partie ne casse pas la vue de la TV', () => {
   const { salle } = sallePrete();
   terminerPartie(salle);
+  passerApresPodium(salle);
   choisirMode(salle, 'quiz');
   demarrerPartie(salle);
   terminerPartie(salle);
+  passerApresPodium(salle);
   choisirMode(salle, 'qui-de-nous');
-  assert.deepEqual(vueTv(salle).etatMode.plusDesignes, []);
+  assert.deepEqual(vueTv(salle).etatMode, {});
 });
 
 // --- Ce que voient la TV et les téléphones ---

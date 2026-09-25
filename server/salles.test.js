@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, choisirMode, creerSalle, demarrerPartie,
-  retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur, vueTv,
+  COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, changerFormat, choisirMode, configurerFormat,
+  creerSalle, demarrerPartie, deconnecterJoueur, fermerSalle, nouvelleAventure, passerApresPodium,
+  peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
 import { modes } from './modes/index.js';
 
@@ -192,13 +193,15 @@ test('choix du mode : mode inconnu, mode à venir ou valeur bizarre refusés', (
   assert.equal(salle.mode, 'quiz');
 });
 
-test('choix du mode : refusé pendant une partie, accepté au podium', (t) => {
+test('choix du mode : refusé pendant une partie et au podium, accepté au tableau', (t) => {
   avecModeFictif(t);
   const { salle } = salleAvec(3);
   demarrerPartie(salle);
   assert.equal(choisirMode(salle, 'fictif'), false);
 
   terminerPartie(salle);
+  assert.equal(choisirMode(salle, 'fictif'), false);
+  passerApresPodium(salle);
   assert.equal(choisirMode(salle, 'fictif'), true);
 });
 
@@ -217,6 +220,7 @@ test('choix du mode : rejouer lance le mode choisi', (t) => {
   const { salle } = salleAvec(3);
   demarrerPartie(salle);
   terminerPartie(salle);
+  passerApresPodium(salle);
   choisirMode(salle, 'fictif');
   demarrerPartie(salle);
   assert.equal(salle.etat, 'partie');
@@ -260,4 +264,124 @@ test('choix du mode : la TV reçoit le mode choisi hors partie seulement', () =>
   assert.equal(vueTv(salle).modeChoisi, undefined);
   terminerPartie(salle);
   assert.equal(vueTv(salle).modeChoisi.nom, 'Quiz');
+});
+
+// --- Format, médailles et points globaux ---
+
+// Partie de quiz terminée par l'hôte avec les scores donnés, dans l'ordre des joueurs.
+function finirPartieAvec(salle, ...scores) {
+  demarrerPartie(salle);
+  salle.joueurs.forEach((joueur, index) => { joueur.score = scores[index]; });
+  terminerPartie(salle);
+}
+
+test('format : petite partie par défaut, objectif de 3 à 15 en salle d\'attente seulement', () => {
+  const { salle } = salleAvec(2);
+  assert.deepEqual(salle.format, { type: 'petite', objectif: 5 });
+  assert.equal(configurerFormat(salle, { type: 'aventure', objectif: 3 }), true);
+  assert.deepEqual(salle.format, { type: 'aventure', objectif: 3 });
+  for (const format of [
+    { type: 'aventure', objectif: 2 }, { type: 'aventure', objectif: 16 }, { type: 'aventure', objectif: 4.5 },
+    { type: 'marathon', objectif: 5 }, { type: 'petite' }, null,
+  ]) {
+    assert.equal(configurerFormat(salle, format), false, JSON.stringify(format));
+  }
+  demarrerPartie(salle);
+  assert.equal(configurerFormat(salle, { type: 'petite', objectif: 5 }), false);
+  assert.deepEqual(salle.format, { type: 'aventure', objectif: 3 });
+});
+
+test('fin de partie : médailles, points globaux et numéro de partie', () => {
+  const { salle, joueurs: [a, b, c] } = salleAvec(3);
+  finirPartieAvec(salle, 900, 900, 0);
+  assert.equal(salle.numeroPartie, 1);
+  assert.deepEqual(salle.medaillesPartie, { [a.id]: 'or', [b.id]: 'or' });
+  assert.deepEqual([a.pointsGlobaux, b.pointsGlobaux, c.pointsGlobaux], [3, 3, 0]);
+  assert.deepEqual(a.medailles, { or: 1, argent: 0, bronze: 0 });
+  assert.deepEqual(
+    [vueJoueur(salle, a).medaille, vueJoueur(salle, a).gain, vueJoueur(salle, c).medaille],
+    ['or', 3, null],
+  );
+});
+
+test('petite partie : podium, tableau, et « Rejouer » garde les points globaux', () => {
+  const { salle, joueurs: [a, b] } = salleAvec(2);
+  finirPartieAvec(salle, 500, 800);
+  assert.equal(peutRejouer(salle), false);
+  passerApresPodium(salle);
+  assert.equal(salle.etat, 'tableau');
+  assert.equal(peutRejouer(salle), true);
+  assert.deepEqual(vueJoueur(salle, a).rangGlobal, 2);
+  finirPartieAvec(salle, 800, 500);
+  assert.deepEqual([a.pointsGlobaux, b.pointsGlobaux], [5, 5]);
+  assert.equal(salle.numeroPartie, 2);
+});
+
+test('aventure : grand gagnant seul en tête à l\'objectif', () => {
+  const { salle, joueurs: [a] } = salleAvec(3);
+  configurerFormat(salle, { type: 'aventure', objectif: 3 });
+  finirPartieAvec(salle, 300, 200, 100);
+  passerApresPodium(salle);
+  assert.equal(salle.etat, 'grandGagnant');
+  assert.equal(salle.grandGagnantId, a.id);
+  assert.equal(vueJoueur(salle, a).estGrandGagnant, true);
+});
+
+test('aventure : égalité en tête à l\'objectif, départage au tableau', () => {
+  const { salle } = salleAvec(3);
+  configurerFormat(salle, { type: 'aventure', objectif: 3 });
+  finirPartieAvec(salle, 300, 300, 100);
+  passerApresPodium(salle);
+  assert.equal(salle.etat, 'tableau');
+  assert.equal(vueTv(salle).departage, true);
+});
+
+test('aventure : sous l\'objectif, tableau sans départage', () => {
+  const { salle } = salleAvec(2);
+  configurerFormat(salle, { type: 'aventure', objectif: 5 });
+  finirPartieAvec(salle, 300, 100);
+  passerApresPodium(salle);
+  assert.equal(salle.etat, 'tableau');
+  assert.equal(vueTv(salle).departage, false);
+  assert.deepEqual(vueTv(salle).tableau.map((ligne) => ligne.ecartAuLeader), [0, 1]);
+});
+
+test('nouvelle aventure : points, médailles et numéro de partie remis à 0, même objectif', () => {
+  const { salle, joueurs: [a] } = salleAvec(2);
+  configurerFormat(salle, { type: 'aventure', objectif: 3 });
+  finirPartieAvec(salle, 300, 100);
+  passerApresPodium(salle);
+  nouvelleAventure(salle);
+  assert.deepEqual([a.pointsGlobaux, a.medailles, salle.numeroPartie, salle.grandGagnantId],
+    [0, { or: 0, argent: 0, bronze: 0 }, 0, null]);
+  assert.deepEqual(salle.format, { type: 'aventure', objectif: 3 });
+});
+
+test('changer de format : retour en salle d\'attente, points gardés sauf après un grand gagnant', () => {
+  const { salle, joueurs: [a] } = salleAvec(2);
+  finirPartieAvec(salle, 300, 100);
+  assert.equal(changerFormat(salle), false);
+  passerApresPodium(salle);
+  assert.equal(changerFormat(salle), true);
+  assert.equal(salle.etat, 'lobby');
+  assert.equal(a.pointsGlobaux, 3);
+
+  configurerFormat(salle, { type: 'aventure', objectif: 3 });
+  finirPartieAvec(salle, 300, 100);
+  passerApresPodium(salle);
+  assert.equal(salle.etat, 'grandGagnant');
+  changerFormat(salle);
+  assert.equal(a.pointsGlobaux, 0);
+});
+
+test('points globaux : un nouveau venu part de 0, un joueur reconnecté garde les siens', () => {
+  const { salle, joueurs: [a] } = salleAvec(2);
+  finirPartieAvec(salle, 300, 100);
+  passerApresPodium(salle);
+  const { joueur: nouveau } = ajouterJoueur(salle, 'Nouveau', 's9');
+  assert.deepEqual([nouveau.pointsGlobaux, nouveau.medailles], [0, { or: 0, argent: 0, bronze: 0 }]);
+  deconnecterJoueur(salle, a, () => {});
+  reconnecterJoueur(salle, a.id, 's1-bis');
+  assert.equal(vueJoueur(salle, a).pointsGlobaux, 3);
+  fermerSalle(salle);
 });

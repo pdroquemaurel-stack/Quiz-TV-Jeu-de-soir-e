@@ -67,6 +67,40 @@ document.getElementById('bouton-rejouer').addEventListener('click', () => {
   socket.emit('hote:rejouer');
 });
 
+document.getElementById('bouton-nouvelle-aventure').addEventListener('click', () => {
+  socket.emit('hote:rejouer');
+});
+
+document.getElementById('bouton-suivant-fin').addEventListener('click', () => {
+  socket.emit('hote:suivant');
+});
+
+for (const bouton of document.querySelectorAll('.bouton-changer-format')) {
+  bouton.addEventListener('click', () => socket.emit('hote:changerFormat'));
+}
+
+// Format reçu du serveur, que l'hôte modifie. Les bornes sont vérifiées par le serveur :
+// ici, elles ne servent qu'à griser − et +.
+const OBJECTIF_MIN = 3;
+const OBJECTIF_MAX = 15;
+let formatRecu = { type: 'petite', objectif: 5 };
+
+function configurerFormat(changement) {
+  socket.emit('hote:configurer', { ...formatRecu, ...changement });
+}
+
+for (const bouton of document.querySelectorAll('[data-format]')) {
+  bouton.addEventListener('click', () => configurerFormat({ type: bouton.dataset.format }));
+}
+
+document.getElementById('objectif-moins').addEventListener('click', () => {
+  configurerFormat({ objectif: formatRecu.objectif - 1 });
+});
+
+document.getElementById('objectif-plus').addEventListener('click', () => {
+  configurerFormat({ objectif: formatRecu.objectif + 1 });
+});
+
 const confirmation = document.getElementById('confirmation');
 
 document.getElementById('bouton-terminer').addEventListener('click', () => {
@@ -96,6 +130,8 @@ const affichagesCommuns = {
   attente: afficherAttente,
   attente_question: () => {},
   fin: afficherFin,
+  tableau: afficherTableau,
+  grandGagnant: afficherGrandGagnant,
 };
 
 // Écrans propres à chaque mode. Remplis par /joueur/modes/<mode>.js.
@@ -158,9 +194,27 @@ function afficherAttente(vue) {
   boutonLancer.hidden = !vue.estHote;
   boutonLancer.disabled = !vue.assezDeJoueurs;
   afficherModes('attente', vue);
+  afficherFormat(vue);
 }
 
-// Salle d'attente et fin : l'hôte choisit le mode, les autres voient le mode choisi.
+// L'hôte règle le format, les autres le voient.
+function afficherFormat(vue) {
+  formatRecu = vue.format;
+  const { type, objectif } = vue.format;
+  const texte = document.getElementById('format-choisi');
+  texte.textContent = type === 'petite' ? 'Petite partie' : `Aventure — premier à ${objectif} points`;
+  texte.hidden = vue.estHote;
+  document.getElementById('reglage-format').hidden = !vue.estHote;
+  for (const bouton of document.querySelectorAll('[data-format]')) {
+    bouton.classList.toggle('choisi', bouton.dataset.format === type);
+  }
+  document.getElementById('reglage-objectif').hidden = type !== 'aventure';
+  document.getElementById('objectif').textContent = objectif;
+  document.getElementById('objectif-moins').disabled = objectif <= OBJECTIF_MIN;
+  document.getElementById('objectif-plus').disabled = objectif >= OBJECTIF_MAX;
+}
+
+// Salle d'attente et tableau : l'hôte choisit le mode, les autres voient le mode choisi.
 function afficherModes(nomEcran, vue) {
   const ecran = document.querySelector(`main[data-ecran="${nomEcran}"]`);
   const texte = ecran.querySelector('.mode-choisi');
@@ -186,17 +240,50 @@ function boutonMode(mode, modeChoisi) {
 
 // Les boutons sont recréés à chaque mise à jour : un seul écouteur pour tous.
 document.addEventListener('click', (evenement) => {
-  const bouton = evenement.target.closest('.bouton-mode');
+  const bouton = evenement.target.closest('.bouton-mode[data-mode]');
   if (bouton && !bouton.disabled) socket.emit('hote:choisirMode', bouton.dataset.mode);
 });
+
+const MEDAILLES = { or: '🥇 Médaille d\'or', argent: '🥈 Médaille d\'argent', bronze: '🥉 Médaille de bronze' };
 
 function afficherFin(vue) {
   document.getElementById('rang-fin').textContent = texteRang(vue.rang);
   document.getElementById('score-fin').textContent = vue.score;
+  document.getElementById('medaille-fin').textContent = vue.medaille
+    ? `${MEDAILLES[vue.medaille]}, +${vue.gain}`
+    : 'Pas de médaille cette fois';
+  document.getElementById('bouton-suivant-fin').hidden = !vue.estHote;
+}
+
+function afficherTableau(vue) {
+  document.getElementById('rang-tableau').textContent = texteRang(vue.rangGlobal);
+  document.getElementById('points-tableau').textContent = textePoints(vue.pointsGlobaux);
   const boutonRejouer = document.getElementById('bouton-rejouer');
+  boutonRejouer.textContent = vue.format.type === 'aventure' ? 'Partie suivante' : 'Rejouer';
   boutonRejouer.hidden = !vue.estHote;
   boutonRejouer.disabled = !vue.assezDeJoueurs;
-  afficherModes('fin', vue);
+  afficherChangerFormat('tableau', vue);
+  afficherModes('tableau', vue);
+}
+
+function afficherGrandGagnant(vue) {
+  document.getElementById('titre-grand-gagnant').textContent = vue.estGrandGagnant
+    ? '🏆 Tu gagnes l\'aventure !'
+    : `🏆 ${vue.grandGagnant} gagne l'aventure`;
+  document.getElementById('rang-grand-gagnant').textContent = texteRang(vue.rangGlobal);
+  document.getElementById('points-grand-gagnant').textContent = textePoints(vue.pointsGlobaux);
+  const boutonNouvelle = document.getElementById('bouton-nouvelle-aventure');
+  boutonNouvelle.hidden = !vue.estHote;
+  boutonNouvelle.disabled = !vue.assezDeJoueurs;
+  afficherChangerFormat('grandGagnant', vue);
+}
+
+function afficherChangerFormat(nomEcran, vue) {
+  document.querySelector(`main[data-ecran="${nomEcran}"] .bouton-changer-format`).hidden = !vue.estHote;
+}
+
+function textePoints(points) {
+  return points > 1 ? `${points} points` : `${points} point`;
 }
 
 function texteRang(rang) {

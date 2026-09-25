@@ -335,7 +335,7 @@ test('minuteur : la révélation arrive à 20 s pile', (t) => {
   assert.equal(etape(salle), 'revelation');
 });
 
-test('minuteur : question suivante 8 s après la révélation, puis podium sans minuteur', (t) => {
+test('minuteur : question suivante 8 s après la révélation, puis podium, et le tableau 15 s plus tard', (t) => {
   simulerTemps(t);
   const { salle } = sallePrete();
   synchroniserMinuteur(salle, quandAvance);
@@ -357,8 +357,12 @@ test('minuteur : question suivante 8 s après la révélation, puis podium sans 
   assert.equal(etape(salle), 'revelation');
   t.mock.timers.tick(8000);
   assert.equal(etape(salle), 'podium');
-  t.mock.timers.tick(60000);
+  t.mock.timers.tick(14999);
   assert.equal(etape(salle), 'podium');
+  t.mock.timers.tick(1);
+  assert.equal(etape(salle), 'tableau');
+  t.mock.timers.tick(60000);
+  assert.equal(etape(salle), 'tableau');
 });
 
 test('minuteur : une resynchronisation en cours de manche ne relance pas le chrono', (t) => {

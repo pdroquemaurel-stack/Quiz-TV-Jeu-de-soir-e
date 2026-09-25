@@ -1,5 +1,7 @@
 // Ce qui sert à plusieurs modes de jeu.
 
+export { passerAuPodium } from '../medailles.js';
+
 // Phase du mode en cours (« question »…), ou null hors partie.
 export function phaseEnCours(salle) {
   return salle.etat === 'partie' ? salle.etatMode.phase : null;

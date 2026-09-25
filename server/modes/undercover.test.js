@@ -457,7 +457,7 @@ test('questionsVues : pas de paire répétée sur 3 parties, les id u… cohabit
   const paires = salle.questionsVues.filter((id) => id.startsWith('u'));
   assert.equal(paires.length, 3 * NOMBRE_MANCHES);
   assert.equal(new Set(paires).size, paires.length);
-  salle.etat = 'podium';
+  salle.etat = 'tableau';
   choisirMode(salle, 'quiz');
   demarrerPartie(salle);
   assert.equal(salle.questionsVues.length, 3 * NOMBRE_MANCHES + NOMBRE_QUESTIONS_QUIZ);

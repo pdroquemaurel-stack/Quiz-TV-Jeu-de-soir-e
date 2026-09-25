@@ -5,8 +5,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import {
-  assezDeJoueurs, ajouterJoueur, choisirMode, creerSalle, deconnecterJoueur, deconnecterTv, demarrerPartie,
-  erreur, reconnecterJoueur, reconnecterTv, synchroniserMinuteur, terminerPartie,
+  assezDeJoueurs, ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle,
+  deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium,
+  peutRejouer, reconnecterJoueur, reconnecterTv, synchroniserMinuteur, terminerPartie,
   trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
 } from './salles.js';
 import { modes } from './modes/index.js';
@@ -104,11 +105,20 @@ export function demarrerServeur(port) {
       diffuser(salle);
     });
 
+    socket.on('hote:configurer', (format) => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !configurerFormat(trouve.salle, format)) return;
+      diffuser(trouve.salle);
+    });
+
+    // Pendant la partie, le « Suivant » du mode. Au podium, le passage au tableau.
     socket.on('hote:suivant', () => {
       const trouve = trouverHoteParSocket(socket.id);
-      if (!trouve || trouve.salle.etat !== 'partie') return;
-      if (!modes[trouve.salle.mode].suivant(trouve.salle)) return;
-      diffuser(trouve.salle);
+      if (!trouve) return;
+      const { salle } = trouve;
+      if (salle.etat === 'podium') passerApresPodium(salle);
+      else if (salle.etat !== 'partie' || !modes[salle.mode].suivant(salle)) return;
+      diffuser(salle);
     });
 
     socket.on('hote:terminer', () => {
@@ -117,12 +127,19 @@ export function demarrerServeur(port) {
       diffuser(trouve.salle);
     });
 
+    // Depuis le tableau : partie suivante. Depuis le grand gagnant : nouvelle aventure.
     socket.on('hote:rejouer', () => {
       const trouve = trouverHoteParSocket(socket.id);
-      if (!trouve) return;
+      if (!trouve || !peutRejouer(trouve.salle)) return;
       const { salle } = trouve;
-      if (salle.etat !== 'podium' || !assezDeJoueurs(salle)) return;
+      if (salle.etat === 'grandGagnant') nouvelleAventure(salle);
       lancerPartie(salle);
+    });
+
+    socket.on('hote:changerFormat', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !changerFormat(trouve.salle)) return;
+      diffuser(trouve.salle);
     });
 
     // Un socket remplacé par une reconnexion n'est plus retrouvé : on l'ignore.

@@ -1,10 +1,16 @@
 import { randomBytes } from 'node:crypto';
+import {
+  POINTS_MEDAILLE, classementGlobal, estDepartage, passerAuPodium, trouverGrandGagnant,
+} from './medailles.js';
 import { rangDe } from './modes/commun.js';
 import { modes, modesAVenir } from './modes/index.js';
 
 export const JOUEURS_MAX = 10;
 export const DELAI_ABSENCE_MS = 10000;
 export const DELAI_FERMETURE_MS = 30 * 60 * 1000;
+export const DUREE_PODIUM_MS = 15000;
+export const OBJECTIF_MIN = 3;
+export const OBJECTIF_MAX = 15;
 const PSEUDO_MAX = 12;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -66,6 +72,11 @@ export function creerSalle(tvSocketId) {
     joueurs: [],
     questionsVues: [],
     derniereActiviteA: Date.now(),
+    format: { type: 'petite', objectif: 5 },
+    numeroPartie: 0,
+    grandGagnantId: null,
+    debutPodiumA: null,
+    medaillesPartie: {},
     etatMode: {},
   };
   salles[salle.code] = salle;
@@ -109,26 +120,72 @@ function listeModes(salle) {
   return [...jouables, ...aVenir];
 }
 
-// Choix de l'hôte, en salle d'attente ou au podium. Renvoie true si le mode a changé.
+// Choix de l'hôte, en salle d'attente ou au tableau. Renvoie true si le mode a changé.
 // Un mode à venir n'est pas dans le registre : il est refusé comme un mode inconnu.
 export function choisirMode(salle, id) {
-  if (salle.etat !== 'lobby' && salle.etat !== 'podium') return false;
+  if (salle.etat !== 'lobby' && salle.etat !== 'tableau') return false;
   if (!Object.hasOwn(modes, id) || !modeDisponible(salle, modes[id])) return false;
   salle.mode = id;
+  return true;
+}
+
+// Format choisi par l'hôte en salle d'attente. Renvoie true s'il est accepté.
+export function configurerFormat(salle, format) {
+  const { type, objectif } = format ?? {};
+  if (salle.etat !== 'lobby' || (type !== 'petite' && type !== 'aventure')) return false;
+  if (!Number.isInteger(objectif) || objectif < OBJECTIF_MIN || objectif > OBJECTIF_MAX) return false;
+  salle.format = { type, objectif };
   return true;
 }
 
 // Lancer ou rejouer : le mode tire son contenu et démarre la première manche.
 export function demarrerPartie(salle) {
   salle.etat = 'partie';
+  salle.numeroPartie++;
+  salle.medaillesPartie = {};
   modeDe(salle).demarrerPartie(salle);
 }
 
 // Arrêt par l'hôte. Les points ne sont ajoutés qu'à la révélation : une manche
-// en cours n'est donc pas comptée. Renvoie true si la partie a été terminée.
+// en cours n'est donc pas comptée. Les médailles se font sur les scores du moment.
+// Renvoie true si la partie a été terminée.
 export function terminerPartie(salle) {
   if (salle.etat !== 'partie') return false;
-  salle.etat = 'podium';
+  passerAuPodium(salle);
+  return true;
+}
+
+// Après le podium : le grand gagnant d'une aventure, sinon le tableau des points globaux.
+export function passerApresPodium(salle) {
+  if (salle.etat !== 'podium') return false;
+  const gagnant = salle.format.type === 'aventure'
+    ? trouverGrandGagnant(salle.joueurs, salle.format.objectif)
+    : null;
+  salle.grandGagnantId = gagnant;
+  salle.etat = gagnant ? 'grandGagnant' : 'tableau';
+  return true;
+}
+
+// Après un grand gagnant : tout repart de zéro, avec le même objectif.
+export function nouvelleAventure(salle) {
+  salle.numeroPartie = 0;
+  salle.grandGagnantId = null;
+  for (const joueur of salle.joueurs) {
+    joueur.pointsGlobaux = 0;
+    joueur.medailles = { or: 0, argent: 0, bronze: 0 };
+  }
+}
+
+// « Partie suivante », « Rejouer » ou « Nouvelle aventure ».
+export function peutRejouer(salle) {
+  return (salle.etat === 'tableau' || salle.etat === 'grandGagnant') && assezDeJoueurs(salle);
+}
+
+// Retour en salle d'attente. Les points globaux restent, sauf après un grand gagnant.
+export function changerFormat(salle) {
+  if (salle.etat !== 'tableau' && salle.etat !== 'grandGagnant') return false;
+  if (salle.etat === 'grandGagnant') nouvelleAventure(salle);
+  salle.etat = 'lobby';
   return true;
 }
 
@@ -158,6 +215,8 @@ export function ajouterJoueur(salle, pseudoSaisi, socketId) {
     pseudo,
     couleur: couleurPourNouveauJoueur(salle),
     score: 0,
+    pointsGlobaux: 0,
+    medailles: { or: 0, argent: 0, bronze: 0 },
     connecte: true,
     socketId,
     arriveeA: Date.now(),
@@ -263,17 +322,20 @@ export function trouverHoteParSocket(socketId) {
   return trouve;
 }
 
-// Programme le passage à l'étape suivante à l'échéance donnée par le mode.
-// L'échéance est une heure fixe : resynchroniser ne décale jamais le chrono.
+// Programme le passage à l'étape suivante : celle du mode pendant la partie,
+// le tableau à la fin du podium. L'échéance est une heure fixe : resynchroniser
+// ne décale jamais le chrono.
 export function synchroniserMinuteur(salle, quandAvance) {
   const cle = `${salle.code}:etape`;
   annuler(cle);
 
-  const fin = modeDe(salle).echeance(salle);
+  const auPodium = salle.etat === 'podium';
+  const fin = auPodium ? salle.debutPodiumA + DUREE_PODIUM_MS : modeDe(salle).echeance(salle);
   if (fin === null) return;
 
   programmer(cle, Math.max(0, fin - Date.now()), () => {
-    modeDe(salle).avancer(salle);
+    if (auPodium) passerApresPodium(salle);
+    else modeDe(salle).avancer(salle);
     quandAvance(salle);
   });
 }
@@ -285,6 +347,9 @@ export function vueTv(salle) {
   return {
     ...vue,
     modeChoisi: { id, nom, regleCourte, joueursMin, assezDeJoueurs: assezDeJoueurs(salle) },
+    pointsMedaille: POINTS_MEDAILLE,
+    tableau: classementGlobal(salle.joueurs),
+    departage: salle.format.type === 'aventure' && estDepartage(salle.joueurs, salle.format.objectif),
   };
 }
 
@@ -302,9 +367,40 @@ export function vueJoueur(salle, joueur) {
   };
   if (salle.etat === 'partie') return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };
 
-  // Salle d'attente et podium : le mode choisi, et le sélecteur pour l'hôte.
-  const horsPartie = { ...vue, modeChoisi: modeDe(salle).nom, assezDeJoueurs: assezDeJoueurs(salle) };
+  // Hors partie : le mode choisi, et le sélecteur pour l'hôte.
+  const horsPartie = {
+    ...vue,
+    modeChoisi: modeDe(salle).nom,
+    assezDeJoueurs: assezDeJoueurs(salle),
+    format: salle.format,
+    pointsGlobaux: joueur.pointsGlobaux,
+  };
   if (estHote) horsPartie.modes = listeModes(salle);
-  if (salle.etat === 'podium') return { ...horsPartie, ecran: 'fin', rang: rangDe(salle, joueur) };
+  if (salle.etat === 'podium') return { ...horsPartie, ...vueFin(salle, joueur) };
+  if (salle.etat === 'tableau' || salle.etat === 'grandGagnant') {
+    return { ...horsPartie, ...vueTableau(salle, joueur) };
+  }
   return horsPartie;
+}
+
+function vueFin(salle, joueur) {
+  const medaille = salle.medaillesPartie[joueur.id] ?? null;
+  return {
+    ecran: 'fin',
+    rang: rangDe(salle, joueur),
+    medaille,
+    gain: medaille ? POINTS_MEDAILLE[medaille] : 0,
+  };
+}
+
+// Écrans « tableau » et « grandGagnant ».
+function vueTableau(salle, joueur) {
+  const gagnant = salle.joueurs.find((autre) => autre.id === salle.grandGagnantId);
+  return {
+    ecran: salle.etat,
+    rangGlobal: classementGlobal(salle.joueurs).find((ligne) => ligne.id === joueur.id).rang,
+    numeroPartie: salle.numeroPartie,
+    grandGagnant: gagnant ? gagnant.pseudo : null,
+    estGrandGagnant: salle.grandGagnantId === joueur.id,
+  };
 }

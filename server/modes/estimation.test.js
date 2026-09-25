@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ajouterJoueur, choisirMode, creerSalle, demarrerPartie, synchroniserMinuteur, terminerPartie,
-  vueJoueur, vueTv,
+  ajouterJoueur, choisirMode, creerSalle, demarrerPartie, passerApresPodium, synchroniserMinuteur,
+  terminerPartie, vueJoueur, vueTv,
 } from '../salles.js';
 import {
   NOMBRE_QUESTIONS, REPONSE_MAX, banqueEstimation, calculerEstimations, enregistrerReponse,
@@ -161,6 +161,7 @@ test('questionsVues : les parties d\'estimation et de quiz ne se répètent pas'
     demarrerPartie(salle);
   }
   terminerPartie(salle);
+  passerApresPodium(salle);
   choisirMode(salle, 'quiz');
   demarrerPartie(salle);
   const total = 3 * NOMBRE_QUESTIONS + NOMBRE_QUESTIONS_QUIZ;

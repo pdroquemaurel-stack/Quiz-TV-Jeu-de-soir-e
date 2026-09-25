@@ -39,6 +39,18 @@
     <p id="est-hote" hidden><span class="forme couronne"></span> Tu es l'hôte</p>
     <p id="attente-hote" class="discret">En attente que l'hôte lance</p>
     <p class="mode-choisi discret"></p>
+    <p id="format-choisi" class="discret"></p>
+    <div id="reglage-format" class="reglage-format en-bas" hidden>
+      <div class="choix-format">
+        <button class="bouton-mode" data-format="petite">Petite partie</button>
+        <button class="bouton-mode" data-format="aventure">Aventure</button>
+      </div>
+      <div id="reglage-objectif" class="reglage-objectif">
+        <button id="objectif-moins" class="bouton-mode">−</button>
+        <span>Premier à <strong id="objectif"></strong> points</span>
+        <button id="objectif-plus" class="bouton-mode">+</button>
+      </div>
+    </div>
     <div class="choix-modes en-bas" hidden></div>
     <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
   </main>
@@ -203,9 +215,26 @@
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
     <p>Ton score : <strong id="score-fin"></strong></p>
+    <p id="medaille-fin" class="medaille-fin rebond"></p>
+    <button id="bouton-suivant-fin" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
+  <main data-ecran="tableau" hidden>
+    <p class="gros-texte">Points globaux</p>
+    <p id="rang-tableau" class="rang-fin rebond"></p>
+    <p><strong id="points-tableau"></strong></p>
     <p class="mode-choisi discret"></p>
     <div class="choix-modes en-bas" hidden></div>
-    <button id="bouton-rejouer" class="bouton en-bas" hidden>Rejouer</button>
+    <button id="bouton-rejouer" class="bouton en-bas" hidden></button>
+    <button class="bouton secondaire en-bas bouton-changer-format" hidden>Changer de format</button>
+  </main>
+
+  <main data-ecran="grandGagnant" hidden>
+    <p id="titre-grand-gagnant" class="gros-texte rebond"></p>
+    <p id="rang-grand-gagnant" class="rang-fin"></p>
+    <p><strong id="points-grand-gagnant"></strong></p>
+    <button id="bouton-nouvelle-aventure" class="bouton en-bas" hidden>Nouvelle aventure</button>
+    <button class="bouton secondaire en-bas bouton-changer-format" hidden>Changer de format</button>
   </main>
 
   <!-- Confirmation avant d'arrêter la partie, contre les appuis accidentels. -->

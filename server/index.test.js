@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { demarrerServeur } from './index.js';
-import { creerSalle, salles } from './salles.js';
+import { creerSalle, fermerSalle } from './salles.js';
 import { modes } from './modes/index.js';
 
 test('/sante répond 200', async () => {
@@ -68,8 +68,8 @@ test('seul l\'hôte peut terminer la partie', async () => {
   await attendre(autre, 'joueur:etat');
   assert.equal(salle.etat, 'podium');
 
-  // Salle retirée avant la déconnexion : aucun minuteur d'absence ne retient le test.
-  delete salles[salle.code];
+  // Salle fermée avant la déconnexion : aucun minuteur (absence, podium) ne retient le test.
+  fermerSalle(salle);
   hote.fermer();
   autre.fermer();
   await new Promise((resolve) => serveur.close(resolve));
@@ -100,9 +100,12 @@ test('chaque mode du registre se lance et se termine par les événements', { ti
     hote.emettre('hote:terminer');
     await attendre(hote, 'joueur:etat');
     assert.equal(salle.etat, 'podium', id);
+    hote.emettre('hote:suivant');
+    await attendre(hote, 'joueur:etat');
+    assert.equal(salle.etat, 'tableau', id);
   }
 
-  delete salles[salle.code];
+  fermerSalle(salle);
   for (const client of clients) client.fermer();
   await new Promise((resolve) => serveur.close(resolve));
 });
@@ -145,7 +148,7 @@ test('seul l\'hôte peut choisir le mode', async (t) => {
   assert.equal(salle.mode, 'fictif');
   assert.equal(autre.evenements.at(-1)[1].modeChoisi, 'Fictif');
 
-  delete salles[salle.code];
+  fermerSalle(salle);
   hote.fermer();
   autre.fermer();
   await new Promise((resolve) => serveur.close(resolve));

@@ -24,6 +24,7 @@
           <p class="nom-mode" id="nom-mode"></p>
           <p class="regle-mode" id="regle-mode"></p>
           <p class="minimum-mode" id="minimum-mode" hidden></p>
+          <p class="format-tv" id="format-tv"></p>
         </div>
         <p class="attente">En attente que l'hôte lance</p>
       </section>
@@ -196,8 +197,25 @@
         <div class="marche marche-3"><ul class="noms" id="podium-3"></ul><div class="socle">3</div></div>
       </div>
       <ol class="classement" id="classement-podium"></ol>
+      <p class="attente">Points globaux dans un instant</p>
+    </main>
+
+    <main data-ecran="tableau" hidden>
+      <h1 class="titre">Points globaux</h1>
+      <p class="sous-titre-tableau">
+        <span id="sous-titre-tableau"></span>
+        <span class="departage rebond" id="departage" hidden>Départage !</span>
+      </p>
+      <ol class="classement tableau-global" id="tableau-global"></ol>
       <p class="prochain-mode">Prochain mode : <strong id="prochain-mode"></strong></p>
       <p class="attente">L'hôte peut relancer</p>
+    </main>
+
+    <main data-ecran="grandGagnant" hidden>
+      <h1 class="titre">Grand gagnant de l'aventure</h1>
+      <p class="grand-gagnant rebond" id="grand-gagnant"></p>
+      <ol class="classement tableau-global" id="tableau-final"></ol>
+      <p class="attente">L'hôte peut lancer une nouvelle aventure</p>
     </main>
 
     <aside id="qr-coin" class="qr-coin" hidden>

@@ -76,6 +76,9 @@ Un fichier `server/modes/commun.js` reçoit ce qui sert à plusieurs modes, extr
 - Un mode est grisé tant qu'il n'y a pas assez de joueurs connectés pour lui. On ne peut pas le choisir.
 - Si le mode choisi devient insuffisant (un joueur part), il reste choisi et le bouton « Lancer la partie » (ou « Rejouer ») est désactivé.
 - Au podium, « Rejouer » lance directement le mode choisi, sans repasser par la salle d'attente.
+
+> Depuis la tranche 17, le choix du mode et « Rejouer » ne se font plus au podium mais au tableau des points globaux, qui le suit (voir « Format et médailles » dans `docs/spec.md`).
+
 - Avec `MODE_DEV=1`, un seul joueur suffit pour tous les modes. `MODE_DEV` n'est pas activé sur Render.
 - Les modes pas encore codés apparaissent aussi dans le sélecteur, toujours grisés, avec « Bientôt ». Ils sont décrits dans la liste `modesAVenir` de `server/modes/index.js` (id, nom, règle courte, minimum de joueurs), sans fichier ni code de jeu. Quand un mode est codé, il quitte cette liste pour entrer dans le registre.
 

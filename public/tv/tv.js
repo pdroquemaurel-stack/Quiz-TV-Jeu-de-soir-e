@@ -60,6 +60,12 @@ socket.on('salle:etat', (salle) => {
   } else if (salle.etat === 'podium') {
     afficherEcran('podium');
     afficherPodium(salle);
+  } else if (salle.etat === 'tableau') {
+    afficherEcran('tableau');
+    afficherTableau(salle);
+  } else if (salle.etat === 'grandGagnant') {
+    afficherEcran('grandGagnant');
+    afficherGrandGagnant(salle);
   } else {
     afficherEcran('lobby');
     afficherLobby(salle);
@@ -73,7 +79,7 @@ function jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape) {
   else arreterMusique();
   if (!nouvelleEtape) return;
   if (salle.etat === 'partie' && etatPrecedent !== 'partie') sonner('lancement');
-  if (salle.etat === 'podium') sonner('podium');
+  if (salle.etat === 'podium' || salle.etat === 'grandGagnant') sonner('podium');
 }
 
 // Petit QR code dans un coin pendant la partie, pour les retardataires.
@@ -110,6 +116,12 @@ function afficherLobby(salle) {
   );
   if (arrivees > 0) sonner('arrivee');
   afficherModeChoisi(salle.modeChoisi);
+  document.getElementById('format-tv').textContent = texteFormat(salle.format);
+}
+
+function texteFormat(format) {
+  if (format.type === 'petite') return 'Petite partie';
+  return `Aventure — premier à ${format.objectif} points`;
 }
 
 function afficherModeChoisi(mode) {
@@ -184,13 +196,18 @@ function lancerChrono(element, tempsRestantMs) {
   intervalleChrono = setInterval(afficher, 250);
 }
 
+const EMOJI_MEDAILLE = { or: '🥇', argent: '🥈', bronze: '🥉' };
+
 // Tous les joueurs de rang 3 ou mieux : les ex æquo partagent la même marche.
+// Un joueur à 0 point peut être sur une marche sans médaille.
 function afficherPodium(salle) {
   const { classement } = salle.etatMode;
   for (const rang of [1, 2, 3]) {
     const noms = classement.filter((ligne) => ligne.rang === rang).map((ligne) => {
       const element = document.createElement('li');
       element.append(pastille(ligne.couleur), ligne.pseudo);
+      const medaille = salle.medaillesPartie[ligne.id];
+      if (medaille) element.append(texte('medaille', EMOJI_MEDAILLE[medaille]));
       griserSiDeconnecte(element, ligne);
       return element;
     });
@@ -199,13 +216,56 @@ function afficherPodium(salle) {
     liste.parentElement.classList.toggle('vide', noms.length === 0);
   }
   document.getElementById('classement-podium').replaceChildren(
-    ...classement.map((ligne) => ligneClassement(ligne, false)),
+    ...classement.map((ligne) => {
+      const element = ligneClassement(ligne, false);
+      const medaille = salle.medaillesPartie[ligne.id];
+      if (medaille) {
+        element.append(texte('gain', `${EMOJI_MEDAILLE[medaille]} +${salle.pointsMedaille[medaille]}`));
+      }
+      return element;
+    }),
   );
-  document.getElementById('prochain-mode').textContent = salle.modeChoisi.nom;
   // Un mode peut ajouter une ligne au podium commun (« Le plus désigné »…).
   document.getElementById('plus-designe').hidden = true;
   const { completerPodium } = modesTv[salle.mode];
   if (completerPodium) completerPodium(salle);
+}
+
+function afficherTableau(salle) {
+  const { format, numeroPartie } = salle;
+  const partie = `Après la partie ${numeroPartie}`;
+  document.getElementById('sous-titre-tableau').textContent = format.type === 'aventure'
+    ? `${partie} — premier à ${format.objectif} points`
+    : partie;
+  document.getElementById('departage').hidden = !salle.departage;
+  remplirTableau(document.getElementById('tableau-global'), salle.tableau, format.type === 'aventure');
+  document.getElementById('prochain-mode').textContent = salle.modeChoisi.nom;
+}
+
+function afficherGrandGagnant(salle) {
+  const gagnant = salle.tableau.find((ligne) => ligne.id === salle.grandGagnantId);
+  document.getElementById('grand-gagnant').replaceChildren(pastille(gagnant.couleur), gagnant.pseudo);
+  remplirTableau(document.getElementById('tableau-final'), salle.tableau, false);
+}
+
+// Une ligne par joueur : rang, pseudo, médailles obtenues, points globaux, écart au leader.
+function remplirTableau(liste, tableau, avecEcart) {
+  liste.replaceChildren(...tableau.map((ligne) => {
+    const element = document.createElement('li');
+    const medailles = Object.entries(EMOJI_MEDAILLE)
+      .filter(([nom]) => ligne.medailles[nom] > 0)
+      .map(([nom, emoji]) => `${emoji}${ligne.medailles[nom]}`)
+      .join(' ');
+    element.append(
+      texte('rang', `${ligne.rang}.`), pastille(ligne.couleur), texte('pseudo', ligne.pseudo),
+      texte('medailles', medailles), texte('score', `${ligne.pointsGlobaux} pts`),
+    );
+    if (avecEcart) {
+      element.append(texte('ecart', ligne.ecartAuLeader > 0 ? `−${ligne.ecartAuLeader}` : 'en tête'));
+    }
+    griserSiDeconnecte(element, ligne);
+    return element;
+  }));
 }
 
 function ligneClassement(ligne, avecGain) {

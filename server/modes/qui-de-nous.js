@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import {
   classement as classementCommun, listerAttendus, noterQuestionsVues, participe, phaseEnCours,
-  rangDe, tirerQuestions, tousOntRepondu,
+  passerAuPodium, rangDe, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
 export const id = 'qui-de-nous';
@@ -102,7 +102,7 @@ export function montrerResultats(salle) {
 export function passerALaSuite(salle) {
   const suivante = salle.etatMode.indexQuestion + 1;
   if (suivante < salle.etatMode.questions.length) demarrerQuestion(salle, suivante);
-  else salle.etat = 'podium';
+  else passerAuPodium(salle);
 }
 
 // « Suivant » de l'hôte. Renvoie true si quelque chose a changé.
@@ -132,7 +132,7 @@ export function classement(salle) {
 }
 
 // Le ou les joueurs les plus désignés de la partie, pour le podium.
-// votesRecus manque si la partie jouée était d'un autre mode (l'hôte a changé de mode au podium).
+// votesRecus manque si la partie jouée était d'un autre mode (l'hôte a changé de mode au tableau).
 export function plusDesignes(salle) {
   const lignes = Object.entries(salle.etatMode.votesRecus ?? {})
     .map(([joueurId, votes]) => ({ id: joueurId, votes }));

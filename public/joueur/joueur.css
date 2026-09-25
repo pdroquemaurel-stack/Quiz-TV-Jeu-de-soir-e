@@ -102,7 +102,8 @@ main::after {
 
 /* ---------- Choix du mode (hôte, salle d'attente et fin) ---------- */
 
-.choix-modes {
+.choix-modes,
+.choix-format {
   width: 100%;
   max-width: 420px;
   margin-bottom: 8px;
@@ -485,4 +486,37 @@ main[data-ecran="quiz-repondre"] {
   text-align: center;
   background: var(--panneau);
   border-bottom-width: 10px;
+}
+
+/* ---------- Format (hôte, salle d'attente), médailles et points globaux ---------- */
+
+.reglage-format {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.reglage-objectif {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reglage-objectif .bouton-mode {
+  width: 72px;
+  font-size: 32px;
+}
+
+.reglage-format[hidden],
+.reglage-objectif[hidden] {
+  display: none;
+}
+
+.medaille-fin {
+  margin-top: 8px;
+  font-size: 28px;
 }
