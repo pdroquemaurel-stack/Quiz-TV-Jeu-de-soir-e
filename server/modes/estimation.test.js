@@ -201,7 +201,7 @@ test('un téléphone ne reçoit jamais la bonne réponse avant la révélation, 
   const vueB = vueJoueur(salle, b);
   assert.ok(!JSON.stringify(vueB).includes('987654321'));
   assert.deepEqual(
-    Object.keys(vueB).filter((cle) => !['mode', 'id', 'pseudo', 'couleur', 'score', 'estHote', 'peutTerminer'].includes(cle)),
+    Object.keys(vueB).filter((cle) => !['mode', 'id', 'pseudo', 'couleur', 'score', 'estHote', 'peutTerminer', 'etape'].includes(cle)),
     ['ecran', 'numero', 'unite'],
   );
   const vueA = vueJoueur(salle, a);

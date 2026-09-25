@@ -51,9 +51,7 @@ champNombre.addEventListener('keydown', (evenement) => {
 });
 boutonValiderNombre.addEventListener('click', envoyerNombre);
 
-document.getElementById('bouton-suivant-estimation').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
+document.getElementById('bouton-suivant-estimation').addEventListener('click', envoyerSuivant);
 
 function afficherRepondreEstimation(vue) {
   if (vue.numero === numeroSaisi) return;

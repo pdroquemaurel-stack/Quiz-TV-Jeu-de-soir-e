@@ -148,6 +148,30 @@ test('devinette : casse, accents et variantes acceptés, mot de l\'undercover re
 
 // --- Déroulé d'une manche ---
 
+test('manche à 2 participants : les infiltrés gagnent aussitôt, sans vote sans fin', () => {
+  const salle = creerSalle('tv');
+  const joueurs = PSEUDOS.slice(0, 4).map((pseudo, i) => ajouterJoueur(salle, pseudo, `s${i}`).joueur);
+  assert.equal(choisirMode(salle, 'undercover'), true);
+  joueurs[2].connecte = false;
+  joueurs[3].connecte = false;
+  demarrerPartie(salle);
+
+  assert.equal(salle.etatMode.participants.length, 2);
+  assert.equal(etape(salle), 'fin_manche');
+  assert.equal(salle.etatMode.gagnant, 'infiltres');
+  const undercover = joueurs.find((joueur) => salle.etatMode.roles[joueur.id] === 'undercover');
+  assert.equal(undercover.score, 2000);
+});
+
+test('manche à 1 joueur (MODE_DEV) : elle se joue, pour parcourir les écrans seul', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'A', 's0');
+  salle.mode = 'undercover';
+  demarrerPartie(salle);
+
+  assert.equal(etape(salle), 'description');
+});
+
 test('civils gagnants : 1000 pour chaque civil, éliminés compris, en fin de manche seulement', () => {
   const { salle, joueurs: [a, b, c, d] } = sallePrete(4);
   imposerRoles(salle, [a, b, c, d], 'u...');

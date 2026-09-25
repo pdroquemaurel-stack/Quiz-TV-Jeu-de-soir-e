@@ -8,9 +8,7 @@ listeCandidats.addEventListener('click', (evenement) => {
   if (bouton) socket.emit('joueur:repondre', bouton.dataset.id);
 });
 
-document.getElementById('bouton-suivant-qdn').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
+document.getElementById('bouton-suivant-qdn').addEventListener('click', envoyerSuivant);
 
 function boutonCandidat(candidat) {
   const bouton = document.createElement('button');

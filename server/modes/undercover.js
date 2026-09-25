@@ -57,7 +57,7 @@ export function tirerOrdreParole(enJeu, roles) {
   return ordre;
 }
 
-// Vérifié après une élimination seulement : 'civils', 'infiltres' ou null.
+// Vérifié au début d'une manche et après une élimination : 'civils', 'infiltres' ou null.
 export function vainqueur(roles, elimines) {
   const restants = Object.keys(roles).filter((joueurId) => !elimines.includes(joueurId));
   const civils = restants.filter((joueurId) => roles[joueurId] === 'civil').length;
@@ -105,7 +105,12 @@ function demarrerManche(salle, index) {
     devinette: null,
     gagnant: null,
   });
-  demarrerTour(salle);
+  // À 2 participants (1 civil, 1 undercover), les infiltrés ont déjà gagné : sans cela,
+  // chacun vote pour l'autre et l'égalité se répète sans fin. À 1 joueur (MODE_DEV),
+  // la manche se joue pour pouvoir parcourir les écrans.
+  const gagnant = participants.length >= 2 ? vainqueur(etatMode.roles, []) : null;
+  if (gagnant) finirManche(salle, gagnant);
+  else demarrerTour(salle);
 }
 
 function demarrerTour(salle) {

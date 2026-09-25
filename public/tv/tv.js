@@ -16,11 +16,35 @@ window.addEventListener('resize', ajusterEchelle);
 // sessionStorage : un rechargement ou une coupure retrouve la salle,
 // un nouvel onglet (ou l'app relancée) en crée une nouvelle.
 socket.on('connect', () => {
+  document.getElementById('bandeau-connexion').hidden = true;
   socket.emit('tv:creer', {
     code: sessionStorage.getItem('codeSalle'),
     jetonTv: sessionStorage.getItem('jetonTv'),
   });
 });
+
+// Avant le premier état, l'écran « Connexion au serveur… » est déjà affiché.
+// Ensuite, le bandeau signale la coupure par-dessus l'écran figé.
+socket.on('disconnect', () => {
+  document.getElementById('bandeau-connexion').hidden = premierEtatRecu;
+});
+
+// Wake Lock : l'écran de la TV reste allumé si le navigateur le permet (HTTPS seulement).
+// Le navigateur le relâche quand la page passe en arrière-plan : on le redemande au retour.
+let verrouEcran = null;
+
+async function garderEcranAllume() {
+  if (verrouEcran || !navigator.wakeLock || document.visibilityState !== 'visible') return;
+  verrouEcran = 'demande en cours';
+  try {
+    verrouEcran = await navigator.wakeLock.request('screen');
+    verrouEcran.addEventListener('release', () => { verrouEcran = null; });
+  } catch {
+    verrouEcran = null;
+  }
+}
+
+document.addEventListener('visibilitychange', garderEcranAllume);
 
 // Écrans de chaque mode pendant une partie, par phase. Remplis par /tv/modes/<mode>.js.
 const modesTv = {};
@@ -71,6 +95,7 @@ socket.on('salle:etat', (salle) => {
     afficherLobby(salle);
   }
   premierEtatRecu = false;
+  garderEcranAllume();
 });
 
 function jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape) {

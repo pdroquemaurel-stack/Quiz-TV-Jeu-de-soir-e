@@ -24,9 +24,7 @@ champReponseMr.addEventListener('keydown', (evenement) => {
   if (evenement.key === 'Enter') envoyerReponseMr();
 });
 
-document.getElementById('mr-suivant').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
+document.getElementById('mr-suivant').addEventListener('click', envoyerSuivant);
 
 function afficherRepondreMr(vue) {
   const question = `${vue.numero} ${vue.question.texte}`;

@@ -4,11 +4,13 @@ import { networkInterfaces } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
+import { journaliser, journaliserErreur } from './journal.js';
 import {
   assezDeJoueurs, ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle,
-  deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium,
-  peutRejouer, reconnecterJoueur, reconnecterTv, synchroniserMinuteur, terminerPartie,
-  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, vueJoueur, vueTv,
+  deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, etapeCourante, nouvelleAventure,
+  passerApresPodium, peutRejouer, reconnecterJoueur, reconnecterTv, statistiques,
+  synchroniserMinuteur, terminerPartie, trouverHoteParSocket, trouverJoueurParSocket, trouverSalle,
+  vueJoueur, vueTv,
 } from './salles.js';
 import { modes } from './modes/index.js';
 
@@ -28,10 +30,22 @@ export function demarrerServeur(port) {
   // Une coupure réelle (4G perdue, écran verrouillé) est détectée en 20 s au plus,
   // au lieu de 45 s avec les réglages par défaut.
   const io = new Server(serveurHttp, { pingInterval: 10000, pingTimeout: 10000 });
+  // Visible dans /sante : si l'heure change, le serveur a redémarré.
+  const demarreA = new Date().toISOString();
 
   const lienJoueur = (code) => `${urlPublique(serveurHttp.address().port)}/joueur?code=${code}`;
 
+  // Dernier état journalisé de chaque salle : une ligne à chaque changement.
+  const etatsJournalises = new Map();
+
+  function journaliserEtat(salle) {
+    if (etatsJournalises.get(salle.code) === salle.etat) return;
+    etatsJournalises.set(salle.code, salle.etat);
+    journaliser(salle.code, salle.etat === 'partie' ? `partie ${salle.mode} lancée` : salle.etat);
+  }
+
   function diffuser(salle) {
+    journaliserEtat(salle);
     synchroniserMinuteur(salle, diffuser);
     if (salle.tvSocketId) {
       io.to(salle.tvSocketId).emit('salle:etat', { ...vueTv(salle), urlJoueur: lienJoueur(salle.code) });
@@ -47,13 +61,13 @@ export function demarrerServeur(port) {
     const dejaVues = new Set(salle.questionsVues);
     demarrerPartie(salle);
     const nouvelles = salle.questionsVues.filter((id) => !dejaVues.has(id));
-    console.log(`Salle ${salle.code}, tirages inédits : ${nouvelles.join(' ')} (${salle.questionsVues.length} vus dans la salle)`);
+    journaliser(salle.code, `tirages inédits : ${nouvelles.join(' ')} (${salle.questionsVues.length} vus dans la salle)`);
     diffuser(salle);
   }
 
   app.get('/tv',(req, res) => res.sendFile('tv/index.html', { root: dossierPublic }));
   app.get('/joueur', (req, res) => res.sendFile('joueur/index.html', { root: dossierPublic }));
-  app.get('/sante', (req, res) => res.json({ ok: true }));
+  app.get('/sante', (req, res) => res.json({ ok: true, ...statistiques(), demarreA }));
   app.get('/qr/:code.svg', async (req, res) => {
     const salle = trouverSalle(req.params.code);
     if (!salle) return res.sendStatus(404);
@@ -63,24 +77,41 @@ export function demarrerServeur(port) {
   app.use(express.static(dossierPublic));
 
   io.on('connection', (socket) => {
+    // Une erreur imprévue dans une action est journalisée : elle ne perd que cette
+    // action, jamais le serveur ni les autres salles.
+    function surEvenement(nom, action) {
+      socket.on(nom, (...donnees) => {
+        try {
+          action(...donnees);
+        } catch (erreurImprevue) {
+          journaliserErreur(`événement ${nom}`, erreurImprevue);
+        }
+      });
+    }
+
     // Sans code ni jeton valides, une nouvelle salle est créée.
-    socket.on('tv:creer', (donnees = {}) => {
-      diffuser(reconnecterTv(donnees.code, donnees.jetonTv, socket.id) ?? creerSalle(socket.id));
+    surEvenement('tv:creer', (donnees) => {
+      const { code, jetonTv } = donnees ?? {};
+      diffuser(reconnecterTv(code, jetonTv, socket.id) ?? creerSalle(socket.id));
     });
 
     // Un id connu dans la salle : reconnexion. Sinon : nouveau joueur.
-    socket.on('joueur:rejoindre', (donnees = {}) => {
-      const salle = trouverSalle(donnees.code);
+    surEvenement('joueur:rejoindre', (donnees) => {
+      const { code, id, pseudo } = donnees ?? {};
+      const salle = trouverSalle(code);
       if (!salle) return socket.emit('erreur', erreur('salle_introuvable'));
 
-      if (!reconnecterJoueur(salle, donnees.id, socket.id)) {
-        const resultat = ajouterJoueur(salle, donnees.pseudo, socket.id);
+      // Ce socket joue déjà dans la salle (double appui sur « Entrer ») : pas de 2e joueur.
+      if (trouverJoueurParSocket(socket.id)?.salle === salle) return diffuser(salle);
+
+      if (!reconnecterJoueur(salle, id, socket.id)) {
+        const resultat = ajouterJoueur(salle, pseudo, socket.id);
         if (resultat.erreur) return socket.emit('erreur', resultat.erreur);
       }
       diffuser(salle);
     });
 
-    socket.on('hote:lancer', () => {
+    surEvenement('hote:lancer', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve) return;
       const { salle } = trouve;
@@ -88,13 +119,13 @@ export function demarrerServeur(port) {
       lancerPartie(salle);
     });
 
-    socket.on('hote:choisirMode', (id) => {
+    surEvenement('hote:choisirMode', (id) => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !choisirMode(trouve.salle, id)) return;
       diffuser(trouve.salle);
     });
 
-    socket.on('joueur:repondre', (choix) => {
+    surEvenement('joueur:repondre', (choix) => {
       const trouve = trouverJoueurParSocket(socket.id);
       if (!trouve) return;
       const { salle, joueur } = trouve;
@@ -105,30 +136,33 @@ export function demarrerServeur(port) {
       diffuser(salle);
     });
 
-    socket.on('hote:configurer', (format) => {
+    surEvenement('hote:configurer', (format) => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !configurerFormat(trouve.salle, format)) return;
       diffuser(trouve.salle);
     });
 
     // Pendant la partie, le « Suivant » du mode. Au podium, le passage au tableau.
-    socket.on('hote:suivant', () => {
+    // Le téléphone envoie l'étape qu'il affiche : un « Suivant » d'une étape déjà
+    // passée (double appui, chrono écoulé entre-temps) est ignoré.
+    surEvenement('hote:suivant', (donnees) => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve) return;
       const { salle } = trouve;
+      if (donnees?.etape !== etapeCourante(salle)) return;
       if (salle.etat === 'podium') passerApresPodium(salle);
       else if (salle.etat !== 'partie' || !modes[salle.mode].suivant(salle)) return;
       diffuser(salle);
     });
 
-    socket.on('hote:terminer', () => {
+    surEvenement('hote:terminer', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !terminerPartie(trouve.salle)) return;
       diffuser(trouve.salle);
     });
 
     // Depuis le tableau : partie suivante. Depuis le grand gagnant : nouvelle aventure.
-    socket.on('hote:rejouer', () => {
+    surEvenement('hote:rejouer', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !peutRejouer(trouve.salle)) return;
       const { salle } = trouve;
@@ -136,14 +170,14 @@ export function demarrerServeur(port) {
       lancerPartie(salle);
     });
 
-    socket.on('hote:changerFormat', () => {
+    surEvenement('hote:changerFormat', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !changerFormat(trouve.salle)) return;
       diffuser(trouve.salle);
     });
 
     // Un socket remplacé par une reconnexion n'est plus retrouvé : on l'ignore.
-    socket.on('disconnect', () => {
+    surEvenement('disconnect', () => {
       deconnecterTv(socket.id);
       const trouve = trouverJoueurParSocket(socket.id);
       if (!trouve) return;
@@ -162,6 +196,15 @@ export function demarrerServeur(port) {
 
 // Démarre le serveur seulement si ce fichier est lancé directement (pas depuis un test).
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // Dernier filet : l'erreur complète part dans les logs Render avant l'arrêt.
+  process.on('uncaughtException', (erreurFatale) => {
+    console.error('[ERREUR FATALE]', erreurFatale);
+    process.exit(1);
+  });
+  // Sans URL_PUBLIQUE, le QR code encoderait l'adresse interne du conteneur Render.
+  if (process.env.RENDER && !process.env.URL_PUBLIQUE) {
+    console.warn('ATTENTION : URL_PUBLIQUE n\'est pas définie sur Render, le QR code sera inutilisable.');
+  }
   const port = Number(process.env.PORT) || 3000;
   const serveur = await demarrerServeur(port);
   console.log(`Serveur lancé sur http://localhost:${port}`);

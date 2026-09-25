@@ -11,6 +11,12 @@
 <body>
   <!-- Toujours conçue en 1920×1080, puis mise à l'échelle de la fenêtre par ajusterEchelle(). -->
   <div id="scene" class="scene">
+    <!-- Affiché au chargement, tant que le serveur ne répond pas (réveil de Render). -->
+    <main data-ecran="connexion">
+      <h1 class="titre">Quiz TV</h1>
+      <p class="attente">Connexion au serveur…</p>
+    </main>
+
     <main data-ecran="lobby" hidden>
       <section class="carte-rejoindre rebond">
         <img id="qr" class="qr" alt="QR code pour rejoindre">
@@ -266,6 +272,7 @@
     </aside>
 
     <p id="bandeau-son" class="bandeau-son" hidden>Cliquez pour activer le son</p>
+    <p id="bandeau-connexion" class="bandeau-connexion" hidden>Connexion au serveur…</p>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

@@ -6,9 +6,7 @@ for (const bouton of document.querySelectorAll('[data-choix]')) {
   });
 }
 
-document.getElementById('bouton-suivant').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
+document.getElementById('bouton-suivant').addEventListener('click', envoyerSuivant);
 
 function afficherReponseEnvoyeeQuiz(vue) {
   document.getElementById('choix-envoye').className =

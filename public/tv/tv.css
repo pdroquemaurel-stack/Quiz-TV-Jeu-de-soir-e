@@ -1198,6 +1198,27 @@ main[data-ecran="undercover-vote"] .question {
 /* ---------- Sons : bandeau de déblocage et planche /tv?sons ---------- */
 
 /* Lus depuis le PC, pas à 3 mètres : ils peuvent rester petits. */
+/* ---------- Connexion au serveur ---------- */
+
+main[data-ecran="connexion"] {
+  align-items: center;
+  justify-content: center;
+}
+
+/* Coupure pendant la soirée : l'écran en cours reste visible, le bandeau prévient. */
+.bandeau-connexion {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 16px;
+  text-align: center;
+  background: var(--rate);
+  color: var(--panneau);
+  font-size: 48px;
+}
+
 .bandeau-son {
   position: absolute;
   left: 50%;

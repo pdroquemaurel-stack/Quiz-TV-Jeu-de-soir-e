@@ -1,17 +1,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { demarrerServeur } from './index.js';
-import { creerSalle, fermerSalle } from './salles.js';
+import { creerSalle, fermerSalle, salles } from './salles.js';
 import { modes } from './modes/index.js';
 
-test('/sante répond 200', async () => {
+test('/sante répond 200 avec les salles, les joueurs connectés et l\'heure de démarrage', async () => {
   const serveur = await demarrerServeur(0);
   const { port } = serveur.address();
 
   const reponse = await fetch(`http://localhost:${port}/sante`);
 
   assert.equal(reponse.status, 200);
-  assert.deepEqual(await reponse.json(), { ok: true });
+  const sante = await reponse.json();
+  assert.equal(sante.ok, true);
+  assert.equal(typeof sante.salles, 'number');
+  assert.equal(typeof sante.joueursConnectes, 'number');
+  assert.ok(!Number.isNaN(Date.parse(sante.demarreA)));
   serveur.close();
 });
 
@@ -21,9 +25,11 @@ function connecterClient(port) {
   const ws = new WebSocket(`ws://localhost:${port}/socket.io/?EIO=4&transport=websocket`);
   const client = {
     evenements: [],
+    ferme: false,
     emettre: (nom, donnees) => ws.send('42' + JSON.stringify([nom, donnees])),
     fermer: () => ws.close(),
   };
+  ws.addEventListener('close', () => { client.ferme = true; });
   return new Promise((resolve) => {
     ws.addEventListener('message', ({ data }) => {
       if (data.startsWith('0')) ws.send('40');
@@ -40,6 +46,40 @@ async function attendre(client, nom) {
   while (client.evenements.filter(([n]) => n === nom).length === deja) {
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
+}
+
+// Attend qu'une condition sur la salle devienne vraie.
+async function attendreQue(condition) {
+  while (!condition()) await new Promise((resolve) => setTimeout(resolve, 10));
+}
+
+const derniereVue = (client) => client.evenements.filter(([nom]) => nom === 'joueur:etat').at(-1)[1];
+
+// Les messages d'un même socket sont traités dans l'ordre : quand cette reconnexion
+// renvoie l'état, tout ce que le client a envoyé avant a été traité.
+async function synchroniser(client, salle) {
+  client.emettre('joueur:rejoindre', { code: salle.code, id: derniereVue(client).id });
+  await attendre(client, 'joueur:etat');
+}
+
+// Serveur, salle et joueurs connectés, tout refermé à la fin du test (même en échec).
+async function ouvrirSalle(t, pseudos) {
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+  const salle = creerSalle('tv-test');
+  const clients = [];
+  t.after(async () => {
+    for (const ouverte of Object.values(salles)) fermerSalle(ouverte);
+    for (const client of clients) client.fermer();
+    await new Promise((resolve) => serveur.close(resolve));
+  });
+  for (const pseudo of pseudos) {
+    const client = await connecterClient(port);
+    clients.push(client);
+    client.emettre('joueur:rejoindre', { code: salle.code, pseudo });
+    await attendre(client, 'joueur:etat');
+  }
+  return { port, salle, clients };
 }
 
 test('seul l\'hôte peut terminer la partie', async () => {
@@ -100,7 +140,7 @@ test('chaque mode du registre se lance et se termine par les événements', { ti
     hote.emettre('hote:terminer');
     await attendre(hote, 'joueur:etat');
     assert.equal(salle.etat, 'podium', id);
-    hote.emettre('hote:suivant');
+    hote.emettre('hote:suivant', { etape: derniereVue(hote).etape });
     await attendre(hote, 'joueur:etat');
     assert.equal(salle.etat, 'tableau', id);
   }
@@ -152,4 +192,159 @@ test('seul l\'hôte peut choisir le mode', async (t) => {
   hote.fermer();
   autre.fermer();
   await new Promise((resolve) => serveur.close(resolve));
+});
+
+// --- Fiabilité (tranche 18) ---
+
+const EVENEMENTS = [
+  'tv:creer', 'joueur:rejoindre', 'joueur:repondre', 'hote:lancer', 'hote:choisirMode',
+  'hote:configurer', 'hote:suivant', 'hote:terminer', 'hote:rejouer', 'hote:changerFormat',
+];
+const DONNEES_MALFORMEES = [null, 42, [], {}, 'texte', { code: {}, pseudo: [], id: 1, etape: 7 }];
+// Envoyés par l'hôte, ceux-là changeraient l'état pour de bon : seul un non-hôte les envoie.
+const ACTIONS_SANS_DONNEES = ['hote:lancer', 'hote:terminer', 'hote:rejouer', 'hote:changerFormat'];
+
+test('données malformées sur chaque événement, dans chaque mode : le serveur tient', { timeout: 20000 }, async (t) => {
+  const erreurs = t.mock.method(console, 'error', () => {});
+  const { port, salle, clients } = await ouvrirSalle(t, ['A', 'B', 'C', 'D']);
+  const [hote, autre] = clients;
+
+  for (const id of Object.keys(modes)) {
+    hote.emettre('hote:choisirMode', id);
+    await attendre(hote, 'joueur:etat');
+    hote.emettre(salle.etat === 'lobby' ? 'hote:lancer' : 'hote:rejouer');
+    await attendre(hote, 'joueur:etat');
+    // En Undercover, les réponses ne comptent qu'au vote.
+    if (id === 'undercover') {
+      hote.emettre('hote:suivant', { etape: derniereVue(hote).etape });
+      await attendre(hote, 'joueur:etat');
+    }
+
+    for (const nom of EVENEMENTS) {
+      for (const donnees of DONNEES_MALFORMEES) {
+        autre.emettre(nom, donnees);
+        if (!ACTIONS_SANS_DONNEES.includes(nom)) hote.emettre(nom, donnees);
+      }
+    }
+    await synchroniser(autre, salle);
+    await synchroniser(hote, salle);
+    assert.equal(salle.etat, 'partie', id);
+    assert.equal(salle.joueurs.length, 4, id);
+
+    hote.emettre('hote:terminer');
+    await attendre(hote, 'joueur:etat');
+    hote.emettre('hote:suivant', { etape: derniereVue(hote).etape });
+    await attendre(hote, 'joueur:etat');
+    assert.equal(salle.etat, 'tableau', id);
+  }
+
+  // Au-delà de la taille maximale d'un message, Socket.IO coupe ce client, et lui seul.
+  const gros = await connecterClient(port);
+  clients.push(gros);
+  gros.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'x'.repeat(1_000_000) });
+  await attendreQue(() => gros.ferme);
+
+  const sante = await (await fetch(`http://localhost:${port}/sante`)).json();
+  assert.equal(sante.joueursConnectes, 4);
+  assert.equal(erreurs.mock.callCount(), 0, 'aucune erreur imprévue, même rattrapée');
+});
+
+test('chaque action hote:* est refusée à un non-hôte', { timeout: 10000 }, async (t) => {
+  const { salle, clients: [hote, autre] } = await ouvrirSalle(t, ['Hôte', 'Autre']);
+
+  autre.emettre('hote:configurer', { type: 'aventure', objectif: 5 });
+  autre.emettre('hote:lancer');
+  await synchroniser(autre, salle);
+  assert.equal(salle.etat, 'lobby');
+  assert.equal(salle.format.type, 'petite');
+
+  hote.emettre('hote:lancer');
+  await attendreQue(() => salle.etat === 'partie');
+  hote.emettre('joueur:repondre', 0);
+  autre.emettre('joueur:repondre', 0);
+  await attendreQue(() => salle.etatMode.phase === 'revelation');
+  await synchroniser(autre, salle);
+  const etapeRevelation = derniereVue(autre).etape;
+  autre.emettre('hote:suivant', { etape: etapeRevelation });
+  await synchroniser(autre, salle);
+  assert.equal(derniereVue(autre).etape, etapeRevelation);
+
+  hote.emettre('hote:terminer');
+  await attendreQue(() => salle.etat === 'podium');
+  await synchroniser(autre, salle);
+  autre.emettre('hote:suivant', { etape: derniereVue(autre).etape });
+  await synchroniser(autre, salle);
+  assert.equal(salle.etat, 'podium');
+
+  await synchroniser(hote, salle);
+  hote.emettre('hote:suivant', { etape: derniereVue(hote).etape });
+  await attendreQue(() => salle.etat === 'tableau');
+  autre.emettre('hote:rejouer');
+  autre.emettre('hote:changerFormat');
+  await synchroniser(autre, salle);
+  assert.equal(salle.etat, 'tableau');
+});
+
+test('double « Entrer » puis autre pseudo depuis le même socket : un seul joueur', { timeout: 5000 }, async (t) => {
+  const { port, salle, clients } = await ouvrirSalle(t, ['Hôte']);
+  const paul = await connecterClient(port);
+  clients.push(paul);
+
+  paul.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Paul' });
+  paul.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Paul' });
+  paul.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Paul2' });
+  await attendreQue(() => paul.evenements.filter(([nom]) => nom === 'joueur:etat').length === 3);
+
+  assert.deepEqual(salle.joueurs.map((joueur) => joueur.pseudo), ['Hôte', 'Paul']);
+  assert.ok(!paul.evenements.some(([nom]) => nom === 'erreur'));
+});
+
+test('double « Suivant » à la 10e révélation du quiz : le podium n\'est pas sauté', { timeout: 10000 }, async (t) => {
+  const { salle, clients } = await ouvrirSalle(t, ['Hôte', 'Autre']);
+  const [hote] = clients;
+  hote.emettre('hote:lancer');
+
+  for (let numero = 1; numero <= 10; numero++) {
+    await attendreQue(() => salle.etat === 'partie' && salle.etatMode.phase === 'question');
+    for (const client of clients) client.emettre('joueur:repondre', 0);
+    await attendreQue(() => salle.etatMode.phase === 'revelation');
+    await synchroniser(hote, salle);
+    const { etape } = derniereVue(hote);
+    if (numero === 1) {
+      // Sans étape (ancienne page en cache) : ignoré.
+      hote.emettre('hote:suivant');
+      await synchroniser(hote, salle);
+      assert.equal(derniereVue(hote).etape, etape);
+    }
+    hote.emettre('hote:suivant', { etape });
+    if (numero === 10) hote.emettre('hote:suivant', { etape });
+  }
+
+  await synchroniser(hote, salle);
+  assert.equal(salle.etat, 'podium');
+});
+
+test('double « Suivant » à l\'élimination en Undercover : le tour de description s\'affiche', { timeout: 10000 }, async (t) => {
+  const { salle, clients } = await ouvrirSalle(t, ['A', 'B', 'C', 'D']);
+  const [hote] = clients;
+  hote.emettre('hote:choisirMode', 'undercover');
+  await attendre(hote, 'joueur:etat');
+  hote.emettre('hote:lancer');
+  await attendre(hote, 'joueur:etat');
+  hote.emettre('hote:suivant', { etape: derniereVue(hote).etape });
+  await attendreQue(() => salle.etatMode.phase === 'vote');
+
+  // Tous désignent un civil, qui désigne quelqu'un d'autre : 3 civils moins un, la manche continue.
+  const idDe = (client) => derniereVue(client).id;
+  const cible = clients.find((client) => salle.etatMode.roles[idDe(client)] === 'civil');
+  const autreQueCible = clients.find((client) => client !== cible);
+  for (const client of clients) client.emettre('joueur:repondre', idDe(client === cible ? autreQueCible : cible));
+  await attendreQue(() => salle.etatMode.phase === 'elimination');
+
+  await synchroniser(hote, salle);
+  const { etape } = derniereVue(hote);
+  hote.emettre('hote:suivant', { etape });
+  hote.emettre('hote:suivant', { etape });
+  await synchroniser(hote, salle);
+  assert.equal(salle.etatMode.phase, 'description');
 });

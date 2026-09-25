@@ -19,6 +19,7 @@ server/
   index.js          # Express + Socket.IO, routes /tv, /joueur, /sante
   salles.js         # création, recherche, fermeture des salles, joueurs, hôte
   medailles.js      # médailles de fin de partie, points globaux, grand gagnant
+  journal.js        # journal des événements et des erreurs (logs Render)
   modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
   modes/commun.js   # tirage, classement, joueurs attendus : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
@@ -71,6 +72,12 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - Ce qui est propre au quiz reste dans `etatMode` et `server/modes/quiz.js`, pour pouvoir ajouter d'autres modes sans toucher au reste.
 - Le code commun (`server/index.js`, `server/salles.js`) ne lit jamais `etatMode` : c'est la zone privée de chaque mode.
 - Noms de champs et d'événements : exactement ceux de la spec (`salle:etat`, `joueur:repondre`, `etatMode`…).
+
+## Déploiement (Render)
+
+- **Jamais de push sur `main` pendant une soirée** : chaque push redéploie Render et redémarre le serveur, toutes les parties en cours sont perdues.
+- **`URL_PUBLIQUE` est obligatoire sur Render** (adresse HTTPS du service) : sans elle, le QR code encode l'adresse interne du conteneur, illisible pour les téléphones. Le serveur affiche un avertissement au démarrage si elle manque.
+- `/sante` donne le nombre de salles, de joueurs connectés et l'heure de démarrage (`demarreA`) : si elle change, le serveur a redémarré.
 
 ## Style de code
 

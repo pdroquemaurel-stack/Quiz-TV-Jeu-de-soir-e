@@ -275,7 +275,7 @@ test('un téléphone ne reçoit jamais le vote d\'un autre joueur', () => {
   assert.equal(vueB.ecran, 'voter');
   assert.deepEqual(vueB.candidats.map((cand) => cand.id), [a.id, c.id, d.id]);
   assert.deepEqual(
-    Object.keys(vueB).filter((cle) => !['mode', 'id', 'pseudo', 'couleur', 'score', 'estHote', 'peutTerminer'].includes(cle)),
+    Object.keys(vueB).filter((cle) => !['mode', 'id', 'pseudo', 'couleur', 'score', 'estHote', 'peutTerminer', 'etape'].includes(cle)),
     ['ecran', 'numero', 'candidats'],
   );
   assert.deepEqual(Object.keys(vueB.candidats[0]), ['id', 'pseudo', 'couleur', 'connecte']);

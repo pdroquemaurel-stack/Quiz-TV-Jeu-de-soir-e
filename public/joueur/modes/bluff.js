@@ -35,9 +35,7 @@ listeChoixBluff.addEventListener('click', (evenement) => {
   if (bouton) socket.emit('joueur:repondre', Number(bouton.dataset.index));
 });
 
-document.getElementById('bl-suivant').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
+document.getElementById('bl-suivant').addEventListener('click', envoyerSuivant);
 
 function afficherEcrireBluff(vue) {
   const question = `${vue.numero} ${vue.question.texte}`;

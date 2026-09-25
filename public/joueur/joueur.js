@@ -10,9 +10,20 @@ const champCode = document.getElementById('code');
 const champPseudo = document.getElementById('pseudo');
 const messageErreur = document.getElementById('message-erreur');
 const bandeau = document.getElementById('bandeau-reconnexion');
+const boutonEntrer = formulaire.querySelector('button[type="submit"]');
 
 // Code de la salle qu'on essaie de rejoindre, mémorisé une fois dedans.
 let codeEnCours = '';
+// Vrai quand ce code vient du QR code ou de la mémoire, et non de la saisie.
+let codeNonSaisi = false;
+
+// Étape affichée, renvoyée avec « Suivant » : le serveur ignore un « Suivant »
+// d'une étape déjà passée (double appui).
+let etapeRecue = '';
+
+function envoyerSuivant() {
+  socket.emit('hote:suivant', { etape: etapeRecue });
+}
 
 champCode.value = codeUrl;
 champPseudo.value = stockage.getItem('pseudo') || '';
@@ -35,6 +46,7 @@ socket.on('connect', () => {
   const memoire = salleMemorisee();
   if (!memoire) return;
   codeEnCours = memoire.code;
+  codeNonSaisi = true;
   socket.emit('joueur:rejoindre', memoire);
 });
 
@@ -46,6 +58,9 @@ formulaire.addEventListener('submit', (evenement) => {
   evenement.preventDefault();
   messageErreur.hidden = true;
   codeEnCours = champCode.value.trim().toUpperCase();
+  codeNonSaisi = codeEnCours === codeUrl;
+  // Réactivé à la réponse du serveur : un double appui ne crée pas deux joueurs.
+  boutonEntrer.disabled = true;
   socket.emit('joueur:rejoindre', { code: codeEnCours, pseudo: champPseudo.value });
 });
 
@@ -71,9 +86,7 @@ document.getElementById('bouton-nouvelle-aventure').addEventListener('click', ()
   socket.emit('hote:rejouer');
 });
 
-document.getElementById('bouton-suivant-fin').addEventListener('click', () => {
-  socket.emit('hote:suivant');
-});
+document.getElementById('bouton-suivant-fin').addEventListener('click', envoyerSuivant);
 
 for (const bouton of document.querySelectorAll('.bouton-changer-format')) {
   bouton.addEventListener('click', () => socket.emit('hote:changerFormat'));
@@ -117,13 +130,28 @@ document.getElementById('confirmer-terminer').addEventListener('click', () => {
 });
 
 socket.on('erreur', (erreur) => {
+  boutonEntrer.disabled = false;
   if (erreur.code === 'salle_introuvable') oublierSalle();
   document.getElementById('entete').hidden = true;
   confirmation.hidden = true;
   afficherEcran('rejoindre');
-  messageErreur.textContent = erreur.message;
+  const partieDisparue = erreur.code === 'salle_introuvable' && codeNonSaisi;
+  if (partieDisparue) oublierCodeUrl();
+  messageErreur.textContent = partieDisparue
+    ? 'Cette partie n\'existe plus. Scanne le nouveau QR code sur la TV'
+    : erreur.message;
   messageErreur.hidden = false;
 });
+
+// Après un redémarrage du serveur, l'ancien code (QR ou mémoire) ne marche plus :
+// on vide le champ et on le retire de l'URL, pour qu'on rescanne au lieu de réessayer.
+function oublierCodeUrl() {
+  champCode.value = '';
+  codeNonSaisi = false;
+  const url = new URL(location.href);
+  url.searchParams.delete('code');
+  history.replaceState(null, '', url);
+}
 
 // Écrans communs à tous les modes.
 const affichagesCommuns = {
@@ -138,6 +166,8 @@ const affichagesCommuns = {
 const modesJoueur = {};
 
 socket.on('joueur:etat', (vue) => {
+  boutonEntrer.disabled = false;
+  etapeRecue = vue.etape;
   stockage.setItem('idJoueur', vue.id);
   stockage.setItem('codeSalle', codeEnCours);
   stockage.setItem('pseudo', vue.pseudo);

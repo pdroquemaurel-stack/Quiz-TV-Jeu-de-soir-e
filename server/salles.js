@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import {
   POINTS_MEDAILLE, classementGlobal, estDepartage, passerAuPodium, trouverGrandGagnant,
 } from './medailles.js';
+import { journaliser, journaliserErreur } from './journal.js';
 import { rangDe } from './modes/commun.js';
 import { modes, modesAVenir } from './modes/index.js';
 
@@ -34,7 +35,12 @@ function programmer(cle, delaiMs, action) {
   annuler(cle);
   const minuteur = setTimeout(() => {
     minuteurs.delete(cle);
-    action();
+    // Une erreur imprévue ne perd que cette action, pas toutes les salles du serveur.
+    try {
+      action();
+    } catch (erreur) {
+      journaliserErreur(`minuteur ${cle}`, erreur);
+    }
   }, delaiMs);
   minuteurs.set(cle, minuteur);
 }
@@ -80,6 +86,7 @@ export function creerSalle(tvSocketId) {
     etatMode: {},
   };
   salles[salle.code] = salle;
+  journaliser(salle.code, 'salle créée');
   return salle;
 }
 
@@ -222,6 +229,7 @@ export function ajouterJoueur(salle, pseudoSaisi, socketId) {
     arriveeA: Date.now(),
   };
   salle.joueurs.push(joueur);
+  journaliser(salle.code, `+joueur ${pseudo} (${joueursConnectes(salle).length} connectés)`);
   verifierHote(salle);
   surveillerFermeture(salle);
   return { joueur };
@@ -233,6 +241,7 @@ export function reconnecterJoueur(salle, id, socketId) {
   if (!joueur) return null;
   joueur.connecte = true;
   joueur.socketId = socketId;
+  journaliser(salle.code, `retour ${joueur.pseudo} (${joueursConnectes(salle).length} connectés)`);
   annuler(cleAbsence(salle, id));
   verifierHote(salle);
   surveillerFermeture(salle);
@@ -243,6 +252,7 @@ export function reconnecterJoueur(salle, id, socketId) {
 export function deconnecterJoueur(salle, joueur, quandChange) {
   joueur.connecte = false;
   joueur.socketId = null;
+  journaliser(salle.code, `déconnexion ${joueur.pseudo} (${joueursConnectes(salle).length} connectés)`);
   programmer(cleAbsence(salle, joueur.id), DELAI_ABSENCE_MS, () => {
     if (salle.etat === 'lobby') retirerJoueur(salle, joueur.id);
     else if (salle.hoteId === joueur.id) transfererHote(salle);
@@ -253,6 +263,8 @@ export function deconnecterJoueur(salle, joueur, quandChange) {
 
 export function retirerJoueur(salle, id) {
   annuler(cleAbsence(salle, id));
+  const retire = salle.joueurs.find((joueur) => joueur.id === id);
+  if (retire) journaliser(salle.code, `-joueur ${retire.pseudo} retiré`);
   salle.joueurs = salle.joueurs.filter((joueur) => joueur.id !== id);
   if (salle.hoteId === id) {
     salle.hoteId = null;
@@ -265,7 +277,9 @@ export function transfererHote(salle) {
   const successeur = joueursConnectes(salle)
     .filter((joueur) => joueur.id !== salle.hoteId)
     .sort((a, b) => a.arriveeA - b.arriveeA)[0];
-  if (successeur) salle.hoteId = successeur.id;
+  if (!successeur) return;
+  salle.hoteId = successeur.id;
+  journaliser(salle.code, `hôte → ${successeur.pseudo}`);
 }
 
 // À chaque arrivée : on désigne un hôte s'il n'y en a pas, ou si l'hôte est absent
@@ -281,6 +295,7 @@ export function reconnecterTv(code, jetonTv, socketId) {
   const salle = trouverSalle(code);
   if (!salle || !jetonTv || salle.jetonTv !== jetonTv) return null;
   salle.tvSocketId = socketId;
+  journaliser(salle.code, 'TV reconnectée');
   surveillerFermeture(salle);
   return salle;
 }
@@ -289,6 +304,7 @@ export function deconnecterTv(socketId) {
   const salle = Object.values(salles).find((s) => s.tvSocketId === socketId);
   if (!salle) return;
   salle.tvSocketId = null;
+  journaliser(salle.code, 'TV déconnectée');
   surveillerFermeture(salle);
 }
 
@@ -305,6 +321,16 @@ export function fermerSalle(salle) {
     if (cle.startsWith(`${salle.code}:`)) annuler(cle);
   }
   delete salles[salle.code];
+  journaliser(salle.code, 'salle fermée');
+}
+
+// Pour /sante : des nombres seulement, rien de sensible.
+export function statistiques() {
+  const toutes = Object.values(salles);
+  return {
+    salles: toutes.length,
+    joueursConnectes: toutes.reduce((total, salle) => total + joueursConnectes(salle).length, 0),
+  };
 }
 
 export function trouverJoueurParSocket(socketId) {
@@ -340,6 +366,13 @@ export function synchroniserMinuteur(salle, quandAvance) {
   });
 }
 
+// L'étape affichée, même chaîne que celle de la TV (« partie:revelation:10 »).
+// Construite depuis la vue publique du mode, sans lire etatMode.
+export function etapeCourante(salle) {
+  const { phase = '', numero = '' } = modeDe(salle).vueTv(salle) ?? {};
+  return `${salle.etat}:${phase}:${numero}`;
+}
+
 export function vueTv(salle) {
   const vue = { ...salle, etatMode: modeDe(salle).vueTv(salle) };
   if (salle.etat === 'partie') return vue;
@@ -364,6 +397,7 @@ export function vueJoueur(salle, joueur) {
     score: joueur.score,
     estHote,
     peutTerminer: estHote && salle.etat === 'partie',
+    etape: etapeCourante(salle),
   };
   if (salle.etat === 'partie') return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };
 

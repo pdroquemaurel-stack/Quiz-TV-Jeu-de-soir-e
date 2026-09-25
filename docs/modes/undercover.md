@@ -269,6 +269,7 @@ Le tirage réutilise `tirerQuestions` et `noterQuestionsVues` de `commun.js` (un
 | Joueur déconnecté au début d'une manche | Il n'y participe pas : pas de rôle. À son retour, « Attente de manche », il joue à la suivante. |
 | Arrivée en cours de partie | 0 point, « Attente de manche », joue à partir de la manche suivante. |
 | Moins de 4 joueurs connectés en cours de partie | La partie continue. Seul « Rejouer » est désactivé tant que le compte n'y est pas. La composition d'une nouvelle manche dépend de ses participants. |
+| Manche qui démarre avec 2 participants (les autres déconnectés) | 1 civil contre 1 undercover : il ne reste qu'un civil en jeu, les infiltrés ont donc déjà gagné. La manche se termine aussitôt sur l'écran de fin de manche. Sinon, chacun voterait pour l'autre et l'égalité se répéterait sans fin (tranche 18, R9). |
 | Vote invalide (id inconnu, éliminé, soi-même, hors départage, pas une chaîne) | Le serveur l'ignore et le joueur reste sur « Voter ». |
 | Proposition invalide (vide, trop longue, pas une chaîne, envoyée par un autre joueur, deuxième proposition) | Le serveur l'ignore. |
 | « Suivant » de l'hôte pendant un vote ou pendant que Mister White cherche | Ignoré : la phase se termine seule. |

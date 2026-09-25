@@ -44,7 +44,7 @@ function afficherBoutonsHoteUc(vue) {
 }
 
 document.addEventListener('click', (evenement) => {
-  if (evenement.target.closest('.bouton-hote-uc')) socket.emit('hote:suivant');
+  if (evenement.target.closest('.bouton-hote-uc')) envoyerSuivant();
 });
 
 function afficherCommunUc(vue) {
