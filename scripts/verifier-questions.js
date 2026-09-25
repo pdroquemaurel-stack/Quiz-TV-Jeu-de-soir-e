@@ -92,6 +92,13 @@ const MOTS_COURANTS = new Set([
   'principal', 'ingredient', 'traditionnellement', 'couleur', 'interprete', 'chanteur',
   'chanteuse', 'acteur', 'peintre', 'groupe', 'decouvert', 'scientifique', 'capable', 'mesure',
   'marque',
+  // Mots banals ou à double sens (« chaîne » de montagnes et de restaurants, « tournée »
+  // d'un chanteur et d'un film) : ils rapprochaient des questions sans sujet commun.
+  'affrontent', 'album', 'artiste', 'autrice', 'breaking', 'britannique', 'chaine', 'chimie',
+  'civilisation', 'classique', 'deroule', 'devant', 'devenu', 'elles', 'enfants', 'entre',
+  'entreprise', 'fondee', 'garcon', 'independance', 'jeune', 'lance', 'marche', 'mondial',
+  'nicolas', 'partie', 'piece', 'premiers', 'produit', 'quitte', 'record', 'remplace', 'robot',
+  'scene', 'signe', 'somme', 'souvent', 'thomas', 'tournee', 'unite',
 ]);
 
 function sansAccents(texte) {

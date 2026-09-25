@@ -114,6 +114,14 @@ test('paires voisines : 2 propositions identiques sont signalées, sauf des nomb
   assert.deepEqual(idsVoisines(liste), ['q0001/q0002']);
 });
 
+test('paires voisines : un mot banal partagé ne rapproche pas deux questions', () => {
+  const liste = [
+    questionValide({ id: 'q0001', texte: 'Quel pays est devenu le plus peuplé ?', reponses: ['Inde', 'Chine', 'Japon', 'Laos'], bonneReponse: 0 }),
+    questionValide({ id: 'q0002', texte: 'Quel compositeur est devenu sourd ?', reponses: ['Bach', 'Liszt', 'Verdi', 'Satie'], bonneReponse: 0 }),
+  ];
+  assert.deepEqual(idsVoisines(liste), []);
+});
+
 test('paires voisines : les paires connues de la banque sont signalées', () => {
   const trouvees = idsVoisines(banque);
   for (const paire of ['q0081/q0084', 'q0111/q0117', 'q0121/q0122', 'q0161/q0169', 'q0043/q0047', 'q0082/q0088', 'q0095/q0182']) {
