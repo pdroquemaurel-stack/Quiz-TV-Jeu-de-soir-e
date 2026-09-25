@@ -200,8 +200,8 @@ Un joueur éliminé garde son mot et son rôle à l'écran, et rien d'autre : il
 |---|---|---|
 | TV | Description | « Manche 2/3 · Tour 1 », « 1 undercover et 1 Mister White parmi vous ». L'ordre de parole en grand : numéro, pastille, pseudo. Rappel : « Décrivez votre mot à voix haute, sans le dire. L'hôte lance le vote. » Les éliminés en bas, barrés, avec leur rôle. Petit QR code |
 | TV | Vote | « Qui éliminer ? » (ou « Départage : Paul ou Léa ? »), chrono de 20 s, pastilles des joueurs ayant voté |
-| TV | Élimination | « Paul est éliminé » en très gros, puis « Il était civil », « C'était un undercover ! » ou « C'était Mister White ! ». Dessous, les votes : une ligne par votant (« Léa → Paul »). Variantes : « Égalité : départage entre Paul et Léa », « Personne n'est éliminé » |
-| TV | Devinette | « Mister White a une chance de trouver le mot des civils », chrono. Puis « Il propose : Plage… Trouvé ! » ou « Raté » |
+| TV | Élimination | « Paul sort du jeu » en très gros, puis « Rôle : civil », « Rôle : undercover ! » ou « C'était Mister White ! ». Dessous, les votes : une ligne par votant (« Léa → Paul »). Variantes : « Égalité : départage entre Paul et Léa », « Personne ne sort du jeu » |
+| TV | Devinette | « Mister White a une chance de trouver le mot des civils », chrono. Puis « Proposition : « Plage » », « Trouvé ! » ou « Raté » |
 | TV | Fin de manche | « Les civils gagnent ! », « Les infiltrés gagnent ! » ou « Mister White gagne ! ». Les deux mots : « Civils : Plage — Undercover : Piscine ». Les rôles de chacun (pastille et rôle). Classement général à droite, avec les points gagnés |
 | TV | Podium | Le podium commun, plus une ligne via `completerPodium` : « Manches gagnées : civils 2, infiltrés 1 » (et « Mister White 1 » s'il a gagné) |
 | Téléphone | Mot | « Ton mot » masqué par défaut, bouton « Voir mon mot » / « Cacher » pour le montrer sans que le voisin le lise. Pour Mister White : « Tu es Mister White : tu n'as pas de mot. Écoute les autres et bluffe ! », masqué de la même façon. « Manche 2/3 · Tour 1 ». Pour l'hôte, gros bouton « Passer au vote » |

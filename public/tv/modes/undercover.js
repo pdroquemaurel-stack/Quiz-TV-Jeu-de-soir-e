@@ -70,8 +70,8 @@ function afficherVoteUndercover(salle, nouvelleEtape) {
 }
 
 const REVELATIONS = {
-  civil: "C'était un civil",
-  undercover: "C'était un undercover !",
+  civil: 'Rôle : civil',
+  undercover: 'Rôle : undercover !',
   mister_white: "C'était Mister White !",
 };
 
@@ -87,13 +87,13 @@ function afficherEliminationUndercover(salle, nouvelleEtape) {
   const detail = document.getElementById('uc-detail');
   if (elimine) {
     const joueur = joueurUndercover(salle, elimine.id);
-    verdict.replaceChildren(pastille(joueur.couleur), ` ${joueur.pseudo} est éliminé`);
+    verdict.replaceChildren(pastille(joueur.couleur), ` ${joueur.pseudo} sort du jeu`);
     detail.textContent = REVELATIONS[elimine.role];
   } else if (departage) {
     verdict.textContent = 'Égalité !';
     detail.textContent = `Vote de départage entre ${listerPseudos(departage.map(pseudoDe))}`;
   } else {
-    verdict.textContent = 'Personne n\'est éliminé';
+    verdict.textContent = 'Personne ne sort du jeu';
     detail.textContent = exAequo.length > 1 ? 'Encore une égalité' : 'Aucun vote';
   }
   document.getElementById('uc-votes').replaceChildren(...votes.map(({ votant, cible }) => {
@@ -123,11 +123,11 @@ function afficherDevinetteUndercover(salle, nouvelleEtape) {
   resultat.hidden = !devinette.resultatConnu;
   if (!devinette.resultatConnu) {
     lancerChrono(chrono, tempsRestantMs);
-    proposition.textContent = 'Il cherche…';
+    proposition.textContent = 'Recherche en cours…';
     return;
   }
   proposition.textContent = devinette.proposition
-    ? `Il propose « ${devinette.proposition} »`
+    ? `Proposition : « ${devinette.proposition} »`
     : 'Pas de proposition';
   resultat.textContent = devinette.trouve ? 'Trouvé !' : 'Raté';
   resultat.classList.toggle('trouve', devinette.trouve);

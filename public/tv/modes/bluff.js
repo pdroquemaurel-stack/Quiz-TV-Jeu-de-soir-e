@@ -5,6 +5,11 @@
 // Délai entre deux cartes de la révélation : les bluffs un par un, puis la vérité.
 const DELAI_CARTE_BLUFF_MS = 1000;
 
+// À 40 px, pour que la révélation tienne à 10 joueurs (tranche 19).
+const MAX_BLUFFS_AFFICHES = 5;
+const MAX_PASTILLES_CARTE = 3;
+const MAX_PASTILLES_VERITE = 8;
+
 function afficherSaisieBluff(salle, nouvelleEtape) {
   const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
   if (nouvelleEtape) {
@@ -57,13 +62,7 @@ function afficherRevelationBluff(salle, nouvelleEtape) {
     numero, total, question, propositions, sansBluff, sansVote, classement,
   } = salle.etatMode;
   const joueurDe = (id) => salle.joueurs.find((joueur) => joueur.id === id);
-  const etiquettes = (ids) => ids.map((id) => etiquetteJoueur(joueurDe(id), false));
-  const pastilles = (ids) => ids.map((id) => {
-    const element = document.createElement('li');
-    element.className = 'seule';
-    element.append(pastille(joueurDe(id).couleur));
-    return element;
-  });
+  const pastilles = (ids, max) => pastillesSeules(ids.map(joueurDe), max);
 
   if (nouvelleEtape) {
     sonner(sonRevelationBluff(salle.etatMode));
@@ -71,14 +70,17 @@ function afficherRevelationBluff(salle, nouvelleEtape) {
     document.getElementById('bl-texte-revelation').textContent = question.texte;
 
     // Les bluffs qui ont piégé quelqu'un, du moins au plus voté, puis la vérité.
+    // Au-delà de MAX_BLUFFS_AFFICHES, les moins votés sont résumés en « et N autres bluffs ».
     const piegeurs = propositions
       .filter((proposition) => !proposition.vraie && proposition.votants.length > 0)
       .sort((a, b) => a.votants.length - b.votants.length);
+    const affiches = piegeurs.slice(-MAX_BLUFFS_AFFICHES);
     const vraie = propositions.find((proposition) => proposition.vraie);
     const cartes = [
-      ...piegeurs.map((p) => carteBluff(p, etiquettes, pastilles)),
+      ...affiches.map((p) => carteBluff(p, pastilles)),
       carteVeriteBluff(vraie, pastilles),
     ];
+    if (piegeurs.length > affiches.length) cartes.unshift(carteAutresBluffs(piegeurs.length - affiches.length));
     const delai = (rang) => (premierEtatRecu ? '0ms' : `${rang * DELAI_CARTE_BLUFF_MS}ms`);
     cartes.forEach((carte, rang) => { carte.style.animationDelay = delai(rang); });
     document.getElementById('bl-cartes').replaceChildren(...cartes);
@@ -86,12 +88,13 @@ function afficherRevelationBluff(salle, nouvelleEtape) {
     const verdict = document.getElementById('bl-verdict');
     verdict.textContent = verdictBluff(salle.etatMode);
     verdict.hidden = verdict.textContent === '';
-    verdict.style.animationDelay = delai(piegeurs.length);
+    verdict.style.animationDelay = delai(cartes.length - 1);
 
+    // Seuls les auteurs : à 40 px, les textes de ces bluffs ne tiendraient pas sous les cartes.
     const personneNyACru = propositions.filter((p) => !p.vraie && p.votants.length === 0);
-    remplirLigneBluff('bl-personne-ny-a-cru', personneNyACru.map((p) => bluffSansVictime(p, joueurDe)));
-    remplirLigneBluff('bl-sans-bluff', etiquettes(sansBluff));
-    remplirLigneBluff('bl-sans-vote', etiquettes(sansVote));
+    remplirLigneBluff('bl-personne-ny-a-cru', pastilles(personneNyACru.flatMap((p) => p.auteurs)));
+    remplirLigneBluff('bl-sans-bluff', pastilles(sansBluff));
+    remplirLigneBluff('bl-sans-vote', pastilles(sansVote));
   }
   document.getElementById('bl-classement').replaceChildren(
     ...classement.map((ligne) => ligneClassement(ligne, true)),
@@ -111,30 +114,47 @@ function verdictBluff({ personneNaBluffe, tousOntTrouve, personneNaTrouve }) {
   return '';
 }
 
-// Une ligne par carte, pour en faire tenir 10 : « Riz », +1000, de Paul, a piégé ●●.
-// Les auteurs avec leur pseudo, les piégés et ceux qui ont trouvé en pastilles seules.
-// Les points passent avant les pastilles : s'il y a trop de piégés, ce sont elles qui sont coupées.
-function carteBluff(proposition, etiquettes, pastilles) {
+// Une ligne par carte : « Riz », +1000, de (P), a piégé (L)(S)+2.
+// Auteurs et piégés en pastilles à initiale : à 40 px, les pseudos ne tiendraient pas.
+function carteBluff(proposition, pastilles) {
   const element = document.createElement('li');
   element.append(
     texte('libelle', proposition.texte),
     texte('points', `+${proposition.points}`),
-    groupeBluff('de', etiquettes(proposition.auteurs)),
-    groupeBluff('a piégé', pastilles(proposition.votants)),
+    groupeBluff('de', pastilles(proposition.auteurs)),
+    groupeBluff('a piégé', pastilles(proposition.votants, MAX_PASTILLES_CARTE)),
   );
   return element;
 }
 
-// « Sel », la vérité, avec ceux qui l'ont trouvée et ceux qui l'avaient écrite comme bluff.
+function carteAutresBluffs(nombre) {
+  const element = document.createElement('li');
+  element.className = 'autres';
+  element.textContent = nombre > 1 ? `et ${nombre} autres bluffs` : 'et 1 autre bluff';
+  return element;
+}
+
+// « Sel », la vérité, puis dessous ceux qui l'ont trouvée et ceux qui l'avaient écrite comme bluff.
 function carteVeriteBluff(proposition, pastilles) {
   const element = document.createElement('li');
   element.className = 'verite';
-  element.append(texte('libelle', proposition.texte), texte('mention', 'La vérité !'));
-  if (proposition.votants.length) element.append(groupeBluff('trouvée par', pastilles(proposition.votants)));
-  if (proposition.ontEcritLaVerite.length) {
-    element.append(groupeBluff('l\'avait écrite :', pastilles(proposition.ontEcritLaVerite)));
+  element.append(ligneBluff(texte('libelle', proposition.texte), texte('mention', 'La vérité !')));
+  const groupes = [];
+  if (proposition.votants.length) {
+    groupes.push(groupeBluff('trouvée par', pastilles(proposition.votants, MAX_PASTILLES_VERITE)));
   }
+  if (proposition.ontEcritLaVerite.length) {
+    groupes.push(groupeBluff('l\'avait écrite :', pastilles(proposition.ontEcritLaVerite)));
+  }
+  if (groupes.length) element.append(ligneBluff(...groupes));
   return element;
+}
+
+function ligneBluff(...elements) {
+  const ligne = document.createElement('span');
+  ligne.className = 'bl-ligne';
+  ligne.append(...elements);
+  return ligne;
 }
 
 function groupeBluff(titre, elements) {
@@ -145,15 +165,6 @@ function groupeBluff(titre, elements) {
   liste.append(...elements);
   groupe.append(texte('titre-groupe', titre), liste);
   return groupe;
-}
-
-// Pour la ligne « Personne n'y a cru » : le ou les auteurs, puis le bluff.
-function bluffSansVictime(proposition, joueurDe) {
-  const [premier, ...autres] = proposition.auteurs.map(joueurDe);
-  const element = etiquetteJoueur(premier, false);
-  for (const autre of autres) element.append(pastille(autre.couleur));
-  element.append(texte('reponse-seule', proposition.texte));
-  return element;
 }
 
 // Ligne « Personne n'y a cru », « Pas de bluff » ou « Pas de vote », masquée si elle est vide.

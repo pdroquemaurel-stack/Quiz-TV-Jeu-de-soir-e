@@ -146,7 +146,7 @@ function afficherLobby(salle) {
 
 function texteFormat(format) {
   if (format.type === 'petite') return 'Petite partie';
-  return `Aventure — premier à ${format.objectif} points`;
+  return `Aventure — ${format.objectif} points pour gagner`;
 }
 
 function afficherModeChoisi(mode) {
@@ -185,6 +185,35 @@ function pastille(couleur) {
   element.className = 'pastille';
   element.style.setProperty('--couleur', `var(--joueur-${couleur})`);
   return element;
+}
+
+// Pastille sans pseudo à côté : l'initiale la distingue, y compris pour un joueur daltonien.
+// Array.from ne coupe pas un émoji en deux.
+function pastilleInitiale(joueur) {
+  const element = pastille(joueur.couleur);
+  element.classList.add('initiale');
+  element.style.setProperty('--couleur-initiale', `var(--texte-joueur-${joueur.couleur})`);
+  element.textContent = Array.from(joueur.pseudo)[0].toLocaleUpperCase('fr');
+  return element;
+}
+
+// Pastilles à initiale, pour une liste d'étiquettes : au-delà de max, les premières puis « +N ».
+function pastillesSeules(joueurs, max = Infinity) {
+  const visibles = joueurs.length > max ? joueurs.slice(0, max - 1) : joueurs;
+  const elements = visibles.map((joueur) => {
+    const element = document.createElement('li');
+    element.className = 'seule';
+    element.append(pastilleInitiale(joueur));
+    griserSiDeconnecte(element, joueur);
+    return element;
+  });
+  if (visibles.length < joueurs.length) {
+    const reste = document.createElement('li');
+    reste.className = 'seule reste';
+    reste.textContent = `+${joueurs.length - visibles.length}`;
+    elements.push(reste);
+  }
+  return elements;
 }
 
 function forme(classes) {
@@ -260,7 +289,7 @@ function afficherTableau(salle) {
   const { format, numeroPartie } = salle;
   const partie = `Après la partie ${numeroPartie}`;
   document.getElementById('sous-titre-tableau').textContent = format.type === 'aventure'
-    ? `${partie} — premier à ${format.objectif} points`
+    ? `${partie} — ${format.objectif} points pour gagner`
     : partie;
   document.getElementById('departage').hidden = !salle.departage;
   remplirTableau(document.getElementById('tableau-global'), salle.tableau, format.type === 'aventure');

@@ -20,6 +20,8 @@ function afficherSaisieMemeReponse(salle, nouvelleEtape) {
   if (reponses > 0) sonner('reponse');
 }
 
+const MAX_PASTILLES_GROUPE = 5;
+
 function afficherResultatsMemeReponse(salle, nouvelleEtape) {
   const {
     numero, total, question, groupes, sansReponse, unanimite, classement,
@@ -37,34 +39,35 @@ function afficherResultatsMemeReponse(salle, nouvelleEtape) {
     ...ensemble.map((groupe) => carteGroupe(groupe, joueurDe)),
   );
   remplirLigne('mr-seuls', seuls.map((groupe) => reponseSeule(groupe, joueurDe(groupe.joueurs[0]))));
-  remplirLigne('mr-absents', sansReponse.map((id) => etiquetteJoueur(joueurDe(id), false)));
+  remplirLigne('mr-absents', pastillesSeules(sansReponse.map(joueurDe)));
   document.getElementById('mr-classement').replaceChildren(
     ...classement.map((ligne) => ligneClassement(ligne, true)),
   );
 }
 
-// « Tous d'accord ! », « Fraise ! », « Fraise et Cerise ! », « Chacun sa réponse », « Personne n'a répondu ».
+// « Tout le monde d'accord ! », « Fraise ! », « Fraise et Cerise ! », « Chacun sa réponse », « Personne n'a répondu ».
 function texteVerdict(groupes, unanimite) {
   if (groupes.length === 0) return 'Personne n\'a répondu';
-  if (unanimite) return 'Tous d\'accord !';
+  if (unanimite) return 'Tout le monde d\'accord !';
   const enTete = groupes.filter((groupe) => groupe.enTete).map((groupe) => groupe.libelle);
   if (enTete.length === 0) return 'Chacun sa réponse';
   return `${enTete.join(' et ')} !`;
 }
 
-// Libellé en gros, joueurs du groupe, points gagnés.
+// Libellé en gros, joueurs du groupe en pastilles à initiale (5 au plus, puis « +N »), points gagnés.
+// Les pseudos sont dans le classement, à droite : à 40 px, ils ne tiendraient pas dans la carte.
 function carteGroupe(groupe, joueurDe) {
   const element = document.createElement('li');
   if (groupe.enTete) element.classList.add('en-tete');
   const joueurs = document.createElement('ul');
   joueurs.className = 'etiquettes';
-  joueurs.append(...groupe.joueurs.map((id) => etiquetteJoueur(joueurDe(id), false)));
+  joueurs.append(...pastillesSeules(groupe.joueurs.map(joueurDe), MAX_PASTILLES_GROUPE));
   element.append(texte('libelle', groupe.libelle), joueurs, texte('points', `+${groupe.points}`));
   return element;
 }
 
 function reponseSeule(groupe, joueur) {
-  const element = etiquetteJoueur(joueur, false);
+  const [element] = pastillesSeules([joueur]);
   element.append(texte('reponse-seule', groupe.libelle));
   return element;
 }

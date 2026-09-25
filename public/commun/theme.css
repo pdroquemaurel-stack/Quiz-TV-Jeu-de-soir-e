@@ -17,15 +17,16 @@
   --choix-2: #FFC01F; --texte-choix-2: #1B1035;
   --choix-3: #17A34A; --texte-choix-3: #FFFFFF;
 
-  /* Joueurs : le serveur envoie le numéro (couleur: 3 → --joueur-3). */
-  --joueur-1: #FF7A00;
-  --joueur-2: #FF4FA0;
-  --joueur-3: #8A4DFF;
-  --joueur-4: #00B4C6;
-  --joueur-5: #19C37D;
-  --joueur-6: #8BC000;
-  --joueur-7: #9A5B34;
-  --joueur-8: #1B1035;
-  --joueur-9: #3E9BFF;
-  --joueur-10: #7B8190;
+  /* Joueurs : le serveur envoie le numéro (couleur: 3 → --joueur-3).
+     --texte-joueur-N : couleur de l'initiale dans la pastille (contraste 4,5:1 au moins). */
+  --joueur-1: #FF7A00; --texte-joueur-1: #1B1035;
+  --joueur-2: #FF4FA0; --texte-joueur-2: #1B1035;
+  --joueur-3: #8A4DFF; --texte-joueur-3: #FFFFFF;
+  --joueur-4: #00B4C6; --texte-joueur-4: #1B1035;
+  --joueur-5: #19C37D; --texte-joueur-5: #1B1035;
+  --joueur-6: #8BC000; --texte-joueur-6: #1B1035;
+  --joueur-7: #9A5B34; --texte-joueur-7: #FFFFFF;
+  --joueur-8: #2B3A8F; --texte-joueur-8: #FFFFFF;
+  --joueur-9: #3E9BFF; --texte-joueur-9: #1B1035;
+  --joueur-10: #117777; --texte-joueur-10: #FFFFFF;
 }

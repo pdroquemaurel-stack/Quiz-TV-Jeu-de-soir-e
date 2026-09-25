@@ -251,7 +251,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Connexion | « Connexion au serveur… » en plein écran tant que la page n'a jamais été connectée, puis en bandeau lors d'une coupure, avec nouvelle tentative automatique (tranche 18, voir Contraintes techniques) |
-| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), format (« Petite partie » ou « Aventure — premier à 5 points »), « En attente que l'hôte lance » |
+| Salle d'attente | QR code géant, code en 4 lettres, URL courte, joueurs arrivés (couleur, pseudo, couronne de l'hôte), mode choisi et sa règle courte (« N joueurs minimum » s'il en manque), format (« Petite partie » ou « Aventure — 5 points pour gagner »), « En attente que l'hôte lance » |
 | Question | Numéro (3/10), texte, 4 réponses (couleur + forme ▲ ◆ ● ■), chrono, pastilles des joueurs ayant répondu, petit QR code dans un coin |
 | Révélation | Bonne réponse mise en avant, nombre de réponses par choix, qui a eu juste, puis classement avec les points gagnés |
 | Podium | Tous les joueurs de rang 3 ou mieux (ex æquo possibles, donc parfois plus de 3) avec leur médaille, classement complet dessous avec « 🥇 +3 / 🥈 +2 / 🥉 +1 », « Points globaux dans un instant » |
@@ -289,7 +289,7 @@ Réponses :
 | ● | Jaune `#FFC01F` (forme et texte foncés) |
 | ■ | Vert `#17A34A` |
 
-Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoie que le numéro.
+Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoie que le numéro. Sur la TV, une pastille qui n'a pas le pseudo à côté porte l'initiale du joueur (blanche ou foncée selon la couleur, `--texte-joueur-N`) : les joueurs restent distinguables pour un daltonien. Un joueur déconnecté est à 60 % d'opacité, avec une icône pause.
 
 | # | Couleur |
 |---|---|
@@ -300,9 +300,9 @@ Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoi
 | 5 | Menthe `#19C37D` |
 | 6 | Citron vert `#8BC000` |
 | 7 | Brun `#9A5B34` |
-| 8 | Encre `#1B1035` |
+| 8 | Bleu marine `#2B3A8F` |
 | 9 | Bleu ciel `#3E9BFF` |
-| 10 | Gris `#7B8190` |
+| 10 | Canard `#117777` |
 
 ## Contraintes techniques
 
