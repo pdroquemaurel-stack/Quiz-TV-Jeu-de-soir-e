@@ -333,7 +333,7 @@ Limites connues (doc Render) :
 
 - Mise en veille après 15 min sans requête HTTP ni message WebSocket entrant, puis environ 1 min de réveil. Le premier lancement de la soirée attend donc ~1 min.
   - Parade : ouvrir la page TV quelques minutes avant l'arrivée des invités. Tant que le serveur ne répond pas, c'est le navigateur qui attend. Une fois la page chargée, elle affiche « Connexion au serveur… » tant que le socket n'est pas connecté (tranche 18). La page locale « Réveil du serveur… » de l'APK est en réserve avec lui.
-  - Pendant une partie, les échanges Socket.IO (ping/pong toutes les 10 s) devraient empêcher la mise en veille. À vérifier en conditions réelles, salle d'attente ouverte 20 min (tranche 18, H3). Si le serveur s'endort, la TV interrogera `/sante` toutes les 5 min.
+  - Pendant une partie, les échanges Socket.IO (ping/pong toutes les 10 s) empêchent la mise en veille : vérifié à la tranche 18 (H3), salle d'attente ouverte 20 min sans action, sans redémarrage du serveur. Si le serveur venait à s'endormir, la TV interrogerait `/sante` toutes les 5 min.
 - Redémarrages possibles à tout moment, et fichiers locaux effacés : cohérent avec le choix « tout en mémoire, partie perdue si redémarrage ». `questions.json` est versionné dans le dépôt, donc il n'est pas concerné.
 - 750 h gratuites par mois : suffisant pour un seul service.
 
@@ -359,8 +359,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu).
-- **À venir**, après l'audit (`AUDIT.md`) : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité).
+- **À venir**, après l'audit (`AUDIT.md`) : **19 → 10 → 20 → 21 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -377,7 +377,7 @@ Le PC de développement est sur un réseau d'entreprise : les téléphones ne pe
   *Test : les scores correspondent à la formule, et une égalité donne le même rang.*
 - **5. Banque de questions.** ✅ Terminée. `questions.json` d'environ 200 questions (générées avec Claude, relues par Paul), tirage sans répétition dans la salle, mélange de l'ordre des réponses (avec test automatique du recalcul de `bonneReponse`), script qui vérifie le format du fichier.
   *Test : 3 parties d'affilée sans aucune question répétée.*
-- **8. Déploiement Render** (réalisée juste après la tranche 5) ✅ Terminée. Dépôt GitHub, service gratuit, HTTPS, vérification de la mise en veille pendant une salle d'attente longue. La vérification de la mise en veille reste à faire : elle passe à la tranche 18 (H3).
+- **8. Déploiement Render** (réalisée juste après la tranche 5) ✅ Terminée. Dépôt GitHub, service gratuit, HTTPS, vérification de la mise en veille pendant une salle d'attente longue. La vérification de la mise en veille a été faite à la tranche 18 (H3).
   *Test : jouer avec un téléphone en 4G.*
 - **6. Robustesse.** ✅ Terminée. Reconnexion des joueurs, transfert de l'hôte après 10 s, arrivée en cours de partie, reconnexion de la TV, fermeture des salles après 30 min.
   - Boutons de test sur la page joueur, visibles seulement avec `?dev` : « Couper la connexion 5 s » et « Couper 15 s ». Ils coupent le socket puis le rétablissent après ce délai, ce qui simule une coupure sans avoir à verrouiller un téléphone. 5 s reste sous le seuil de 10 s (l'hôte et le joueur en salle d'attente sont conservés), 15 s le dépasse.
@@ -426,7 +426,7 @@ Tranches :
 
 Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 préparent la soirée test (10). Ses retours peuvent réordonner la suite.
 
-- **18. Fiabilité avant soirée.** Qu'aucun incident technique connu ne puisse gâcher la soirée test, et qu'on puisse comprendre après coup ce qui s'est passé.
+- **18. Fiabilité avant soirée.** ✅ Terminée. Qu'aucun incident technique connu ne puisse gâcher la soirée test, et qu'on puisse comprendre après coup ce qui s'est passé.
   - Plantage du serveur sur un message `null` (R1, T1) : aucune donnée reçue ne fait tomber le process, et une erreur imprévue dans une action est journalisée sans arrêter le serveur.
   - Joueur fantôme (R3, TEL2) : un socket déjà joueur de la salle ne crée pas de 2e joueur, et « Entrer » reste désactivé jusqu'à la réponse du serveur.
   - Double « Suivant » (R2) : un « Suivant » qui ne correspond plus à l'étape affichée est ignoré.
