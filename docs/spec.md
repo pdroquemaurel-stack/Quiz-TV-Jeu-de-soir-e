@@ -380,8 +380,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène).
-- **À venir**, après l'audit (`AUDIT.md`) : **10 → 22 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions).
+- **À venir**, après l'audit (`AUDIT.md`) : **10 → 23**. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -495,10 +495,10 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : partie de quiz à 4 sur la vraie TV (navigateur du stick) : chaque question est précédée de sa catégorie ; le podium révèle le 3e, le 2e puis le 1er ; les scores montent au classement ; chaque révélation affiche la réponse la plus rapide (« ⚡ Léa en 1,8 s ») ; l'écran de fin montre au moins 3 « prix » justes, vérifiés à la main sur la partie jouée ; aucune saccade visible sur le stick.*
 
-- **22. Contenu et choix des questions.** Plus de questions, plus variées, choisies selon le groupe, et une reconnexion impossible à usurper.
-  - Environ 100 questions récentes et de culture populaire, relues à la main, plus une catégorie `maths-logique` (C2).
-  - Choix du thème et de la difficulté par l'hôte en salle d'attente, comme le format (F2).
-  - Clé secrète de reconnexion, remise au seul téléphone, distincte de l'`id` public (T2).
+- **22. Contenu et choix des questions.** ✅ Terminée. Plus de questions, plus variées, choisies selon le groupe, et une reconnexion impossible à usurper.
+  - 100 questions relues à la main (q0201 à q0300) : 80 récentes et de culture populaire, 20 de la nouvelle catégorie `maths-logique`, soit 300 en tout. `scripts/verifier-questions.js` contrôle en plus les espaces, le « ? » final, la bonne réponse écrite dans la question, les propositions mélangées et le stock de chaque thème par niveau (C2).
+  - Choix des thèmes et du niveau (Facile, Normal, Difficile) par l'hôte en salle d'attente, comme le format, affiché sur la TV : événement `hote:reglerMode`, champ `reglagesMode`, règles dans « Quiz culture générale » (F2).
+  - Clé secrète de reconnexion (`cle`), remise au seul téléphone, distincte de l'`id` public, jamais envoyée à la TV ni aux autres joueurs (T2).
 
   *Test : `node scripts/verifier-questions.js` passe. 3 parties d'affilée sans répétition, où les nouvelles questions apparaissent (journal des tirages). En salle d'attente, l'hôte choisit « Cinéma, facile » : 10 questions de cinéma, aucune de difficulté 3. En Qui de nous ?, un onglet qui envoie `joueur:rejoindre` avec l'`id` d'un autre joueur (lu dans la console) est refusé, et ce joueur garde sa place. Test automatique : une reconnexion sans la bonne clé est refusée.*
 
