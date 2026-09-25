@@ -248,13 +248,20 @@ export function reconnecterJoueur(salle, id, socketId) {
   return joueur;
 }
 
-// Au bout de 10 s d'absence : retrait en salle d'attente, sinon transfert de l'hôte.
+// Des points globaux ou une médaille : le joueur a déjà joué dans cette salle.
+function aUnHistorique(joueur) {
+  const { or, argent, bronze } = joueur.medailles;
+  return joueur.pointsGlobaux > 0 || or + argent + bronze > 0;
+}
+
+// Au bout de 10 s d'absence : retrait en salle d'attente d'un joueur sans historique,
+// sinon il reste (grisé) et perd seulement le rôle d'hôte.
 export function deconnecterJoueur(salle, joueur, quandChange) {
   joueur.connecte = false;
   joueur.socketId = null;
   journaliser(salle.code, `déconnexion ${joueur.pseudo} (${joueursConnectes(salle).length} connectés)`);
   programmer(cleAbsence(salle, joueur.id), DELAI_ABSENCE_MS, () => {
-    if (salle.etat === 'lobby') retirerJoueur(salle, joueur.id);
+    if (salle.etat === 'lobby' && !aUnHistorique(joueur)) retirerJoueur(salle, joueur.id);
     else if (salle.hoteId === joueur.id) transfererHote(salle);
     quandChange(salle);
   });

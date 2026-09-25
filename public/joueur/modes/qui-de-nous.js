@@ -5,7 +5,9 @@ const listeCandidats = document.getElementById('candidats');
 // Les boutons sont recréés à chaque mise à jour : un seul écouteur pour tous.
 listeCandidats.addEventListener('click', (evenement) => {
   const bouton = evenement.target.closest('.bouton-candidat');
-  if (bouton) socket.emit('joueur:repondre', bouton.dataset.id);
+  if (!bouton) return;
+  marquerAppui(bouton);
+  socket.emit('joueur:repondre', bouton.dataset.id);
 });
 
 document.getElementById('bouton-suivant-qdn').addEventListener('click', envoyerSuivant);

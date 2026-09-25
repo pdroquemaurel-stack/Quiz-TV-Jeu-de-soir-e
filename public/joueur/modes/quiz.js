@@ -2,6 +2,7 @@
 
 for (const bouton of document.querySelectorAll('[data-choix]')) {
   bouton.addEventListener('click', () => {
+    marquerAppui(bouton);
     socket.emit('joueur:repondre', Number(bouton.dataset.choix));
   });
 }
@@ -15,7 +16,8 @@ function afficherReponseEnvoyeeQuiz(vue) {
 
 function afficherResultatQuiz(vue) {
   const resultat = document.getElementById('resultat');
-  resultat.textContent = vue.juste ? `Bonne réponse, +${vue.points}` : 'Raté';
+  if (vue.juste) resultat.textContent = `Bonne réponse, +${vue.points}`;
+  else resultat.textContent = vue.aRepondu ? 'Raté' : 'Pas de réponse';
   resultat.classList.toggle('juste', vue.juste);
   document.getElementById('score-resultat').textContent = vue.score;
   document.getElementById('rang-resultat').textContent = texteRang(vue.rang);

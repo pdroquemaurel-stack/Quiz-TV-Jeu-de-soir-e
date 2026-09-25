@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { verifierQuestions } from './verifier-questions.js';
+import { readFileSync } from 'node:fs';
+import { pairesVoisines, verifierQuestions } from './verifier-questions.js';
 
 function questionValide(modifications = {}) {
   return {
@@ -77,4 +78,35 @@ test('id et texte en double entre deux questions', () => {
   assert.equal(erreurs.length, 2);
   assert.ok(erreurs[0].includes('id en double'));
   assert.ok(erreurs[1].includes('texte en double'));
+});
+
+// --- Paires voisines ---
+
+const banque = JSON.parse(readFileSync(new URL('../data/questions.json', import.meta.url), 'utf8'));
+const idsVoisines = (liste) => pairesVoisines(liste).map(({ ids }) => ids.join('/'));
+
+test('paires voisines : le même sujet rare dans deux questions est signalé', () => {
+  const liste = [
+    questionValide({ id: 'q0001', texte: 'Qui a peint la Joconde ?', reponses: ['Vinci', 'Monet', 'Manet', 'Dali'], bonneReponse: 0 }),
+    questionValide({ id: 'q0002', texte: 'Dans quel musée est la Joconde ?', reponses: ['Louvre', 'Orsay', 'Prado', 'Tate'], bonneReponse: 0 }),
+    questionValide({ id: 'q0003', texte: 'Qui a composé le Boléro ?', reponses: ['Ravel', 'Vinci', 'Satie', 'Bizet'], bonneReponse: 0 }),
+  ];
+  assert.deepEqual(idsVoisines(liste), ['q0001/q0002']);
+});
+
+test('paires voisines : 2 propositions identiques sont signalées, sauf des nombres', () => {
+  const liste = [
+    questionValide({ id: 'q0001', reponses: ['Elvis Presley', 'Michael Jackson', 'Prince', 'Madonna'] }),
+    questionValide({ id: 'q0002', texte: 'Autre question ?', reponses: ['Michael Jackson', 'Elvis Presley', 'Sting', 'Bono'] }),
+    questionValide({ id: 'q0003', texte: 'Combien de pattes ?', reponses: ['4', '6', '8', '10'] }),
+    questionValide({ id: 'q0004', texte: 'Combien de roues ?', reponses: ['4', '6', '3', '2'] }),
+  ];
+  assert.deepEqual(idsVoisines(liste), ['q0001/q0002']);
+});
+
+test('paires voisines : les paires connues de la banque sont signalées', () => {
+  const trouvees = idsVoisines(banque);
+  for (const paire of ['q0081/q0084', 'q0111/q0117', 'q0121/q0122', 'q0161/q0169', 'q0043/q0047', 'q0082/q0088', 'q0095/q0182']) {
+    assert.ok(trouvees.includes(paire), `${paire} attendue`);
+  }
 });

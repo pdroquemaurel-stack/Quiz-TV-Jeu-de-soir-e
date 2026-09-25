@@ -75,6 +75,62 @@ export function verifierQuestions(liste) {
   return erreurs;
 }
 
+// ---------- Paires voisines ----------
+// Deux questions sur le même sujet (« la Joconde ») donnent une impression de répétition
+// si elles tombent dans la même partie. Simple alerte à relire : le script n'échoue pas.
+
+// Mots de la façon de poser une question, pas du sujet.
+const MOTS_COURANTS = new Set([
+  'quelle', 'quels', 'quelles', 'combien', 'lequel', 'laquelle', 'environ', 'celebre',
+  'premier', 'premiere', 'porte', 'realise', 'raconte', 'originaire', 'specialite', 'fabrique',
+  'principal', 'ingredient', 'traditionnellement', 'couleur', 'interprete', 'chanteur',
+  'chanteuse', 'acteur', 'peintre', 'groupe', 'decouvert', 'scientifique', 'capable', 'mesure',
+  'marque',
+]);
+
+function sansAccents(texte) {
+  return texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+function mots(texte) {
+  return sansAccents(texte).split(/[^a-z0-9]+/).filter((mot) => mot.length >= 5 && !MOTS_COURANTS.has(mot));
+}
+
+// Le sujet d'une question : son texte et sa bonne réponse.
+const motsDuSujet = (question) => new Set(mots(`${question.texte} ${question.reponses[question.bonneReponse]}`));
+const tousLesMots = (question) => new Set(mots(`${question.texte} ${question.reponses.join(' ')}`));
+
+// Propositions identiques, hors nombres (« 4 », « 1945 » reviennent partout).
+function propositionsCommunes(a, b) {
+  const deA = new Set(a.reponses.map((reponse) => sansAccents(reponse).trim()));
+  return b.reponses
+    .map((reponse) => sansAccents(reponse).trim())
+    .filter((reponse) => deA.has(reponse) && !/^\d+$/.test(reponse));
+}
+
+// Renvoie [{ ids: [a, b], raison }]. Deux règles :
+// - un mot rare (présent dans ces deux questions seulement) fait partie du sujet des deux ;
+// - au moins 2 propositions identiques.
+export function pairesVoisines(liste) {
+  const sujets = liste.map(motsDuSujet);
+  const frequence = {};
+  for (const question of liste) {
+    for (const mot of tousLesMots(question)) frequence[mot] = (frequence[mot] ?? 0) + 1;
+  }
+  const paires = [];
+  for (let i = 0; i < liste.length; i++) {
+    for (let j = i + 1; j < liste.length; j++) {
+      const motsRares = [...sujets[i]].filter((mot) => sujets[j].has(mot) && frequence[mot] === 2);
+      const propositions = propositionsCommunes(liste[i], liste[j]);
+      const raisons = [];
+      if (motsRares.length) raisons.push(`même sujet : ${motsRares.join(', ')}`);
+      if (propositions.length >= 2) raisons.push(`mêmes propositions : ${propositions.join(', ')}`);
+      if (raisons.length) paires.push({ ids: [liste[i].id, liste[j].id], raison: raisons.join(' ; ') });
+    }
+  }
+  return paires;
+}
+
 function compter(liste, champ) {
   const totaux = {};
   for (const question of liste) totaux[question[champ]] = (totaux[question[champ]] ?? 0) + 1;
@@ -101,4 +157,10 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   console.log(`${liste.length} questions OK`);
   console.log(`Par catégorie : ${compter(liste, 'categorie')}`);
   console.log(`Par difficulté : ${compter(liste, 'difficulte')}`);
+
+  const voisines = pairesVoisines(liste);
+  if (voisines.length) {
+    console.log(`\nAttention, ${voisines.length} paire(s) voisine(s) à relire (elles peuvent tomber dans la même partie) :`);
+    for (const { ids, raison } of voisines) console.log(`  ${ids.join(' / ')} : ${raison}`);
+  }
 }

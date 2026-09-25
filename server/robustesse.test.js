@@ -103,6 +103,57 @@ test('salle d\'attente : l\'hôte retiré cède son rôle au joueur connecté le
   assert.equal(salle.hoteId, b.id);
 });
 
+test('salle d\'attente : un joueur avec des points globaux reste, grisé, avec ses points', (t) => {
+  simulerTemps(t);
+  const { salle, c } = salleATrois(t);
+  c.pointsGlobaux = 4;
+
+  deconnecterJoueur(salle, c, espion());
+  t.mock.timers.tick(60 * 60 * 1000);
+
+  assert.equal(trouverJoueur(salle, c.id), c);
+  assert.equal(c.connecte, false);
+  assert.equal(c.pointsGlobaux, 4);
+});
+
+test('salle d\'attente : un joueur avec une médaille mais 0 point global reste aussi', (t) => {
+  simulerTemps(t);
+  const { salle, c } = salleATrois(t);
+  c.medailles.bronze = 1;
+
+  deconnecterJoueur(salle, c, espion());
+  t.mock.timers.tick(DELAI_ABSENCE_MS);
+
+  assert.equal(trouverJoueur(salle, c.id), c);
+});
+
+test('salle d\'attente : l\'hôte avec des points globaux reste mais cède son rôle après 10 s', (t) => {
+  simulerTemps(t);
+  const { salle, a, b } = salleATrois(t);
+  a.pointsGlobaux = 2;
+
+  deconnecterJoueur(salle, a, espion());
+  t.mock.timers.tick(DELAI_ABSENCE_MS);
+
+  assert.equal(trouverJoueur(salle, a.id), a);
+  assert.equal(salle.hoteId, b.id);
+});
+
+test('salle d\'attente : un joueur gardé qui revient retrouve ses points globaux', (t) => {
+  simulerTemps(t);
+  const { salle, c } = salleATrois(t);
+  c.pointsGlobaux = 3;
+
+  deconnecterJoueur(salle, c, espion());
+  t.mock.timers.tick(60000);
+  const revenu = reconnecterJoueur(salle, c.id, 'sC2');
+
+  assert.equal(revenu, c);
+  assert.equal(revenu.connecte, true);
+  assert.equal(revenu.pointsGlobaux, 3);
+  assert.equal(salle.joueurs.length, 3);
+});
+
 // --- Pendant une partie ---
 
 test('partie : un joueur déconnecté n\'est jamais retiré', (t) => {

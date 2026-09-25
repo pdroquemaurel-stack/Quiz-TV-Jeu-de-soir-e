@@ -41,7 +41,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 2. **Arrivée des joueurs.** Chaque joueur scanne le QR code (ou tape le code), saisit un pseudo et apparaît sur la TV avec sa couleur. Le premier arrivé devient l'hôte (couronne sur la TV).
 3. **Lancement.** L'hôte choisit le mode et le format (« Petite partie » ou « Aventure », voir « Format et médailles »), puis voit un bouton « Lancer la partie », actif dès 2 joueurs connectés.
 4. **Question.** La TV affiche la question, les 4 réponses (couleur + forme), le chrono de 20 s et qui a déjà répondu. Les téléphones affichent 4 gros boutons. Un joueur répond une seule fois, sans changer d'avis.
-5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, puis le classement. Chaque téléphone affiche « Bonne réponse, +740 » ou « Raté ».
+5. **Révélation.** Dès que tous les joueurs attendus ont répondu (voir « Fin anticipée »), ou à la fin du chrono, la TV montre la bonne réponse, le nombre de réponses par choix, qui a eu juste, puis le classement. Chaque téléphone affiche « Bonne réponse, +740 », « Raté » ou « Pas de réponse ».
 6. **Enchaînement.** Passage automatique après 8 s. L'hôte peut accélérer avec « Suivant ».
 7. **Fin.** Après 10 questions, la TV affiche le podium avec les médailles et les téléphones le rang de chacun.
 8. **Tableau.** Après 15 s (ou « Suivant » de l'hôte), la TV affiche les points globaux. En aventure, si un seul joueur en tête a atteint l'objectif, c'est l'écran du grand gagnant à la place.
@@ -63,7 +63,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 - Écran maintenu allumé pendant la partie (Wake Lock)
 
 ### Partie de quiz
-- 10 questions tirées au hasard, sans répétition dans la salle
+- 10 questions tirées au hasard, sans répétition dans la salle, et équilibrées : 4 faciles, 4 moyennes et 2 difficiles, au plus 2 par catégorie. Les questions jamais vues passent avant cet équilibre, qui est assoupli quand la banque est épuisée
 - QCM à 4 choix, chrono de 20 s, points dégressifs selon la rapidité
 - Révélation, classement intermédiaire, podium final avec médailles, tableau des points globaux, « Rejouer »
 
@@ -132,7 +132,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | Situation | Comportement |
 |---|---|
 | Joueur déconnecté pendant une partie | Grisé sur la TV, garde son score et son pseudo (réservé), ne bloque pas la manche. Jamais supprimé pendant une partie. |
-| Joueur déconnecté en salle d'attente | S'il n'a encore ni point global ni médaille : retiré de la salle après 10 s de déconnexion. Sinon (par exemple après « Changer de format ») : jamais retiré, grisé, il garde ses points globaux et ses médailles, comme au tableau. Ce second cas s'applique à partir de la tranche 20 (R4) ; avant, le joueur est retiré avec ses points globaux. |
+| Joueur déconnecté en salle d'attente | S'il n'a encore ni point global ni médaille : retiré de la salle après 10 s de déconnexion. Sinon (par exemple après « Changer de format ») : jamais retiré, grisé, il garde ses points globaux et ses médailles, comme au tableau. |
 | Joueur déconnecté au podium, au tableau ou au grand gagnant | Comme pendant une partie : jamais retiré, garde ses points globaux et ses médailles. |
 | Joueur qui revient | Retrouve pseudo et score grâce à son identifiant mémorisé, et reprend à l'écran en cours. |
 | Joueur retiré de la salle d'attente qui revient | Réinscrit automatiquement avec son pseudo mémorisé, comme un nouveau joueur. Si ce pseudo a été pris entre-temps, il revient au formulaire avec « Pseudo déjà pris ». |
@@ -267,7 +267,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Attente | « Tu es dans la salle », sa couleur. Pour l'hôte : « Petite partie » / « Aventure » (et en aventure le réglage − / + de l'objectif), un bouton par mode (grisé s'il manque des joueurs ; « Bientôt » pour un mode annoncé mais pas encore codé, listé dans `modesAVenir` du registre des modes, vide aujourd'hui : l'affichage « Bientôt » est gardé pour les prochains modes), puis « Lancer la partie » (inactif sous le minimum du mode choisi). Pour les autres : « Mode : … » et le format |
 | Répondre | 4 gros boutons couleur + forme, sans texte, qui occupent tout l'écran |
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
-| Résultat | « Bonne réponse, +740 » ou « Raté », rang actuel. Pour l'hôte : bouton « Suivant » |
+| Résultat | « Bonne réponse, +740 », « Raté » ou « Pas de réponse », rang actuel. Le bouton touché est marqué dès l'appui, avant la réponse du serveur. Pour l'hôte : bouton « Suivant » |
 | Fin | Rang final, score, médaille et points globaux gagnés (« 🥇 Médaille d'or, +3 » ou « Pas de médaille cette fois »). Pour l'hôte : « Suivant » |
 | Tableau | Rang et points globaux. Pour l'hôte : les boutons de mode, « Partie suivante » (aventure) ou « Rejouer » (petite partie), inactif sous le minimum du mode choisi, et « Changer de format ». Pour les autres : « Mode : … » |
 | Grand gagnant | « Tu gagnes l'aventure ! » ou « X gagne l'aventure », rang et points globaux. Pour l'hôte : « Nouvelle aventure » et « Changer de format » |

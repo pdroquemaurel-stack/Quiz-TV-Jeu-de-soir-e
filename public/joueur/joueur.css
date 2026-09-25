@@ -92,6 +92,23 @@ main::after {
   border-bottom-width: 10px;
 }
 
+/* Retour immédiat à l'appui, en attendant la réponse du serveur :
+   le bouton choisi reste enfoncé et entouré, les autres s'effacent. */
+.appui-en-cours {
+  pointer-events: none;
+}
+
+.appui-en-cours > :not(.appuye) {
+  opacity: 0.35;
+}
+
+.appuye {
+  transform: translateY(6px);
+  border-bottom-width: 4px;
+  outline: 6px solid var(--contour);
+  outline-offset: 3px;
+}
+
 .bouton.danger { background: var(--rate); }
 .bouton.secondaire { background: var(--panneau); color: var(--texte); }
 

@@ -21,6 +21,7 @@ function envoyerBluff() {
   const texte = champBluff.value.trim();
   if (texte === '') return;
   champBluff.blur();
+  marquerEnvoi(boutonValiderBluff);
   socket.emit('joueur:repondre', texte);
 }
 
@@ -32,7 +33,9 @@ champBluff.addEventListener('keydown', (evenement) => {
 // Les boutons sont recréés à chaque question : un seul écouteur pour tous.
 listeChoixBluff.addEventListener('click', (evenement) => {
   const bouton = evenement.target.closest('.bouton-proposition');
-  if (bouton) socket.emit('joueur:repondre', Number(bouton.dataset.index));
+  if (!bouton) return;
+  marquerAppui(bouton);
+  socket.emit('joueur:repondre', Number(bouton.dataset.index));
 });
 
 document.getElementById('bl-suivant').addEventListener('click', envoyerSuivant);

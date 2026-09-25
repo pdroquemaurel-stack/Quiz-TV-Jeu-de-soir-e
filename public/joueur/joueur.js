@@ -25,6 +25,48 @@ function envoyerSuivant() {
   socket.emit('hote:suivant', { etape: etapeRecue });
 }
 
+// Android seulement : iOS ne connaît pas navigator.vibrate. Chrome refuse
+// (avec une erreur en console) tant que la page n'a pas été touchée.
+function vibrer(dureeMs) {
+  if (!navigator.vibrate) return;
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+  navigator.vibrate(dureeMs);
+}
+
+// Retour immédiat à l'appui, purement visuel : le prochain joueur:etat
+// redessine l'écran, que le serveur ait accepté l'appui ou non.
+function marquerAppui(bouton) {
+  vibrer(30);
+  bouton.classList.add('appuye');
+  bouton.parentElement.classList.add('appui-en-cours');
+}
+
+// Pour les boutons « Valider » des saisies.
+function marquerEnvoi(bouton) {
+  vibrer(30);
+  bouton.disabled = true;
+  bouton.classList.add('envoi-en-cours');
+}
+
+function relacherAppuis() {
+  for (const bouton of document.querySelectorAll('.appuye')) bouton.classList.remove('appuye');
+  for (const liste of document.querySelectorAll('.appui-en-cours')) liste.classList.remove('appui-en-cours');
+  for (const bouton of document.querySelectorAll('.envoi-en-cours')) {
+    bouton.classList.remove('envoi-en-cours');
+    bouton.disabled = false;
+  }
+}
+
+// Une vibration à l'arrivée sur un résultat, la même que l'on ait gagné ou perdu :
+// elle ne doit rien révéler au voisin avant la TV.
+const ECRANS_RESULTAT = ['resultat', 'fin_manche'];
+let ecranPrecedent = '';
+
+function vibrerAuResultat(ecran) {
+  if (ECRANS_RESULTAT.includes(ecran) && ecran !== ecranPrecedent) vibrer(120);
+  ecranPrecedent = ecran;
+}
+
 champCode.value = codeUrl;
 champPseudo.value = stockage.getItem('pseudo') || '';
 
@@ -172,6 +214,8 @@ socket.on('joueur:etat', (vue) => {
   stockage.setItem('codeSalle', codeEnCours);
   stockage.setItem('pseudo', vue.pseudo);
   afficherEntete(vue);
+  relacherAppuis();
+  vibrerAuResultat(vue.ecran);
   if (affichagesCommuns[vue.ecran]) {
     afficherEcran(vue.ecran);
     affichagesCommuns[vue.ecran](vue);

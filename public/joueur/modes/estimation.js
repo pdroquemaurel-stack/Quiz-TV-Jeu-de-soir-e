@@ -9,8 +9,8 @@ const apercuNombre = document.getElementById('apercu-nombre');
 const boutonValiderNombre = document.getElementById('bouton-valider-nombre');
 
 // Question dont le champ est affiché : on ne le vide qu'au changement de question,
-// pas à chaque mise à jour (arrivée d'un joueur…).
-let numeroSaisi = null;
+// pas à chaque mise à jour (arrivée d'un joueur…). Le texte compte aussi : une nouvelle partie repart à 1.
+let questionSaisie = null;
 let uniteSaisie = '';
 
 function avecUniteTel(nombre, unite) {
@@ -42,6 +42,7 @@ function envoyerNombre() {
   const { nombre } = lireNombre();
   if (nombre === undefined) return;
   champNombre.blur();
+  marquerEnvoi(boutonValiderNombre);
   socket.emit('joueur:repondre', nombre);
 }
 
@@ -54,8 +55,9 @@ boutonValiderNombre.addEventListener('click', envoyerNombre);
 document.getElementById('bouton-suivant-estimation').addEventListener('click', envoyerSuivant);
 
 function afficherRepondreEstimation(vue) {
-  if (vue.numero === numeroSaisi) return;
-  numeroSaisi = vue.numero;
+  const question = `${vue.numero} ${vue.question.texte}`;
+  if (question === questionSaisie) return;
+  questionSaisie = question;
   uniteSaisie = vue.unite;
   document.getElementById('unite-saisie').textContent = vue.unite;
   champNombre.value = '';

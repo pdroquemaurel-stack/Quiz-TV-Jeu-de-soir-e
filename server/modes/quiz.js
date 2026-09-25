@@ -35,9 +35,39 @@ export function melangerReponses(question) {
   };
 }
 
+// Une partie vise 4 questions faciles, 4 moyennes et 2 difficiles.
+const REPARTITION = { 1: 4, 2: 4, 3: 2 };
+const MAX_PAR_CATEGORIE = 2;
+
+// Les questions jamais vues passent avant l'équilibre : on ne revoit une question
+// que si la banque est épuisée. Dans chaque groupe, on assouplit les règles
+// l'une après l'autre (difficulté, puis catégorie) jusqu'à avoir 10 questions.
+export function tirerQuestionsEquilibrees(banque, questionsVues) {
+  const ordre = tirerQuestions(banque, questionsVues, banque.length);
+  const inedites = ordre.filter((question) => !questionsVues.includes(question.id));
+  const choisies = [];
+  const combien = (champ, valeur) => choisies.filter((question) => question[champ] === valeur).length;
+  const categorieLibre = (question) => combien('categorie', question.categorie) < MAX_PAR_CATEGORIE;
+  const difficulteLibre = (question) => combien('difficulte', question.difficulte) < REPARTITION[question.difficulte];
+  const regles = [
+    (question) => categorieLibre(question) && difficulteLibre(question),
+    categorieLibre,
+    () => true,
+  ];
+  for (const groupe of [inedites, ordre]) {
+    for (const regle of regles) {
+      for (const question of groupe) {
+        if (choisies.length === NOMBRE_QUESTIONS) break;
+        if (!choisies.includes(question) && regle(question)) choisies.push(question);
+      }
+    }
+  }
+  return melanger(choisies);
+}
+
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const questions = tirerQuestions(banqueQuestions, salle.questionsVues, NOMBRE_QUESTIONS);
+  const questions = tirerQuestionsEquilibrees(banqueQuestions, salle.questionsVues);
   noterQuestionsVues(salle, questions);
   salle.etatMode = { questions: questions.map(melangerReponses) };
   demarrerQuestion(salle, 0);
@@ -154,5 +184,6 @@ export function vueJoueur(salle, joueur) {
     return reponse ? { ecran: 'reponse_envoyee', choix: reponse.choix } : { ecran: 'repondre' };
   }
   const points = pointsGagnes(salle, joueur.id);
-  return { ecran: 'resultat', juste: points > 0, points, rang: rangDe(salle, joueur) };
+  const aRepondu = joueur.id in salle.etatMode.reponses;
+  return { ecran: 'resultat', juste: points > 0, aRepondu, points, rang: rangDe(salle, joueur) };
 }

@@ -425,7 +425,7 @@
   },
   {
     "id": "q0054",
-    "texte": "Quel est le plus grand organe du corps humain ?",
+    "texte": "Quel est l'organe le plus lourd du corps humain ?",
     "reponses": ["Le foie", "Le cerveau", "La peau", "L'intestin"],
     "bonneReponse": 2,
     "categorie": "sciences",
@@ -941,7 +941,7 @@
     "reponses": ["L'Ours d'or", "Le Lion d'or", "La Palme d'or", "Le César"],
     "bonneReponse": 2,
     "categorie": "cinema-tv",
-    "difficulte": 3
+    "difficulte": 1
   },
   {
     "id": "q0119",
@@ -1085,7 +1085,7 @@
     "reponses": ["4", "3", "5", "6"],
     "bonneReponse": 0,
     "categorie": "musique",
-    "difficulte": 2
+    "difficulte": 1
   },
   {
     "id": "q0137",
@@ -1277,7 +1277,7 @@
     "reponses": ["64", "49", "81", "100"],
     "bonneReponse": 0,
     "categorie": "sport",
-    "difficulte": 3
+    "difficulte": 1
   },
   {
     "id": "q0161",
@@ -1354,7 +1354,7 @@
   {
     "id": "q0170",
     "texte": "Avec quelle farine prépare-t-on les galettes bretonnes salées ?",
-    "reponses": ["Le blé", "Le maïs", "Le sarrasin", "Le seigle"],
+    "reponses": ["La farine de blé", "La farine de maïs", "La farine de sarrasin", "La farine de seigle"],
     "bonneReponse": 2,
     "categorie": "gastronomie",
     "difficulte": 2
@@ -1565,7 +1565,7 @@
     "reponses": ["90", "45", "180", "100"],
     "bonneReponse": 0,
     "categorie": "langue-divers",
-    "difficulte": 2
+    "difficulte": 1
   },
   {
     "id": "q0197",

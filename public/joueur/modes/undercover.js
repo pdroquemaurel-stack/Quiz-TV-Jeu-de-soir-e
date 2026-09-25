@@ -63,7 +63,9 @@ const listeCandidatsUc = document.getElementById('uc-candidats');
 
 listeCandidatsUc.addEventListener('click', (evenement) => {
   const bouton = evenement.target.closest('.bouton-candidat');
-  if (bouton) socket.emit('joueur:repondre', bouton.dataset.id);
+  if (!bouton) return;
+  marquerAppui(bouton);
+  socket.emit('joueur:repondre', bouton.dataset.id);
 });
 
 function boutonCandidatUc(candidat) {
@@ -152,6 +154,7 @@ function envoyerMotUc() {
   const proposition = champMotUc.value.trim();
   if (proposition === '') return;
   champMotUc.blur();
+  marquerEnvoi(boutonValiderMotUc);
   socket.emit('joueur:repondre', proposition);
 }
 

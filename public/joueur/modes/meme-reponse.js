@@ -16,6 +16,7 @@ function envoyerReponseMr() {
   const texte = champReponseMr.value.trim();
   if (texte === '') return;
   champReponseMr.blur();
+  marquerEnvoi(boutonValiderMr);
   socket.emit('joueur:repondre', texte);
 }
 

@@ -162,7 +162,8 @@ export function vueJoueur(salle, joueur) {
   const reponse = reponses[joueur.id];
   if (phase === 'question') {
     if (reponse) return { ecran: 'reponse_envoyee', nombre: reponse.nombre, unite: questionCourante(salle).unite };
-    return { ecran: 'repondre', numero: indexQuestion + 1, unite: questionCourante(salle).unite };
+    const { texte, unite } = questionCourante(salle);
+    return { ecran: 'repondre', numero: indexQuestion + 1, question: { texte }, unite };
   }
   const ligne = estimations(salle).find((l) => l.id === joueur.id);
   return {

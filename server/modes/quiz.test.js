@@ -7,7 +7,8 @@ import {
 import { tousOntRepondu } from './commun.js';
 import {
   NOMBRE_QUESTIONS, avancer, banqueQuestions, calculerPoints, classement, echeance,
-  enregistrerReponse, melangerReponses, passerALaSuite, reveler, verifierFinAnticipee,
+  enregistrerReponse, melangerReponses, passerALaSuite, reveler, tirerQuestionsEquilibrees,
+  verifierFinAnticipee,
 } from './quiz.js';
 
 function sallePrete() {
@@ -139,6 +140,42 @@ test('banque épuisée : une question revue passe en fin de questionsVues', () =
   assert.equal(new Set(salle.questionsVues).size, salle.questionsVues.length);
   assert.equal(salle.questionsVues.length, banqueQuestions.length);
   assert.deepEqual(salle.questionsVues.slice(-NOMBRE_QUESTIONS), derniere);
+});
+
+const compterPar = (questions, champ) => {
+  const totaux = {};
+  for (const question of questions) totaux[question[champ]] = (totaux[question[champ]] ?? 0) + 1;
+  return totaux;
+};
+
+test('tirage équilibré : sur 1 000 tirages, 4 faciles, 4 moyennes, 2 difficiles et 2 par catégorie au plus', () => {
+  for (let i = 0; i < 1000; i++) {
+    const questions = tirerQuestionsEquilibrees(banqueQuestions, []);
+    assert.equal(new Set(idsDe(questions)).size, NOMBRE_QUESTIONS);
+    assert.deepEqual(compterPar(questions, 'difficulte'), { 1: 4, 2: 4, 3: 2 });
+    assert.ok(Object.values(compterPar(questions, 'categorie')).every((nombre) => nombre <= 2));
+  }
+});
+
+test('tirage équilibré : toujours 10 questions, même quand les difficiles sont épuisées', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  const nombreParties = Math.floor(banqueQuestions.length / NOMBRE_QUESTIONS) + 3;
+  for (let i = 0; i < nombreParties; i++) {
+    demarrerPartie(salle);
+    assert.equal(new Set(idsDe(salle.etatMode.questions)).size, NOMBRE_QUESTIONS);
+  }
+});
+
+test('tirage équilibré : les questions jamais vues passent avant l\'équilibre', () => {
+  const banque = [
+    ...Array.from({ length: 10 }, (_, i) => ({ id: `d${i}`, categorie: 'sport', difficulte: 3 })),
+    ...Array.from({ length: 10 }, (_, i) => ({ id: `f${i}`, categorie: `c${i}`, difficulte: 1 })),
+  ];
+  const vues = banque.slice(10).map((question) => question.id);
+  // Les 10 inédites sont toutes difficiles et de la même catégorie : on les prend quand même.
+  const questions = tirerQuestionsEquilibrees(banque, vues);
+  assert.deepEqual(idsDe(questions).sort(), banque.slice(0, 10).map((question) => question.id).sort());
 });
 
 test('les questions d\'une partie ont leurs réponses mélangées sans perdre la bonne', () => {
@@ -462,6 +499,8 @@ test('l\'écran du téléphone suit l\'état de la manche', (t) => {
   assert.equal(vuePaul.juste, true);
   assert.equal(vuePaul.points, 1000);
   assert.equal(vueJoueur(salle, lea).juste, false);
+  assert.equal(vuePaul.aRepondu, true);
+  assert.equal(vueJoueur(salle, lea).aRepondu, false);
 
   for (let i = 0; i < NOMBRE_QUESTIONS; i++) passerALaSuite(salle);
   assert.equal(vueJoueur(salle, paul).ecran, 'fin');

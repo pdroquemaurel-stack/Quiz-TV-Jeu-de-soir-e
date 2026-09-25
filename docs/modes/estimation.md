@@ -183,7 +183,7 @@ Le téléphone retire les espaces de la saisie avant l'envoi. Le serveur ne fait
 
 | Écran | Données |
 |---|---|
-| `repondre` | `question: { unite }` (le texte est sur la TV) |
+| `repondre` | `numero`, `question: { texte }`, `unite`. Le texte n'est pas affiché (il est sur la TV) : il sert à reconnaître une nouvelle question pour vider le champ |
 | `reponse_envoyee` | Son propre nombre |
 | `resultat` | Son nombre (ou rien), son écart, son rang d'écart, ses points, son rang général. Pour l'hôte : « Suivant » |
 | `attente_question`, `fin` | Comme au quiz |
