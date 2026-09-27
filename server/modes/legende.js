@@ -17,7 +17,7 @@ export const DUREE_VOTE_MS = 40000;
 export const DUREE_REVELATION_MS = 20000;
 export const POINTS_PAR_VOTE = 500;
 export const BONUS_LEGENDAIRE = 1000;
-export const LONGUEUR_MAX_TITRE = 40;
+export const LONGUEUR_MAX_TITRE = 120;
 
 // Lu au premier lancement seulement : scripts/verifier-legende.js importe ce fichier
 // pour ses constantes, et doit pouvoir signaler lui-même un catalogue illisible.
@@ -89,16 +89,21 @@ export function enregistrerReponse(salle, joueurId, contenu) {
   if (!participe(salle, joueurId) || salle.etatMode.reponses[joueurId]) return false;
   const accepte = phase === 'saisie' ? titreValide(contenu) : voteValide(salle, joueurId, contenu);
   if (!accepte) return false;
-  const reponse = phase === 'saisie' ? { texte: contenu.trim() } : { choix: contenu };
+  const reponse = phase === 'saisie' ? { texte: nettoyerTitre(contenu) } : { choix: contenu };
   salle.etatMode.reponses[joueurId] = { ...reponse, recuA: Date.now() };
   return true;
 }
 
-// Un texte de 1 à 40 caractères une fois les bords retirés, de clé non vide.
+// Un texte de 1 à 120 caractères une fois les espaces réduits, de clé non vide.
 function titreValide(texte) {
   if (typeof texte !== 'string') return false;
-  const propre = texte.trim();
+  const propre = nettoyerTitre(texte);
   return propre.length <= LONGUEUR_MAX_TITRE && cleReponse(propre) !== '';
+}
+
+// Bords retirés, retours à la ligne et espaces multiples réduits à un espace.
+function nettoyerTitre(texte) {
+  return texte.trim().replace(/\s+/g, ' ');
 }
 
 // Jamais pour une proposition dont on est l'auteur.

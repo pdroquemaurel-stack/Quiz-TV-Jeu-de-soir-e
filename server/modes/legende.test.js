@@ -155,12 +155,14 @@ test('un titre est définitif, bords retirés, ponctuation finale gardée', () =
   assert.equal(salle.etatMode.reponses[a.id].texte, 'lundi matin...');
 });
 
-test('un titre invalide est refusé, 40 caractères acceptés', () => {
-  const { salle, joueurs: [a, b] } = sallePrete();
-  for (const invalide of [42, null, ['x'], '', '   ', '!!!', 'x'.repeat(41)]) {
+test('un titre invalide est refusé, 120 caractères acceptés, espaces réduits', () => {
+  const { salle, joueurs: [a, b, c] } = sallePrete();
+  for (const invalide of [42, null, ['x'], '', '   ', '!!!', 'x'.repeat(121)]) {
     assert.equal(enregistrerReponse(salle, a.id, invalide), false, String(invalide));
   }
-  assert.equal(enregistrerReponse(salle, b.id, ` ${'x'.repeat(40)} `), true);
+  assert.equal(enregistrerReponse(salle, b.id, ` ${'x'.repeat(120)} `), true);
+  assert.equal(enregistrerReponse(salle, c.id, '  Lundi\n  matin   ! '), true);
+  assert.equal(salle.etatMode.reponses[c.id].texte, 'Lundi matin !');
 });
 
 test('un titre d\'un joueur non attendu ou hors saisie est refusé', () => {

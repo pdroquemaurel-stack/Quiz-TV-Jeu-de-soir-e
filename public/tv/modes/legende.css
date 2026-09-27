@@ -125,12 +125,21 @@ main[data-ecran="legende-revelation"] .mr-ligne {
   animation: apparaitre 400ms both;
 }
 
-/* Deux lignes au plus pour un titre seul, une chacun pour deux gagnants à égalité. */
+/* Deux lignes au plus pour un titre seul, quatre s'il est long (plus de 60 caractères, en 40 px : 120 caractères y tiennent),
+   une chacun pour deux gagnants à égalité. */
 .lg-titre-gagnant {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+}
+
+.lg-bandeau.long {
+  font-size: 40px;
+}
+
+.lg-bandeau.long .lg-titre-gagnant {
+  -webkit-line-clamp: 4;
 }
 
 .lg-bandeau.deux .lg-titre-gagnant {

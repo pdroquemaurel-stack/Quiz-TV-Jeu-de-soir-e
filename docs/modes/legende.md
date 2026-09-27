@@ -14,7 +14,7 @@ La tranche se code en deux temps, chacun testé avant de passer au suivant :
 
 - **3 à 10 joueurs.** À 3, chacun a encore 2 titres au choix (ceux des deux autres).
 - Une partie compte **8 GIF**.
-- **Saisie** : la TV joue un GIF en boucle. Chaque joueur écrit sur son téléphone le titre qu'il lui donnerait, en une seule réponse définitive (« Valider »). Texte de 1 à **40 caractères** une fois les bords retirés, de clé non vide.
+- **Saisie** : la TV joue un GIF en boucle. Chaque joueur écrit sur son téléphone le titre qu'il lui donnerait, en une seule réponse définitive (« Valider »). Texte de 1 à **120 caractères** une fois les bords retirés et les espaces multiples (retours à la ligne compris) réduits à un seul, de clé non vide.
 - **Vote** : la TV et les téléphones affichent tous les titres, **mélangés par le serveur**, sans auteur. Chacun vote pour son préféré, un seul vote définitif. **Son propre titre n'est pas proposé** sur son téléphone, et le serveur refuse ce vote. Un joueur qui n'a pas écrit de titre vote quand même.
 - **Révélation** : la TV dévoile qui a écrit chaque titre et combien de votes il a reçus, puis affiche le titre gagnant en grand sous le GIF, avec le classement.
 - **Joueurs** : les joueurs attendus de la manche (connectés au début du GIF), liste figée pour la saisie **et** le vote, comme au bluff.
@@ -124,7 +124,7 @@ Aucun nouvel événement.
 
 | Événement | Contenu en La légende |
 |---|---|
-| `joueur:repondre` | En `saisie` : le texte du titre (chaîne). Refusé si ce n'est pas une chaîne, s'il est vide ou fait plus de 40 caractères une fois les bords retirés, si sa clé est vide, si le joueur n'est pas attendu ou a déjà un titre. En `vote` : l'index de la proposition choisie (entier). Refusé si ce n'est pas un index valide, si le joueur en est l'auteur (ou co-auteur), s'il n'est pas attendu ou a déjà voté. Ignoré en `revelation`. |
+| `joueur:repondre` | En `saisie` : le texte du titre (chaîne). Refusé si ce n'est pas une chaîne, s'il est vide ou fait plus de 120 caractères une fois nettoyé, si sa clé est vide, si le joueur n'est pas attendu ou a déjà un titre. En `vote` : l'index de la proposition choisie (entier). Refusé si ce n'est pas un index valide, si le joueur en est l'auteur (ou co-auteur), s'il n'est pas attendu ou a déjà voté. Ignoré en `revelation`. |
 | `hote:suivant` | Pendant la révélation : GIF suivant (ou podium) |
 | `hote:terminer`, `hote:rejouer` | Comme au quiz |
 
@@ -165,15 +165,15 @@ Les vues TV et joueur sont construites champ par champ (jamais en recopiant `pro
 
 ## Écrans
 
-Mesure faite dans le navigateur avec la police du jeu (Fredoka) : à 40 px, un titre courant de 40 caractères fait environ 710 px de large (30 caractères : 530 px ; 50 : 870 px). Un titre anormalement large (majuscules « MMMWWW… ») est coupé par « … », comme au bluff.
+Mesure faite dans le navigateur avec la police du jeu (Fredoka) : à 40 px, un titre courant de 40 caractères fait environ 710 px de large (30 caractères : 530 px ; 50 : 870 px). **À la TV, la liste des titres (vote et cartes de la révélation) tient sur une ligne par titre : au-delà d'environ 40 caractères, un titre est coupé par « … ».** Il reste complet sur les téléphones, où l'on vote, et le titre gagnant s'affiche en entier sur le GIF.
 
 | Où | Écran | Contenu |
 |---|---|---|
 | TV | Saisie | « GIF 3/8 », le GIF en grand au centre (cadre de 960×540, proportions gardées, fond sombre autour : au-delà, les 2 lignes de pastilles ne tiennent plus), « Donne un titre à ce GIF ! », chrono, pastilles des joueurs ayant écrit, petit QR code |
-| TV | Vote | À gauche, le GIF (cadre de 640×360) et « Vote pour ton préféré ! » ; à droite, les titres numérotés en **une colonne** (jusqu'à 10, à gauche du petit QR code), sans couleur de joueur : un titre de 40 caractères tient sur une ligne à 40 px. En bas, chrono et pastilles de ceux qui ont voté. (Deux colonnes sous le GIF ne laissaient pas la place aux pastilles.) |
-| TV | Révélation | En haut : « GIF 3/8 », le verdict (« Légendaire ! », « Égalité ! », « Aucun vote » ou « Pas assez de titres pour voter ») et la ligne discrète « Pas de titre : » avec les pastilles à initiale. À gauche : le GIF (cadre de 760×428), avec **en bandeau sur son bas** le ou les titres gagnants en 56 px (2 lignes au plus pour un gagnant, 1 chacun pour deux gagnants à égalité) ; dessous, le classement général, 6 lignes au plus (5 et « et N autres » au-delà), avec les points gagnés. À droite : une carte par titre, du moins au plus voté, une par 0,8 s (opacité et déplacement) : nombre de votes, texte, pastille à initiale de l'auteur (ou des co-auteurs). Les cartes gagnantes mises en avant. Les points ne sont pas sur les cartes (ils ne tiendraient pas à côté d'un titre de 40 caractères) : ils sont dans le classement. Tout à 40 px au moins (tranche 19) |
+| TV | Vote | À gauche, le GIF (cadre de 640×360) et « Vote pour ton préféré ! » ; à droite, les titres numérotés en **une colonne** (jusqu'à 10, à gauche du petit QR code), sans couleur de joueur , une ligne chacun (coupés par « … » au-delà d'environ 40 caractères). En bas, chrono et pastilles de ceux qui ont voté. (Deux colonnes sous le GIF ne laissaient pas la place aux pastilles.) |
+| TV | Révélation | En haut : « GIF 3/8 », le verdict (« Légendaire ! », « Égalité ! », « Aucun vote » ou « Pas assez de titres pour voter ») et la ligne discrète « Pas de titre : » avec les pastilles à initiale. À gauche : le GIF (cadre de 760×428), avec **en bandeau sur son bas** le ou les titres gagnants en 56 px (2 lignes au plus pour un gagnant ; en 40 px sur 4 lignes s'il dépasse 60 caractères, ce qui laisse 120 caractères entiers ; 1 ligne chacun pour deux gagnants à égalité) ; dessous, le classement général, 6 lignes au plus (5 et « et N autres » au-delà), avec les points gagnés. À droite : une carte par titre, du moins au plus voté, une par 0,8 s (opacité et déplacement) : nombre de votes, texte, pastille à initiale de l'auteur (ou des co-auteurs). Les cartes gagnantes mises en avant. Les points ne sont pas sur les cartes (ils ne tiendraient pas à côté d'un long titre) : ils sont dans le classement. Tout à 40 px au moins (tranche 19) |
 | TV | Podium | Le podium commun |
-| Téléphone | Écrire | « GIF 3/8 », « Regarde la TV et donne un titre à ce GIF », un champ texte (40 caractères max), « Valider » inactif tant que le champ est vide |
+| Téléphone | Écrire | « GIF 3/8 », « Regarde la TV et donne un titre à ce GIF », une zone de texte de 5 lignes (120 caractères max, compteur « 87 / 120 » dessous ; « Entrée » envoie), « Valider » inactif tant que le champ est vide. Au vote, chaque titre est affiché en entier sur autant de lignes qu'il faut, et la page défile si besoin |
 | Téléphone | Titre envoyé | « Ton titre : … Regarde la TV » |
 | Téléphone | Voter | « Ton préféré ? », un gros bouton par titre, numéroté comme sur la TV, sans le sien |
 | Téléphone | Vote envoyé | « Tu as choisi : … » |
@@ -309,7 +309,7 @@ Avec `node:test` et, pour les chronos, `mock.timers`.
 - le registre contient `legende` avec tout le contrat ;
 - `hote:choisirMode` refuse La légende à 2 joueurs, l'accepte à 3 ;
 - tirage : seuls les GIF `garder: true` sont tirés ; les `id` `g…` cohabitent avec les autres dans `questionsVues`, pas de répétition sur 3 parties ;
-- saisie : validation (pas une chaîne, vide, 41 caractères, que de la ponctuation, deuxième titre, joueur non attendu, hors phase) ; 40 caractères acceptés ; texte gardé tel quel (bords retirés, ponctuation finale conservée) ;
+- saisie : validation (pas une chaîne, vide, 121 caractères, que de la ponctuation, deuxième titre, joueur non attendu, hors phase) ; 120 caractères acceptés ; texte gardé tel quel (bords retirés, espaces et retours à la ligne réduits, ponctuation finale conservée) ;
 - `formerPropositions` : deux titres de même clé fusionnés (texte du premier arrivé, deux auteurs) ; le mélange ne place pas toujours le même titre au même endroit ; `fusionnerParCle` : les tests du bluff restent verts ;
 - vote : index invalide, non entier, son propre titre, titre fusionné dont on est co-auteur, deuxième vote, joueur non attendu, hors phase : refusés ; un joueur sans titre peut voter ;
 - points : l'exemple de la section « Points » (500 par vote) ; « Légendaire » (tous les votes exprimés des non-auteurs, + 1000) ; pas de bonus avec un seul vote, ni avec un seul titre ; titre fusionné qui rapporte votes et bonus à ses deux auteurs ; pas de vote, pas de titre : 0 ;
@@ -329,8 +329,8 @@ Sur Render, TV dans un onglet du PC en 1920×1080 avec le son, joueurs sur de vr
 **Temps 2 (mode)**
 
 1. **Choix du mode.** Rejoindre à 2 : La légende est grisée (« 3 joueurs min. »). Un 3e joueur arrive : elle devient active. L'hôte la choisit : la TV affiche « La légende » et sa règle.
-2. **Saisie.** Lancer. Le GIF tourne en boucle sur la TV, sans son ; les téléphones affichent « Regarde la TV » et le champ, sans vidéo (onglet Réseau d'un téléphone `?dev` : aucune requête `.mp4`). La TV montre qui a écrit, jamais quoi. « Ding » au GIF, « tic » à chaque titre, tic-tac sur les 5 dernières secondes. Un titre de 40 caractères passe, le 41e est bloqué.
-3. **Vote.** Les titres s'affichent dans le même ordre sur la TV et les téléphones, sans auteur ; aucun téléphone ne propose son propre titre. Deux joueurs ont tapé le même titre (« Lundi matin » et « lundi matin ! ») : une seule proposition, absente de leurs deux téléphones. Avec 10 onglets, les 10 titres de 40 caractères tiennent sur la TV sans défilement, chacun sur une ligne.
+2. **Saisie.** Lancer. Le GIF tourne en boucle sur la TV, sans son ; les téléphones affichent « Regarde la TV » et le champ, sans vidéo (onglet Réseau d'un téléphone `?dev` : aucune requête `.mp4`). La TV montre qui a écrit, jamais quoi. « Ding » au GIF, « tic » à chaque titre, tic-tac sur les 5 dernières secondes. Un titre de 120 caractères passe, le 121e est bloqué ; le compteur suit la saisie.
+3. **Vote.** Les titres s'affichent dans le même ordre sur la TV et les téléphones, sans auteur ; aucun téléphone ne propose son propre titre. Deux joueurs ont tapé le même titre (« Lundi matin » et « lundi matin ! ») : une seule proposition, absente de leurs deux téléphones. Avec 10 onglets et des titres longs : sur la TV, chaque titre tient sur une ligne, coupé par « … » ; sur les téléphones, il est en entier.
 4. **Révélation.** Les cartes apparaissent une par une avec leur auteur et leurs votes, puis le titre gagnant en bandeau sur le GIF, qui continue de tourner. Vérifier les points d'un cas concret (500 par vote) sur la TV et les téléphones. Faire voter tout le monde pour le même titre : « Légendaire ! », + 1000 et la fanfare `victoire`.
 5. **Secret.** Pendant le vote, dans les outils de développement de la TV (onglet Réseau, messages Socket.IO) : les propositions n'ont que `texte`.
 6. **Vidéo manquante.** Dans les outils de développement de la TV, bloquer l'URL d'un `.mp4` (clic droit sur la requête, « Bloquer l'URL de la requête ») puis passer au GIF suivant si c'est lui, ou recharger : le nom du template s'affiche dans le cadre et la manche continue.
@@ -342,7 +342,7 @@ Sur Render, TV dans un onglet du PC en 1920×1080 avec le son, joueurs sur de vr
 
 Tranchés par Paul le 25/09/2026 :
 
-1. **Titre** : 1 à 40 caractères.
+1. **Titre** : 1 à 120 caractères (d'abord 40, porté à 120 par Paul le 27/09/2026 : l'important est de pouvoir l'écrire et de le lire en entier sur le téléphone ; la liste de la TV peut finir par « … »).
 2. **Rythme** : 8 GIF, saisie 45 s, vote 40 s, révélation 20 s.
 3. **Points** : 500 par vote reçu, + 1000 « Légendaire ! » si tous les votants qui pouvaient choisir le titre l'ont choisi (au moins 2 votes, au moins 2 titres). Pas de malus.
 4. **Moins de 2 titres** : vote sauté, sans points.
@@ -356,4 +356,4 @@ Tranchés par Paul le 25/09/2026 :
 9. **Arrêt des vidéos au podium** par le crochet `completerPodium`.
 10. **Constante** `NOMBRE_GIF` (et non `NOMBRE_QUESTIONS`) ; `etatMode` garde `questions` et `indexQuestion`.
 
-Ajustés à la mise en page réelle en 1920×1080 (mesurés, 10 joueurs, titres de 40 caractères), à valider avec le test : cadre de saisie 960×540, vote en deux colonnes (GIF à gauche, titres à droite), bandeau du gagnant sur le bas du GIF, points dans le classement plutôt que sur les cartes (voir « Écrans »).
+Ajustés à la mise en page réelle en 1920×1080 (mesurés, 10 joueurs, titres de 40 puis 120 caractères), à valider avec le test : cadre de saisie 960×540, vote en deux colonnes (GIF à gauche, titres à droite), bandeau du gagnant sur le bas du GIF, points dans le classement plutôt que sur les cartes (voir « Écrans »).

@@ -253,13 +253,14 @@
   <main data-ecran="legende-ecrire" hidden>
     <p id="lg-numero" class="discret"></p>
     <p class="gros-texte">Regarde la TV et donne un titre à ce GIF</p>
-    <input id="lg-champ" class="champ-mot" type="text" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Ton titre">
+    <textarea id="lg-champ" class="champ-mot champ-titre" rows="5" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Ton titre"></textarea>
+    <p id="lg-compteur" class="discret">0 / 120</p>
     <button id="lg-valider" class="bouton en-bas" disabled>Valider</button>
   </main>
 
   <main data-ecran="legende-titre_envoye" hidden>
     <p class="gros-texte">Ton titre</p>
-    <p id="lg-titre-envoye" class="nombre-envoye rebond"></p>
+    <p id="lg-titre-envoye" class="nombre-envoye texte-long rebond"></p>
     <p class="discret">Regarde la TV</p>
   </main>
 
@@ -270,7 +271,7 @@
 
   <main data-ecran="legende-vote_envoye" hidden>
     <p class="gros-texte">Tu as choisi</p>
-    <p id="lg-vote-envoye" class="nombre-envoye rebond"></p>
+    <p id="lg-vote-envoye" class="nombre-envoye texte-long rebond"></p>
     <p class="discret">Regarde la TV</p>
   </main>
 
