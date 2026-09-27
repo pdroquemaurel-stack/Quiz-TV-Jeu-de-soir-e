@@ -642,3 +642,60 @@ main[data-ecran="quiz-repondre"] {
   font-size: 26px;
   overflow-wrap: anywhere;
 }
+
+/* ---------- Blind test ---------- */
+
+/* Le maître voit la réponse : pochette à gauche, titre et artiste à droite. */
+.bt-chanson {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-radius: 16px;
+}
+
+.bt-pochette-maitre {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.bt-titre-maitre {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.bt-artiste-maitre {
+  margin: 4px 0 0;
+  font-size: 20px;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+
+.bt-question-maitre {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
+
+/* Le joueur coché : même couleur que les réglages choisis. */
+.bouton-candidat.choisi {
+  color: #fff;
+  background: var(--accent);
+}
+
+.bouton-candidat.bt-personne {
+  justify-content: center;
+  color: var(--texte-doux);
+}
+
+.bouton-candidat.bt-personne.choisi {
+  color: #fff;
+}

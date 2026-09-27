@@ -9,12 +9,15 @@ function volumeDuGain(gain) {
   return Math.min(1, 10 ** ((GAIN_CIBLE - gain) / 20));
 }
 
-// Une piste qui boucle à partir de `depart` secondes. surErreur : l'extrait ne se charge pas.
+// Une piste qui boucle à partir de `depart` secondes (au-delà de la fin de l'extrait, on
+// repart du début : après un rechargement de la TV). surErreur : l'extrait ne se charge pas.
 function creerPiste(id, { depart, gain }, surErreur) {
   const piste = new Audio(`/extrait/${id}`);
   piste.loop = true;
   piste.volume = volumeDuGain(gain);
-  piste.addEventListener('loadedmetadata', () => { piste.currentTime = depart; }, { once: true });
+  piste.addEventListener('loadedmetadata', () => {
+    piste.currentTime = Number.isFinite(piste.duration) ? depart % piste.duration : depart;
+  }, { once: true });
   piste.addEventListener('error', surErreur, { once: true });
   return piste;
 }

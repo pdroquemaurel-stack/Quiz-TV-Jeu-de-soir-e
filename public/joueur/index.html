@@ -282,6 +282,38 @@
     <button id="lg-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="blind-test-ecouter" hidden>
+    <p id="bt-numero-ecouter" class="discret"></p>
+    <p class="gros-texte" id="bt-consigne-ecouter"></p>
+    <p class="discret">Maître du jeu : <strong id="bt-maitre-ecouter"></strong></p>
+  </main>
+
+  <main data-ecran="blind-test-maitre_classique" hidden>
+    <p id="bt-numero-maitre" class="discret"></p>
+    <p class="discret">Tu es le maître du jeu : garde la réponse secrète !</p>
+    <div class="bt-chanson">
+      <img id="bt-pochette-maitre" class="bt-pochette-maitre" alt="">
+      <div>
+        <p id="bt-titre-maitre" class="bt-titre-maitre"></p>
+        <p id="bt-artiste-maitre" class="bt-artiste-maitre"></p>
+      </div>
+    </div>
+    <p class="bt-question-maitre">Qui a trouvé le titre ?</p>
+    <div id="bt-choix-titre" class="candidats"></div>
+    <p class="bt-question-maitre">Qui a trouvé l'artiste ?</p>
+    <div id="bt-choix-artiste" class="candidats"></div>
+    <button id="bt-valider" class="bouton en-bas" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="blind-test-resultat" hidden>
+    <p id="bt-resultat" class="carte-resultat rebond"></p>
+    <p id="bt-chanson-resultat" class="gros-texte"></p>
+    <p id="bt-qui-resultat" class="discret"></p>
+    <p>Score : <strong id="bt-score"></strong></p>
+    <p>Rang : <strong id="bt-rang"></strong></p>
+    <button id="bt-suivant" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -343,5 +375,6 @@
   <script src="/joueur/modes/meme-reponse.js"></script>
   <script src="/joueur/modes/bluff.js"></script>
   <script src="/joueur/modes/legende.js"></script>
+  <script src="/joueur/modes/blind-test.js"></script>
 </body>
 </html>

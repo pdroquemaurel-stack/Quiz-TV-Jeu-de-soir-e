@@ -31,6 +31,7 @@ server/
   modes/meme-reponse.js # mode Même réponse (docs/modes/meme-reponse.md)
   modes/bluff.js    # mode Le bluff (docs/modes/bluff.md)
   modes/legende.js  # mode La légende (docs/modes/legende.md)
+  modes/blind-test.js # mode Blind test (docs/modes/blind-test.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -65,7 +66,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 
 - `npm install`
 - `npm run dev` : lance le serveur en rechargement auto (`node --watch`)
-- `npm test` : tests avec `node:test`
+- `npm test` : tests avec `node:test`, fichiers `*.test.js` seulement (sinon `blind-test.js` serait pris pour un fichier de test)
 - `node scripts/verifier-questions.js` : vérifie le format de `questions.json`
 - `node scripts/verifier-estimation.js` : vérifie le format de `estimation.json`
 - `node scripts/verifier-qui-de-nous.js` : vérifie le format de `qui-de-nous.json`
@@ -93,7 +94,7 @@ Après la mini-spec `docs/modes/<mode>.md` validée :
 
 - **Serveur autoritaire** : les clients envoient des actions, le serveur diffuse l'état complet. Aucune logique de jeu côté client.
 - Le temps est **toujours mesuré par le serveur**, jamais par l'horloge du téléphone.
-- Un téléphone ne reçoit **jamais** la bonne réponse avant la révélation.
+- Un téléphone ne reçoit **jamais** la bonne réponse avant la révélation. Seule exception : le maître du jeu du Blind test, pour les chansons de sa manche.
 - Chaque action `hote:*` vérifie côté serveur que l'émetteur est bien l'hôte.
 - L'identité d'un joueur repose sur son `id` mémorisé dans le `localStorage`, pas sur le socket.
 - Ce qui est propre au quiz reste dans `etatMode` et `server/modes/quiz.js`, pour pouvoir ajouter d'autres modes sans toucher au reste.

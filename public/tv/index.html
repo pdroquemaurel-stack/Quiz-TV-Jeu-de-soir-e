@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="/tv/modes/bluff.css">
   <link rel="stylesheet" href="/tv/modes/undercover.css">
   <link rel="stylesheet" href="/tv/modes/legende.css">
+  <link rel="stylesheet" href="/tv/modes/blind-test.css">
 </head>
 <body>
   <!-- Toujours conçue en 1920×1080, puis mise à l'échelle de la fenêtre par ajusterEchelle(). -->
@@ -301,6 +302,50 @@
       </div>
     </main>
 
+    <main data-ecran="blind-test-ecoute" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="bt-numero-ecoute"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="bt-barre-temps-ecoute"></div></div>
+        <p class="chrono" id="bt-chrono-ecoute"></p>
+      </div>
+      <div class="bt-scene">
+        <div class="bt-disque tourne" id="bt-disque"><span class="bt-etiquette-disque">?</span></div>
+        <p class="bt-indisponible" id="bt-indisponible" hidden>Extrait indisponible</p>
+        <p class="consigne-vote">Titre ? Artiste ? Criez vos réponses !</p>
+        <p class="bt-maitre">Maître du jeu : <span id="bt-maitre-ecoute" class="bt-nom-maitre"></span></p>
+      </div>
+      <p class="bt-mention">Extraits : Deezer</p>
+    </main>
+
+    <main data-ecran="blind-test-designation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="bt-numero-designation"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="bt-barre-temps-designation"></div></div>
+        <p class="chrono" id="bt-chrono-designation"></p>
+      </div>
+      <div class="bt-scene">
+        <div class="bt-disque"><span class="bt-etiquette-disque">?</span></div>
+        <p class="consigne-vote"><span id="bt-maitre-designation" class="bt-nom-maitre"></span> désigne les gagnants…</p>
+      </div>
+    </main>
+
+    <main data-ecran="blind-test-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="bt-numero-revelation"></p>
+        <p class="lg-verdict rebond" id="bt-verdict"></p>
+      </div>
+      <div class="bt-colonnes">
+        <div class="bt-reponse">
+          <img class="bt-pochette" id="bt-pochette" alt="">
+          <p class="bt-titre" id="bt-titre"></p>
+          <p class="bt-artiste" id="bt-artiste"></p>
+          <div class="bt-trouve" id="bt-trouve-titre"><span class="mr-titre-ligne">Titre :</span><ul class="etiquettes"></ul></div>
+          <div class="bt-trouve" id="bt-trouve-artiste"><span class="mr-titre-ligne">Artiste :</span><ul class="etiquettes"></ul></div>
+        </div>
+        <ol class="classement classement-colonne" id="bt-classement"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
       <p class="plus-designe" id="plus-designe" hidden></p>
@@ -355,5 +400,6 @@
   <script src="/tv/modes/meme-reponse.js"></script>
   <script src="/tv/modes/bluff.js"></script>
   <script src="/tv/modes/legende.js"></script>
+  <script src="/tv/modes/blind-test.js"></script>
 </body>
 </html>

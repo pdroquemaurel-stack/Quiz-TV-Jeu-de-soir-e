@@ -84,8 +84,8 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 
 - Les modes de jeu autres que les six déjà en place (Quiz et les cinq modes des tranches 11 à 15) : La réplique est prévue à la tranche 23, les autres sont dans « Plus tard »
 - Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz
-- Les questions avec image, son ou vidéo
-- Les sons sur les téléphones, et la musique en dehors de la salle d'attente
+- Les questions avec image, son ou vidéo (sauf les GIF de La légende et les extraits du Blind test)
+- Les sons sur les téléphones, et la musique en dehors de la salle d'attente (sauf les extraits joués par la TV au Blind test)
 - Le jeu à distance, hors de la pièce de la TV
 - Les comptes, l'historique des parties et toute base de données
 - Un back-office pour éditer les questions
@@ -142,6 +142,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 4 | **Même réponse** (disponible, voir `docs/modes/meme-reponse.md`) | 3 à 10 | « Cite un fruit rouge ». On marque des points si on donne la même réponse que d'autres joueurs. |
 | 5 | **Le bluff** (disponible, voir `docs/modes/bluff.md`) | 4 à 10 | Question obscure : chacun invente une fausse réponse, puis tout le monde cherche la vraie parmi les bluffs. Points pour avoir trouvé et pour avoir piégé. |
 | 6 | **La légende** (disponible, voir `docs/modes/legende.md`) | 3 à 10 | La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (jamais le sien). 500 points par vote reçu, bonus « Légendaire ! » à l'unanimité. |
+| 7 | **Blind test** (format classique disponible, voir `docs/modes/blind-test.md`) | 3 à 10 | La TV joue un extrait Deezer, les joueurs crient le titre et l'artiste. Chacun son tour maître du jeu : il voit la réponse sur son téléphone et désigne qui a trouvé (500 points le titre, 500 l'artiste). Le format Mix (5 chansons en même temps) arrive au temps 3. |
 
 ## Cas limites
 
@@ -419,7 +420,7 @@ Règles de l'étape :
 
 - **Une mini-spec par mode**, dans `docs/modes/<mode>.md`, écrite et validée avant de coder le mode. Elle précise au moins : les règles et le calcul des points, les phases de jeu et les chronos, les événements et leur contenu, ce que voient la TV et chaque téléphone (et ce qu'ils ne doivent jamais recevoir), le contenu à préparer (fichier de données et script de vérification), les cas limites (déconnexion, arrivée en cours de partie, joueurs sous le minimum en cours de partie, arrêt par l'hôte) et les tests automatiques.
 - **Contraintes du Mi TV Stick** (voir « Contraintes techniques ») : animations CSS simples (opacité, déplacement), pas de flou (`filter: blur`, `backdrop-filter`), pas d'images lourdes.
-- Les règles d'architecture restent valables : serveur autoritaire, temps mesuré par le serveur, aucune information secrète envoyée avant la révélation, actions `hote:*` vérifiées côté serveur, ce qui est propre à un mode reste dans `etatMode` et `server/modes/<mode>.js`.
+- Les règles d'architecture restent valables : serveur autoritaire, temps mesuré par le serveur, aucune information secrète envoyée avant la révélation (seule exception : le maître du jeu du Blind test voit la réponse de sa manche), actions `hote:*` vérifiées côté serveur, ce qui est propre à un mode reste dans `etatMode` et `server/modes/<mode>.js`.
 - Le quiz reste disponible et continue de marcher à chaque tranche.
 
 Tranches :

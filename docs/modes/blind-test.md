@@ -259,9 +259,9 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 
 | Format, phase | Contenu |
 |---|---|
-| Classique, `ecoute` | `format`, `phase`, `numero`, `total`, `maitre` (id), `extrait: { id, depart }`, `tempsRestantMs`, `tempsEcouleMs` |
+| Classique, `ecoute` | `phase`, `numero`, `total`, `maitre` (id), `extrait: { id, depart, gain }` (le volume est réglé d'après le gain aussi en classique), `tempsRestantMs`, `tempsEcouleMs` |
 | Classique, `designation` | Idem, sans `extrait` (la musique est coupée) |
-| Classique, `revelation` | Idem, plus `chanson: { titre, artiste, pochette }`, `titre` et `artiste` (id du joueur désigné ou `null`), `points` par joueur, `extraitsSuivants` (préchargement, absent à la dernière manche), `classement` |
+| Classique, `revelation` | Idem, plus `chanson: { titre, artiste, pochette }`, `titre` et `artiste` (id du joueur désigné ou `null`), `extraitSuivant: { id }` (préchargement, absent à la dernière manche), `classement` (avec les points de la manche) |
 | Mix, `ecoute` | `format`, `phase`, `numero`, `total`, `maitre`, `tempsRestantMs` (décompte d'écoute), `tempsEcouleMs`, `cartes` : 5 entrées, soit `{ extrait: { id, depart, gain } }` (pas encore trouvée), soit `{ titre, artiste, pochette, joueur, trouve, points }` (trouvée) |
 | Mix, `designation` | Idem, plus `chansonEnDesignation` et le `tempsRestantMs` de la désignation. Le décompte d'écoute est figé (`ecouteRestanteMs`) |
 | Mix, `revelation` | Toutes les cartes retournées (les non trouvées sans `joueur`), `extraitsSuivants`, `classement` |
@@ -277,7 +277,7 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 | `maitre_mix` | Maître (mix, `ecoute`) | `chansons` : 5 × `{ titre, artiste, trouvee, joueur }` |
 | `maitre_designation` | Maître (mix, `designation`) | La chanson arrêtée, `designables`, `tempsRestantMs` |
 | `attente_designation` | Joueurs qui répondent (mix, `designation`) | « Le maître désigne… » |
-| `resultat` | Tous | Les chansons de la manche (titre, artiste, qui), `points` gagnés dans la manche, score et `rang`. Pour l'hôte : « Suivant » |
+| `resultat` | Tous | Classique : `chanson`, `trouveTitre` et `trouveArtiste` (pseudos ou `null`), `aTrouveTitre`, `aTrouveArtiste`, `estMaitre`, `points` gagnés dans la manche, score et `rang`. Pour l'hôte : « Suivant » |
 | `attente_question`, `fin` | Comme au quiz | |
 
 
@@ -483,3 +483,8 @@ Proposés par la mini-spec, validés par Paul le même jour :
 11. **Pochette** affichée à la révélation (TV) et sur le téléphone du maître.
 12. **Catalogue** : au moins 50 chansons gardées pour que le script passe, 100 visées ; import par playlists publiques Deezer. Premier import (temps 1) : « En mode 70, 80, 90, 2000, 2010 » et « Essentiels chanson française ».
 13. **Découpage** en trois temps : extraits et contenu (avec l'essai sur le stick), classique, mix.
+
+Écarts validés avec le plan du temps 2 :
+
+14. **Choix du format au temps 3** : tant que le mix n'existe pas, pas de réglage `format` ; le panneau de réglages (écrit pour le quiz) devient commun aux deux modes au temps 3.
+15. **Volume réglé d'après le `gain` aussi en classique** : la vue TV de l'écoute reçoit `extrait: { id, depart, gain }`.

@@ -1,0 +1,144 @@
+/* Écrans « Blind test » de la TV. Chargé après tv.css (voir tv/index.html).
+   Réutilise .consigne-vote (qui-de-nous.css), .mr-titre-ligne (meme-reponse.css),
+   .lg-verdict (legende.css) et .classement-colonne (estimation.css). */
+
+/* Écoute et désignation : le disque au centre, la consigne et le maître dessous. */
+.bt-scene {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+/* Un vinyle : sillons en anneaux, étiquette colorée au centre. Seule la rotation est animée. */
+.bt-disque {
+  width: 440px;
+  height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 8px solid var(--contour);
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #2b2b2b 0 6px, #1a1a1a 6px 12px);
+}
+
+.bt-disque.tourne {
+  animation: tourner-disque 2.4s linear infinite;
+}
+
+@keyframes tourner-disque {
+  to { transform: rotate(360deg); }
+}
+
+.bt-etiquette-disque {
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid var(--contour);
+  border-radius: 50%;
+  font-size: 88px;
+  color: #fff;
+  background: var(--accent);
+}
+
+.bt-indisponible {
+  margin: 0;
+  font-size: 48px;
+  color: var(--rate);
+}
+
+.bt-maitre {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 48px;
+  color: var(--texte-doux);
+}
+
+.bt-nom-maitre {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--texte);
+}
+
+.bt-mention {
+  position: absolute;
+  left: 80px;
+  bottom: 24px;
+  margin: 0;
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+/* Révélation : la réponse à gauche, le classement à droite. */
+.bt-colonnes {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 640px;
+  gap: 48px;
+  align-items: start;
+}
+
+.bt-reponse {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-areas:
+    "pochette titre"
+    "pochette artiste"
+    "trouve-titre trouve-titre"
+    "trouve-artiste trouve-artiste";
+  gap: 16px 40px;
+  align-items: center;
+  animation: apparaitre 400ms both;
+}
+
+.bt-pochette {
+  grid-area: pochette;
+  width: 320px;
+  height: 320px;
+  border: 6px solid var(--contour);
+  border-radius: 24px;
+  object-fit: cover;
+}
+
+.bt-titre {
+  grid-area: titre;
+  align-self: end;
+  margin: 0;
+  font-size: 64px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.bt-artiste {
+  grid-area: artiste;
+  align-self: start;
+  margin: 0;
+  font-size: 48px;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+
+.bt-trouve {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 48px;
+}
+
+#bt-trouve-titre { grid-area: trouve-titre; }
+#bt-trouve-artiste { grid-area: trouve-artiste; }
+
+.bt-trouve .etiquettes {
+  margin: 0;
+}
+
+.bt-personne {
+  color: var(--texte-doux);
+}
