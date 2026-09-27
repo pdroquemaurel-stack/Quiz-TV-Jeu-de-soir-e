@@ -5,6 +5,7 @@
 const champLegende = document.getElementById('lg-champ');
 const boutonValiderLegende = document.getElementById('lg-valider');
 const listeChoixLegende = document.getElementById('lg-choix');
+const compteurLegende = document.getElementById('lg-compteur');
 
 // GIF dont le champ est affiché : on ne le vide qu'au changement de GIF, pas quand un autre
 // joueur envoie son titre. Oublié dès qu'un autre écran s'affiche (y compris le podium) :
@@ -19,9 +20,12 @@ socket.on('joueur:etat', (vue) => {
 // un appui en cours quand un autre joueur vote au même moment.
 let choixAffichesLegende = '';
 
-champLegende.addEventListener('input', () => {
+function mettreAJourSaisieLegende() {
   boutonValiderLegende.disabled = champLegende.value.trim() === '';
-});
+  compteurLegende.textContent = `${champLegende.value.length} / ${champLegende.maxLength}`;
+}
+
+champLegende.addEventListener('input', mettreAJourSaisieLegende);
 
 function envoyerTitreLegende() {
   const texte = champLegende.value.trim();
@@ -32,8 +36,11 @@ function envoyerTitreLegende() {
 }
 
 boutonValiderLegende.addEventListener('click', envoyerTitreLegende);
+// Pas de retour à la ligne dans un titre : « Entrée » l'envoie.
 champLegende.addEventListener('keydown', (evenement) => {
-  if (evenement.key === 'Enter') envoyerTitreLegende();
+  if (evenement.key !== 'Enter') return;
+  evenement.preventDefault();
+  envoyerTitreLegende();
 });
 
 // Les boutons sont recréés à chaque GIF : un seul écouteur pour tous.
@@ -52,7 +59,7 @@ function afficherEcrireLegende(vue) {
   gifSaisieLegende = gif;
   document.getElementById('lg-numero').textContent = `GIF ${vue.numero}/${vue.total}`;
   champLegende.value = '';
-  boutonValiderLegende.disabled = true;
+  mettreAJourSaisieLegende();
   champLegende.focus();
 }
 

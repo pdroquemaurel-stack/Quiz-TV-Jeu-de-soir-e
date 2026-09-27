@@ -4,6 +4,8 @@
 
 // Délai entre deux cartes de la révélation.
 const DELAI_CARTE_LEGENDE_MS = 800;
+// Au-delà, le titre gagnant passe en plus petit sur 4 lignes pour tenir sur le GIF.
+const LONGUEUR_TITRE_LONG_LEGENDE = 60;
 // Classement sous le GIF : au-delà, les derniers sont résumés en « et N autres ».
 const MAX_LIGNES_CLASSEMENT_LEGENDE = 6;
 
@@ -103,6 +105,7 @@ function afficherRevelationLegende(salle, nouvelleEtape) {
     bandeau.replaceChildren(...textesBandeau.map((ligne) => texte('lg-titre-gagnant', ligne)));
     bandeau.hidden = textesBandeau.length === 0;
     bandeau.classList.toggle('deux', textesBandeau.length === 2);
+    bandeau.classList.toggle('long', textesBandeau.some((ligne) => ligne.length > LONGUEUR_TITRE_LONG_LEGENDE));
     bandeau.style.animationDelay = delai(cartes.length);
 
     const verdict = document.getElementById('lg-verdict');

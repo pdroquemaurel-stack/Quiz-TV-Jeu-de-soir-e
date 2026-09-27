@@ -18,7 +18,7 @@ body {
   color: var(--texte);
 }
 
-h1, h2, strong, button, input {
+h1, h2, strong, button, input, textarea {
   font-family: inherit;
   font-weight: inherit;
 }
