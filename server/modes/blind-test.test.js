@@ -1,14 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ajouterJoueur, choisirMode, creerSalle, deconnecterJoueur, demarrerPartie, synchroniserMinuteur, terminerPartie,
+  ajouterJoueur, choisirMode, creerSalle, deconnecterJoueur, demarrerPartie, reglerMode, synchroniserMinuteur,
+  terminerPartie,
 } from '../salles.js';
 import { vueJoueur, vueTv } from '../vues.js';
 import { banqueBlindTest } from '../extraits.js';
 import { modes } from './index.js';
 import {
-  DUREE_DESIGNATION_MS, DUREE_ECOUTE_MS, DUREE_REVELATION_MS, avancer, designationValide, enregistrerReponse,
-  pointsClassique, suivant, verifierFinAnticipee,
+  CHANSONS_PAR_MIX, DUREE_DESIGNATION_MIX_MS, DUREE_DESIGNATION_MS, DUREE_ECOUTE_MIX_MS, DUREE_ECOUTE_MS,
+  DUREE_REVELATION_MS, avancer, designationValide, enregistrerReponse, pointsClassique, pointsDuMix, suivant,
+  verifierFinAnticipee,
 } from './blind-test.js';
 
 const PSEUDOS = ['Paul', 'Léa', 'Sam', 'Tom', 'Zoé'];
@@ -239,12 +241,12 @@ test('secret : en écoute, ni la TV ni les autres joueurs ne voient la chanson',
     assert.ok(!contient(vueJoueur(salle, lea), secret), `joueur : ${secret}`);
   }
   assert.deepEqual(tv.extrait, { id: 'd42', depart: salle.etatMode.depart, gain: -9 });
-  assert.ok(!contient(vueJoueur(salle, lea), 'd42'));
+  assert.ok(!contient(vueJoueur(salle, lea), '"d42"'));
 
   const vueMaitre = vueJoueur(salle, paul);
   assert.equal(vueMaitre.ecran, 'maitre_classique');
   assert.deepEqual(vueMaitre.chanson, { titre: 'Titre secret', artiste: 'Artiste secret', pochette: 'https://pochette/42.jpg' });
-  assert.ok(!contient(vueMaitre, 'd42'), 'le maître ne reçoit pas l\'id Deezer');
+  assert.ok(!contient(vueMaitre, '"d42"'), 'le maître ne reçoit pas l\'id Deezer');
   assert.ok(!contient(vueMaitre, '"deezer"'));
   assert.deepEqual(vueMaitre.designables.map((joueur) => joueur.pseudo), ['Léa', 'Sam']);
 });
@@ -270,5 +272,216 @@ test('secret : en désignation, toujours rien ; à la révélation, tout le mond
   assert.equal(vueJoueur(salle, lea).points, 500);
   assert.equal(vueJoueur(salle, lea).aTrouveTitre, true);
   assert.equal(vueJoueur(salle, lea).aTrouveArtiste, false);
+  assert.equal(vueJoueur(salle, paul).estMaitre, true);
+});
+
+// --- Réglage du format ---
+
+test('réglage : classique par défaut, classique et mix acceptés, le reste refusé', () => {
+  const salle = creerSalle('tv');
+  for (const pseudo of ['A', 'B', 'C']) ajouterJoueur(salle, pseudo, pseudo);
+  choisirMode(salle, 'blind-test');
+  assert.equal(vueTv(salle).reglages.resume, 'Classique');
+  assert.equal(vueTv(salle).reglages.titre, 'Format');
+  for (const invalide of [{ format: 'rock' }, { format: 1 }, {}, null, 'mix', { format: 'toString' }]) {
+    assert.equal(reglerMode(salle, invalide), false, JSON.stringify(invalide));
+  }
+  assert.equal(reglerMode(salle, { format: 'mix' }), true);
+  assert.equal(vueTv(salle).reglages.resume, 'Mix');
+  assert.deepEqual(vueTv(salle).reglages.options.formats.map((f) => f.id), ['classique', 'mix']);
+  assert.equal(reglerMode(salle, { format: 'classique' }), true);
+  assert.equal(vueTv(salle).reglages.format, 'classique');
+});
+
+test('réglage : refusé hors de la salle d\'attente, et gardé d\'une partie à l\'autre', () => {
+  const salle = creerSalle('tv');
+  for (const pseudo of ['A', 'B', 'C']) ajouterJoueur(salle, pseudo, pseudo);
+  choisirMode(salle, 'blind-test');
+  reglerMode(salle, { format: 'mix' });
+  demarrerPartie(salle);
+  assert.equal(salle.etatMode.format, 'mix');
+  assert.equal(reglerMode(salle, { format: 'classique' }), false);
+  terminerPartie(salle);
+  demarrerPartie(salle);
+  assert.equal(salle.etatMode.format, 'mix');
+});
+
+test('le quiz garde son résumé, avec le titre « Questions »', () => {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'A', 'A');
+  assert.equal(vueTv(salle).reglages.titre, 'Questions');
+  assert.equal(vueTv(salle).reglages.resume, 'Tous les thèmes · Normal');
+});
+
+// --- Format mix ---
+
+// Cinq chansons reconnaissables : « Titre 0 » … « Titre 4 ».
+const MIX = Array.from({ length: CHANSONS_PAR_MIX }, (_, i) => ({
+  id: `d${100 + i}`, deezer: 100 + i, titre: `Titre ${i}`, artiste: `Artiste ${i}`, pochette: `https://pochette/${i}.jpg`, gain: -10, garder: true,
+}));
+
+function mixPret(n = 4) {
+  const salle = creerSalle('tv');
+  const joueurs = PSEUDOS.slice(0, n).map((pseudo, i) => ajouterJoueur(salle, pseudo, `s${i}`).joueur);
+  choisirMode(salle, 'blind-test');
+  assert.equal(reglerMode(salle, { format: 'mix' }), true);
+  demarrerPartie(salle);
+  salle.etatMode.maitres = joueurs.map((joueur) => joueur.id);
+  salle.etatMode.questions[0] = MIX;
+  return { salle, joueurs };
+}
+
+// Le maître arrête une chanson puis désigne, comme joueur:repondre dans index.js.
+function repondre(salle, joueur, contenu) {
+  const accepte = enregistrerReponse(salle, joueur.id, contenu);
+  if (accepte) verifierFinAnticipee(salle);
+  return accepte;
+}
+
+function trouver(salle, maitre, index, gagnant, trouve) {
+  assert.equal(repondre(salle, maitre, { arreter: index }), true, `arrêter ${index}`);
+  assert.equal(repondre(salle, maitre, { joueur: gagnant.id, trouve }), true, `désigner ${index}`);
+}
+
+test('mix : 5 chansons différentes par manche, aucune répétée dans la partie, départs entre 0 et 10 s', () => {
+  const salle = creerSalle('tv');
+  for (const pseudo of PSEUDOS) ajouterJoueur(salle, pseudo, pseudo);
+  choisirMode(salle, 'blind-test');
+  reglerMode(salle, { format: 'mix' });
+  demarrerPartie(salle);
+  const { questions, departs } = salle.etatMode;
+  assert.equal(questions.length, 5);
+  assert.ok(questions.every((mix) => mix.length === CHANSONS_PAR_MIX));
+  assert.equal(new Set(questions.flat().map((chanson) => chanson.id)).size, 25);
+  assert.equal(departs.length, CHANSONS_PAR_MIX);
+  assert.ok(departs.every((depart) => Number.isInteger(depart) && depart >= 0 && depart <= 10));
+});
+
+test('mix : points 1000 les deux, 500 l\'un des deux, cumulés sur la manche', () => {
+  const trouvees = {
+    0: { joueur: 'lea', trouve: 'les-deux' }, 1: { joueur: 'lea', trouve: 'titre' }, 2: { joueur: 'sam', trouve: 'artiste' },
+  };
+  assert.equal(pointsDuMix(trouvees, 'lea'), 1500);
+  assert.equal(pointsDuMix(trouvees, 'sam'), 500);
+  assert.equal(pointsDuMix(trouvees, 'paul'), 0);
+});
+
+test('mix : arrêter, seulement le maître, pendant l\'écoute, une chanson pas encore trouvée', () => {
+  const { salle, joueurs: [paul, lea] } = mixPret(3);
+  assert.equal(repondre(salle, lea, { arreter: 0 }), false, 'pas le maître');
+  for (const index of [-1, 5, 1.5, '0', null]) assert.equal(repondre(salle, paul, { arreter: index }), false, `index ${index}`);
+  assert.equal(repondre(salle, paul, null), false);
+  trouver(salle, paul, 0, lea, 'titre');
+  assert.equal(repondre(salle, paul, { arreter: 0 }), false, 'déjà trouvée');
+  assert.equal(repondre(salle, paul, { arreter: 1 }), true);
+  assert.equal(etape(salle), 'designation');
+  assert.equal(repondre(salle, paul, { arreter: 2 }), false, 'hors écoute');
+});
+
+test('mix : désigner donne les points tout de suite et retire la chanson ; annuler ne compte rien', () => {
+  const { salle, joueurs: [paul, lea, sam] } = mixPret(3);
+  repondre(salle, paul, { arreter: 2 });
+  assert.equal(repondre(salle, paul, { joueur: paul.id, trouve: 'titre' }), false, 'le maître lui-même');
+  assert.equal(repondre(salle, paul, { joueur: 'j_inconnu', trouve: 'titre' }), false);
+  assert.equal(repondre(salle, paul, { joueur: lea.id, trouve: 'tout' }), false);
+  assert.equal(repondre(salle, paul, { joueur: lea.id, trouve: 'toString' }), false);
+  assert.equal(repondre(salle, lea, { joueur: lea.id, trouve: 'titre' }), false, 'pas le maître');
+  assert.equal(repondre(salle, paul, { joueur: lea.id, trouve: 'les-deux' }), true);
+  assert.equal(lea.score, 1000);
+  assert.equal(etape(salle), 'ecoute');
+  assert.deepEqual(salle.etatMode.trouvees, { 2: { joueur: lea.id, trouve: 'les-deux' } });
+
+  repondre(salle, paul, { arreter: 3 });
+  assert.equal(repondre(salle, paul, { annuler: true }), true);
+  assert.equal(etape(salle), 'ecoute');
+  assert.equal(salle.etatMode.trouvees[3], undefined);
+  trouver(salle, paul, 3, sam, 'artiste');
+  assert.equal(sam.score, 500);
+});
+
+test('mix : le décompte d\'écoute est figé pendant la désignation, qui s\'annule au bout de 20 s', (t) => {
+  simulerTemps(t);
+  const { salle, joueurs: [paul] } = mixPret(3);
+  quandAvance(salle);
+  t.mock.timers.tick(30000);
+  repondre(salle, paul, { arreter: 0 });
+  quandAvance(salle);
+  assert.equal(salle.etatMode.ecouteRestanteMs, DUREE_ECOUTE_MIX_MS - 30000);
+  t.mock.timers.tick(DUREE_DESIGNATION_MIX_MS - 1);
+  assert.equal(etape(salle), 'designation');
+  t.mock.timers.tick(1);
+  assert.equal(etape(salle), 'ecoute', 'désignation annulée');
+  assert.deepEqual(salle.etatMode.trouvees, {});
+  assert.equal(vueTv(salle).etatMode.tempsRestantMs, DUREE_ECOUTE_MIX_MS - 30000);
+  t.mock.timers.tick(DUREE_ECOUTE_MIX_MS - 30000 - 1);
+  assert.equal(etape(salle), 'ecoute');
+  t.mock.timers.tick(1);
+  assert.equal(etape(salle), 'revelation', '120 s d\'écoute au total');
+});
+
+test('mix : les 5 chansons trouvées, révélation directe ; « Suivant » passe au mix suivant', () => {
+  const { salle, joueurs: [paul, lea, sam] } = mixPret(3);
+  for (let index = 0; index < CHANSONS_PAR_MIX; index++) trouver(salle, paul, index, index % 2 ? sam : lea, 'les-deux');
+  assert.equal(etape(salle), 'revelation');
+  assert.equal(lea.score, 3000);
+  assert.equal(sam.score, 2000);
+  const classement = vueTv(salle).etatMode.classement;
+  assert.equal(classement.find((ligne) => ligne.id === lea.id).points, 3000);
+  assert.equal(suivant(salle), true);
+  assert.equal(salle.etatMode.indexQuestion, 1);
+  assert.deepEqual(salle.etatMode.trouvees, {});
+  assert.equal(salle.etatMode.ecouteRestanteMs, DUREE_ECOUTE_MIX_MS);
+});
+
+test('mix : l\'hôte termine en plein mix, les chansons déjà trouvées sont comptées', () => {
+  const { salle, joueurs: [paul, lea] } = mixPret(3);
+  trouver(salle, paul, 1, lea, 'titre');
+  terminerPartie(salle);
+  assert.equal(etape(salle), 'podium');
+  assert.equal(lea.score, 500);
+});
+
+test('mix secret : une carte non trouvée n\'a que son extrait, les autres joueurs ne voient rien', () => {
+  const { salle, joueurs: [paul, lea] } = mixPret(3);
+  trouver(salle, paul, 1, lea, 'artiste');
+  const tv = vueTv(salle).etatMode;
+  assert.deepEqual(tv.cartes[0], { extrait: { id: 'd100', depart: salle.etatMode.departs[0], gain: -10 } });
+  assert.deepEqual(tv.cartes[1], {
+    titre: 'Titre 1', artiste: 'Artiste 1', pochette: 'https://pochette/1.jpg', joueur: lea.id, trouve: 'artiste', points: 500,
+  });
+  for (const index of [0, 2, 3, 4]) {
+    assert.ok(!JSON.stringify(tv).includes(`Titre ${index}`), `TV : Titre ${index}`);
+    assert.ok(!JSON.stringify(vueJoueur(salle, lea)).includes(`Titre ${index}`), `joueur : Titre ${index}`);
+  }
+  const maitre = vueJoueur(salle, paul);
+  assert.equal(maitre.ecran, 'maitre_mix');
+  assert.deepEqual(maitre.chansons.map((chanson) => chanson.titre), ['Titre 0', 'Titre 1', 'Titre 2', 'Titre 3', 'Titre 4']);
+  assert.deepEqual(maitre.chansons[1], { titre: 'Titre 1', artiste: 'Artiste 1', trouvee: true, joueur: 'Léa' });
+  assert.ok(!JSON.stringify(maitre).includes('"d10'), 'le maître ne reçoit pas les ids Deezer');
+
+  repondre(salle, paul, { arreter: 3 });
+  const designation = vueJoueur(salle, paul);
+  assert.equal(designation.ecran, 'maitre_designation');
+  assert.equal(designation.chanson.titre, 'Titre 3');
+  assert.deepEqual(designation.designables.map((joueur) => joueur.pseudo), ['Léa', 'Sam']);
+  assert.equal(vueJoueur(salle, lea).ecran, 'ecouter');
+  assert.equal(vueTv(salle).etatMode.chansonEnDesignation, 3);
+});
+
+test('mix révélation : toutes les cartes retournées, résultat de chacun, extraits du mix suivant', () => {
+  const { salle, joueurs: [paul, lea, sam] } = mixPret(3);
+  trouver(salle, paul, 0, lea, 'les-deux');
+  avancer(salle);
+  assert.equal(etape(salle), 'revelation');
+  const tv = vueTv(salle).etatMode;
+  assert.deepEqual(tv.cartes.map((carte) => carte.titre), ['Titre 0', 'Titre 1', 'Titre 2', 'Titre 3', 'Titre 4']);
+  assert.equal(tv.cartes[2].joueur, null);
+  assert.equal(tv.extraitsSuivants.length, CHANSONS_PAR_MIX);
+  const resultat = vueJoueur(salle, lea);
+  assert.equal(resultat.ecran, 'resultat');
+  assert.equal(resultat.points, 1000);
+  assert.equal(resultat.chansons[0].trouvePar, 'Léa');
+  assert.equal(resultat.chansons[0].trouve, 'les-deux');
+  assert.equal(vueJoueur(salle, sam).points, 0);
   assert.equal(vueJoueur(salle, paul).estMaitre, true);
 });

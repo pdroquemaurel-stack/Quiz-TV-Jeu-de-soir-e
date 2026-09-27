@@ -305,10 +305,34 @@
     <button id="bt-valider" class="bouton en-bas" disabled>Valider</button>
   </main>
 
+  <main data-ecran="blind-test-maitre_mix" hidden>
+    <p id="bt-numero-mix" class="discret"></p>
+    <p class="discret">Quelqu'un a trouvé ? Appuie sur sa chanson : le mix se met en pause.</p>
+    <div id="bt-chansons-mix" class="bl-choix"></div>
+  </main>
+
+  <main data-ecran="blind-test-maitre_designation" hidden>
+    <div class="bt-chanson">
+      <div>
+        <p id="bt-titre-designation" class="bt-titre-maitre"></p>
+        <p id="bt-artiste-designation" class="bt-artiste-maitre"></p>
+      </div>
+    </div>
+    <p class="bt-question-maitre">Qui a trouvé ?</p>
+    <div id="bt-choix-gagnant" class="candidats"></div>
+    <p class="bt-question-maitre">Qu'a-t-il trouvé ?</p>
+    <div id="bt-choix-quoi" class="choix-reglages trois-colonnes bt-choix-quoi"></div>
+    <div class="bt-boutons-designation en-bas">
+      <button id="bt-annuler" class="bouton secondaire">Annuler</button>
+      <button id="bt-valider-mix" class="bouton" disabled>Valider</button>
+    </div>
+  </main>
+
   <main data-ecran="blind-test-resultat" hidden>
     <p id="bt-resultat" class="carte-resultat rebond"></p>
     <p id="bt-chanson-resultat" class="gros-texte"></p>
     <p id="bt-qui-resultat" class="discret"></p>
+    <ul id="bt-liste-resultat" class="bt-liste-resultat" hidden></ul>
     <p>Score : <strong id="bt-score"></strong></p>
     <p>Rang : <strong id="bt-rang"></strong></p>
     <button id="bt-suivant" class="bouton en-bas" hidden>Suivant</button>
@@ -343,10 +367,16 @@
   <!-- Confirmation avant d'arrêter la partie, contre les appuis accidentels. -->
   <div id="panneau-reglages" class="voile" hidden>
     <div class="carte boite boite-reglages">
-      <p class="gros-texte">Questions</p>
-      <div id="choix-themes" class="choix-reglages"></div>
-      <div id="choix-difficulte" class="choix-reglages trois-colonnes"></div>
-      <p id="inedites-reglages" class="discret"></p>
+      <p id="titre-reglages" class="gros-texte"></p>
+      <div data-reglages="quiz" hidden>
+        <div id="choix-themes" class="choix-reglages"></div>
+        <div id="choix-difficulte" class="choix-reglages trois-colonnes"></div>
+        <p id="inedites-reglages" class="discret"></p>
+      </div>
+      <div data-reglages="blind-test" hidden>
+        <div id="choix-formats" class="choix-reglages"></div>
+        <p id="explication-format" class="discret"></p>
+      </div>
       <button id="fermer-reglages" class="bouton">OK</button>
     </div>
   </div>

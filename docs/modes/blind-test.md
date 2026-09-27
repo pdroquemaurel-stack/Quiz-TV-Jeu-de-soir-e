@@ -262,9 +262,9 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 | Classique, `ecoute` | `phase`, `numero`, `total`, `maitre` (id), `extrait: { id, depart, gain }` (le volume est réglé d'après le gain aussi en classique), `tempsRestantMs`, `tempsEcouleMs` |
 | Classique, `designation` | Idem, sans `extrait` (la musique est coupée) |
 | Classique, `revelation` | Idem, plus `chanson: { titre, artiste, pochette }`, `titre` et `artiste` (id du joueur désigné ou `null`), `extraitSuivant: { id }` (préchargement, absent à la dernière manche), `classement` (avec les points de la manche) |
-| Mix, `ecoute` | `format`, `phase`, `numero`, `total`, `maitre`, `tempsRestantMs` (décompte d'écoute), `tempsEcouleMs`, `cartes` : 5 entrées, soit `{ extrait: { id, depart, gain } }` (pas encore trouvée), soit `{ titre, artiste, pochette, joueur, trouve, points }` (trouvée) |
+| Mix, `ecoute` | `format`, `phase`, `numero`, `total`, `maitre`, `tempsRestantMs` (décompte d'écoute), `dureeEcouteMs` (120 s), `ecouteRestanteMs`, `tempsEcouteMs` (temps d'écoute déjà passé, pour reprendre les pistes après un rechargement), `cartes` : 5 entrées, soit `{ extrait: { id, depart, gain } }` (pas encore trouvée), soit `{ titre, artiste, pochette, joueur, trouve, points }` (trouvée) |
 | Mix, `designation` | Idem, plus `chansonEnDesignation` et le `tempsRestantMs` de la désignation. Le décompte d'écoute est figé (`ecouteRestanteMs`) |
-| Mix, `revelation` | Toutes les cartes retournées (les non trouvées sans `joueur`), `extraitsSuivants`, `classement` |
+| Mix, `revelation` | Toutes les cartes retournées (les non trouvées avec `joueur: null`), `extraitsSuivants: [{ id }]`, `classement` (avec les points de tout le mix) |
 | podium | `classement` |
 
 
@@ -274,10 +274,10 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 |---|---|---|
 | `ecouter` | Joueurs qui répondent | `numero`, `total`, nom du `maitre`. « Écoute la TV et crie ta réponse ! » |
 | `maitre_classique` | Maître (classique) | `numero`, `total`, `chanson: { titre, artiste, pochette }`, `designables: [{ id, pseudo }]`, `tempsRestantMs` |
-| `maitre_mix` | Maître (mix, `ecoute`) | `chansons` : 5 × `{ titre, artiste, trouvee, joueur }` |
+| `maitre_mix` | Maître (mix, `ecoute`) | `chansons` : 5 × `{ titre, artiste, trouvee, joueur }` (`joueur` : pseudo du gagnant, ou `null`) |
 | `maitre_designation` | Maître (mix, `designation`) | La chanson arrêtée, `designables`, `tempsRestantMs` |
 | `attente_designation` | Joueurs qui répondent (mix, `designation`) | « Le maître désigne… » |
-| `resultat` | Tous | Classique : `chanson`, `trouveTitre` et `trouveArtiste` (pseudos ou `null`), `aTrouveTitre`, `aTrouveArtiste`, `estMaitre`, `points` gagnés dans la manche, score et `rang`. Pour l'hôte : « Suivant » |
+| `resultat` | Tous | Classique : `chanson`, `trouveTitre` et `trouveArtiste` (pseudos ou `null`), `aTrouveTitre`, `aTrouveArtiste`, `estMaitre`, `points` gagnés dans la manche, score et `rang`. Mix : `chansons` (5 × `{ titre, artiste, pochette, trouvePar, trouve }`), `estMaitre`, `points` du mix, score et `rang`. Pour l'hôte : « Suivant » |
 | `attente_question`, `fin` | Comme au quiz | |
 
 
@@ -488,3 +488,9 @@ Proposés par la mini-spec, validés par Paul le même jour :
 
 14. **Choix du format au temps 3** : tant que le mix n'existe pas, pas de réglage `format` ; le panneau de réglages (écrit pour le quiz) devient commun aux deux modes au temps 3.
 15. **Volume réglé d'après le `gain` aussi en classique** : la vue TV de l'écoute reçoit `extrait: { id, depart, gain }`.
+
+Précisions du temps 3 :
+
+16. **Points du mix ajoutés dès la validation** de chaque chanson (et non à la révélation) : c'est ce qui les fait compter quand l'hôte termine en plein mix.
+17. **Panneau de réglages commun** : chaque mode remplit sa section (`remplirReglages` de `joueur/modes/<mode>.js`) ; le quiz et le Blind test affichent « Questions : … » et « Format : … » avec le `titre` de leur `vueReglages`.
+18. **Révélation du mix en liste** : une ligne par chanson (pochette, titre, artiste, gagnant) à gauche du classement, plutôt que 5 cartes trop étroites pour tenir à côté.

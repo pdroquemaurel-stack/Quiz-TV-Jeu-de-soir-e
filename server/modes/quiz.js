@@ -102,6 +102,7 @@ export function vueReglages(salle) {
   const reglages = reglagesDe(salle);
   return {
     ...reglages,
+    titre: 'Questions',
     resume: resumerReglages(reglages),
     inedites: compterInedites(banqueQuestions, salle.questionsVues, reglages),
     options: {

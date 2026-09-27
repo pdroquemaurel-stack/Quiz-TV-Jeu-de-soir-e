@@ -142,3 +142,167 @@
 .bt-personne {
   color: var(--texte-doux);
 }
+
+/* ---------- Mix ---------- */
+
+/* Écoute et désignation : 5 cartes en ligne, sur toute la largeur. */
+.bt-cartes {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.bt-cartes[hidden] {
+  display: none;
+}
+
+.bt-carte {
+  min-height: 420px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  background: var(--panneau);
+  border: 6px solid var(--contour);
+  border-radius: 24px;
+}
+
+/* La chanson que le maître vient d'arrêter. */
+.bt-carte.arretee {
+  background: var(--accent);
+  transform: translateY(-16px);
+}
+
+.bt-carte.trouvee {
+  animation: apparaitre 400ms both;
+}
+
+.bt-carte.indisponible {
+  opacity: 0.5;
+}
+
+.bt-mini-disque {
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid var(--contour);
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #2b2b2b 0 5px, #1a1a1a 5px 10px);
+}
+
+.bt-mini-disque.tourne {
+  animation: tourner-disque 2.4s linear infinite;
+}
+
+.bt-mini-disque .bt-etiquette-disque {
+  width: 96px;
+  height: 96px;
+  font-size: 56px;
+}
+
+.bt-pochette-carte {
+  width: 200px;
+  height: 200px;
+  border: 5px solid var(--contour);
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* Titre sur 3 lignes au plus, artiste sur 2 : la carte garde sa hauteur. */
+.bt-titre-carte,
+.bt-artiste-carte {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.1;
+}
+
+.bt-titre-carte {
+  -webkit-line-clamp: 3;
+  font-size: 40px;
+}
+
+.bt-artiste-carte {
+  -webkit-line-clamp: 2;
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+.bt-carte .etiquettes {
+  margin: 0;
+  justify-content: center;
+}
+
+.bt-ecoute-figee {
+  margin: 0;
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+/* Révélation : une ligne par chanson, à gauche du classement. */
+.bt-liste-mix {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 16px;
+}
+
+.bt-liste-mix[hidden] {
+  display: none;
+}
+
+.bt-liste-mix li {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--panneau);
+  border: 5px solid var(--contour);
+  border-radius: 20px;
+}
+
+.bt-liste-mix li.non-trouvee {
+  animation: apparaitre 400ms both;
+}
+
+.bt-pochette-ligne {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.bt-titre-ligne,
+.bt-artiste-ligne {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 40px;
+}
+
+.bt-artiste-ligne {
+  color: var(--texte-doux);
+}
+
+.bt-liste-mix .etiquettes {
+  margin: 0;
+}
+
+/* Le disque (classique) ou les cartes (mix), la réponse (classique) ou la liste (mix). */
+.bt-disque[hidden],
+.bt-reponse[hidden] {
+  display: none;
+}

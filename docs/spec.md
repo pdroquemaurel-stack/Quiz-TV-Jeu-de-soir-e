@@ -142,7 +142,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 4 | **Même réponse** (disponible, voir `docs/modes/meme-reponse.md`) | 3 à 10 | « Cite un fruit rouge ». On marque des points si on donne la même réponse que d'autres joueurs. |
 | 5 | **Le bluff** (disponible, voir `docs/modes/bluff.md`) | 4 à 10 | Question obscure : chacun invente une fausse réponse, puis tout le monde cherche la vraie parmi les bluffs. Points pour avoir trouvé et pour avoir piégé. |
 | 6 | **La légende** (disponible, voir `docs/modes/legende.md`) | 3 à 10 | La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (jamais le sien). 500 points par vote reçu, bonus « Légendaire ! » à l'unanimité. |
-| 7 | **Blind test** (format classique disponible, voir `docs/modes/blind-test.md`) | 3 à 10 | La TV joue un extrait Deezer, les joueurs crient le titre et l'artiste. Chacun son tour maître du jeu : il voit la réponse sur son téléphone et désigne qui a trouvé (500 points le titre, 500 l'artiste). Le format Mix (5 chansons en même temps) arrive au temps 3. |
+| 7 | **Blind test** (disponible, voir `docs/modes/blind-test.md`) | 3 à 10 | La TV joue des extraits Deezer, les joueurs crient le titre et l'artiste. Chacun son tour maître du jeu : il voit la réponse sur son téléphone et désigne qui a trouvé. Deux formats choisis par l'hôte : Classique (une chanson par manche, 500 points le titre, 500 l'artiste) et Mix (5 chansons en même temps, retirées dès qu'elles sont trouvées, 1000 points les deux, 500 l'un des deux). |
 
 ## Cas limites
 
@@ -239,7 +239,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 
 `format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
-`reglagesMode` range les réglages choisis par l'hôte pour chaque mode, par id de mode. Seul le quiz en a (thèmes et difficulté) : le mode les valide et les lit, le code commun les range sans les lire. Ils sont gardés d'une partie à l'autre, comme le format.
+`reglagesMode` range les réglages choisis par l'hôte pour chaque mode, par id de mode : thèmes et difficulté du quiz, format du Blind test (`{ "blind-test": { "format": "mix" } }`). Le mode les valide et les lit, le code commun les range sans les lire. Ils sont gardés d'une partie à l'autre, comme le format.
 
 `jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
@@ -256,7 +256,7 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `hote:suivant` | téléphone de l'hôte → serveur | `{ etape }` : l'étape affichée par le téléphone (reçue dans `joueur:etat`). Si ce n'est plus l'étape en cours (double appui, chrono écoulé entre-temps), l'action est ignorée. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
 | `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
-| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, difficulte }` pour le quiz : une liste non vide de catégories connues, et `facile`, `normal` ou `difficile`. Accepté seulement en salle d'attente, pour un mode qui a des réglages. |
+| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, difficulte }` pour le quiz : une liste non vide de catégories connues, et `facile`, `normal` ou `difficile`. `{ format }` pour le Blind test : `classique` ou `mix`. Accepté seulement en salle d'attente, pour un mode qui a des réglages. |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant : retour en salle d'attente. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
@@ -522,7 +522,8 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
 - **25. Mode « Blind test ».** La TV joue des extraits Deezer, les joueurs crient leurs réponses, le maître du jeu (tour à tour) voit la réponse sur son téléphone et désigne qui a trouvé. Deux formats choisis par l'hôte : Classique (une chanson par manche) et Mix (5 chansons en même temps). 3 à 10 joueurs. Mini-spec : `docs/modes/blind-test.md`.
   - Temps 1 : extraits et contenu. Route `/extrait/:id` (`server/extraits.js`), planche `/tv?extraits` pour l'essai sur le stick, catalogue `data/blind-test.json`, `scripts/importer-deezer.js`, `scripts/verifier-blind-test.js`.
-  - Temps 2 : format classique. Temps 3 : format mix.
+  - Temps 2 : format classique.
+  - Temps 3 : format mix, et choix du format par l'hôte (panneau de réglages du téléphone commun au quiz et au Blind test).
 
   *Test : défini dans `docs/modes/legende.md`, dont la lecture des vidéos en boucle sur le vrai stick.*
 

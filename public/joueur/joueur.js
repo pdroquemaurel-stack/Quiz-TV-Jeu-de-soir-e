@@ -161,14 +161,8 @@ document.getElementById('objectif-plus').addEventListener('click', () => {
   configurerFormat({ objectif: formatRecu.objectif + 1 });
 });
 
-// Thèmes et difficulté du quiz reçus du serveur, que l'hôte modifie.
-let reglagesRecus = null;
+// Réglages du mode (thèmes du quiz, format du blind test), que l'hôte modifie.
 const panneauReglages = document.getElementById('panneau-reglages');
-
-function reglerQuestions(changement) {
-  const { categories, difficulte } = reglagesRecus;
-  socket.emit('hote:reglerMode', { categories, difficulte, ...changement });
-}
 
 document.getElementById('bouton-reglages').addEventListener('click', () => {
   panneauReglages.hidden = false;
@@ -297,51 +291,34 @@ function afficherAttente(vue) {
   afficherReglages(vue);
 }
 
-// Seulement pour un mode qui a des réglages (le quiz). L'hôte les change, les autres les voient.
+// Seulement pour un mode qui a des réglages. L'hôte les change, les autres les voient.
+// Chaque mode remplit sa section du panneau (remplirReglages de joueur/modes/<mode>.js).
 function afficherReglages(vue) {
-  reglagesRecus = vue.reglages;
   const texte = document.getElementById('reglages-choisis');
   const bouton = document.getElementById('bouton-reglages');
   texte.hidden = !vue.reglages || vue.estHote;
   bouton.hidden = !vue.reglages || !vue.estHote;
   if (bouton.hidden) panneauReglages.hidden = true;
   if (!vue.reglages) return;
-  texte.textContent = `Questions : ${vue.reglages.resume}`;
-  document.getElementById('resume-reglages').textContent = `Questions : ${vue.reglages.resume}`;
-  if (vue.estHote) remplirPanneauReglages(vue.reglages);
+  const resume = `${vue.reglages.titre} : ${vue.reglages.resume}`;
+  texte.textContent = resume;
+  document.getElementById('resume-reglages').textContent = resume;
+  if (!vue.estHote) return;
+  document.getElementById('titre-reglages').textContent = vue.reglages.titre;
+  for (const section of panneauReglages.querySelectorAll('[data-reglages]')) {
+    section.hidden = section.dataset.reglages !== vue.mode;
+  }
+  modesJoueur[vue.mode].remplirReglages(vue.reglages);
 }
 
-// « Tous » coché, un appui sur un thème ne garde que lui. Le dernier thème ne se décoche pas.
-function remplirPanneauReglages({ categories, difficulte, options, inedites }) {
-  const toutes = categories.length === options.categories.length;
-  const themes = options.categories.map(({ id, libelle }) => {
-    const choisi = !toutes && categories.includes(id);
-    let suivantes = choisi ? categories.filter((autre) => autre !== id) : [...categories, id];
-    if (toutes) suivantes = [id];
-    return boutonReglage(libelle, choisi, suivantes.length ? { categories: suivantes } : null);
-  });
-  const tous = boutonReglage('Tous', toutes, { categories: options.categories.map(({ id }) => id) });
-  document.getElementById('choix-themes').replaceChildren(tous, ...themes);
-  document.getElementById('choix-difficulte').replaceChildren(...options.difficultes.map(
-    ({ id, libelle }) => boutonReglage(libelle, id === difficulte, { difficulte: id }),
-  ));
-  document.getElementById('inedites-reglages').textContent = texteInedites(inedites);
-}
-
-// changement null : l'appui ne change rien (dernier thème coché).
-function boutonReglage(texte, choisi, changement) {
+// Un bouton de réglage. envoyer : ce que l'appui envoie au serveur, ou null s'il ne change rien.
+function boutonReglage(texte, choisi, envoyer) {
   const bouton = document.createElement('button');
   bouton.className = 'bouton-mode';
   bouton.classList.toggle('choisi', choisi);
   bouton.textContent = texte;
-  bouton.addEventListener('click', () => changement && reglerQuestions(changement));
+  bouton.addEventListener('click', () => envoyer && envoyer());
   return bouton;
-}
-
-// Moins de 10 : la partie reprendra des questions déjà vues.
-function texteInedites(nombre) {
-  const jamaisVues = nombre > 1 ? `${nombre} questions jamais vues` : `${nombre} question jamais vue`;
-  return nombre < 10 ? `Seulement ${jamaisVues} : certaines reviendront` : jamaisVues;
 }
 
 // L'hôte règle le format, les autres le voient.

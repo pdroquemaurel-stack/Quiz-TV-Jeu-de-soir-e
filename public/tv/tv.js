@@ -148,7 +148,7 @@ function afficherLobby(salle) {
   document.getElementById('format-tv').textContent = texteFormat(salle.format);
   const reglages = document.getElementById('reglages-tv');
   reglages.hidden = !salle.reglages;
-  if (salle.reglages) reglages.textContent = `Questions : ${salle.reglages.resume}`;
+  if (salle.reglages) reglages.textContent = `${salle.reglages.titre} : ${salle.reglages.resume}`;
 }
 
 function texteFormat(format) {

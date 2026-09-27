@@ -309,8 +309,9 @@
         <p class="chrono" id="bt-chrono-ecoute"></p>
       </div>
       <div class="bt-scene">
-        <div class="bt-disque tourne" id="bt-disque"><span class="bt-etiquette-disque">?</span></div>
+        <div class="bt-disque tourne" id="bt-disque-ecoute"><span class="bt-etiquette-disque">?</span></div>
         <p class="bt-indisponible" id="bt-indisponible" hidden>Extrait indisponible</p>
+        <ol class="bt-cartes" id="bt-cartes-ecoute" hidden></ol>
         <p class="consigne-vote">Titre ? Artiste ? Criez vos réponses !</p>
         <p class="bt-maitre">Maître du jeu : <span id="bt-maitre-ecoute" class="bt-nom-maitre"></span></p>
       </div>
@@ -324,8 +325,10 @@
         <p class="chrono" id="bt-chrono-designation"></p>
       </div>
       <div class="bt-scene">
-        <div class="bt-disque"><span class="bt-etiquette-disque">?</span></div>
+        <div class="bt-disque" id="bt-disque-designation"><span class="bt-etiquette-disque">?</span></div>
+        <ol class="bt-cartes" id="bt-cartes-designation" hidden></ol>
         <p class="consigne-vote"><span id="bt-maitre-designation" class="bt-nom-maitre"></span> désigne les gagnants…</p>
+        <p class="bt-ecoute-figee" id="bt-ecoute-figee" hidden></p>
       </div>
     </main>
 
@@ -335,13 +338,14 @@
         <p class="lg-verdict rebond" id="bt-verdict"></p>
       </div>
       <div class="bt-colonnes">
-        <div class="bt-reponse">
+        <div class="bt-reponse" id="bt-reponse">
           <img class="bt-pochette" id="bt-pochette" alt="">
           <p class="bt-titre" id="bt-titre"></p>
           <p class="bt-artiste" id="bt-artiste"></p>
           <div class="bt-trouve" id="bt-trouve-titre"><span class="mr-titre-ligne">Titre :</span><ul class="etiquettes"></ul></div>
           <div class="bt-trouve" id="bt-trouve-artiste"><span class="mr-titre-ligne">Artiste :</span><ul class="etiquettes"></ul></div>
         </div>
+        <ol class="bt-liste-mix" id="bt-liste-mix" hidden></ol>
         <ol class="classement classement-colonne" id="bt-classement"></ol>
       </div>
     </main>

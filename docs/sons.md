@@ -88,9 +88,11 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | La légende | Nouveau GIF, début du vote | `etape` |
 | | Un titre ou un vote arrive (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation | `victoire` si un titre est « Légendaire ! », sinon `revelation` |
-| Blind test | Nouvelle chanson (début de l'écoute, juste avant l'extrait) | `etape` |
-| | Désignation (la musique s'arrête) | Aucun |
-| | Révélation | `victoire` si doublé, `rate` si personne n'a trouvé, sinon `revelation` |
+| Blind test | Nouvelle chanson ou nouveau mix (début de l'écoute, juste avant les extraits). En mix, pas au retour en écoute après une désignation | `etape` |
+| | Désignation (la musique s'arrête ou se met en pause) | Aucun |
+| | Mix : une chanson trouvée (une carte de plus a un `joueur`) | `revelation` |
+| | Révélation du classique | `victoire` si doublé, `rate` si personne n'a trouvé, sinon `revelation` |
+| | Révélation du mix | `victoire` si les 5 chansons ont été trouvées, sinon aucun |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 
