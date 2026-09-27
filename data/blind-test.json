@@ -1,0 +1,2342 @@
+[
+  {
+    "id": "d975366",
+    "deezer": 975366,
+    "titre": "I Will Survive",
+    "artiste": "Gloria Gaynor",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9087e3caed31dabf7d60cb07bb18354c/250x250-000000-80-0-0.jpg",
+    "gain": -8.2,
+    "garder": true
+  },
+  {
+    "id": "d445812132",
+    "deezer": 445812132,
+    "titre": "Supernature",
+    "artiste": "Cerrone",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7943134eae477596a7dc2740fe0156fd/250x250-000000-80-0-0.jpg",
+    "gain": -8.7,
+    "garder": true
+  },
+  {
+    "id": "d781563062",
+    "deezer": 781563062,
+    "titre": "You're The One That I Want",
+    "artiste": "John Travolta",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/337355fa64d7bb7cb64dec282415488d/250x250-000000-80-0-0.jpg",
+    "gain": -14.9,
+    "garder": true
+  },
+  {
+    "id": "d800613",
+    "deezer": 800613,
+    "titre": "Chanson sur ma drôle de vie",
+    "artiste": "Véronique Sanson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7cf5f3a0b16b933315c8e7cdbcbec67c/250x250-000000-80-0-0.jpg",
+    "gain": -12.4,
+    "garder": true
+  },
+  {
+    "id": "d427219162",
+    "deezer": 427219162,
+    "titre": "Stayin' Alive",
+    "artiste": "Bee Gees",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/315772aec36013c1c0653d9dee37cffd/250x250-000000-80-0-0.jpg",
+    "gain": -17.7,
+    "garder": true
+  },
+  {
+    "id": "d2628769",
+    "deezer": 2628769,
+    "titre": "Le sud",
+    "artiste": "Nino Ferrer",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/0be242d7aab897e7192f1445a8281057/250x250-000000-80-0-0.jpg",
+    "gain": -9.9,
+    "garder": true
+  },
+  {
+    "id": "d1438390832",
+    "deezer": 1438390832,
+    "titre": "Laissez-moi danser",
+    "artiste": "Dalida",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/336fec072bb5a6dc0aaf013f63b2a303/250x250-000000-80-0-0.jpg",
+    "gain": -7.3,
+    "garder": true
+  },
+  {
+    "id": "d10370275",
+    "deezer": 10370275,
+    "titre": "Knock On Wood",
+    "artiste": "Amii Stewart",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/2ab479e377517fe0cf9fa35569f61e07/250x250-000000-80-0-0.jpg",
+    "gain": -14.7,
+    "garder": true
+  },
+  {
+    "id": "d3121463",
+    "deezer": 3121463,
+    "titre": "The Passenger",
+    "artiste": "Iggy Pop",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/2a84ce055806af659cafc43e1913f08d/250x250-000000-80-0-0.jpg",
+    "gain": -7.1,
+    "garder": true
+  },
+  {
+    "id": "d2267042",
+    "deezer": 2267042,
+    "titre": "I Was Made For Lovin' You",
+    "artiste": "KISS",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/22abb990857654105f908a558ea78bc1/250x250-000000-80-0-0.jpg",
+    "gain": -11,
+    "garder": true
+  },
+  {
+    "id": "d723870952",
+    "deezer": 723870952,
+    "titre": "Your Song",
+    "artiste": "Billy Paul",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/373ef10cf09cdb145d36a0880a2d8a92/250x250-000000-80-0-0.jpg",
+    "gain": -11.8,
+    "garder": true
+  },
+  {
+    "id": "d2545088",
+    "deezer": 2545088,
+    "titre": "Gimme! Gimme! Gimme! (A Man After Midnight)",
+    "artiste": "ABBA",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f313d9969203ea1735144a35ef26fa49/250x250-000000-80-0-0.jpg",
+    "gain": -12.6,
+    "garder": true
+  },
+  {
+    "id": "d1581601",
+    "deezer": 1581601,
+    "titre": "I'm Not In Love",
+    "artiste": "10cc",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/881d11fe5b2d92509cfe7d08f7ced70f/250x250-000000-80-0-0.jpg",
+    "gain": -16.2,
+    "garder": true
+  },
+  {
+    "id": "d364951",
+    "deezer": 364951,
+    "titre": "Daddy Cool",
+    "artiste": "Boney M.",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/c2ecc5f062629f42115e28f9a2b6ccd0/250x250-000000-80-0-0.jpg",
+    "gain": -10.5,
+    "garder": true
+  },
+  {
+    "id": "d61087139",
+    "deezer": 61087139,
+    "titre": "Say It Ain't So, Joe",
+    "artiste": "Murray Head",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/8cb35a230ec7cbe4c757a5025734ade9/250x250-000000-80-0-0.jpg",
+    "gain": -10.8,
+    "garder": true
+  },
+  {
+    "id": "d10114381",
+    "deezer": 10114381,
+    "titre": "Porque te vas",
+    "artiste": "Jeanette",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1265eea6e3ffce493b164ede8600d10c/250x250-000000-80-0-0.jpg",
+    "gain": -13,
+    "garder": true
+  },
+  {
+    "id": "d108312306",
+    "deezer": 108312306,
+    "titre": "Popcorn",
+    "artiste": "Hot Butter",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1f3b74844395dad1e54e11e23fceb350/250x250-000000-80-0-0.jpg",
+    "gain": -19.5,
+    "garder": true
+  },
+  {
+    "id": "d3616544",
+    "deezer": 3616544,
+    "titre": "Long Train Runnin'",
+    "artiste": "The Doobie Brothers",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/74b91372c66dbd964477b92cacca31f4/250x250-000000-80-0-0.jpg",
+    "gain": -11.3,
+    "garder": true
+  },
+  {
+    "id": "d11567131",
+    "deezer": 11567131,
+    "titre": "Don't Let Me Be Misunderstood",
+    "artiste": "Santa Esmeralda",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/204abe7a445798c3d8b9ca165a0aa78b/250x250-000000-80-0-0.jpg",
+    "gain": -14.5,
+    "garder": true
+  },
+  {
+    "id": "d903704982",
+    "deezer": 903704982,
+    "titre": "Il a neigé sur Yesterday",
+    "artiste": "Marie Laforêt",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a274f84cdeee54fdf564a8867f224f3b/250x250-000000-80-0-0.jpg",
+    "gain": -11.7,
+    "garder": true
+  },
+  {
+    "id": "d76376889",
+    "deezer": 76376889,
+    "titre": "Waterloo",
+    "artiste": "ABBA",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/36133053035ca8f184eb469901965ac0/250x250-000000-80-0-0.jpg",
+    "gain": -7.2,
+    "garder": true
+  },
+  {
+    "id": "d68097787",
+    "deezer": 68097787,
+    "titre": "Hotel California",
+    "artiste": "Eagles",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/ef02459f8e72f33acef71617a97d3999/250x250-000000-80-0-0.jpg",
+    "gain": -12.8,
+    "garder": true
+  },
+  {
+    "id": "d2550600",
+    "deezer": 2550600,
+    "titre": "Sailing",
+    "artiste": "Rod Stewart",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/873fafc66b71f5ea3b3b7219894c8389/250x250-000000-80-0-0.jpg",
+    "gain": -14,
+    "garder": true
+  },
+  {
+    "id": "d3067260",
+    "deezer": 3067260,
+    "titre": "Don't Leave Me This Way",
+    "artiste": "Thelma Houston",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4d13da7245b275c0de4ae1d1e73c0600/250x250-000000-80-0-0.jpg",
+    "gain": -10.8,
+    "garder": true
+  },
+  {
+    "id": "d14458087",
+    "deezer": 14458087,
+    "titre": "Miss You",
+    "artiste": "The Rolling Stones",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4daeaee9a15329dc861f62976d0cbb7c/250x250-000000-80-0-0.jpg",
+    "gain": -10,
+    "garder": true
+  },
+  {
+    "id": "d535660",
+    "deezer": 535660,
+    "titre": "Le lundi au soleil",
+    "artiste": "Claude François",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/73ca3dfde145cc850326ef1de8960384/250x250-000000-80-0-0.jpg",
+    "gain": -13.3,
+    "garder": true
+  },
+  {
+    "id": "d551991",
+    "deezer": 551991,
+    "titre": "Petite Marie",
+    "artiste": "Francis Cabrel",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fec7b3911430fde79d3de8fdc9a7c4c4/250x250-000000-80-0-0.jpg",
+    "gain": -12.2,
+    "garder": true
+  },
+  {
+    "id": "d1005406062",
+    "deezer": 1005406062,
+    "titre": "Lady Lay",
+    "artiste": "Pierre Groscolas",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f703b11fc88b73e29ec34249e2ebec0f/250x250-000000-80-0-0.jpg",
+    "gain": -12.2,
+    "garder": true
+  },
+  {
+    "id": "d418231512",
+    "deezer": 418231512,
+    "titre": "Heart Of Glass",
+    "artiste": "Blondie",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/040aa7c539264730521db562c24bf414/250x250-000000-80-0-0.jpg",
+    "gain": -8.3,
+    "garder": true
+  },
+  {
+    "id": "d129771348",
+    "deezer": 129771348,
+    "titre": "Let's All Chant",
+    "artiste": "Michael Zager Band",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/776fef612ca3694d6d72db08229733e3/250x250-000000-80-0-0.jpg",
+    "gain": -11.5,
+    "garder": true
+  },
+  {
+    "id": "d66789253",
+    "deezer": 66789253,
+    "titre": "My Way",
+    "artiste": "Nina Simone",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fc2817ff3ed6ab8abe578fd07da45f03/250x250-000000-80-0-0.jpg",
+    "gain": -14.4,
+    "garder": true
+  },
+  {
+    "id": "d682217",
+    "deezer": 682217,
+    "titre": "Spacer",
+    "artiste": "Sheila",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9374db364fcd8d8a1196c94cd0e0fdaf/250x250-000000-80-0-0.jpg",
+    "gain": -11.9,
+    "garder": true
+  },
+  {
+    "id": "d684172",
+    "deezer": 684172,
+    "titre": "Le Freak",
+    "artiste": "Chic",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6e5e99f0009cabbdb200d58f408f2806/250x250-000000-80-0-0.jpg",
+    "gain": -17.7,
+    "garder": true
+  },
+  {
+    "id": "d1569676652",
+    "deezer": 1569676652,
+    "titre": "Love Is All",
+    "artiste": "Roger Glover",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7d860c3e89072a532c5c3fd7c50fd3b5/250x250-000000-80-0-0.jpg",
+    "gain": -13,
+    "garder": true
+  },
+  {
+    "id": "d561683",
+    "deezer": 561683,
+    "titre": "L'été indien",
+    "artiste": "Joe Dassin",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/97672f0531b1e9f65473ae20eeab84b6/250x250-000000-80-0-0.jpg",
+    "gain": -12.4,
+    "garder": true
+  },
+  {
+    "id": "d541624322",
+    "deezer": 541624322,
+    "titre": "Ladies Night",
+    "artiste": "Kool & The Gang",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f5ba3fb1a744ce3f4ae72e087882eef0/250x250-000000-80-0-0.jpg",
+    "gain": -12.6,
+    "garder": true
+  },
+  {
+    "id": "d4188287",
+    "deezer": 4188287,
+    "titre": "I Want You Back",
+    "artiste": "Jackson 5",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6097a6304e58084181a2419595d88945/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d551995",
+    "deezer": 551995,
+    "titre": "Je l'aime à mourir",
+    "artiste": "Francis Cabrel",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fec7b3911430fde79d3de8fdc9a7c4c4/250x250-000000-80-0-0.jpg",
+    "gain": -12.9,
+    "garder": true
+  },
+  {
+    "id": "d27533081",
+    "deezer": 27533081,
+    "titre": "Boogie Wonderland",
+    "artiste": "Earth, Wind & Fire",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e192f4eaf270f9f36ccc59264fb05c7c/250x250-000000-80-0-0.jpg",
+    "gain": -15.1,
+    "garder": true
+  },
+  {
+    "id": "d92719900",
+    "deezer": 92719900,
+    "titre": "Highway to Hell",
+    "artiste": "AC/DC",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/de48d988a82fc401f4b9bafc2639f7d0/250x250-000000-80-0-0.jpg",
+    "gain": -8.2,
+    "garder": true
+  },
+  {
+    "id": "d61397433",
+    "deezer": 61397433,
+    "titre": "Viens je t'emmène",
+    "artiste": "France Gall",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9a238770cb099f99759153583ec160f7/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d596034702",
+    "deezer": 596034702,
+    "titre": "Superstition",
+    "artiste": "Stevie Wonder",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/dc11aaf0240dbaf1548639e1c5df8db8/250x250-000000-80-0-0.jpg",
+    "gain": -11.4,
+    "garder": true
+  },
+  {
+    "id": "d61397203",
+    "deezer": 61397203,
+    "titre": "Musique",
+    "artiste": "France Gall",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/67ac8a9aa573b1d762aeb29b8ad9952b/250x250-000000-80-0-0.jpg",
+    "gain": -9.6,
+    "garder": true
+  },
+  {
+    "id": "d7120489",
+    "deezer": 7120489,
+    "titre": "Quand la musique est bonne",
+    "artiste": "Jean-Jacques Goldman",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e097e40cc3c1654acfa342db8cee4298/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d532349",
+    "deezer": 532349,
+    "titre": "Total Eclipse of the Heart",
+    "artiste": "Bonnie Tyler",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9bc5fa03c897154eded3719e512567cc/250x250-000000-80-0-0.jpg",
+    "gain": -14.2,
+    "garder": true
+  },
+  {
+    "id": "d561836",
+    "deezer": 561836,
+    "titre": "Sweet Dreams (Are Made of This)",
+    "artiste": "Eurythmics",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/364f0d4ea4b5452b59e6664b9e5480f0/250x250-000000-80-0-0.jpg",
+    "gain": -10.8,
+    "garder": true
+  },
+  {
+    "id": "d61396971",
+    "deezer": 61396971,
+    "titre": "La groupie du pianiste",
+    "artiste": "Michel Berger",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5fc3b733c15507f327703d99193184c1/250x250-000000-80-0-0.jpg",
+    "gain": -12,
+    "garder": true
+  },
+  {
+    "id": "d540168502",
+    "deezer": 540168502,
+    "titre": "Maniac",
+    "artiste": "Michael Sembello",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/bfa5c96e4b7da2e78247ed2ee56d6d1a/250x250-000000-80-0-0.jpg",
+    "gain": -15.4,
+    "garder": true
+  },
+  {
+    "id": "d4603408",
+    "deezer": 4603408,
+    "titre": "Billie Jean",
+    "artiste": "Michael Jackson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a0ad67d1beb761f2cb9f8b60e5bcf07a/250x250-000000-80-0-0.jpg",
+    "gain": -8.4,
+    "garder": true
+  },
+  {
+    "id": "d664107",
+    "deezer": 664107,
+    "titre": "Take on Me",
+    "artiste": "a-ha",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e0ce8977ab98d73bcea00fc838ece034/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d72194071",
+    "deezer": 72194071,
+    "titre": "Girls Just Want to Have Fun",
+    "artiste": "Cyndi Lauper",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/48bcf7415317ec8dc1181ee55b4b0aeb/250x250-000000-80-0-0.jpg",
+    "gain": -8.4,
+    "garder": true
+  },
+  {
+    "id": "d46251471",
+    "deezer": 46251471,
+    "titre": "Ella, elle l'a",
+    "artiste": "France Gall",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/42e4896decb76161c7551096a954f308/250x250-000000-80-0-0.jpg",
+    "gain": -10.4,
+    "garder": true
+  },
+  {
+    "id": "d2762327",
+    "deezer": 2762327,
+    "titre": "Confidence pour confidence",
+    "artiste": "Jean Schultheis",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e3c2b04b3071646869cb28350c285c94/250x250-000000-80-0-0.jpg",
+    "gain": -11.1,
+    "garder": true
+  },
+  {
+    "id": "d4108057",
+    "deezer": 4108057,
+    "titre": "Les démons de minuit",
+    "artiste": "Images",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7db9815f0197eab20328b8ff4c98a8ad/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d346967941",
+    "deezer": 346967941,
+    "titre": "I'm So Excited",
+    "artiste": "The Pointer Sisters",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/3744e9fc5f2d34c051d0c01bf4ff0d9c/250x250-000000-80-0-0.jpg",
+    "gain": -9.9,
+    "garder": true
+  },
+  {
+    "id": "d678372",
+    "deezer": 678372,
+    "titre": "La Isla Bonita",
+    "artiste": "Madonna",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/43a8e2b1b035391f58b0927cf1040bc4/250x250-000000-80-0-0.jpg",
+    "gain": -9.2,
+    "garder": true
+  },
+  {
+    "id": "d2838140",
+    "deezer": 2838140,
+    "titre": "Partenaire Particulier",
+    "artiste": "Partenaire Particulier",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/090ffaf196fdc94fc3dbee3dfb866704/250x250-000000-80-0-0.jpg",
+    "gain": -7.9,
+    "garder": true
+  },
+  {
+    "id": "d95873824",
+    "deezer": 95873824,
+    "titre": "Celebration",
+    "artiste": "Kool & The Gang",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9953aecd3b6bad65f5b0acf711316fdd/250x250-000000-80-0-0.jpg",
+    "gain": -17.4,
+    "garder": true
+  },
+  {
+    "id": "d72194073",
+    "deezer": 72194073,
+    "titre": "Time After Time",
+    "artiste": "Cyndi Lauper",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/48bcf7415317ec8dc1181ee55b4b0aeb/250x250-000000-80-0-0.jpg",
+    "gain": -12.2,
+    "garder": true
+  },
+  {
+    "id": "d730187022",
+    "deezer": 730187022,
+    "titre": "Envole-moi",
+    "artiste": "Jean-Jacques Goldman",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/8f86b380b23ed04b40704ae3c64149a0/250x250-000000-80-0-0.jpg",
+    "gain": -5.5,
+    "garder": true
+  },
+  {
+    "id": "d538660022",
+    "deezer": 538660022,
+    "titre": "Livin' On A Prayer",
+    "artiste": "Bon Jovi",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1f0365311a9d03c267f175e0ef79f40c/250x250-000000-80-0-0.jpg",
+    "gain": -8,
+    "garder": true
+  },
+  {
+    "id": "d8146779",
+    "deezer": 8146779,
+    "titre": "Faith",
+    "artiste": "George Michael",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f24a4351040ae09175cbd775607aafe6/250x250-000000-80-0-0.jpg",
+    "gain": -16,
+    "garder": true
+  },
+  {
+    "id": "d664115",
+    "deezer": 664115,
+    "titre": "The Sun Always Shines on T.V.",
+    "artiste": "a-ha",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e0ce8977ab98d73bcea00fc838ece034/250x250-000000-80-0-0.jpg",
+    "gain": -11.5,
+    "garder": true
+  },
+  {
+    "id": "d34180931",
+    "deezer": 34180931,
+    "titre": "She Works Hard For The Money",
+    "artiste": "Donna Summer",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/85494b32954ac1611bbdc51e991f6356/250x250-000000-80-0-0.jpg",
+    "gain": -16.7,
+    "garder": true
+  },
+  {
+    "id": "d3256396",
+    "deezer": 3256396,
+    "titre": "New-York avec toi",
+    "artiste": "Telephone",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/23f79c9ea318b528cbceb02b5f4f1e4f/250x250-000000-80-0-0.jpg",
+    "gain": -11.1,
+    "garder": true
+  },
+  {
+    "id": "d2230592",
+    "deezer": 2230592,
+    "titre": "Libertine",
+    "artiste": "Mylène Farmer",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6c40747bcd4b2aab6c10181fd994f3f3/250x250-000000-80-0-0.jpg",
+    "gain": -13.5,
+    "garder": true
+  },
+  {
+    "id": "d61397414",
+    "deezer": 61397414,
+    "titre": "Il jouait du piano debout",
+    "artiste": "France Gall",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9a238770cb099f99759153583ec160f7/250x250-000000-80-0-0.jpg",
+    "gain": -11.3,
+    "garder": true
+  },
+  {
+    "id": "d428735732",
+    "deezer": 428735732,
+    "titre": "Smalltown Boy",
+    "artiste": "Bronski Beat",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5656707f92ecf4d061614498b9d926e8/250x250-000000-80-0-0.jpg",
+    "gain": -11.2,
+    "garder": true
+  },
+  {
+    "id": "d7120484",
+    "deezer": 7120484,
+    "titre": "Au bout de mes rêves",
+    "artiste": "Jean-Jacques Goldman",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e097e40cc3c1654acfa342db8cee4298/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d886349",
+    "deezer": 886349,
+    "titre": "L'Aziza",
+    "artiste": "Daniel Balavoine",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fb63c8264233908a7462a3ac8c30cd6c/250x250-000000-80-0-0.jpg",
+    "gain": -9.5,
+    "garder": true
+  },
+  {
+    "id": "d3092167",
+    "deezer": 3092167,
+    "titre": "The Look",
+    "artiste": "Roxette",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/146abb75ffd7ad263c7356ef413a9f69/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d908790",
+    "deezer": 908790,
+    "titre": "Je vole",
+    "artiste": "Michel Sardou",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/958ffeca4c15633a7cb800ca70d20d16/250x250-000000-80-0-0.jpg",
+    "gain": -16.2,
+    "garder": true
+  },
+  {
+    "id": "d46280471",
+    "deezer": 46280471,
+    "titre": "Quelques mots d'amour",
+    "artiste": "Michel Berger",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/63f38e23e016e4a83c1bb9c49622be99/250x250-000000-80-0-0.jpg",
+    "gain": -12.3,
+    "garder": true
+  },
+  {
+    "id": "d68513610",
+    "deezer": 68513610,
+    "titre": "Just Can't Get Enough",
+    "artiste": "Depeche Mode",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/55972109f7c4049deb78402a94ee3b7b/250x250-000000-80-0-0.jpg",
+    "gain": -11.5,
+    "garder": true
+  },
+  {
+    "id": "d1157007172",
+    "deezer": 1157007172,
+    "titre": "Sauver l'amour",
+    "artiste": "Daniel Balavoine",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e3066fa2c42d4941301be65f0dfef966/250x250-000000-80-0-0.jpg",
+    "gain": -14.2,
+    "garder": true
+  },
+  {
+    "id": "d134036248",
+    "deezer": 134036248,
+    "titre": "Another Day in Paradise",
+    "artiste": "Phil Collins",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/73e6481676a8ab3e93f0f7b79a9cff68/250x250-000000-80-0-0.jpg",
+    "gain": -10.8,
+    "garder": true
+  },
+  {
+    "id": "d1090633",
+    "deezer": 1090633,
+    "titre": "Mad World",
+    "artiste": "Tears for Fears",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/67fd78716f6599d41bb28e629f460276/250x250-000000-80-0-0.jpg",
+    "gain": -9.9,
+    "garder": true
+  },
+  {
+    "id": "d2157280",
+    "deezer": 2157280,
+    "titre": "Sans contrefaçon",
+    "artiste": "Mylène Farmer",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7a9154c58a7ccdf00ec26acaf729489d/250x250-000000-80-0-0.jpg",
+    "gain": -16.4,
+    "garder": true
+  },
+  {
+    "id": "d793796",
+    "deezer": 793796,
+    "titre": "Alexandrie Alexandra",
+    "artiste": "Claude François",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/3e0f2294ca0604a1cd40e2fcb51905e9/250x250-000000-80-0-0.jpg",
+    "gain": -7.8,
+    "garder": true
+  },
+  {
+    "id": "d3578573",
+    "deezer": 3578573,
+    "titre": "Stand The Ghetto",
+    "artiste": "Bernard Lavilliers",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/78bb99268350b825760541781daf7174/250x250-000000-80-0-0.jpg",
+    "gain": -16.1,
+    "garder": true
+  },
+  {
+    "id": "d2425929",
+    "deezer": 2425929,
+    "titre": "Mademoiselle chante le blues",
+    "artiste": "Patricia Kaas",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/204d80d26432d6c3550be63f9dae0490/250x250-000000-80-0-0.jpg",
+    "gain": -16.4,
+    "garder": true
+  },
+  {
+    "id": "d2246521",
+    "deezer": 2246521,
+    "titre": "Allô maman bobo",
+    "artiste": "Alain Souchon",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/d7e4efc2991a5ffa61a53c42c82e26dd/250x250-000000-80-0-0.jpg",
+    "gain": -14.3,
+    "garder": true
+  },
+  {
+    "id": "d61397260",
+    "deezer": 61397260,
+    "titre": "Le paradis blanc",
+    "artiste": "Michel Berger",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/045f682704f854979995ae7ff100a4fa/250x250-000000-80-0-0.jpg",
+    "gain": -13.1,
+    "garder": true
+  },
+  {
+    "id": "d580936",
+    "deezer": 580936,
+    "titre": "Say My Name",
+    "artiste": "Destiny's Child",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/73da200f9335f752d2f7cb5ed8933cef/250x250-000000-80-0-0.jpg",
+    "gain": -9.3,
+    "garder": true
+  },
+  {
+    "id": "d2184743",
+    "deezer": 2184743,
+    "titre": "What's Up?",
+    "artiste": "4 Non Blondes",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/22ab04ebf46e75a8c2c83a774c8831a8/250x250-000000-80-0-0.jpg",
+    "gain": -14.2,
+    "garder": true
+  },
+  {
+    "id": "d1038058",
+    "deezer": 1038058,
+    "titre": "Miami",
+    "artiste": "Will Smith",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/bf3cb7381c79a55fd8bdbaae5a1aee46/250x250-000000-80-0-0.jpg",
+    "gain": -12.2,
+    "garder": true
+  },
+  {
+    "id": "d3528163",
+    "deezer": 3528163,
+    "titre": "Tu m'oublieras",
+    "artiste": "Larusso",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1304b43db2412a723e3bb883a00fa084/250x250-000000-80-0-0.jpg",
+    "gain": -10.4,
+    "garder": true
+  },
+  {
+    "id": "d3133738",
+    "deezer": 3133738,
+    "titre": "Wannabe",
+    "artiste": "Spice Girls",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/18c4f2d9608910a2b8eb1835052e895b/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d695110942",
+    "deezer": 695110942,
+    "titre": "Music Sounds Better With You",
+    "artiste": "Stardust",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/ee56e4b369c91ad8d2c9f7b419d5f600/250x250-000000-80-0-0.jpg",
+    "gain": -9.4,
+    "garder": true
+  },
+  {
+    "id": "d869548",
+    "deezer": 869548,
+    "titre": "Killing Me Softly With His Song",
+    "artiste": "Fugees",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/db06562348299fb5b3bd9d0d8f5233d7/250x250-000000-80-0-0.jpg",
+    "gain": -13.3,
+    "garder": true
+  },
+  {
+    "id": "d2150228",
+    "deezer": 2150228,
+    "titre": "La tribu de Dana",
+    "artiste": "Manau",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/61386ee14b64cf72cde1e98f34764f02/250x250-000000-80-0-0.jpg",
+    "gain": -10.9,
+    "garder": true
+  },
+  {
+    "id": "d6907156",
+    "deezer": 6907156,
+    "titre": "Freed From Desire",
+    "artiste": "Gala",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/479a6495cefe8a34acc064788f715337/250x250-000000-80-0-0.jpg",
+    "gain": -11,
+    "garder": true
+  },
+  {
+    "id": "d540175",
+    "deezer": 540175,
+    "titre": "...Baby One More Time",
+    "artiste": "Britney Spears",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f685d32254a59b6162be0d1082ff8805/250x250-000000-80-0-0.jpg",
+    "gain": -10.6,
+    "garder": true
+  },
+  {
+    "id": "d1584416372",
+    "deezer": 1584416372,
+    "titre": "Gangsta's Paradise",
+    "artiste": "Coolio",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a123b2c32996a8c8664a82cb4219ce0c/250x250-000000-80-0-0.jpg",
+    "gain": -13.6,
+    "garder": true
+  },
+  {
+    "id": "d574984",
+    "deezer": 574984,
+    "titre": "I'm Outta Love",
+    "artiste": "Anastacia",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/adcc3162f6abf31d2ddcffe5f0887694/250x250-000000-80-0-0.jpg",
+    "gain": -9,
+    "garder": true
+  },
+  {
+    "id": "d725274",
+    "deezer": 725274,
+    "titre": "Californication",
+    "artiste": "Red Hot Chili Peppers",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5e61e8290a4d1d64ca58920656c9602d/250x250-000000-80-0-0.jpg",
+    "gain": -6.7,
+    "garder": true
+  },
+  {
+    "id": "d983238",
+    "deezer": 983238,
+    "titre": "J't'emmène au vent",
+    "artiste": "Louise Attaque",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/0b2be6637d8afd3dfc1bc77d5585054f/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d62126191",
+    "deezer": 62126191,
+    "titre": "Firestarter",
+    "artiste": "The Prodigy",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/566d28d32080a6d82a2d4d145ea5ea7e/250x250-000000-80-0-0.jpg",
+    "gain": -9,
+    "garder": true
+  },
+  {
+    "id": "d91045659",
+    "deezer": 91045659,
+    "titre": "Je danse le Mia",
+    "artiste": "IAM",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/58a21bd1439562f3184442891a11ffe1/250x250-000000-80-0-0.jpg",
+    "gain": -8.9,
+    "garder": true
+  },
+  {
+    "id": "d596015",
+    "deezer": 596015,
+    "titre": "Hero",
+    "artiste": "Mariah Carey",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6a1aeef41619907cc283d4eb1eac2fe6/250x250-000000-80-0-0.jpg",
+    "gain": -13,
+    "garder": true
+  },
+  {
+    "id": "d128743581",
+    "deezer": 128743581,
+    "titre": "Still D.R.E.",
+    "artiste": "Dr. Dre",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/0d9a24d054cbc5ab11843beed9f1422b/250x250-000000-80-0-0.jpg",
+    "gain": -9.5,
+    "garder": true
+  },
+  {
+    "id": "d984192",
+    "deezer": 984192,
+    "titre": "Savoir aimer",
+    "artiste": "Florent Pagny",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/43f4378346590f05078f47ed80d5a142/250x250-000000-80-0-0.jpg",
+    "gain": -11.3,
+    "garder": true
+  },
+  {
+    "id": "d62710442",
+    "deezer": 62710442,
+    "titre": "All I Want for Christmas Is You",
+    "artiste": "Mariah Carey",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/60d8f7635ead9b3c5e571aec47a8c73e/250x250-000000-80-0-0.jpg",
+    "gain": -10.7,
+    "garder": true
+  },
+  {
+    "id": "d8164649",
+    "deezer": 8164649,
+    "titre": "You Are Not Alone",
+    "artiste": "Michael Jackson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fbed9a8cfcdd8a5e48cebbea8d8078ea/250x250-000000-80-0-0.jpg",
+    "gain": -11.8,
+    "garder": true
+  },
+  {
+    "id": "d1075781",
+    "deezer": 1075781,
+    "titre": "No Scrubs",
+    "artiste": "TLC",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6dd5f40e7688ba155a5ef557977e95d3/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d3217059461",
+    "deezer": 3217059461,
+    "titre": "Tonton du bled",
+    "artiste": "113",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f10f199287e09ec4a23cfc701eb73a35/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d133204792",
+    "deezer": 133204792,
+    "titre": "Encore Une Fois",
+    "artiste": "Sash!",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/0f129de47fc2e4e3f9ec9ba385459e32/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d3068705921",
+    "deezer": 3068705921,
+    "titre": "Dur Dur d'être bébé !",
+    "artiste": "Jordy",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7337c38e10574e8e7327abdbaee32b32/250x250-000000-80-0-0.jpg",
+    "gain": -9.4,
+    "garder": true
+  },
+  {
+    "id": "d2122532",
+    "deezer": 2122532,
+    "titre": "It Wasn't Me",
+    "artiste": "Shaggy",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/2db7115ada8037b73dfa057f3c045085/250x250-000000-80-0-0.jpg",
+    "gain": -10.4,
+    "garder": true
+  },
+  {
+    "id": "d830200",
+    "deezer": 830200,
+    "titre": "Heartbreaker",
+    "artiste": "Mariah Carey, JAŸ-Z",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f90495128acbb4808b6fe43ef12a3912/250x250-000000-80-0-0.jpg",
+    "gain": -10,
+    "garder": true
+  },
+  {
+    "id": "d870857",
+    "deezer": 870857,
+    "titre": "Ma Benz",
+    "artiste": "Suprême NTM, Lord Kossity",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/529623a3281a7709098859887ddfa467/250x250-000000-80-0-0.jpg",
+    "gain": -10.8,
+    "garder": true
+  },
+  {
+    "id": "d4762933",
+    "deezer": 4762933,
+    "titre": "Pour que tu m'aimes encore",
+    "artiste": "Céline Dion",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/bc5cd6526b7b34cfc0eb5a6ed46b5524/250x250-000000-80-0-0.jpg",
+    "gain": -11.5,
+    "garder": true
+  },
+  {
+    "id": "d128945720",
+    "deezer": 128945720,
+    "titre": "Bienvenue chez moi",
+    "artiste": "Florent Pagny",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5d708c0bed13752846b72b80a8f30f94/250x250-000000-80-0-0.jpg",
+    "gain": -9,
+    "garder": true
+  },
+  {
+    "id": "d3030263841",
+    "deezer": 3030263841,
+    "titre": "Tic, tic, tac",
+    "artiste": "Carrapicho",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9f595247b592603b9f466172123dfbc0/250x250-000000-80-0-0.jpg",
+    "gain": -16.8,
+    "garder": true
+  },
+  {
+    "id": "d910683",
+    "deezer": 910683,
+    "titre": "California Love",
+    "artiste": "2Pac",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/49856d92a31e284c7fe34b7971dba0b0/250x250-000000-80-0-0.jpg",
+    "gain": -8.7,
+    "garder": true
+  },
+  {
+    "id": "d3117869",
+    "deezer": 3117869,
+    "titre": "Can You Feel the Love Tonight",
+    "artiste": "Elton John",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/800bb546d0f86e60bccdb093b8664f6c/250x250-000000-80-0-0.jpg",
+    "gain": -14.7,
+    "garder": true
+  },
+  {
+    "id": "d15003613",
+    "deezer": 15003613,
+    "titre": "Solaar pleure",
+    "artiste": "MC Solaar",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5f83ebaa565fbdf064debe4dd484fbab/250x250-000000-80-0-0.jpg",
+    "gain": -8.3,
+    "garder": true
+  },
+  {
+    "id": "d3132726",
+    "deezer": 3132726,
+    "titre": "Foule sentimentale",
+    "artiste": "Alain Souchon",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/beca67efc4b98663f08e2a3cf4d5c137/250x250-000000-80-0-0.jpg",
+    "gain": -13,
+    "garder": true
+  },
+  {
+    "id": "d994491",
+    "deezer": 994491,
+    "titre": "Macarena",
+    "artiste": "Los Del Río",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6a827921da4e6afde64294d7483cbf0e/250x250-000000-80-0-0.jpg",
+    "gain": -10.3,
+    "garder": true
+  },
+  {
+    "id": "d867320",
+    "deezer": 867320,
+    "titre": "Alane",
+    "artiste": "Wes",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/8843044d85d73529b0ee180d26b1b652/250x250-000000-80-0-0.jpg",
+    "gain": -11.1,
+    "garder": true
+  },
+  {
+    "id": "d68515055",
+    "deezer": 68515055,
+    "titre": "Enjoy the Silence",
+    "artiste": "Depeche Mode",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e73716d037ee24f1331a8c0332526590/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d921886",
+    "deezer": 921886,
+    "titre": "Aïcha",
+    "artiste": "Khaled",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/44874ca2fe3cd06fadc9edd864615b9d/250x250-000000-80-0-0.jpg",
+    "gain": -11.3,
+    "garder": true
+  },
+  {
+    "id": "d3135563",
+    "deezer": 3135563,
+    "titre": "Veridis Quo",
+    "artiste": "Daft Punk",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/250x250-000000-80-0-0.jpg",
+    "gain": -14.3,
+    "garder": true
+  },
+  {
+    "id": "d3437034",
+    "deezer": 3437034,
+    "titre": "La Boulette (Génération Nan Nan)",
+    "artiste": "Diam's",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/05490ffeee00a99568b3189f6ab41e37/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d2603558",
+    "deezer": 2603558,
+    "titre": "Poker Face",
+    "artiste": "Lady Gaga",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/cc24d60a998e1a296f0c22efa8ddffd2/250x250-000000-80-0-0.jpg",
+    "gain": -7.7,
+    "garder": true
+  },
+  {
+    "id": "d1151147",
+    "deezer": 1151147,
+    "titre": "Say It Right",
+    "artiste": "Nelly Furtado",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1d3625d9f19527440769e7f8cc09db85/250x250-000000-80-0-0.jpg",
+    "gain": -9.5,
+    "garder": true
+  },
+  {
+    "id": "d1161679",
+    "deezer": 1161679,
+    "titre": "Family Affair",
+    "artiste": "Mary J. Blige",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a3939a5b62df412e83d898dfd85035c9/250x250-000000-80-0-0.jpg",
+    "gain": -9.4,
+    "garder": true
+  },
+  {
+    "id": "d64848628",
+    "deezer": 64848628,
+    "titre": "Obsesion",
+    "artiste": "Aventura",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/84f4f4e7477c433f449107b671ffab5f/250x250-000000-80-0-0.jpg",
+    "gain": -10.9,
+    "garder": true
+  },
+  {
+    "id": "d2176856",
+    "deezer": 2176856,
+    "titre": "Back To Black",
+    "artiste": "Amy Winehouse",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5772b495f0dcdf660d0fc88c4c38a3fa/250x250-000000-80-0-0.jpg",
+    "gain": -7.8,
+    "garder": true
+  },
+  {
+    "id": "d925106",
+    "deezer": 925106,
+    "titre": "Umbrella",
+    "artiste": "Rihanna",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/91276466fbc876d96be9e6926060af60/250x250-000000-80-0-0.jpg",
+    "gain": -8.7,
+    "garder": true
+  },
+  {
+    "id": "d71608366",
+    "deezer": 71608366,
+    "titre": "Me Gustas Tu",
+    "artiste": "Manu Chao",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/8453da83592b1ce09febf8af0e7751b8/250x250-000000-80-0-0.jpg",
+    "gain": -10.6,
+    "garder": true
+  },
+  {
+    "id": "d79976878",
+    "deezer": 79976878,
+    "titre": "Everytime We Touch",
+    "artiste": "Cascada",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/51515b40c93a2ac8b4aebb2505684802/250x250-000000-80-0-0.jpg",
+    "gain": -9.1,
+    "garder": true
+  },
+  {
+    "id": "d502768092",
+    "deezer": 502768092,
+    "titre": "Hey Sexy Lady",
+    "artiste": "Shaggy",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9c18477c3e9664358dd01144038d35f6/250x250-000000-80-0-0.jpg",
+    "gain": -9.5,
+    "garder": true
+  },
+  {
+    "id": "d1170524",
+    "deezer": 1170524,
+    "titre": "The Way I Are",
+    "artiste": "Timbaland",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/93167966c410f71a0204c8517be259df/250x250-000000-80-0-0.jpg",
+    "gain": -8.8,
+    "garder": true
+  },
+  {
+    "id": "d3026450",
+    "deezer": 3026450,
+    "titre": "The Magic Key",
+    "artiste": "One-T",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9cfb5cd0988bea84e0d30782865e48c7/250x250-000000-80-0-0.jpg",
+    "gain": -7.6,
+    "garder": true
+  },
+  {
+    "id": "d4311360",
+    "deezer": 4311360,
+    "titre": "Halo",
+    "artiste": "Beyoncé",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9e6686fb79ab27afcc7ceeaf98689277/250x250-000000-80-0-0.jpg",
+    "gain": -8.8,
+    "garder": true
+  },
+  {
+    "id": "d565131",
+    "deezer": 565131,
+    "titre": "What Goes Around... Comes Around",
+    "artiste": "Justin Timberlake",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/9d629455f0bfad0de744182df2549b5b/250x250-000000-80-0-0.jpg",
+    "gain": -8.2,
+    "garder": true
+  },
+  {
+    "id": "d837914",
+    "deezer": 837914,
+    "titre": "Yeah!",
+    "artiste": "Usher Featuring Lil' Jon & Ludacris",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1a727988b4762a5bd8f05e064753d381/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d3087828",
+    "deezer": 3087828,
+    "titre": "Love Don't Let Me Go",
+    "artiste": "David Guetta",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/38b341f53dde2a6d9f96b1994df9e295/250x250-000000-80-0-0.jpg",
+    "gain": -7.6,
+    "garder": true
+  },
+  {
+    "id": "d4708087",
+    "deezer": 4708087,
+    "titre": "R&B 2 Rue",
+    "artiste": "Matt",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/49bd50a72f342f40a089bfc049c84528/250x250-000000-80-0-0.jpg",
+    "gain": -8.9,
+    "garder": true
+  },
+  {
+    "id": "d1143499",
+    "deezer": 1143499,
+    "titre": "Behind Blue Eyes",
+    "artiste": "Limp Bizkit",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f17a6d764d4eea95dab085c917e1ce7f/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d482681822",
+    "deezer": 482681822,
+    "titre": "Premier Gaou",
+    "artiste": "Magic System",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/eb12a715debdf38a92a01b6ed7f5748f/250x250-000000-80-0-0.jpg",
+    "gain": -9.9,
+    "garder": true
+  },
+  {
+    "id": "d2279321587",
+    "deezer": 2279321587,
+    "titre": "Trick Me",
+    "artiste": "Kelis",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f321c963eb17397c83a68b49d49d0e9f/250x250-000000-80-0-0.jpg",
+    "gain": -8.8,
+    "garder": true
+  },
+  {
+    "id": "d705531",
+    "deezer": 705531,
+    "titre": "Turn Me On",
+    "artiste": "Kevin Lyttle",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/0261ed55e0f9a9029cbd397b786c4847/250x250-000000-80-0-0.jpg",
+    "gain": -10.5,
+    "garder": true
+  },
+  {
+    "id": "d3097549",
+    "deezer": 3097549,
+    "titre": "Qui est l'exemple ?",
+    "artiste": "Rohff",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/43fe968a6110a9cdd11c880ad2be42f3/250x250-000000-80-0-0.jpg",
+    "gain": -9.5,
+    "garder": true
+  },
+  {
+    "id": "d730470",
+    "deezer": 730470,
+    "titre": "Love's Divine",
+    "artiste": "Seal",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/42dba4c83a7432571d932f3cbf2e69f5/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d2157406",
+    "deezer": 2157406,
+    "titre": "Never Leave You (Uh Oooh, Uh Oooh)",
+    "artiste": "Lumidee",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/c3d67a577632904e89340f5d8d24a53f/250x250-000000-80-0-0.jpg",
+    "gain": -10.5,
+    "garder": true
+  },
+  {
+    "id": "d4162078",
+    "deezer": 4162078,
+    "titre": "Right Round",
+    "artiste": "Flo Rida",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5b3f74432c67d166d5d69139a651c97f/250x250-000000-80-0-0.jpg",
+    "gain": -10.4,
+    "garder": true
+  },
+  {
+    "id": "d673165762",
+    "deezer": 673165762,
+    "titre": "Sexy Bitch",
+    "artiste": "David Guetta, Akon",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/052de888ea3a0a6f30d564850a07967d/250x250-000000-80-0-0.jpg",
+    "gain": -7,
+    "garder": true
+  },
+  {
+    "id": "d679217",
+    "deezer": 679217,
+    "titre": "Hung Up",
+    "artiste": "Madonna",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/8e499d7b0e9be5b77eb6c2697e179fe3/250x250-000000-80-0-0.jpg",
+    "gain": -9,
+    "garder": true
+  },
+  {
+    "id": "d13129211",
+    "deezer": 13129211,
+    "titre": "You Rock My World",
+    "artiste": "Michael Jackson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/d602fda192ef89e16da0768448dfe4a3/250x250-000000-80-0-0.jpg",
+    "gain": -8.9,
+    "garder": true
+  },
+  {
+    "id": "d2545396411",
+    "deezer": 2545396411,
+    "titre": "Thank You (Not So Bad)",
+    "artiste": "Dimitri Vegas & Like Mike",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/b182bb4fb44ee09911220b6955b753a7/250x250-000000-80-0-0.jpg",
+    "gain": -8.5,
+    "garder": true
+  },
+  {
+    "id": "d1066626492",
+    "deezer": 1066626492,
+    "titre": "Liberta",
+    "artiste": "Pep's",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/48425b73f6b7ebdfe22ef1e77839fff1/250x250-000000-80-0-0.jpg",
+    "gain": -10.9,
+    "garder": true
+  },
+  {
+    "id": "d2447443",
+    "deezer": 2447443,
+    "titre": "Dilemma",
+    "artiste": "Nelly",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/632fa55096ecab62a0c2556fa9e958c1/250x250-000000-80-0-0.jpg",
+    "gain": -10.6,
+    "garder": true
+  },
+  {
+    "id": "d3667551",
+    "deezer": 3667551,
+    "titre": "Music",
+    "artiste": "Madonna",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/32fa1f6bf870f558de0e874ee04be456/250x250-000000-80-0-0.jpg",
+    "gain": -11.3,
+    "garder": true
+  },
+  {
+    "id": "d90533119",
+    "deezer": 90533119,
+    "titre": "Empire State Of Mind",
+    "artiste": "JAY Z",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e0edb930ad843bb002c04956a81ce7de/250x250-000000-80-0-0.jpg",
+    "gain": -6.1,
+    "garder": true
+  },
+  {
+    "id": "d3129431",
+    "deezer": 3129431,
+    "titre": "Caravane",
+    "artiste": "Raphaël",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/368626f3f178b6925c036f0c76dc7335/250x250-000000-80-0-0.jpg",
+    "gain": -10.7,
+    "garder": true
+  },
+  {
+    "id": "d67929419",
+    "deezer": 67929419,
+    "titre": "Formidable",
+    "artiste": "Stromae",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/b1d00f9aaf288ee97abda56dc1ecb73f/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d577487252",
+    "deezer": 577487252,
+    "titre": "It's My Life",
+    "artiste": "Bon Jovi",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/58ca1d20e8d19c1e5f8e821d07412c74/250x250-000000-80-0-0.jpg",
+    "gain": -6.9,
+    "garder": true
+  },
+  {
+    "id": "d1141668",
+    "deezer": 1141668,
+    "titre": "In Da Club",
+    "artiste": "50 Cent",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/8f4dd4d8abf85ceda96b6b4adf217590/250x250-000000-80-0-0.jpg",
+    "gain": -7.9,
+    "garder": true
+  },
+  {
+    "id": "d969494",
+    "deezer": 969494,
+    "titre": "Cry Me a River",
+    "artiste": "Justin Timberlake",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7cba368fa8466d72d149264577cb19d7/250x250-000000-80-0-0.jpg",
+    "gain": -9.4,
+    "garder": true
+  },
+  {
+    "id": "d3148168",
+    "deezer": 3148168,
+    "titre": "Fuck You",
+    "artiste": "Lily Allen",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/69261885e1912b2320b1209630be350e/250x250-000000-80-0-0.jpg",
+    "gain": -8.7,
+    "garder": true
+  },
+  {
+    "id": "d6685848",
+    "deezer": 6685848,
+    "titre": "Bad Day",
+    "artiste": "Daniel Powter",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/90db17ba5563a51136265536d1d70e43/250x250-000000-80-0-0.jpg",
+    "gain": -8.9,
+    "garder": true
+  },
+  {
+    "id": "d3135367",
+    "deezer": 3135367,
+    "titre": "Elle est à toi",
+    "artiste": "Assia",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/3ca727fc2a805aa9f0743719150d474b/250x250-000000-80-0-0.jpg",
+    "gain": -10,
+    "garder": true
+  },
+  {
+    "id": "d579936282",
+    "deezer": 579936282,
+    "titre": "Il avait les mots",
+    "artiste": "Sheryfa Luna",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f08759a4730061fc0de4290a7ec06e10/250x250-000000-80-0-0.jpg",
+    "gain": -10.2,
+    "garder": true
+  },
+  {
+    "id": "d3664988",
+    "deezer": 3664988,
+    "titre": "L'assasymphonie",
+    "artiste": "Mozart Opera Rock",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/95909e24bb21a434282a483766ef64b5/250x250-000000-80-0-0.jpg",
+    "gain": -7.5,
+    "garder": true
+  },
+  {
+    "id": "d863369",
+    "deezer": 863369,
+    "titre": "911",
+    "artiste": "Wyclef Jean, Mary J. Blige",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a87c6cf419f435e65403d8cfc7d71801/250x250-000000-80-0-0.jpg",
+    "gain": -12.6,
+    "garder": true
+  },
+  {
+    "id": "d2793680",
+    "deezer": 2793680,
+    "titre": "Me & U",
+    "artiste": "Cassie",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/191d3e7ca739887e4befabde40cf10cd/250x250-000000-80-0-0.jpg",
+    "gain": -8.8,
+    "garder": true
+  },
+  {
+    "id": "d1151152",
+    "deezer": 1151152,
+    "titre": "All Good Things (Come To An End)",
+    "artiste": "Nelly Furtado",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/1d3625d9f19527440769e7f8cc09db85/250x250-000000-80-0-0.jpg",
+    "gain": -9.6,
+    "garder": true
+  },
+  {
+    "id": "d561856742",
+    "deezer": 561856742,
+    "titre": "Shallow",
+    "artiste": "Lady Gaga",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/88a8288e14f61ffa39c14ac2ef9210d8/250x250-000000-80-0-0.jpg",
+    "gain": -9,
+    "garder": true
+  },
+  {
+    "id": "d61424044",
+    "deezer": 61424044,
+    "titre": "Can't Hold Us",
+    "artiste": "Macklemore, Ray Dalton",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/238f1c36e8445fd162d1d53b8181ecb5/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d14525574",
+    "deezer": 14525574,
+    "titre": "We Found Love",
+    "artiste": "Rihanna",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5199f89d5113a83b5086463d5d0c9415/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d5639256",
+    "deezer": 5639256,
+    "titre": "Désolé",
+    "artiste": "Sexion d'Assaut",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/00cb64e8f7241cd51899b88a616eecf2/250x250-000000-80-0-0.jpg",
+    "gain": -10,
+    "garder": true
+  },
+  {
+    "id": "d139470659",
+    "deezer": 139470659,
+    "titre": "Shape of You",
+    "artiste": "Ed Sheeran",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/107c2b43f10c249077c1f7618563bb63/250x250-000000-80-0-0.jpg",
+    "gain": -7.3,
+    "garder": true
+  },
+  {
+    "id": "d28852751",
+    "deezer": 28852751,
+    "titre": "Starships",
+    "artiste": "Nicki Minaj",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/3de7484240aaf23e129662c5914707df/250x250-000000-80-0-0.jpg",
+    "gain": -6.5,
+    "garder": true
+  },
+  {
+    "id": "d62766452",
+    "deezer": 62766452,
+    "titre": "On se connaît",
+    "artiste": "Youssoupha",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/d9130e55513f5f4bf08e0cab748e819e/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d62847142",
+    "deezer": 62847142,
+    "titre": "Titanium",
+    "artiste": "David Guetta, Sia",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/52330286cb5008805253fd77c7111d3f/250x250-000000-80-0-0.jpg",
+    "gain": -6.7,
+    "garder": true
+  },
+  {
+    "id": "d134533238",
+    "deezer": 134533238,
+    "titre": "Cheap Thrills",
+    "artiste": "Sia, Sean Paul",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/305b06b02f21849dd2bf45614e0fafef/250x250-000000-80-0-0.jpg",
+    "gain": -8.3,
+    "garder": true
+  },
+  {
+    "id": "d89077555",
+    "deezer": 89077555,
+    "titre": "Shake It Off",
+    "artiste": "Taylor Swift",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/68b4e986958b17f05b062ffa8d7ae114/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d79587580",
+    "deezer": 79587580,
+    "titre": "Chandelier",
+    "artiste": "Sia",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4275db12f5e284b3c2f3e20726187b64/250x250-000000-80-0-0.jpg",
+    "gain": -5.6,
+    "garder": true
+  },
+  {
+    "id": "d5639255",
+    "deezer": 5639255,
+    "titre": "Wati by Night",
+    "artiste": "Sexion d'Assaut",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/00cb64e8f7241cd51899b88a616eecf2/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d1254389442",
+    "deezer": 1254389442,
+    "titre": "Stereo Love",
+    "artiste": "Edward Maya",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5b823acc99170378c8807062e62280c2/250x250-000000-80-0-0.jpg",
+    "gain": -9.6,
+    "garder": true
+  },
+  {
+    "id": "d569166532",
+    "deezer": 569166532,
+    "titre": "Lean On",
+    "artiste": "Major Lazer",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fd04cc1cae7d8b60fd07035aedd4aedf/250x250-000000-80-0-0.jpg",
+    "gain": -8.4,
+    "garder": true
+  },
+  {
+    "id": "d8086130",
+    "deezer": 8086130,
+    "titre": "Set Fire to the Rain",
+    "artiste": "Adele",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/dc1ce848d830ecc93521be5a78350364/250x250-000000-80-0-0.jpg",
+    "gain": -7.3,
+    "garder": true
+  },
+  {
+    "id": "d79589178",
+    "deezer": 79589178,
+    "titre": "Loca",
+    "artiste": "Shakira, El Cata",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e5f3faf34a31ae0a4552e7f86c819170/250x250-000000-80-0-0.jpg",
+    "gain": -9.4,
+    "garder": true
+  },
+  {
+    "id": "d61142285",
+    "deezer": 61142285,
+    "titre": "Feel So Close",
+    "artiste": "Calvin Harris",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/3cd154b7ee332e7fb0dc3e8bd4085f6b/250x250-000000-80-0-0.jpg",
+    "gain": -6.8,
+    "garder": true
+  },
+  {
+    "id": "d6461440",
+    "deezer": 6461440,
+    "titre": "Love The Way You Lie",
+    "artiste": "Eminem",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/be682506145061814eddee648edb7c59/250x250-000000-80-0-0.jpg",
+    "gain": -9.5,
+    "garder": true
+  },
+  {
+    "id": "d14235829",
+    "deezer": 14235829,
+    "titre": "I Follow Rivers",
+    "artiste": "Lykke Li",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a91071665368a95007d4c40288e2074e/250x250-000000-80-0-0.jpg",
+    "gain": -9.2,
+    "garder": true
+  },
+  {
+    "id": "d101764813",
+    "deezer": 101764813,
+    "titre": "On verra",
+    "artiste": "Nekfeu",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/beb388822ee34e78a0e30c0436c6a299/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d65232772",
+    "deezer": 65232772,
+    "titre": "Good Feeling",
+    "artiste": "Flo Rida",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7833d3bd55cd66c11528908dd7fe96a1/250x250-000000-80-0-0.jpg",
+    "gain": -8.4,
+    "garder": true
+  },
+  {
+    "id": "d576822202",
+    "deezer": 576822202,
+    "titre": "Cosmo",
+    "artiste": "Soprano",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/61a126ecfaebe0a924e4c894928e0583/250x250-000000-80-0-0.jpg",
+    "gain": -6.8,
+    "garder": true
+  },
+  {
+    "id": "d98356864",
+    "deezer": 98356864,
+    "titre": "Andalouse",
+    "artiste": "Kendji Girac",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/2d12f5b9d7d01aa4e96046e3b2317450/250x250-000000-80-0-0.jpg",
+    "gain": -7.7,
+    "garder": true
+  },
+  {
+    "id": "d5400243",
+    "deezer": 5400243,
+    "titre": "Memories",
+    "artiste": "David Guetta, Kid Cudi",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/cadee1e42f92abf85b07dff16f7fc195/250x250-000000-80-0-0.jpg",
+    "gain": -6.6,
+    "garder": true
+  },
+  {
+    "id": "d617239422",
+    "deezer": 617239422,
+    "titre": "Always",
+    "artiste": "Gavin James",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/dfd92c4fcf1e64c9c043821adff04544/250x250-000000-80-0-0.jpg",
+    "gain": -8.8,
+    "garder": true
+  },
+  {
+    "id": "d99976954",
+    "deezer": 99976954,
+    "titre": "Ride",
+    "artiste": "Twenty One Pilots",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/dbbde1014cda9b101412a8e27add0ad2/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d106095086",
+    "deezer": 106095086,
+    "titre": "Est-ce que tu m'aimes ?",
+    "artiste": "GIMS",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a3878ba440ebc7e2d74c9454bfa21405/250x250-000000-80-0-0.jpg",
+    "gain": -7.7,
+    "garder": true
+  },
+  {
+    "id": "d144389048",
+    "deezer": 144389048,
+    "titre": "Lush Life",
+    "artiste": "Zara Larsson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/68ef927599933cc3f45fcf8af23c5ac5/250x250-000000-80-0-0.jpg",
+    "gain": -6.8,
+    "garder": true
+  },
+  {
+    "id": "d106095102",
+    "deezer": 106095102,
+    "titre": "Sapés comme jamais",
+    "artiste": "GIMS, Niska",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a3878ba440ebc7e2d74c9454bfa21405/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d71645436",
+    "deezer": 71645436,
+    "titre": "Dark Horse",
+    "artiste": "Katy Perry",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fe781ecd9879a82beed80f6d3e80745b/250x250-000000-80-0-0.jpg",
+    "gain": -8.2,
+    "garder": true
+  },
+  {
+    "id": "d70266756",
+    "deezer": 70266756,
+    "titre": "Wake Me Up",
+    "artiste": "Avicii",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/ec97306735b46ec334e0ce562290775b/250x250-000000-80-0-0.jpg",
+    "gain": -8.7,
+    "garder": true
+  },
+  {
+    "id": "d546875572",
+    "deezer": 546875572,
+    "titre": "Balance ton quoi",
+    "artiste": "Angèle",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4a2360324af313f73b56fd1f7faaac88/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d63510358",
+    "deezer": 63510358,
+    "titre": "Radioactive",
+    "artiste": "Imagine Dragons",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7e8314f4280cffde363547a495a260bc/250x250-000000-80-0-0.jpg",
+    "gain": -5.7,
+    "garder": true
+  },
+  {
+    "id": "d10308117",
+    "deezer": 10308117,
+    "titre": "Give Me Everything",
+    "artiste": "Pitbull, Nayer",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/93806e3105596219e5c241af4b7e1955/250x250-000000-80-0-0.jpg",
+    "gain": -6.9,
+    "garder": true
+  },
+  {
+    "id": "d8086136",
+    "deezer": 8086136,
+    "titre": "Someone Like You",
+    "artiste": "Adele",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/dc1ce848d830ecc93521be5a78350364/250x250-000000-80-0-0.jpg",
+    "gain": -10.5,
+    "garder": true
+  },
+  {
+    "id": "d143783500",
+    "deezer": 143783500,
+    "titre": "Despacito",
+    "artiste": "Luis Fonsi",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/cb64af3614105b409393ebc92fd13f6a/250x250-000000-80-0-0.jpg",
+    "gain": -8.7,
+    "garder": true
+  },
+  {
+    "id": "d5979887",
+    "deezer": 5979887,
+    "titre": "Airplanes",
+    "artiste": "B.o.B, Hayley Williams",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/b9bc22abc42702fc1b1833f0c0b997a2/250x250-000000-80-0-0.jpg",
+    "gain": -8.3,
+    "garder": true
+  },
+  {
+    "id": "d62724015",
+    "deezer": 62724015,
+    "titre": "Locked out of Heaven",
+    "artiste": "Bruno Mars",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/2ae8e9f1714cc6cc9393f7873008f45c/250x250-000000-80-0-0.jpg",
+    "gain": -7.3,
+    "garder": true
+  },
+  {
+    "id": "d1645426722",
+    "deezer": 1645426722,
+    "titre": "Stolen Dance",
+    "artiste": "Milky Chance",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/f9d654c8dfbb4420827b542b9a7c1425/250x250-000000-80-0-0.jpg",
+    "gain": -10.2,
+    "garder": true
+  },
+  {
+    "id": "d8086126",
+    "deezer": 8086126,
+    "titre": "Rolling in the Deep",
+    "artiste": "Adele",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/dc1ce848d830ecc93521be5a78350364/250x250-000000-80-0-0.jpg",
+    "gain": -8.6,
+    "garder": true
+  },
+  {
+    "id": "d739870792",
+    "deezer": 739870792,
+    "titre": "Dance Monkey",
+    "artiste": "Tones and I",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5636a569737f8dad9a928f3d907c493a/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d81263834",
+    "deezer": 81263834,
+    "titre": "Le chant des sirènes",
+    "artiste": "Fréro Delavega",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/bf5cd7b628d80f2f58e41f31ce7bd119/250x250-000000-80-0-0.jpg",
+    "gain": -10.3,
+    "garder": true
+  },
+  {
+    "id": "d78527795",
+    "deezer": 78527795,
+    "titre": "Counting Stars",
+    "artiste": "OneRepublic",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/63bb716faf92942d967f5c053fc8720c/250x250-000000-80-0-0.jpg",
+    "gain": -8.2,
+    "garder": true
+  },
+  {
+    "id": "d17135110",
+    "deezer": 17135110,
+    "titre": "California Gurls",
+    "artiste": "Katy Perry",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/99578b0bb8c838383c414a5b62b5e15d/250x250-000000-80-0-0.jpg",
+    "gain": -8,
+    "garder": true
+  },
+  {
+    "id": "d92734438",
+    "deezer": 92734438,
+    "titre": "Uptown Funk",
+    "artiste": "Mark Ronson, Bruno Mars",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/3734366a73152d0367a83a4b09fd163f/250x250-000000-80-0-0.jpg",
+    "gain": -11.9,
+    "garder": true
+  },
+  {
+    "id": "d472898512",
+    "deezer": 472898512,
+    "titre": "Shotgun",
+    "artiste": "George Ezra",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/34b2fe66c53c7d4fc1b79a8dcb5eb797/250x250-000000-80-0-0.jpg",
+    "gain": -7.8,
+    "garder": true
+  },
+  {
+    "id": "d71645431",
+    "deezer": 71645431,
+    "titre": "Roar",
+    "artiste": "Katy Perry",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fe781ecd9879a82beed80f6d3e80745b/250x250-000000-80-0-0.jpg",
+    "gain": -7.5,
+    "garder": true
+  },
+  {
+    "id": "d129632340",
+    "deezer": 129632340,
+    "titre": "Let Me Love You",
+    "artiste": "DJ Snake",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/6a52e1bbddc750c996a66b0ccfa4370c/250x250-000000-80-0-0.jpg",
+    "gain": -8.3,
+    "garder": true
+  },
+  {
+    "id": "d516351532",
+    "deezer": 516351532,
+    "titre": "High Hopes",
+    "artiste": "Panic! At the Disco",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/61a2e3b5a084305f503ea641e2841ecb/250x250-000000-80-0-0.jpg",
+    "gain": -6.3,
+    "garder": true
+  },
+  {
+    "id": "d124237488",
+    "deezer": 124237488,
+    "titre": "Can't Stop the Feeling!",
+    "artiste": "Justin Timberlake",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/209aa560e3b5fbe679e91887fc0c7332/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d546875592",
+    "deezer": 546875592,
+    "titre": "Tout oublier",
+    "artiste": "Angèle",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4a2360324af313f73b56fd1f7faaac88/250x250-000000-80-0-0.jpg",
+    "gain": -9.1,
+    "garder": true
+  },
+  {
+    "id": "d5414031",
+    "deezer": 5414031,
+    "titre": "Hold My Hand",
+    "artiste": "Sean Paul, Keri Hilson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/929d0037d76a57cff9e5d36ae7f3162b/250x250-000000-80-0-0.jpg",
+    "gain": -9.1,
+    "garder": true
+  },
+  {
+    "id": "d129473388",
+    "deezer": 129473388,
+    "titre": "This Is What You Came For",
+    "artiste": "Calvin Harris",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/83ccb7389fc36648b70c6d7865fcdf25/250x250-000000-80-0-0.jpg",
+    "gain": -5.7,
+    "garder": true
+  },
+  {
+    "id": "d1084861832",
+    "deezer": 1084861832,
+    "titre": "Waves",
+    "artiste": "Mr. Probz",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/81ae52925eae1b3b0e73dee1f2854877/250x250-000000-80-0-0.jpg",
+    "gain": -10.7,
+    "garder": true
+  },
+  {
+    "id": "d140295501",
+    "deezer": 140295501,
+    "titre": "Faded",
+    "artiste": "Alan Walker",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e50540d7f752c93e0695ebae272be0c3/250x250-000000-80-0-0.jpg",
+    "gain": -8.1,
+    "garder": true
+  },
+  {
+    "id": "d111780380",
+    "deezer": 111780380,
+    "titre": "I'm Not The Only One",
+    "artiste": "Sam Smith",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/231c66c0ed260c708163eff3bb8458da/250x250-000000-80-0-0.jpg",
+    "gain": -8.5,
+    "garder": true
+  },
+  {
+    "id": "d6297555",
+    "deezer": 6297555,
+    "titre": "Alors on danse",
+    "artiste": "Stromae",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/43bd78a4753df33da9efc2207c4286ee/250x250-000000-80-0-0.jpg",
+    "gain": -13,
+    "garder": true
+  },
+  {
+    "id": "d29190691",
+    "deezer": 29190691,
+    "titre": "Hymne à l'amour",
+    "artiste": "Edith Piaf",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/10f0b233da7b74200375759a65c3247c/250x250-000000-80-0-0.jpg",
+    "gain": -11.8,
+    "garder": true
+  },
+  {
+    "id": "d1915940247",
+    "deezer": 1915940247,
+    "titre": "Lettre à France",
+    "artiste": "Michel Polnareff",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/a4475aa32f7a5e7529c8d075ae7f8cd8/250x250-000000-80-0-0.jpg",
+    "gain": -12.8,
+    "garder": true
+  },
+  {
+    "id": "d2296855",
+    "deezer": 2296855,
+    "titre": "Ne me quitte pas",
+    "artiste": "Jacques Brel",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/d415b2d0462a550ef192995fc124e9d6/250x250-000000-80-0-0.jpg",
+    "gain": -13.8,
+    "garder": true
+  },
+  {
+    "id": "d89572411",
+    "deezer": 89572411,
+    "titre": "Emmenez-moi",
+    "artiste": "Charles Aznavour",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fe30e29fd9cf285df42d9c32ab18df26/250x250-000000-80-0-0.jpg",
+    "gain": -10.1,
+    "garder": true
+  },
+  {
+    "id": "d886347",
+    "deezer": 886347,
+    "titre": "Tous les cris les S.O.S.",
+    "artiste": "Daniel Balavoine",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/fb63c8264233908a7462a3ac8c30cd6c/250x250-000000-80-0-0.jpg",
+    "gain": -9.7,
+    "garder": true
+  },
+  {
+    "id": "d561686",
+    "deezer": 561686,
+    "titre": "Et si tu n'existais pas",
+    "artiste": "Joe Dassin",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/97672f0531b1e9f65473ae20eeab84b6/250x250-000000-80-0-0.jpg",
+    "gain": -12.3,
+    "garder": true
+  },
+  {
+    "id": "d2420855",
+    "deezer": 2420855,
+    "titre": "Les copains d'abord",
+    "artiste": "Georges Brassens",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/27f0a1c925b268ff74eaf27c08a3d571/250x250-000000-80-0-0.jpg",
+    "gain": -15.7,
+    "garder": true
+  },
+  {
+    "id": "d65707466",
+    "deezer": 65707466,
+    "titre": "L'aigle noir",
+    "artiste": "Barbara",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/902e4fa1d3adb33d3f4bc2e76a4970e2/250x250-000000-80-0-0.jpg",
+    "gain": -11.7,
+    "garder": true
+  },
+  {
+    "id": "d2308590",
+    "deezer": 2308590,
+    "titre": "Je te promets",
+    "artiste": "Johnny Hallyday",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/5e834c0767640de0e4feee00f7c5e82e/250x250-000000-80-0-0.jpg",
+    "gain": -15,
+    "garder": true
+  },
+  {
+    "id": "d3413187",
+    "deezer": 3413187,
+    "titre": "La bohème",
+    "artiste": "Charles Aznavour",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4a745ed02e6678ab0e1f85ad45f3d701/250x250-000000-80-0-0.jpg",
+    "gain": -14.3,
+    "garder": true
+  },
+  {
+    "id": "d17099424",
+    "deezer": 17099424,
+    "titre": "J'ai encore rêvé d'elle",
+    "artiste": "Il Etait Une Fois",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/55011014574cff680bc81b73c04c9de1/250x250-000000-80-0-0.jpg",
+    "gain": -11.2,
+    "garder": true
+  },
+  {
+    "id": "d72064755",
+    "deezer": 72064755,
+    "titre": "L'encre de tes yeux",
+    "artiste": "Francis Cabrel",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/bf5e9636fded60faa8624487de80bb30/250x250-000000-80-0-0.jpg",
+    "gain": -15.4,
+    "garder": true
+  },
+  {
+    "id": "d7120485",
+    "deezer": 7120485,
+    "titre": "Comme toi",
+    "artiste": "Jean-Jacques Goldman",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/e097e40cc3c1654acfa342db8cee4298/250x250-000000-80-0-0.jpg",
+    "gain": -12.4,
+    "garder": true
+  },
+  {
+    "id": "d2326603",
+    "deezer": 2326603,
+    "titre": "Je suis malade",
+    "artiste": "Serge Lama",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/0ac07129d8b1bf4fea55edc63c039d59/250x250-000000-80-0-0.jpg",
+    "gain": -15.1,
+    "garder": true
+  },
+  {
+    "id": "d540429",
+    "deezer": 540429,
+    "titre": "J'aime les filles",
+    "artiste": "Jacques Dutronc",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4b3410fb489d544ce96cf32cd768f8dc/250x250-000000-80-0-0.jpg",
+    "gain": -10.4,
+    "garder": true
+  },
+  {
+    "id": "d72066529",
+    "deezer": 72066529,
+    "titre": "Je t'aimais, je t'aime, je t'aimerai",
+    "artiste": "Francis Cabrel",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/80844751cd0a48825327ae6176069f64/250x250-000000-80-0-0.jpg",
+    "gain": -15.2,
+    "garder": true
+  },
+  {
+    "id": "d69959542",
+    "deezer": 69959542,
+    "titre": "C'est extra",
+    "artiste": "Léo Ferré",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7febc6b1eff8dcb9c842745481756bd7/250x250-000000-80-0-0.jpg",
+    "gain": -9.3,
+    "garder": true
+  },
+  {
+    "id": "d1150880",
+    "deezer": 1150880,
+    "titre": "Love Me, Please Love Me",
+    "artiste": "Michel Polnareff",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/40c841e93cdf64f89a4a6d8eb8aa107c/250x250-000000-80-0-0.jpg",
+    "gain": -11.6,
+    "garder": true
+  },
+  {
+    "id": "d69125492",
+    "deezer": 69125492,
+    "titre": "Morgane de toi",
+    "artiste": "Renaud",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/87d0dca8554707fa4b05ce0777bd6e91/250x250-000000-80-0-0.jpg",
+    "gain": -10.3,
+    "garder": true
+  },
+  {
+    "id": "d121672886",
+    "deezer": 121672886,
+    "titre": "Amsterdam",
+    "artiste": "Jacques Brel",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/d61b65b271612da7fd80712411eba49a/250x250-000000-80-0-0.jpg",
+    "gain": -13.6,
+    "garder": true
+  },
+  {
+    "id": "d3105622",
+    "deezer": 3105622,
+    "titre": "Ma préférence",
+    "artiste": "Julien Clerc",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/b1784ced82acbd6956f69239e2836f6f/250x250-000000-80-0-0.jpg",
+    "gain": -12,
+    "garder": true
+  },
+  {
+    "id": "d515826692",
+    "deezer": 515826692,
+    "titre": "Les amoureux des bancs publics",
+    "artiste": "Georges Brassens",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/925c07f346632e4c39acf46169d47fa9/250x250-000000-80-0-0.jpg",
+    "gain": -15.8,
+    "garder": true
+  },
+  {
+    "id": "d627441",
+    "deezer": 627441,
+    "titre": "S'il suffisait d'aimer",
+    "artiste": "Céline Dion",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/48661a4a6672225ea9d189892c99044b/250x250-000000-80-0-0.jpg",
+    "gain": -16.3,
+    "garder": true
+  },
+  {
+    "id": "d742375982",
+    "deezer": 742375982,
+    "titre": "Elle a les yeux revolver",
+    "artiste": "Marc Lavoine",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/75222af15bd54647764f8ee055adc3d7/250x250-000000-80-0-0.jpg",
+    "gain": -19.2,
+    "garder": true
+  },
+  {
+    "id": "d730170002",
+    "deezer": 730170002,
+    "titre": "Né en 17 à Leidenstadt",
+    "artiste": "Carole Fredericks",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/ce40d9e6f38fd994832b06a96491b6a3/250x250-000000-80-0-0.jpg",
+    "gain": -8.8,
+    "garder": true
+  },
+  {
+    "id": "d355615151",
+    "deezer": 355615151,
+    "titre": "Un homme extraordinaire",
+    "artiste": "Les Innocents",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/c535ea2856f5dc47030c9ef4c8e2fff9/250x250-000000-80-0-0.jpg",
+    "gain": -16.8,
+    "garder": true
+  },
+  {
+    "id": "d800576",
+    "deezer": 800576,
+    "titre": "Amoureuse",
+    "artiste": "Véronique Sanson",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/7cf5f3a0b16b933315c8e7cdbcbec67c/250x250-000000-80-0-0.jpg",
+    "gain": -12.4,
+    "garder": true
+  },
+  {
+    "id": "d107991796",
+    "deezer": 107991796,
+    "titre": "La dernière séance",
+    "artiste": "Eddy Mitchell",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/2930138df7914d4a2e6cb956a29c4cb9/250x250-000000-80-0-0.jpg",
+    "gain": -13.5,
+    "garder": true
+  },
+  {
+    "id": "d89077407",
+    "deezer": 89077407,
+    "titre": "Je suis venu te dire que je m'en vais",
+    "artiste": "Serge Gainsbourg",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/bf404f557b3b833e25367e26bb7248c7/250x250-000000-80-0-0.jpg",
+    "gain": -19.9,
+    "garder": true
+  },
+  {
+    "id": "d46279231",
+    "deezer": 46279231,
+    "titre": "Chanter pour ceux qui sont loin de chez eux",
+    "artiste": "Michel Berger",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/91946dfeb4f501e0c8f6911dbc023206/250x250-000000-80-0-0.jpg",
+    "gain": -14.7,
+    "garder": true
+  },
+  {
+    "id": "d3456554",
+    "deezer": 3456554,
+    "titre": "Mon manège à moi",
+    "artiste": "Etienne Daho",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/4ebae44a334d74c39448370baaa719f3/250x250-000000-80-0-0.jpg",
+    "gain": -15.5,
+    "garder": true
+  },
+  {
+    "id": "d5151905",
+    "deezer": 5151905,
+    "titre": "Mistral gagnant",
+    "artiste": "Renaud",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/83a7a070a8239c8d479fe2eb7ee38408/250x250-000000-80-0-0.jpg",
+    "gain": -14.9,
+    "garder": true
+  },
+  {
+    "id": "d114339092",
+    "deezer": 114339092,
+    "titre": "Le Jour s'est levé",
+    "artiste": "Telephone",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/507eb63426a0d6a88b22edc987269f6c/250x250-000000-80-0-0.jpg",
+    "gain": -9.8,
+    "garder": true
+  },
+  {
+    "id": "d74245835",
+    "deezer": 74245835,
+    "titre": "Toulouse",
+    "artiste": "Claude Nougaro",
+    "pochette": "https://cdn-images.dzcdn.net/images/cover/ef4835cf0d1f97444f6474c129b4f100/250x250-000000-80-0-0.jpg",
+    "gain": -12.3,
+    "garder": true
+  }
+]

@@ -331,7 +331,7 @@ Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoi
 
 ### Mi TV Stick 4K
 
-- Android TV 11 et 2 Go de RAM : la page TV reste en HTML/CSS/JS sans framework, avec des animations CSS simples (opacité, déplacement) et aucune image lourde. Seule exception : les vidéos MP4 de La légende (tranche 24), une seule jouée à la fois, 1 Mo au plus chacune.
+- Android TV 11 et 2 Go de RAM : la page TV reste en HTML/CSS/JS sans framework, avec des animations CSS simples (opacité, déplacement) et aucune image lourde. Exceptions : les vidéos MP4 de La légende (tranche 24), une seule jouée à la fois, 1 Mo au plus chacune ; les extraits Deezer du Blind test (tranche 25), jusqu'à 5 `<audio>` joués en même temps (MP3 de 30 s, environ 480 Ko).
 - **Pour l'instant, la TV tourne dans un navigateur installé sur le stick**, qui ouvre la page `/tv` du serveur. Cela suffit pour jouer : l'APK est en réserve (tranche 9) et ne sera repris que si la soirée test révèle un problème.
 - Réglages du stick avant une soirée : économiseur d'écran et mise en veille réglés sur le délai le plus long. La page TV demande en plus un Wake Lock quand le navigateur le permet (tranche 18).
 - Dans le navigateur, le son reste bloqué jusqu'au premier geste : la touche OK de la télécommande le débloque (voir `docs/sons.md`).
@@ -516,6 +516,12 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
   - Temps 1 : contenu. Vidéos dans `public/gifs/` (1 Mo au plus), catalogue `data/legende.json`, `scripts/verifier-legende.js`, `scripts/telecharger-gifs.py`.
   - Puis le temps 1 de la tranche 23 (nettoyage L1 à L5, L7), pour que le mode s'écrive sur les aides communes.
   - Temps 2 : le mode. Test local validé par Paul ; reste la lecture des vidéos sur le vrai stick (étape 9 du test).
+
+### Tranche « Blind test » (25)
+
+- **25. Mode « Blind test ».** La TV joue des extraits Deezer, les joueurs crient leurs réponses, le maître du jeu (tour à tour) voit la réponse sur son téléphone et désigne qui a trouvé. Deux formats choisis par l'hôte : Classique (une chanson par manche) et Mix (5 chansons en même temps). 3 à 10 joueurs. Mini-spec : `docs/modes/blind-test.md`.
+  - Temps 1 : extraits et contenu. Route `/extrait/:id` (`server/extraits.js`), planche `/tv?extraits` pour l'essai sur le stick, catalogue `data/blind-test.json`, `scripts/importer-deezer.js`, `scripts/verifier-blind-test.js`.
+  - Temps 2 : format classique. Temps 3 : format mix.
 
   *Test : défini dans `docs/modes/legende.md`, dont la lecture des vidéos en boucle sur le vrai stick.*
 

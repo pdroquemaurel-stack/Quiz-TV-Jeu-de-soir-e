@@ -4,6 +4,7 @@ import { networkInterfaces } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import QRCode from 'qrcode';
 import { Server } from 'socket.io';
+import { lienExtrait, tirerEssai } from './extraits.js';
 import { journaliser, journaliserErreur } from './journal.js';
 import {
   assezDeJoueurs, ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle,
@@ -75,6 +76,14 @@ export function demarrerServeur(port) {
     const svg = await QRCode.toString(lienJoueur(salle.code), { type: 'svg', margin: 1 });
     res.type('svg').send(svg);
   });
+  // Blind test : la TV lit l'extrait directement chez Deezer, avec un lien frais.
+  app.get('/extrait/:id', async (req, res) => {
+    const lien = await lienExtrait(req.params.id);
+    if (!lien) return res.sendStatus(404);
+    res.redirect(302, lien);
+  });
+  // Pour la planche /tv?extraits seulement.
+  app.get('/extraits/essai', (req, res) => res.json(tirerEssai()));
   app.use(express.static(dossierPublic));
 
   io.on('connection', (socket) => {

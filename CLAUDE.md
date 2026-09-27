@@ -21,6 +21,7 @@ server/
   vues.js           # ce que reçoivent la TV (salle:etat) et chaque téléphone (joueur:etat)
   medailles.js      # médailles de fin de partie, points globaux, grand gagnant
   journal.js        # journal des événements et des erreurs (logs Render)
+  extraits.js       # extraits Deezer du blind test : route /extrait/:id et son cache
   modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
   modes/commun.js   # tirage, classement, joueurs attendus, enchaînement des questions : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
@@ -34,6 +35,7 @@ public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   tv/sons.js        # sons et musique synthétisés par la TV (docs/sons.md)
+  tv/extraits.js    # lecture des extraits Deezer, planche /tv?extraits
   commun/           # CSS et JS partagés
   gifs/             # vidéos MP4 de La légende (<id Imgflip>.mp4, 1 Mo max)
 data/questions.json
@@ -43,6 +45,7 @@ data/undercover.json
 data/meme-reponse.json
 data/bluff.json
 data/legende.json
+data/blind-test.json   # catalogue du blind test : ids Deezer et métadonnées, aucun son
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -51,6 +54,8 @@ scripts/verifier-meme-reponse.js
 scripts/verifier-bluff.js
 scripts/verifier-legende.js
 scripts/telecharger-gifs.py  # complète data/legende.json depuis Imgflip (Python + requests)
+scripts/verifier-blind-test.js
+scripts/importer-deezer.js   # complète data/blind-test.json depuis des playlists Deezer
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -69,6 +74,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-bluff.js` : vérifie le format de `bluff.json`
 - `node scripts/verifier-legende.js` : vérifie `legende.json` et les vidéos de `public/gifs/`
 - `py scripts/telecharger-gifs.py` (après `pip install requests`) : ajoute des GIF Imgflip au catalogue de La légende
+- `node scripts/importer-deezer.js <id de playlist> [<id>…]` : ajoute les chansons de playlists Deezer publiques au catalogue du blind test
+- `node scripts/verifier-blind-test.js` : vérifie `blind-test.json` ; avec `--deezer`, liste en plus les extraits devenus indisponibles
 
 ## Ajouter un mode
 

@@ -671,7 +671,7 @@ main[data-ecran="podium"] .classement {
   line-height: 1.2;
 }
 
-/* ---------- Sons : bandeau de déblocage et planche /tv?sons ---------- */
+/* ---------- Sons : bandeau de déblocage et planches /tv?sons et /tv?extraits ---------- */
 
 /* Lus depuis le PC, pas à 3 mètres : ils peuvent rester petits. */
 /* ---------- Connexion au serveur ---------- */
@@ -729,6 +729,20 @@ main[data-ecran="connexion"] {
   color: var(--texte);
   font-size: 24px;
   cursor: pointer;
+}
+
+.planche-sons ol {
+  flex-basis: 100%;
+  margin: 0;
+  padding: 16px 24px 16px 64px;
+  border-radius: 16px;
+  background: var(--panneau);
+  color: var(--texte);
+  font-size: 24px;
+}
+
+.planche-sons ol:empty {
+  display: none;
 }
 
 /* ---------- Format, tableau des points globaux et grand gagnant ---------- */

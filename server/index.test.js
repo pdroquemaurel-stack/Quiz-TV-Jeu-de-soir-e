@@ -161,6 +161,28 @@ test('/qr d\'une salle inconnue répond 404', async () => {
   serveur.close();
 });
 
+test('/extrait d\'une chanson inconnue répond 404, sans appeler Deezer', async () => {
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+
+  const reponse = await fetch(`http://localhost:${port}/extrait/d0`, { redirect: 'manual' });
+
+  assert.equal(reponse.status, 404);
+  serveur.close();
+});
+
+test('/extraits/essai donne 5 chansons du catalogue, sans pochette ni id Deezer', async () => {
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+
+  const essai = await (await fetch(`http://localhost:${port}/extraits/essai`)).json();
+
+  assert.equal(essai.length, 5);
+  assert.equal(new Set(essai.map((c) => c.id)).size, 5);
+  for (const chanson of essai) assert.deepEqual(Object.keys(chanson), ['id', 'titre', 'artiste', 'gain']);
+  serveur.close();
+});
+
 test('seul l\'hôte peut choisir le mode', async (t) => {
   modes.fictif = {
     id: 'fictif', nom: 'Fictif', regleCourte: '', joueursMin: 1, echeance: () => null, vueTv: () => ({}),

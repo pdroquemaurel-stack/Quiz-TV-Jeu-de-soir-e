@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 
 // La TV se lit à 3 mètres : aucun texte sous 40 px (docs/spec.md, « Écrans à concevoir »).
-// Seule la planche de sons (/tv?sons), lue depuis le PC, y échappe.
+// Seules les planches de test (/tv?sons, /tv?extraits) y échappent.
 const TAILLE_MIN = 40;
 
 function taillesDeTexte(css) {
@@ -27,7 +27,7 @@ function cssDeLaTv() {
   ].join('\n');
 }
 
-test('TV : aucun font-size sous 40 px dans tv.css et tv/modes/*.css, hors planche de sons', () => {
+test('TV : aucun font-size sous 40 px dans tv.css et tv/modes/*.css, hors planches de test', () => {
   const tailles = taillesDeTexte(cssDeLaTv());
   assert.ok(tailles.length >= 30, `seulement ${tailles.length} font-size trouvés : lecture du CSS cassée ?`);
 
