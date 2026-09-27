@@ -1,0 +1,202 @@
+/* Écrans « La légende » de la TV. Chargé après tv.css (voir tv/index.html).
+   Réutilise .bl-propositions (bluff.css) pour les titres du vote. */
+
+/* Le cadre du GIF : fond sombre, vidéo entière et centrée, proportions gardées. */
+.lg-cadre {
+  position: relative;
+  overflow: hidden;
+  background: var(--contour);
+  border: 6px solid var(--contour);
+  border-radius: 24px;
+}
+
+.lg-gif,
+.lg-gif video {
+  width: 100%;
+  height: 100%;
+}
+
+.lg-gif video {
+  display: block;
+  object-fit: contain;
+}
+
+/* Si la vidéo ne se charge pas : le nom du template, en clair sur le fond sombre. */
+.lg-nom-gif {
+  height: 100%;
+  margin: 0;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 56px;
+  color: #fff;
+}
+
+/* Saisie : le GIF en grand. 540 px de haut laissent la consigne et 2 lignes de pastilles. */
+main[data-ecran="legende-saisie"] .lg-cadre {
+  width: 960px;
+  height: 540px;
+  align-self: center;
+}
+
+main[data-ecran="legende-saisie"] .consigne-vote {
+  text-align: center;
+}
+
+/* Vote et révélation : le GIF à gauche, les titres à droite. */
+.lg-colonnes {
+  display: grid;
+  gap: 40px;
+  align-items: start;
+}
+
+.lg-gauche {
+  display: grid;
+  gap: 24px;
+}
+
+main[data-ecran="legende-vote"] .lg-colonnes {
+  grid-template-columns: 640px minmax(0, 1fr);
+}
+
+main[data-ecran="legende-vote"] .lg-cadre {
+  height: 360px;
+}
+
+main[data-ecran="legende-vote"] .consigne-vote {
+  font-size: 40px;
+}
+
+/* 10 titres de 40 caractères en une colonne, une ligne chacun, à gauche du petit QR code du coin. */
+.lg-propositions {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding-right: 220px;
+}
+
+/* Révélation : en-tête plus bas, pour que 10 cartes tiennent au-dessus du QR code du coin. */
+main[data-ecran="legende-revelation"] .tv-haut {
+  min-height: 100px;
+}
+
+main[data-ecran="legende-revelation"] .lg-colonnes {
+  grid-template-columns: 760px minmax(0, 1fr);
+}
+
+main[data-ecran="legende-revelation"] .lg-cadre {
+  height: 428px;
+}
+
+.lg-verdict {
+  margin: 0;
+  padding: 4px 32px;
+  font-size: 56px;
+  color: #fff;
+  background: var(--juste);
+  border: 5px solid var(--contour);
+  border-radius: 20px;
+  animation: rebondir 450ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+main[data-ecran="legende-revelation"] .mr-ligne {
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+/* Le titre gagnant, en grand sur le bas du GIF : fond plein, pas de flou (stick). */
+.lg-bandeau {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 10px 24px 14px;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  font-size: 56px;
+  line-height: 1.15;
+  color: #fff;
+  background: var(--accent);
+  border-top: 5px solid var(--contour);
+  animation: apparaitre 400ms both;
+}
+
+/* Deux lignes au plus pour un titre seul, une chacun pour deux gagnants à égalité. */
+.lg-titre-gagnant {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.lg-bandeau.deux .lg-titre-gagnant {
+  -webkit-line-clamp: 1;
+}
+
+/* Le classement sous le GIF : 6 lignes au plus (voir legende.js). */
+main[data-ecran="legende-revelation"] .classement-colonne {
+  gap: 8px;
+}
+
+.lg-autres {
+  justify-content: center;
+  color: var(--texte-doux);
+  background: none !important;
+  border: none !important;
+}
+
+/* Une carte par titre, du moins au plus voté ; le délai de chacune est posé en JavaScript. */
+.lg-cartes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.lg-cartes > li {
+  height: 58px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px 0 6px;
+  white-space: nowrap;
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 18px;
+  animation: rebondir 450ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+.lg-cartes .libelle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lg-cartes .etiquettes {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.lg-votes {
+  flex-shrink: 0;
+  min-width: 56px;
+  text-align: center;
+  font-size: 40px;
+  color: #fff;
+  background: var(--contour);
+  border-radius: 12px;
+}
+
+.lg-cartes .gagnant {
+  color: #fff;
+  background: var(--juste);
+}

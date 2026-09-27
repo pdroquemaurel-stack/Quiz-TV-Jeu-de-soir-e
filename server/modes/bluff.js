@@ -1,7 +1,7 @@
 // Mode Le bluff (docs/modes/bluff.md).
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, cleReponse, echeanceDePhase, listerAttendus, melanger,
+  classement as classementCommun, cleReponse, echeanceDePhase, fusionnerParCle, listerAttendus, melanger,
   noterQuestionsVues, participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe,
   tempsRestantMs, tirerQuestions, tousOntRepondu,
 } from './commun.js';
@@ -45,19 +45,17 @@ export function presenter(texte) {
 // Les propositions du vote : les bluffs de même clé fusionnés (texte du premier arrivé),
 // ceux qui sont la vraie réponse fondus dans celle-ci, puis la vraie réponse, le tout mélangé.
 export function formerPropositions(bluffs, question, melange = melanger) {
-  const vraie = { texte: question.reponse, auteurs: [], vraie: true, ontEcritLaVerite: [] };
-  const parCle = new Map();
-  const parArrivee = Object.entries(bluffs).sort(([, a], [, b]) => a.recuA - b.recuA);
-  for (const [joueurId, { texte }] of parArrivee) {
-    if (estLaVerite(texte, question)) {
-      vraie.ontEcritLaVerite.push(joueurId);
-      continue;
-    }
-    const cle = cleReponse(texte);
-    if (!parCle.has(cle)) parCle.set(cle, { texte: presenter(texte), auteurs: [], vraie: false });
-    parCle.get(cle).auteurs.push(joueurId);
-  }
-  return melange([...parCle.values(), vraie]);
+  const ontEcritLaVerite = Object.entries(bluffs)
+    .sort(([, a], [, b]) => a.recuA - b.recuA)
+    .filter(([, { texte }]) => estLaVerite(texte, question))
+    .map(([joueurId]) => joueurId);
+  const vraie = { texte: question.reponse, auteurs: [], vraie: true, ontEcritLaVerite };
+  const autres = Object.fromEntries(
+    Object.entries(bluffs).filter(([joueurId]) => !ontEcritLaVerite.includes(joueurId)),
+  );
+  const faux = fusionnerParCle(autres)
+    .map(({ texte, auteurs }) => ({ texte: presenter(texte), auteurs, vraie: false }));
+  return melange([...faux, vraie]);
 }
 
 // Points de la question : { joueurId: { aTrouve, pieges, points } }, pour ceux qui marquent.

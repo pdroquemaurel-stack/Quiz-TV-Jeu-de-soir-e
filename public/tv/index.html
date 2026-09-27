@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/tv/modes/meme-reponse.css">
   <link rel="stylesheet" href="/tv/modes/bluff.css">
   <link rel="stylesheet" href="/tv/modes/undercover.css">
+  <link rel="stylesheet" href="/tv/modes/legende.css">
 </head>
 <body>
   <!-- Toujours conçue en 1920×1080, puis mise à l'échelle de la fenêtre par ajusterEchelle(). -->
@@ -249,6 +250,57 @@
       </div>
     </main>
 
+    <main data-ecran="legende-saisie" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="lg-numero-saisie"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="lg-barre-temps-saisie"></div></div>
+        <p class="chrono" id="lg-chrono-saisie"></p>
+      </div>
+      <!-- Le GIF (#lg-gif) passe d'un cadre à l'autre selon la phase (voir tv/modes/legende.js). -->
+      <div class="lg-cadre" id="lg-cadre-saisie">
+        <div class="lg-gif" id="lg-gif">
+          <video id="lg-video" autoplay loop muted playsinline></video>
+          <p class="lg-nom-gif" id="lg-nom-gif" hidden></p>
+          <p class="lg-bandeau" id="lg-bandeau" hidden></p>
+        </div>
+      </div>
+      <p class="consigne-vote">Donne un titre à ce GIF !</p>
+      <ul class="etiquettes ont-repondu" id="lg-ont-ecrit"></ul>
+      <!-- Le GIF suivant, chargé pendant la révélation et jamais joué. -->
+      <video id="lg-video-suivante" preload="auto" muted hidden></video>
+    </main>
+
+    <main data-ecran="legende-vote" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="lg-numero-vote"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="lg-barre-temps-vote"></div></div>
+        <p class="chrono" id="lg-chrono-vote"></p>
+      </div>
+      <div class="lg-colonnes">
+        <div class="lg-gauche">
+          <div class="lg-cadre" id="lg-cadre-vote"></div>
+          <p class="consigne-vote">Vote pour ton préféré !</p>
+        </div>
+        <ol class="bl-propositions lg-propositions" id="lg-propositions"></ol>
+      </div>
+      <ul class="etiquettes ont-repondu" id="lg-ont-vote"></ul>
+    </main>
+
+    <main data-ecran="legende-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="lg-numero-revelation"></p>
+        <p class="lg-verdict rebond" id="lg-verdict"></p>
+        <div class="mr-ligne" id="lg-sans-titre"><span class="mr-titre-ligne">Pas de titre :</span><ul class="etiquettes"></ul></div>
+      </div>
+      <div class="lg-colonnes">
+        <div class="lg-gauche">
+          <div class="lg-cadre" id="lg-cadre-revelation"></div>
+          <ol class="classement classement-colonne" id="lg-classement"></ol>
+        </div>
+        <ol class="lg-cartes" id="lg-cartes"></ol>
+      </div>
+    </main>
+
     <main data-ecran="podium" hidden>
       <h1 class="titre">Partie terminée</h1>
       <p class="plus-designe" id="plus-designe" hidden></p>
@@ -301,5 +353,6 @@
   <script src="/tv/modes/undercover.js"></script>
   <script src="/tv/modes/meme-reponse.js"></script>
   <script src="/tv/modes/bluff.js"></script>
+  <script src="/tv/modes/legende.js"></script>
 </body>
 </html>

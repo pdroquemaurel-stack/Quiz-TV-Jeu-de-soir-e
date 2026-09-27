@@ -1,10 +1,10 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { NOMBRE_GIF } from '../server/modes/legende.js';
 
 const CHAMPS = ['id', 'nom', 'fichier', 'garder'];
 // Au-delà, la vidéo alourdit le dépôt et le chargement sur le stick (docs/modes/legende.md).
 export const TAILLE_MAX_OCTETS = 1000000;
-export const GIF_PAR_PARTIE = 8;
 
 // Le fichier se déduit de l'id : « g222516354 » → « gifs/222516354.mp4 », chemin relatif à public/.
 export function fichierAttendu(id) {
@@ -58,8 +58,8 @@ export function verifierLegende(liste, tailles) {
   for (const fichier of tailles.keys()) {
     if (!fichiersGardes.has(fichier)) erreurs.push(`public/${fichier} : aucun GIF gardé ne l'utilise, à supprimer`);
   }
-  if (fichiersGardes.size < GIF_PAR_PARTIE) {
-    erreurs.push(`${fichiersGardes.size} GIF gardés, il en faut au moins ${GIF_PAR_PARTIE} pour une partie`);
+  if (fichiersGardes.size < NOMBRE_GIF) {
+    erreurs.push(`${fichiersGardes.size} GIF gardés, il en faut au moins ${NOMBRE_GIF} pour une partie`);
   }
   return erreurs;
 }

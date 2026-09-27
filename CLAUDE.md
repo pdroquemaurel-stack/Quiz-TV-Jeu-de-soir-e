@@ -29,7 +29,7 @@ server/
   modes/undercover.js # mode Undercover (docs/modes/undercover.md)
   modes/meme-reponse.js # mode Même réponse (docs/modes/meme-reponse.md)
   modes/bluff.js    # mode Le bluff (docs/modes/bluff.md)
-  modes/legende.js  # mode La légende (docs/modes/legende.md), à venir
+  modes/legende.js  # mode La légende (docs/modes/legende.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem

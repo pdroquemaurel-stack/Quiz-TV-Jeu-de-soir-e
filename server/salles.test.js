@@ -255,7 +255,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
     liste.slice(1).map((m) => [m.id, m.disponible, m.bientot]),
     [
       ['estimation', false, false], ['qui-de-nous', false, false], ['undercover', false, false],
-      ['meme-reponse', false, false], ['bluff', false, false], ['futur', false, true],
+      ['meme-reponse', false, false], ['bluff', false, false], ['legende', false, false], ['futur', false, true],
     ],
   );
   assert.equal(vueJoueur(salle, autre).modes, undefined);

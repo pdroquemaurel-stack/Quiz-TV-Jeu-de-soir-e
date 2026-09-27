@@ -85,6 +85,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | Le bluff | Nouvelle question, début du vote | `etape` |
 | | Un bluff ou un vote arrive (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation | `victoire` si tous les votants ont trouvé, `rate` si aucun, sinon `revelation` |
+| La légende | Nouveau GIF, début du vote | `etape` |
+| | Un titre ou un vote arrive (`ontRepondu` s'allonge) | `reponse` |
+| | Révélation | `victoire` si un titre est « Légendaire ! », sinon `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

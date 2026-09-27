@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle } from '../salles.js';
 import {
-  classement, cleReponse, echeanceDePhase, normaliser, questionCourante, questionSuivanteOuPodium,
+  classement, cleReponse, echeanceDePhase, fusionnerParCle, normaliser, questionCourante, questionSuivanteOuPodium,
   tempsRestantMs, tirerQuestions,
 } from './commun.js';
 import { modes, modesAVenir } from './index.js';
@@ -192,4 +192,19 @@ test('tempsRestantMs : jamais négatif', () => {
   assert.equal(tempsRestantMs(salle, () => Date.now() + 5000) <= 5000, true);
   assert.equal(tempsRestantMs(salle, () => Date.now() + 5000) > 4000, true);
   assert.equal(tempsRestantMs(salle, () => Date.now() - 5000), 0);
+});
+
+// --- Fusion des textes libres (Le bluff, La légende) ---
+
+test('fusionnerParCle : même clé, une seule entrée avec le texte du premier arrivé et tous ses auteurs', () => {
+  const textes = {
+    b: { texte: 'les Chiens', recuA: 20 },
+    a: { texte: 'Chien', recuA: 10 },
+    c: { texte: 'Chat', recuA: 15 },
+  };
+  assert.deepEqual(fusionnerParCle(textes), [
+    { texte: 'Chien', auteurs: ['a', 'b'] },
+    { texte: 'Chat', auteurs: ['c'] },
+  ]);
+  assert.deepEqual(fusionnerParCle({}), []);
 });

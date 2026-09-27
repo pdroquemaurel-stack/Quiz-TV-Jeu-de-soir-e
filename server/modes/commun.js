@@ -66,6 +66,19 @@ export function cleReponse(texte) {
     .join(' ');
 }
 
+// Textes libres de plusieurs joueurs ({ joueurId: { texte, recuA } }) regroupés par clé :
+// [{ texte, auteurs }], avec le texte du premier arrivé, dans l'ordre d'arrivée.
+export function fusionnerParCle(textes) {
+  const parCle = new Map();
+  const parArrivee = Object.entries(textes).sort(([, a], [, b]) => a.recuA - b.recuA);
+  for (const [joueurId, { texte }] of parArrivee) {
+    const cle = cleReponse(texte);
+    if (!parCle.has(cle)) parCle.set(cle, { texte, auteurs: [] });
+    parCle.get(cle).auteurs.push(joueurId);
+  }
+  return [...parCle.values()];
+}
+
 // Mélange de Fisher-Yates, sur une copie.
 export function melanger(liste) {
   const copie = [...liste];

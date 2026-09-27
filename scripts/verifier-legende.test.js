@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { GIF_PAR_PARTIE, TAILLE_MAX_OCTETS, lireTailles, verifierLegende } from './verifier-legende.js';
+import { NOMBRE_GIF } from '../server/modes/legende.js';
+import { TAILLE_MAX_OCTETS, lireTailles, verifierLegende } from './verifier-legende.js';
 
 function gif(numero, modifications = {}) {
   return { id: `g${numero}`, nom: `Gif ${numero}`, fichier: `gifs/${numero}.mp4`, garder: true, ...modifications };
@@ -9,7 +10,7 @@ function gif(numero, modifications = {}) {
 
 // Un catalogue valide de 8 GIF (1 à 8), et les tailles de leurs vidéos sur le « disque ».
 function catalogue(modifierPremier = {}) {
-  const liste = Array.from({ length: GIF_PAR_PARTIE }, (_, i) => gif(i + 1));
+  const liste = Array.from({ length: NOMBRE_GIF }, (_, i) => gif(i + 1));
   liste[0] = { ...liste[0], ...modifierPremier };
   return liste;
 }
@@ -100,7 +101,7 @@ test('légende : une vidéo qu\'aucun GIF gardé n\'utilise est signalée', () =
 test('légende : il faut au moins 8 GIF gardés', () => {
   const liste = catalogue({ garder: false });
   const tailles = taillesDe(liste.slice(1));
-  erreurAttendue(liste, tailles, `7 GIF gardés, il en faut au moins ${GIF_PAR_PARTIE}`);
+  erreurAttendue(liste, tailles, `7 GIF gardés, il en faut au moins ${NOMBRE_GIF}`);
 });
 
 test('légende : le vrai catalogue data/legende.json et ses vidéos sont valides', () => {

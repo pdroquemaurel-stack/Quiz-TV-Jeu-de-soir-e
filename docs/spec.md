@@ -141,6 +141,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 3 | **Undercover** (disponible, voir `docs/modes/undercover.md`) | 4 à 10 | Chacun reçoit un mot secret sur son téléphone : les undercovers ont un mot légèrement différent, Mister White (dès 5 joueurs) n'en a aucun. Tours de description à voix haute, puis vote pour éliminer les intrus. Mister White éliminé peut gagner en devinant le mot des civils. |
 | 4 | **Même réponse** (disponible, voir `docs/modes/meme-reponse.md`) | 3 à 10 | « Cite un fruit rouge ». On marque des points si on donne la même réponse que d'autres joueurs. |
 | 5 | **Le bluff** (disponible, voir `docs/modes/bluff.md`) | 4 à 10 | Question obscure : chacun invente une fausse réponse, puis tout le monde cherche la vraie parmi les bluffs. Points pour avoir trouvé et pour avoir piégé. |
+| 6 | **La légende** (disponible, voir `docs/modes/legende.md`) | 3 à 10 | La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (jamais le sien). 500 points par vote reçu, bonus « Légendaire ! » à l'unanimité. |
 
 ## Cas limites
 
@@ -514,7 +515,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 - **24. Mode « La légende ».** La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (3 à 10 joueurs). Même mécanisme que La réplique (M3), avec un GIF à la place d'une amorce texte : La légende est un mode à part, la mini-spec de La réplique dira si elle en devient une seconde source. Mini-spec : `docs/modes/legende.md`.
   - Temps 1 : contenu. Vidéos dans `public/gifs/` (1 Mo au plus), catalogue `data/legende.json`, `scripts/verifier-legende.js`, `scripts/telecharger-gifs.py`.
   - Puis le temps 1 de la tranche 23 (nettoyage L1 à L5, L7), pour que le mode s'écrive sur les aides communes.
-  - Temps 2 : le mode.
+  - Temps 2 : le mode. Test local validé par Paul ; reste la lecture des vidéos sur le vrai stick (étape 9 du test).
 
   *Test : défini dans `docs/modes/legende.md`, dont la lecture des vidéos en boucle sur le vrai stick.*
 

@@ -250,6 +250,37 @@
     <button id="bl-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="legende-ecrire" hidden>
+    <p id="lg-numero" class="discret"></p>
+    <p class="gros-texte">Regarde la TV et donne un titre à ce GIF</p>
+    <input id="lg-champ" class="champ-mot" type="text" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Ton titre">
+    <button id="lg-valider" class="bouton en-bas" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="legende-titre_envoye" hidden>
+    <p class="gros-texte">Ton titre</p>
+    <p id="lg-titre-envoye" class="nombre-envoye rebond"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="legende-voter" hidden>
+    <p class="gros-texte">Ton préféré ?</p>
+    <div id="lg-choix" class="bl-choix"></div>
+  </main>
+
+  <main data-ecran="legende-vote_envoye" hidden>
+    <p class="gros-texte">Tu as choisi</p>
+    <p id="lg-vote-envoye" class="nombre-envoye rebond"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="legende-resultat" hidden>
+    <p id="lg-resultat" class="carte-resultat rebond"></p>
+    <p>Score : <strong id="lg-score"></strong></p>
+    <p>Rang : <strong id="lg-rang"></strong></p>
+    <button id="lg-suivant" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -310,5 +341,6 @@
   <script src="/joueur/modes/undercover.js"></script>
   <script src="/joueur/modes/meme-reponse.js"></script>
   <script src="/joueur/modes/bluff.js"></script>
+  <script src="/joueur/modes/legende.js"></script>
 </body>
 </html>

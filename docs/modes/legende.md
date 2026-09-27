@@ -169,9 +169,9 @@ Mesure faite dans le navigateur avec la police du jeu (Fredoka) : à 40 px, un t
 
 | Où | Écran | Contenu |
 |---|---|---|
-| TV | Saisie | « GIF 3/8 », le GIF en grand au centre (cadre de 1280×720 au plus, proportions gardées, fond sombre autour), « Donne un titre à ce GIF ! », chrono, pastilles des joueurs ayant écrit, petit QR code |
-| TV | Vote | Le GIF en haut, plus petit (cadre de 640×360), puis les titres numérotés en cartes sur **deux colonnes de 5** (jusqu'à 10), sans couleur de joueur. Chaque colonne laisse environ 770 px au texte : un titre de 40 caractères tient sur une ligne à 40 px. « Vote pour ton préféré ! », chrono, pastilles de ceux qui ont voté |
-| TV | Révélation | À gauche : le GIF (cadre de 760×428) et dessous, en bandeau, le ou les titres gagnants en 56 px sur 2 lignes au plus, avec « Légendaire ! » s'il y a lieu ; sous le bandeau, le classement général limité à 5 lignes (« et N autres »). À droite : une carte par titre, du moins au plus voté, une par 0,8 s (opacité et déplacement) : nombre de votes, texte, « de » et la pastille à initiale de l'auteur (ou des co-auteurs), « +1500 ». Les cartes gagnantes mises en avant. Ligne discrète « Pas de titre : » avec les pastilles à initiale. Verdict : « Légendaire ! », « Égalité ! », « Aucun vote » ou « Pas assez de titres pour voter ». Tout à 40 px au moins (tranche 19) |
+| TV | Saisie | « GIF 3/8 », le GIF en grand au centre (cadre de 960×540, proportions gardées, fond sombre autour : au-delà, les 2 lignes de pastilles ne tiennent plus), « Donne un titre à ce GIF ! », chrono, pastilles des joueurs ayant écrit, petit QR code |
+| TV | Vote | À gauche, le GIF (cadre de 640×360) et « Vote pour ton préféré ! » ; à droite, les titres numérotés en **une colonne** (jusqu'à 10, à gauche du petit QR code), sans couleur de joueur : un titre de 40 caractères tient sur une ligne à 40 px. En bas, chrono et pastilles de ceux qui ont voté. (Deux colonnes sous le GIF ne laissaient pas la place aux pastilles.) |
+| TV | Révélation | En haut : « GIF 3/8 », le verdict (« Légendaire ! », « Égalité ! », « Aucun vote » ou « Pas assez de titres pour voter ») et la ligne discrète « Pas de titre : » avec les pastilles à initiale. À gauche : le GIF (cadre de 760×428), avec **en bandeau sur son bas** le ou les titres gagnants en 56 px (2 lignes au plus pour un gagnant, 1 chacun pour deux gagnants à égalité) ; dessous, le classement général, 6 lignes au plus (5 et « et N autres » au-delà), avec les points gagnés. À droite : une carte par titre, du moins au plus voté, une par 0,8 s (opacité et déplacement) : nombre de votes, texte, pastille à initiale de l'auteur (ou des co-auteurs). Les cartes gagnantes mises en avant. Les points ne sont pas sur les cartes (ils ne tiendraient pas à côté d'un titre de 40 caractères) : ils sont dans le classement. Tout à 40 px au moins (tranche 19) |
 | TV | Podium | Le podium commun |
 | Téléphone | Écrire | « GIF 3/8 », « Regarde la TV et donne un titre à ce GIF », un champ texte (40 caractères max), « Valider » inactif tant que le champ est vide |
 | Téléphone | Titre envoyé | « Ton titre : … Regarde la TV » |
@@ -184,6 +184,7 @@ Mesure faite dans le navigateur avec la police du jeu (Fredoka) : à 40 px, un t
 - `<video autoplay loop muted playsinline>`, jamais `<img>`. `muted` est obligatoire pour la lecture automatique sans geste.
 - Une seule vidéo jouée à la fois. Le même élément `<video>` sert aux trois phases : il est seulement déplacé et redimensionné, sa source ne change qu'au GIF suivant (la vidéo ne redémarre pas entre saisie, vote et révélation).
 - **Préchargement** : pendant la révélation, la TV reçoit `gifSuivant` et le charge dans un second `<video preload="auto" muted>` caché, jamais lu. Au GIF suivant, le fichier est déjà dans le cache du navigateur.
+- **Au podium**, les deux vidéos sont arrêtées et vidées (crochet `completerPodium` de la TV) : rien ne tourne en arrière-plan sur le stick.
 - Erreur de chargement : le nom du template à la place (voir « Cas délicats »).
 - Petites vidéos (certaines font 220 px de large) : agrandies dans le cadre, un peu floues de près, lisibles depuis le canapé. Les plus petites sont à signaler à la relecture (voir « Contenu »).
 - Contraintes du Mi TV Stick : pas de flou, pas de `filter`, animations en opacité et déplacement seulement. Le bandeau du titre gagnant est un fond plein, pas un texte détouré.
@@ -330,7 +331,7 @@ Sur Render, TV dans un onglet du PC en 1920×1080 avec le son, joueurs sur de vr
 1. **Choix du mode.** Rejoindre à 2 : La légende est grisée (« 3 joueurs min. »). Un 3e joueur arrive : elle devient active. L'hôte la choisit : la TV affiche « La légende » et sa règle.
 2. **Saisie.** Lancer. Le GIF tourne en boucle sur la TV, sans son ; les téléphones affichent « Regarde la TV » et le champ, sans vidéo (onglet Réseau d'un téléphone `?dev` : aucune requête `.mp4`). La TV montre qui a écrit, jamais quoi. « Ding » au GIF, « tic » à chaque titre, tic-tac sur les 5 dernières secondes. Un titre de 40 caractères passe, le 41e est bloqué.
 3. **Vote.** Les titres s'affichent dans le même ordre sur la TV et les téléphones, sans auteur ; aucun téléphone ne propose son propre titre. Deux joueurs ont tapé le même titre (« Lundi matin » et « lundi matin ! ») : une seule proposition, absente de leurs deux téléphones. Avec 10 onglets, les 10 titres de 40 caractères tiennent sur la TV sans défilement, chacun sur une ligne.
-4. **Révélation.** Les cartes apparaissent une par une avec leur auteur et leurs votes, puis le titre gagnant sous le GIF, qui continue de tourner. Vérifier les points d'un cas concret (500 par vote) sur la TV et les téléphones. Faire voter tout le monde pour le même titre : « Légendaire ! », + 1000 et la fanfare `victoire`.
+4. **Révélation.** Les cartes apparaissent une par une avec leur auteur et leurs votes, puis le titre gagnant en bandeau sur le GIF, qui continue de tourner. Vérifier les points d'un cas concret (500 par vote) sur la TV et les téléphones. Faire voter tout le monde pour le même titre : « Légendaire ! », + 1000 et la fanfare `victoire`.
 5. **Secret.** Pendant le vote, dans les outils de développement de la TV (onglet Réseau, messages Socket.IO) : les propositions n'ont que `texte`.
 6. **Vidéo manquante.** Dans les outils de développement de la TV, bloquer l'URL d'un `.mp4` (clic droit sur la requête, « Bloquer l'URL de la requête ») puis passer au GIF suivant si c'est lui, ou recharger : le nom du template s'affiche dans le cadre et la manche continue.
 7. **Déconnexion.** Couper un joueur pendant le vote (« Couper 15 s ») : le vote se termine dès que les autres ont voté ; son titre reste proposé.
@@ -349,3 +350,10 @@ Tranchés par Paul le 25/09/2026 :
 6. **Poids** : 1 Mo au plus par vidéo. Les 12 plus lourdes sont `garder: false` et leur vidéo n'est pas commitée.
 7. **Contenu** : catalogue `data/legende.json`, vidéos dans `public/gifs/`, préfixe d'id `g` + id Imgflip, script de téléchargement dans `scripts/telecharger-gifs.py`.
 8. **La réplique** : La légende est un mode à part. Ordre : contenu de La légende, puis nettoyage de la tranche 23 (temps 1), puis mode La légende.
+
+Écarts au plan, validés par Paul avec le plan du temps 2 :
+
+9. **Arrêt des vidéos au podium** par le crochet `completerPodium`.
+10. **Constante** `NOMBRE_GIF` (et non `NOMBRE_QUESTIONS`) ; `etatMode` garde `questions` et `indexQuestion`.
+
+Ajustés à la mise en page réelle en 1920×1080 (mesurés, 10 joueurs, titres de 40 caractères), à valider avec le test : cadre de saisie 960×540, vote en deux colonnes (GIF à gauche, titres à droite), bandeau du gagnant sur le bas du GIF, points dans le classement plutôt que sur les cartes (voir « Écrans »).
