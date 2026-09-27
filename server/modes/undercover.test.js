@@ -2,8 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   ajouterJoueur, choisirMode, creerSalle, demarrerPartie, reconnecterJoueur, synchroniserMinuteur,
-  terminerPartie, vueJoueur, vueTv,
+  terminerPartie,
 } from '../salles.js';
+import { vueJoueur, vueTv } from '../vues.js';
 import { modes, modesAVenir } from './index.js';
 import {
   NOMBRE_MANCHES, avancer, composition, distribuerRoles, echeance, enregistrerReponse, motTrouve,

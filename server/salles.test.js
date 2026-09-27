@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import {
   COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, changerFormat, choisirMode, configurerFormat,
   creerSalle, demarrerPartie, deconnecterJoueur, fermerSalle, nouvelleAventure, passerApresPodium,
-  peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle, vueJoueur, vueTv,
+  peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle,
 } from './salles.js';
+import { vueJoueur, vueTv } from './vues.js';
 import { modes, modesAVenir } from './modes/index.js';
 
 test('le code de salle fait 4 lettres et deux salles ont des codes différents', () => {

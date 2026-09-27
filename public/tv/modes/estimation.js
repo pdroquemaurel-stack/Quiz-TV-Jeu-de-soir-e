@@ -8,24 +8,16 @@ function avecUnite(nombre, unite) {
 }
 
 function afficherQuestionEstimation(salle, nouvelleEtape) {
-  const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
+  const { numero, total, question, ontRepondu } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     document.getElementById('estimation-numero-question').textContent = `Question ${numero}/${total}`;
     document.getElementById('estimation-texte-question').textContent = question.texte;
     document.getElementById('estimation-unite').textContent =
       question.unite ? `? ${question.unite}` : '?';
-    viderBarreTemps(document.getElementById('estimation-barre-temps'), tempsRestantMs);
-    document.getElementById('estimation-ont-repondu').replaceChildren();
   }
-  lancerChrono(document.getElementById('estimation-chrono'), tempsRestantMs);
-
-  const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  const reponses = remplirEtiquettes(
-    document.getElementById('estimation-ont-repondu'),
-    joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-  if (reponses > 0) sonner('reponse');
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'estimation-barre-temps', chrono: 'estimation-chrono', pastilles: 'estimation-ont-repondu',
+  }, ontRepondu);
 }
 
 function afficherRevelationEstimation(salle, nouvelleEtape) {

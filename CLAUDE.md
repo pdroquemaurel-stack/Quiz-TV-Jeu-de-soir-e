@@ -18,10 +18,11 @@ Jeu de soirée entre amis : la TV (page web ouverte dans le navigateur du Mi TV 
 server/
   index.js          # Express + Socket.IO, routes /tv, /joueur, /sante
   salles.js         # création, recherche, fermeture des salles, joueurs, hôte
+  vues.js           # ce que reçoivent la TV (salle:etat) et chaque téléphone (joueur:etat)
   medailles.js      # médailles de fin de partie, points globaux, grand gagnant
   journal.js        # journal des événements et des erreurs (logs Render)
   modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
-  modes/commun.js   # tirage, classement, joueurs attendus : partagés entre modes
+  modes/commun.js   # tirage, classement, joueurs attendus, enchaînement des questions : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
   modes/estimation.js # mode Estimation (docs/modes/estimation.md)
   modes/qui-de-nous.js # mode Qui de nous ? (docs/modes/qui-de-nous.md)
@@ -30,7 +31,7 @@ server/
   modes/bluff.js    # mode Le bluff (docs/modes/bluff.md)
   modes/legende.js  # mode La légende (docs/modes/legende.md), à venir
 public/
-  tv/               # page TV (1920x1080), tv/modes/<mode>.js pour les écrans d'un mode
+  tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   tv/sons.js        # sons et musique synthétisés par la TV (docs/sons.md)
   commun/           # CSS et JS partagés
@@ -69,6 +70,18 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-legende.js` : vérifie `legende.json` et les vidéos de `public/gifs/`
 - `py scripts/telecharger-gifs.py` (après `pip install requests`) : ajoute des GIF Imgflip au catalogue de La légende
 
+## Ajouter un mode
+
+Après la mini-spec `docs/modes/<mode>.md` validée :
+
+1. `server/modes/<mode>.js` : le contrat du registre (`id`, `nom`, `regleCourte`, `joueursMin`, `demarrerPartie`, `enregistrerReponse`, `verifierFinAnticipee`, `suivant`, `echeance`, `avancer`, `vueTv`, `vueJoueur`), avec les aides de `modes/commun.js` (`questionCourante`, `questionSuivanteOuPodium`, `echeanceDePhase`, `tempsRestantMs`…), et ses tests.
+2. `server/modes/index.js` : le mode entre dans le registre.
+3. TV : les écrans dans `public/tv/index.html`, `public/tv/modes/<mode>.js` (avec `afficherAttenteReponses` de `tv.js` pour les écrans d'attente) et `public/tv/modes/<mode>.css`, tous deux chargés par `tv/index.html`.
+4. Téléphone : les écrans dans `public/joueur/index.html`, `public/joueur/modes/<mode>.js`, et leurs styles dans `joueur.css`.
+5. Contenu : `data/<mode>.json` et `scripts/verifier-<mode>.js`, avec leurs tests.
+6. Sons : la table « Quand jouer quoi » de `docs/sons.md`.
+7. Doc : `docs/spec.md` (« Modes de jeu supplémentaires », tranches) et ce fichier (structure, commandes).
+
 ## Règles d'architecture (non négociables)
 
 - **Serveur autoritaire** : les clients envoient des actions, le serveur diffuse l'état complet. Aucune logique de jeu côté client.
@@ -77,7 +90,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - Chaque action `hote:*` vérifie côté serveur que l'émetteur est bien l'hôte.
 - L'identité d'un joueur repose sur son `id` mémorisé dans le `localStorage`, pas sur le socket.
 - Ce qui est propre au quiz reste dans `etatMode` et `server/modes/quiz.js`, pour pouvoir ajouter d'autres modes sans toucher au reste.
-- Le code commun (`server/index.js`, `server/salles.js`) ne lit jamais `etatMode` : c'est la zone privée de chaque mode.
+- Le code commun (`server/index.js`, `server/salles.js`, `server/vues.js`) ne lit jamais `etatMode` : c'est la zone privée de chaque mode.
 - Noms de champs et d'événements : exactement ceux de la spec (`salle:etat`, `joueur:repondre`, `etatMode`…).
 
 ## Déploiement (Render)

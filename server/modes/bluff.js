@@ -1,8 +1,9 @@
 // Mode Le bluff (docs/modes/bluff.md).
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, cleReponse, listerAttendus, melanger, noterQuestionsVues, participe,
-  passerAuPodium, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
+  classement as classementCommun, cleReponse, echeanceDePhase, listerAttendus, melanger,
+  noterQuestionsVues, participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe,
+  tempsRestantMs, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
 export const id = 'bluff';
@@ -103,10 +104,6 @@ function demarrerQuestion(salle, index) {
   });
 }
 
-function questionCourante(salle) {
-  return salle.etatMode.questions[salle.etatMode.indexQuestion];
-}
-
 // Un bluff en saisie, un index de proposition en vote. Renvoie true s'il est accepté.
 export function enregistrerReponse(salle, joueurId, contenu) {
   const phase = phaseEnCours(salle);
@@ -172,9 +169,7 @@ function montrerRevelation(salle) {
 }
 
 function passerALaSuite(salle) {
-  const suivante = salle.etatMode.indexQuestion + 1;
-  if (suivante < salle.etatMode.questions.length) demarrerQuestion(salle, suivante);
-  else passerAuPodium(salle);
+  questionSuivanteOuPodium(salle, demarrerQuestion);
 }
 
 // « Suivant » de l'hôte. Renvoie true si quelque chose a changé.
@@ -186,10 +181,8 @@ export function suivant(salle) {
 
 const DUREES = { saisie: DUREE_SAISIE_MS, vote: DUREE_VOTE_MS, revelation: DUREE_REVELATION_MS };
 
-// Heure à laquelle la phase en cours se termine d'elle-même, ou null.
 export function echeance(salle) {
-  const phase = phaseEnCours(salle);
-  return phase ? salle.etatMode.debutPhaseA + DUREES[phase] : null;
+  return echeanceDePhase(salle, DUREES);
 }
 
 // Appelée quand l'échéance est atteinte.
@@ -226,7 +219,7 @@ function vueQuestion(salle) {
     total: questions.length,
     question: { texte: questionCourante(salle).texte },
     ontRepondu: Object.keys(reponses),
-    tempsRestantMs: Math.max(0, echeance(salle) - Date.now()),
+    tempsRestantMs: tempsRestantMs(salle, echeance),
   };
 }
 

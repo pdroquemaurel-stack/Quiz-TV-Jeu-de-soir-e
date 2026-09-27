@@ -68,21 +68,6 @@ listeCandidatsUc.addEventListener('click', (evenement) => {
   socket.emit('joueur:repondre', bouton.dataset.id);
 });
 
-function boutonCandidatUc(candidat) {
-  const bouton = document.createElement('button');
-  bouton.className = 'bouton-candidat';
-  bouton.classList.toggle('deconnecte', !candidat.connecte);
-  bouton.dataset.id = candidat.id;
-  const rond = document.createElement('span');
-  rond.className = 'pastille';
-  rond.style.setProperty('--couleur', `var(--joueur-${candidat.couleur})`);
-  const pseudo = document.createElement('span');
-  pseudo.className = 'pseudo-candidat';
-  pseudo.textContent = candidat.pseudo;
-  bouton.append(rond, pseudo);
-  return bouton;
-}
-
 // On ne recrée la grille que si elle change, pour ne pas perdre un appui en cours.
 let grilleAfficheeUc = '';
 
@@ -92,7 +77,7 @@ function afficherVoterUc(vue) {
   const grille = JSON.stringify([vue.manche, vue.tour, vue.departage, vue.candidats]);
   if (grille === grilleAfficheeUc) return;
   grilleAfficheeUc = grille;
-  listeCandidatsUc.replaceChildren(...vue.candidats.map(boutonCandidatUc));
+  listeCandidatsUc.replaceChildren(...vue.candidats.map(boutonCandidat));
 }
 
 function afficherVoteEnvoyeUc(vue) {

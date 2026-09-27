@@ -7,11 +7,11 @@ import { Server } from 'socket.io';
 import { journaliser, journaliserErreur } from './journal.js';
 import {
   assezDeJoueurs, ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle,
-  deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, etapeCourante, nouvelleAventure,
-  passerApresPodium, peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, statistiques,
-  synchroniserMinuteur, terminerPartie, trouverHoteParSocket, trouverJoueurParSocket, trouverSalle,
-  vueJoueur, vueTv,
+  deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium,
+  peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, statistiques, synchroniserMinuteur,
+  terminerPartie, trouverHoteParSocket, trouverJoueurParSocket, trouverSalle,
 } from './salles.js';
+import { etapeCourante, vueJoueur, vueTv } from './vues.js';
 import { modes } from './modes/index.js';
 
 const dossierPublic = fileURLToPath(new URL('../public', import.meta.url));

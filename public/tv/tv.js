@@ -257,6 +257,27 @@ function lancerChrono(element, tempsRestantMs) {
   intervalleChrono = setInterval(afficher, 250);
 }
 
+// Partie commune des écrans où l'on attend les réponses : son de la nouvelle étape, barre de
+// temps, chrono, et pastilles de ceux qui ont répondu. Le texte propre au mode est affiché avant.
+// ids : { barre, chrono, pastilles }, les identifiants des éléments de l'écran.
+function afficherAttenteReponses(salle, nouvelleEtape, ids, ontRepondu) {
+  const { tempsRestantMs } = salle.etatMode;
+  const pastilles = document.getElementById(ids.pastilles);
+  if (nouvelleEtape) {
+    sonner('etape');
+    viderBarreTemps(document.getElementById(ids.barre), tempsRestantMs);
+    pastilles.replaceChildren();
+  }
+  lancerChrono(document.getElementById(ids.chrono), tempsRestantMs);
+
+  const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
+  const nouvelles = remplirEtiquettes(
+    pastilles,
+    joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
+  );
+  if (nouvelles > 0) sonner('reponse');
+}
+
 const EMOJI_MEDAILLE = { or: '🥇', argent: '🥈', bronze: '🥉' };
 
 // Tous les joueurs de rang 3 ou mieux : les ex æquo partagent la même marche.

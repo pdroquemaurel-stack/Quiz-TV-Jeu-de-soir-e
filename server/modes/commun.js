@@ -1,10 +1,37 @@
 // Ce qui sert à plusieurs modes de jeu.
 
-export { passerAuPodium } from '../medailles.js';
+import { passerAuPodium } from '../medailles.js';
+
+export { passerAuPodium };
 
 // Phase du mode en cours (« question »…), ou null hors partie.
 export function phaseEnCours(salle) {
   return salle.etat === 'partie' ? salle.etatMode.phase : null;
+}
+
+// ---------- Enchaînement des questions (modes à questions : etatMode.questions, indexQuestion) ----------
+
+export function questionCourante(salle) {
+  return salle.etatMode.questions[salle.etatMode.indexQuestion];
+}
+
+// demarrer(salle, index) : la façon propre au mode d'ouvrir une question.
+export function questionSuivanteOuPodium(salle, demarrer) {
+  const suivante = salle.etatMode.indexQuestion + 1;
+  if (suivante < salle.etatMode.questions.length) demarrer(salle, suivante);
+  else passerAuPodium(salle);
+}
+
+// Heure à laquelle la phase en cours se termine d'elle-même, ou null.
+// durees : { phase: durée en ms }, comptée depuis etatMode.debutPhaseA.
+export function echeanceDePhase(salle, durees) {
+  const phase = phaseEnCours(salle);
+  return phase in durees ? salle.etatMode.debutPhaseA + durees[phase] : null;
+}
+
+// Pour les vues : echeance est la fonction du mode.
+export function tempsRestantMs(salle, echeance) {
+  return Math.max(0, echeance(salle) - Date.now());
 }
 
 // Forme comparable d'un texte saisi : minuscules, sans accents, espaces réduits.

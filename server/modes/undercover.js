@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import {
   classement as classementCommun, listerAttendus, melanger, normaliser, noterQuestionsVues,
-  participe, passerAuPodium, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
+  participe, passerAuPodium, phaseEnCours, rangDe, tempsRestantMs, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 import { compterVotes, trouverElus } from './qui-de-nous.js';
 
@@ -330,7 +330,7 @@ const VUES_TV = {
     candidats: salle.etatMode.departage ?? enJeu(salle),
     departage: salle.etatMode.departage,
     ontVote: Object.keys(salle.etatMode.reponses),
-    tempsRestantMs: tempsRestant(salle),
+    tempsRestantMs: tempsRestantMs(salle, echeance),
   }),
   elimination: (salle) => {
     const { dernierVote, roles } = salle.etatMode;
@@ -342,7 +342,7 @@ const VUES_TV = {
       departage: dernierVote.departageAVenir,
     };
   },
-  devinette: (salle) => ({ devinette: vueDevinette(salle), tempsRestantMs: tempsRestant(salle) }),
+  devinette: (salle) => ({ devinette: vueDevinette(salle), tempsRestantMs: tempsRestantMs(salle, echeance) }),
   fin_manche: (salle) => {
     const {
       gagnant, motCivils, motUndercover, roles,
@@ -356,10 +356,6 @@ const VUES_TV = {
     };
   },
 };
-
-function tempsRestant(salle) {
-  return Math.max(0, echeance(salle) - Date.now());
-}
 
 // Ce que tout le monde voit de la devinette : la proposition une fois envoyée, jamais le mot attendu.
 function vueDevinette(salle) {
@@ -416,7 +412,9 @@ export function vueJoueur(salle, joueur) {
   const { phase } = etatMode;
   if (phase === 'fin_manche') return { ...avecMot, ...vueFinManche(salle, joueur, role) };
   if (phase === 'devinette' && etatMode.devinette.misterWhite === joueur.id) {
-    return { ...avecMot, ecran: 'deviner', devinette: vueDevinette(salle), tempsRestantMs: tempsRestant(salle) };
+    return {
+      ...avecMot, ecran: 'deviner', devinette: vueDevinette(salle), tempsRestantMs: tempsRestantMs(salle, echeance),
+    };
   }
   if (etatMode.elimines.includes(joueur.id)) return { ...avecMot, ecran: 'elimine', role };
   if (phase === 'vote') return { ...avecMot, ...vueVote(salle, joueur) };

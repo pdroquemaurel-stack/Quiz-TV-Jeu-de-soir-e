@@ -391,6 +391,22 @@ document.addEventListener('click', (evenement) => {
   if (bouton && !bouton.disabled) socket.emit('hote:choisirMode', bouton.dataset.mode);
 });
 
+// Un joueur à désigner (Qui de nous ?, vote d'Undercover) : sa pastille et son pseudo.
+function boutonCandidat(candidat) {
+  const bouton = document.createElement('button');
+  bouton.className = 'bouton-candidat';
+  bouton.classList.toggle('deconnecte', !candidat.connecte);
+  bouton.dataset.id = candidat.id;
+  const rond = document.createElement('span');
+  rond.className = 'pastille';
+  rond.style.setProperty('--couleur', `var(--joueur-${candidat.couleur})`);
+  const pseudo = document.createElement('span');
+  pseudo.className = 'pseudo-candidat';
+  pseudo.textContent = candidat.pseudo;
+  bouton.append(rond, pseudo);
+  return bouton;
+}
+
 const MEDAILLES = { or: '🥇 Médaille d\'or', argent: '🥈 Médaille d\'argent', bronze: '🥉 Médaille de bronze' };
 
 function afficherFin(vue) {

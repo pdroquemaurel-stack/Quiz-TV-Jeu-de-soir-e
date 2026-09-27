@@ -49,24 +49,17 @@ function afficherDescriptionUndercover(salle, nouvelleEtape) {
 }
 
 function afficherVoteUndercover(salle, nouvelleEtape) {
-  const { departage, ontVote, tempsRestantMs } = salle.etatMode;
+  const { departage, ontVote } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     afficherNumeroUndercover('uc-numero-vote', salle.etatMode);
     const pseudos = (departage ?? []).map((id) => joueurUndercover(salle, id).pseudo);
     document.getElementById('uc-titre-vote').textContent = departage
       ? `Départage : ${listerPseudos(pseudos, 'ou')} ?`
       : 'Qui éliminer ?';
-    viderBarreTemps(document.getElementById('uc-barre-temps'), tempsRestantMs);
-    document.getElementById('uc-ont-vote').replaceChildren();
   }
-  lancerChrono(document.getElementById('uc-chrono'), tempsRestantMs);
-  const joueursAyantVote = salle.joueurs.filter((joueur) => ontVote.includes(joueur.id));
-  const votes = remplirEtiquettes(
-    document.getElementById('uc-ont-vote'),
-    joueursAyantVote.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-  if (votes > 0) sonner('reponse');
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'uc-barre-temps', chrono: 'uc-chrono', pastilles: 'uc-ont-vote',
+  }, ontVote);
 }
 
 const REVELATIONS = {
@@ -160,8 +153,6 @@ function afficherFinMancheUndercover(salle, nouvelleEtape) {
 // « Manches gagnées : civils 2, infiltrés 1 », Mister White seulement s'il a gagné.
 function completerPodiumUndercover(salle) {
   const { victoires } = salle.etatMode;
-  // Absent si la partie jouée était d'un autre mode (l'hôte a changé de mode au podium).
-  if (!victoires) return;
   const morceaux = [`civils ${victoires.civils}`, `infiltrés ${victoires.infiltres}`];
   if (victoires.misterWhite > 0) morceaux.push(`Mister White ${victoires.misterWhite}`);
   const ligne = document.getElementById('plus-designe');

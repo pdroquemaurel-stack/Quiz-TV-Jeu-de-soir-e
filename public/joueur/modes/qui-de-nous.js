@@ -12,21 +12,6 @@ listeCandidats.addEventListener('click', (evenement) => {
 
 document.getElementById('bouton-suivant-qdn').addEventListener('click', envoyerSuivant);
 
-function boutonCandidat(candidat) {
-  const bouton = document.createElement('button');
-  bouton.className = 'bouton-candidat';
-  bouton.classList.toggle('deconnecte', !candidat.connecte);
-  bouton.dataset.id = candidat.id;
-  const rond = document.createElement('span');
-  rond.className = 'pastille';
-  rond.style.setProperty('--couleur', `var(--joueur-${candidat.couleur})`);
-  const pseudo = document.createElement('span');
-  pseudo.className = 'pseudo-candidat';
-  pseudo.textContent = candidat.pseudo;
-  bouton.append(rond, pseudo);
-  return bouton;
-}
-
 // Grille affichée : on ne la recrée que si elle change, pour ne pas perdre
 // un appui en cours quand un autre joueur vote au même moment.
 let grilleAffichee = '';

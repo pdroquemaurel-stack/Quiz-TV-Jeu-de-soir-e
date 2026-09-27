@@ -2,22 +2,14 @@
 // Le vote est anonyme : la TV ne connaît que le nombre de votes reçus par chacun.
 
 function afficherVoteQuiDeNous(salle, nouvelleEtape) {
-  const { numero, total, question, ontVote, tempsRestantMs } = salle.etatMode;
+  const { numero, total, question, ontVote } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     document.getElementById('qdn-numero-vote').textContent = `Question ${numero}/${total}`;
     document.getElementById('qdn-texte-vote').textContent = question.texte;
-    viderBarreTemps(document.getElementById('qdn-barre-temps'), tempsRestantMs);
-    document.getElementById('qdn-ont-vote').replaceChildren();
   }
-  lancerChrono(document.getElementById('qdn-chrono'), tempsRestantMs);
-
-  const joueursAyantVote = salle.joueurs.filter((joueur) => ontVote.includes(joueur.id));
-  const votes = remplirEtiquettes(
-    document.getElementById('qdn-ont-vote'),
-    joueursAyantVote.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-  if (votes > 0) sonner('reponse');
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'qdn-barre-temps', chrono: 'qdn-chrono', pastilles: 'qdn-ont-vote',
+  }, ontVote);
 }
 
 function afficherResultatsQuiDeNous(salle, nouvelleEtape) {

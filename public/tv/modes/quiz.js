@@ -8,25 +8,17 @@ function afficherTransitionQuiz(salle) {
 }
 
 function afficherQuestionQuiz(salle, nouvelleEtape) {
-  const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
+  const { numero, total, question, ontRepondu } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     document.getElementById('numero-question').textContent = `Question ${numero}/${total}`;
     document.getElementById('texte-question').textContent = question.texte;
     document.getElementById('reponses-question').replaceChildren(
       ...question.reponses.map((texte, index) => caseReponse(texte, index)),
     );
-    viderBarreTemps(document.getElementById('barre-temps'), tempsRestantMs);
-    document.getElementById('ont-repondu').replaceChildren();
   }
-  lancerChrono(document.getElementById('chrono'), tempsRestantMs);
-
-  const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  const reponses = remplirEtiquettes(
-    document.getElementById('ont-repondu'),
-    joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-  if (reponses > 0) sonner('reponse');
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'barre-temps', chrono: 'chrono', pastilles: 'ont-repondu',
+  }, ontRepondu);
 }
 
 function caseReponse(texte, index) {

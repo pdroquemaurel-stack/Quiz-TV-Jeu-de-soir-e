@@ -11,28 +11,24 @@ const MAX_PASTILLES_CARTE = 3;
 const MAX_PASTILLES_VERITE = 8;
 
 function afficherSaisieBluff(salle, nouvelleEtape) {
-  const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
+  const { numero, total, question, ontRepondu } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     document.getElementById('bl-numero-saisie').textContent = `Question ${numero}/${total}`;
     document.getElementById('bl-texte-saisie').textContent = question.texte;
-    viderBarreTemps(document.getElementById('bl-barre-temps-saisie'), tempsRestantMs);
-    document.getElementById('bl-ont-ecrit').replaceChildren();
   }
-  lancerChrono(document.getElementById('bl-chrono-saisie'), tempsRestantMs);
-  afficherOntReponduBluff(salle, 'bl-ont-ecrit', ontRepondu);
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'bl-barre-temps-saisie', chrono: 'bl-chrono-saisie', pastilles: 'bl-ont-ecrit',
+  }, ontRepondu);
 }
 
 // Les propositions ne sont construites qu'une fois : leur arrivée ne se rejoue pas à chaque vote.
 function afficherVoteBluff(salle, nouvelleEtape) {
   const {
-    numero, total, question, propositions, ontRepondu, tempsRestantMs,
+    numero, total, question, propositions, ontRepondu,
   } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     document.getElementById('bl-numero-vote').textContent = `Question ${numero}/${total}`;
     document.getElementById('bl-texte-vote').textContent = question.texte;
-    viderBarreTemps(document.getElementById('bl-barre-temps-vote'), tempsRestantMs);
     document.getElementById('bl-propositions').replaceChildren(
       ...propositions.map((proposition, index) => {
         const element = document.createElement('li');
@@ -40,19 +36,10 @@ function afficherVoteBluff(salle, nouvelleEtape) {
         return element;
       }),
     );
-    document.getElementById('bl-ont-vote').replaceChildren();
   }
-  lancerChrono(document.getElementById('bl-chrono-vote'), tempsRestantMs);
-  afficherOntReponduBluff(salle, 'bl-ont-vote', ontRepondu);
-}
-
-function afficherOntReponduBluff(salle, id, ontRepondu) {
-  const joueurs = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  const nouveaux = remplirEtiquettes(
-    document.getElementById(id),
-    joueurs.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-  if (nouveaux > 0) sonner('reponse');
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'bl-barre-temps-vote', chrono: 'bl-chrono-vote', pastilles: 'bl-ont-vote',
+  }, ontRepondu);
 }
 
 // Les cartes ne sont construites qu'au début de la révélation, pour ne pas rejouer leur

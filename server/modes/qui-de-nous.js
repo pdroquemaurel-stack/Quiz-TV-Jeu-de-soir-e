@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, listerAttendus, noterQuestionsVues, participe, phaseEnCours,
-  passerAuPodium, rangDe, tirerQuestions, tousOntRepondu,
+  classement as classementCommun, echeanceDePhase, listerAttendus, noterQuestionsVues, participe,
+  phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions,
+  tousOntRepondu,
 } from './commun.js';
 
 export const id = 'qui-de-nous';
@@ -51,10 +52,6 @@ function demarrerQuestion(salle, index) {
   salle.etatMode.attendus = listerAttendus(salle);
 }
 
-function questionCourante(salle) {
-  return salle.etatMode.questions[salle.etatMode.indexQuestion];
-}
-
 // On ne vote pas pour soi, sauf si l'on est le seul candidat.
 function candidatsPour(salle, votantId) {
   const { attendus } = salle.etatMode;
@@ -100,9 +97,7 @@ export function montrerResultats(salle) {
 }
 
 export function passerALaSuite(salle) {
-  const suivante = salle.etatMode.indexQuestion + 1;
-  if (suivante < salle.etatMode.questions.length) demarrerQuestion(salle, suivante);
-  else passerAuPodium(salle);
+  questionSuivanteOuPodium(salle, demarrerQuestion);
 }
 
 // « Suivant » de l'hôte. Renvoie true si quelque chose a changé.
@@ -112,12 +107,10 @@ export function suivant(salle) {
   return true;
 }
 
-// Heure à laquelle la phase en cours se termine d'elle-même, ou null.
+const DUREES = { vote: DUREE_VOTE_MS, resultats: DUREE_RESULTATS_MS };
+
 export function echeance(salle) {
-  const phase = phaseEnCours(salle);
-  if (phase === 'vote') return salle.etatMode.debutPhaseA + DUREE_VOTE_MS;
-  if (phase === 'resultats') return salle.etatMode.debutPhaseA + DUREE_RESULTATS_MS;
-  return null;
+  return echeanceDePhase(salle, DUREES);
 }
 
 // Appelée quand l'échéance est atteinte.
@@ -132,9 +125,8 @@ export function classement(salle) {
 }
 
 // Le ou les joueurs les plus désignés de la partie, pour le podium.
-// votesRecus manque si la partie jouée était d'un autre mode (l'hôte a changé de mode au tableau).
 export function plusDesignes(salle) {
-  const lignes = Object.entries(salle.etatMode.votesRecus ?? {})
+  const lignes = Object.entries(salle.etatMode.votesRecus)
     .map(([joueurId, votes]) => ({ id: joueurId, votes }));
   const maximum = Math.max(0, ...lignes.map((ligne) => ligne.votes));
   if (maximum === 0) return [];
@@ -158,7 +150,7 @@ function vueQuestion(salle) {
     total: questions.length,
     question: { texte: questionCourante(salle).texte },
     ontVote: Object.keys(reponses),
-    tempsRestantMs: Math.max(0, echeance(salle) - Date.now()),
+    tempsRestantMs: tempsRestantMs(salle, echeance),
   };
 }
 

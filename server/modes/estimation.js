@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, listerAttendus, noterQuestionsVues, participe, phaseEnCours,
-  passerAuPodium, rangDe, tirerQuestions, tousOntRepondu,
+  classement as classementCommun, echeanceDePhase, listerAttendus, noterQuestionsVues, participe,
+  phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions,
+  tousOntRepondu,
 } from './commun.js';
 
 export const id = 'estimation';
@@ -53,10 +54,6 @@ function demarrerQuestion(salle, index) {
   salle.etatMode.attendus = listerAttendus(salle);
 }
 
-function questionCourante(salle) {
-  return salle.etatMode.questions[salle.etatMode.indexQuestion];
-}
-
 // Renvoie true si la réponse est acceptée : un entier de 0 à REPONSE_MAX.
 export function enregistrerReponse(salle, joueurId, nombre) {
   if (phaseEnCours(salle) !== 'question' || !participe(salle, joueurId)) return false;
@@ -91,9 +88,7 @@ export function reveler(salle) {
 }
 
 export function passerALaSuite(salle) {
-  const suivante = salle.etatMode.indexQuestion + 1;
-  if (suivante < salle.etatMode.questions.length) demarrerQuestion(salle, suivante);
-  else passerAuPodium(salle);
+  questionSuivanteOuPodium(salle, demarrerQuestion);
 }
 
 // « Suivant » de l'hôte. Renvoie true si quelque chose a changé.
@@ -103,12 +98,10 @@ export function suivant(salle) {
   return true;
 }
 
-// Heure à laquelle la phase en cours se termine d'elle-même, ou null.
+const DUREES = { question: DUREE_QUESTION_MS, revelation: DUREE_REVELATION_MS };
+
 export function echeance(salle) {
-  const phase = phaseEnCours(salle);
-  if (phase === 'question') return salle.etatMode.debutPhaseA + DUREE_QUESTION_MS;
-  if (phase === 'revelation') return salle.etatMode.debutPhaseA + DUREE_REVELATION_MS;
-  return null;
+  return echeanceDePhase(salle, DUREES);
 }
 
 // Appelée quand l'échéance est atteinte.
@@ -140,7 +133,7 @@ function vueQuestion(salle) {
     total: questions.length,
     question: { texte, unite },
     ontRepondu: Object.keys(reponses),
-    tempsRestantMs: Math.max(0, echeance(salle) - Date.now()),
+    tempsRestantMs: tempsRestantMs(salle, echeance),
   };
 }
 

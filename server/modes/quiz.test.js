@@ -2,8 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DUREE_PODIUM_MS, ajouterJoueur, creerSalle, demarrerPartie, reglerMode, synchroniserMinuteur,
-  terminerPartie, vueJoueur, vueTv,
+  terminerPartie,
 } from '../salles.js';
+import { vueJoueur, vueTv } from '../vues.js';
 import { CATEGORIES } from '../../scripts/verifier-questions.js';
 import { tousOntRepondu } from './commun.js';
 import {

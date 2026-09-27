@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle } from '../salles.js';
 import {
-  classement, cleReponse, normaliser, tirerQuestions,
+  classement, cleReponse, echeanceDePhase, normaliser, questionCourante, questionSuivanteOuPodium,
+  tempsRestantMs, tirerQuestions,
 } from './commun.js';
 import { modes, modesAVenir } from './index.js';
 
@@ -145,4 +146,50 @@ test('clé : pas de tolérance aux fautes, clé vide sans lettre ni chiffre', ()
   assert.notEqual(cleReponse('canard'), cleReponse('canari'));
   assert.equal(cleReponse('!!!'), '');
   assert.equal(cleReponse('Œuf'), 'oeuf');
+});
+
+// --- Enchaînement des questions ---
+
+// Une salle en partie, sur la question d'index donné parmi 3.
+function salleEnPartie(indexQuestion, phase = 'question') {
+  const salle = creerSalle('tv');
+  ajouterJoueur(salle, 'Paul', 's1');
+  salle.etat = 'partie';
+  salle.etatMode = { questions: ['q1', 'q2', 'q3'], indexQuestion, phase, debutPhaseA: 1000 };
+  return salle;
+}
+
+test('questionCourante : la question de l\'index en cours', () => {
+  assert.equal(questionCourante(salleEnPartie(1)), 'q2');
+});
+
+test('questionSuivanteOuPodium : démarre la suivante, puis le podium après la dernière', () => {
+  const demarrees = [];
+  const demarrer = (salle, index) => demarrees.push(index);
+  const salle = salleEnPartie(1);
+  questionSuivanteOuPodium(salle, demarrer);
+  assert.deepEqual(demarrees, [2]);
+  assert.equal(salle.etat, 'partie');
+
+  const derniere = salleEnPartie(2);
+  questionSuivanteOuPodium(derniere, demarrer);
+  assert.deepEqual(demarrees, [2]);
+  assert.equal(derniere.etat, 'podium');
+});
+
+test('echeanceDePhase : début de la phase + sa durée, null hors partie ou pour une phase sans durée', () => {
+  const durees = { question: 20000, revelation: 8000 };
+  assert.equal(echeanceDePhase(salleEnPartie(0, 'question'), durees), 21000);
+  assert.equal(echeanceDePhase(salleEnPartie(0, 'revelation'), durees), 9000);
+  assert.equal(echeanceDePhase(salleEnPartie(0, 'description'), durees), null);
+  const horsPartie = salleEnPartie(0);
+  horsPartie.etat = 'podium';
+  assert.equal(echeanceDePhase(horsPartie, durees), null);
+});
+
+test('tempsRestantMs : jamais négatif', () => {
+  const salle = salleEnPartie(0);
+  assert.equal(tempsRestantMs(salle, () => Date.now() + 5000) <= 5000, true);
+  assert.equal(tempsRestantMs(salle, () => Date.now() + 5000) > 4000, true);
+  assert.equal(tempsRestantMs(salle, () => Date.now() - 5000), 0);
 });

@@ -225,6 +225,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
     "phase": "question",
     "questions": ["...10 questions tirées..."],
     "indexQuestion": 3,
+    "debutPhaseA": 1758641190000,
     "debutQuestionA": 1758641190000,
     "attendus": ["j_8f3k2a", "j_2m9x7c"],
     "reponses": { "j_8f3k2a": { "choix": 1, "recuA": 1758641195300 } }
@@ -232,7 +233,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 }
 ```
 
-`etat` vaut `lobby`, `partie`, `podium`, `tableau` ou `grandGagnant`. Pendant une partie, `etatMode.phase` vaut `transition`, `question` ou `revelation` pour le quiz. `etatMode.attendus` liste les `id` des joueurs attendus pour la manche en cours (voir « Fin anticipée ») : tous les modes l'utilisent, via `server/modes/commun.js`. Les timers (2,5 s de transition, 20 s, 8 s, 20 s de podium, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur.
+`etat` vaut `lobby`, `partie`, `podium`, `tableau` ou `grandGagnant`. Pendant une partie, `etatMode.phase` vaut `transition`, `question` ou `revelation` pour le quiz. `etatMode.attendus` liste les `id` des joueurs attendus pour la manche en cours (voir « Fin anticipée ») : tous les modes l'utilisent, via `server/modes/commun.js`. Les timers (2,5 s de transition, 20 s, 8 s, 20 s de podium, 10 s pour l'hôte et pour le retrait d'un joueur en salle d'attente) sont gérés par le serveur. Dans tous les modes, `debutPhaseA` est l'heure de début de la phase en cours, d'où part son chrono ; le quiz garde en plus `debutQuestionA`, qui sert à mesurer le temps de chaque réponse (points, réponse la plus rapide, prix).
 
 `format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
@@ -502,8 +503,8 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : `node scripts/verifier-questions.js` passe. 3 parties d'affilée sans répétition, où les nouvelles questions apparaissent (journal des tirages). En salle d'attente, l'hôte choisit « Cinéma, facile » : 10 questions de cinéma, aucune de difficulté 3. En Qui de nous ?, un onglet qui envoie `joueur:rejoindre` avec l'`id` d'un autre joueur (lu dans la console) est refusé, et ce joueur garde sa place. Test automatique : une reconnexion sans la bonne clé est refusée.*
 
-- **23. Nettoyage puis mode « La réplique ».** Alléger la dette de lisibilité avant d'ajouter un 7e mode, puis ajouter un mode de rire qui recycle le bluff. Deux commits distincts.
-  - Temps 1 : dette de lisibilité (L1 à L5, L7), sans aucun changement visible, avec tous les tests au vert.
+- **23. Nettoyage puis mode « La réplique ».** Alléger la dette de lisibilité avant d'ajouter un nouveau mode (La légende, tranche 24), puis ajouter un mode de rire qui recycle le bluff. Deux commits distincts.
+  - Temps 1 : dette de lisibilité (L1 à L5, L7), sans aucun changement visible, avec tous les tests au vert. ✅ Terminé : aides communes aux modes à questions dans `server/modes/commun.js` (L1), écran « attente de réponses » commun à la TV (L2), bouton de candidat commun au téléphone (L3), `tv/modes/<mode>.css` et liste « Ajouter un mode » dans `CLAUDE.md` (L4), garde-fous morts retirés (L5), `server/vues.js` (L7). Tests existants : seules leurs lignes d'import (vues depuis `vues.js`) et les fichiers lus par le test de lisibilité (`tv/modes/*.css` en plus) ont changé, avec l'accord de Paul.
   - Temps 2 : mode La réplique (M3), avec sa mini-spec `docs/modes/replique.md` écrite et validée avant le code (règles de l'étape « Modes de jeu »).
 
   *Test : temps 1 : `npm test` passe sans qu'aucun test existant n'ait été modifié pour passer, et une partie de chaque mode sur Render se déroule comme avant. Temps 2 : défini dans la mini-spec, au minimum : partie à 4 sur Render, répliques anonymes jusqu'à la révélation, impossible de voter pour sa propre réplique, points égaux au nombre de votes reçus multiplié par le barème.*

@@ -2,22 +2,14 @@
 // Pendant la saisie, la TV ne connaît que qui a répondu, jamais quoi.
 
 function afficherSaisieMemeReponse(salle, nouvelleEtape) {
-  const { numero, total, question, ontRepondu, tempsRestantMs } = salle.etatMode;
+  const { numero, total, question, ontRepondu } = salle.etatMode;
   if (nouvelleEtape) {
-    sonner('etape');
     document.getElementById('mr-numero-saisie').textContent = `Question ${numero}/${total}`;
     document.getElementById('mr-texte-saisie').textContent = question.texte;
-    viderBarreTemps(document.getElementById('mr-barre-temps'), tempsRestantMs);
-    document.getElementById('mr-ont-repondu').replaceChildren();
   }
-  lancerChrono(document.getElementById('mr-chrono'), tempsRestantMs);
-
-  const joueursAyantRepondu = salle.joueurs.filter((joueur) => ontRepondu.includes(joueur.id));
-  const reponses = remplirEtiquettes(
-    document.getElementById('mr-ont-repondu'),
-    joueursAyantRepondu.map((joueur) => etiquetteJoueur(joueur, false)),
-  );
-  if (reponses > 0) sonner('reponse');
+  afficherAttenteReponses(salle, nouvelleEtape, {
+    barre: 'mr-barre-temps', chrono: 'mr-chrono', pastilles: 'mr-ont-repondu',
+  }, ontRepondu);
 }
 
 const MAX_PASTILLES_GROUPE = 5;

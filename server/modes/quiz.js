@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, listerAttendus, melanger, noterQuestionsVues, participe,
-  passerAuPodium, phaseEnCours, rangDe, tirerQuestions, tousOntRepondu,
+  classement as classementCommun, echeanceDePhase, listerAttendus, melanger, noterQuestionsVues, participe,
+  phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions,
+  tousOntRepondu,
 } from './commun.js';
 
 export const id = 'quiz';
@@ -163,20 +164,18 @@ export function demarrerPartie(salle) {
 function demarrerTransition(salle, index) {
   salle.etatMode.phase = 'transition';
   salle.etatMode.indexQuestion = index;
-  salle.etatMode.debutTransitionA = Date.now();
+  salle.etatMode.debutPhaseA = Date.now();
   salle.etatMode.reponses = {};
   salle.etatMode.attendus = [];
 }
 
+// debutQuestionA reste après la question : il mesure le temps de chaque réponse.
 function demarrerQuestion(salle) {
   salle.etatMode.phase = 'question';
-  salle.etatMode.debutQuestionA = Date.now();
+  salle.etatMode.debutPhaseA = Date.now();
+  salle.etatMode.debutQuestionA = salle.etatMode.debutPhaseA;
   salle.etatMode.reponses = {};
   salle.etatMode.attendus = listerAttendus(salle);
-}
-
-function questionCourante(salle) {
-  return salle.etatMode.questions[salle.etatMode.indexQuestion];
 }
 
 // Renvoie true si la réponse est acceptée.
@@ -201,7 +200,7 @@ function pointsGagnes(salle, joueurId) {
 
 export function reveler(salle) {
   salle.etatMode.phase = 'revelation';
-  salle.etatMode.debutRevelationA = Date.now();
+  salle.etatMode.debutPhaseA = Date.now();
   for (const joueur of salle.joueurs) joueur.score += pointsGagnes(salle, joueur.id);
   salle.etatMode.historique.push(resumerQuestion(salle));
 }
@@ -227,9 +226,7 @@ function resumerQuestion(salle) {
 }
 
 export function passerALaSuite(salle) {
-  const suivante = salle.etatMode.indexQuestion + 1;
-  if (suivante < salle.etatMode.questions.length) demarrerTransition(salle, suivante);
-  else passerAuPodium(salle);
+  questionSuivanteOuPodium(salle, demarrerTransition);
 }
 
 // La bonne réponse reçue la première, ou null. À égalité, la première enregistrée.
@@ -256,13 +253,10 @@ export function suivant(salle) {
   return true;
 }
 
-// Heure à laquelle la phase en cours se termine d'elle-même, ou null.
+const DUREES = { transition: DUREE_TRANSITION_MS, question: DUREE_QUESTION_MS, revelation: DUREE_REVELATION_MS };
+
 export function echeance(salle) {
-  const phase = phaseEnCours(salle);
-  if (phase === 'transition') return salle.etatMode.debutTransitionA + DUREE_TRANSITION_MS;
-  if (phase === 'question') return salle.etatMode.debutQuestionA + DUREE_QUESTION_MS;
-  if (phase === 'revelation') return salle.etatMode.debutRevelationA + DUREE_REVELATION_MS;
-  return null;
+  return echeanceDePhase(salle, DUREES);
 }
 
 // Appelée quand l'échéance est atteinte.
@@ -308,7 +302,7 @@ function vueQuestion(salle) {
     total: questions.length,
     question: { texte, reponses: propositions },
     ontRepondu: Object.keys(reponses),
-    tempsRestantMs: Math.max(0, echeance(salle) - Date.now()),
+    tempsRestantMs: tempsRestantMs(salle, echeance),
   };
 }
 
