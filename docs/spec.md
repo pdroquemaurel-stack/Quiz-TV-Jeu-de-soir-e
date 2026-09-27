@@ -382,8 +382,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions).
-- **À venir**, après l'audit (`AUDIT.md`) : **10 → 23**, puis **24** (La légende), commencée par son contenu. Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende).
+- **À venir**, après l'audit (`AUDIT.md`) : **10**, puis **23** temps 2 (La réplique). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -512,10 +512,10 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
 ### Tranche « La légende » (24)
 
-- **24. Mode « La légende ».** La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (3 à 10 joueurs). Même mécanisme que La réplique (M3), avec un GIF à la place d'une amorce texte : La légende est un mode à part, la mini-spec de La réplique dira si elle en devient une seconde source. Mini-spec : `docs/modes/legende.md`.
+- **24. Mode « La légende ».** ✅ Terminée. La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (3 à 10 joueurs). Même mécanisme que La réplique (M3), avec un GIF à la place d'une amorce texte : La légende est un mode à part, la mini-spec de La réplique dira si elle en devient une seconde source. Mini-spec : `docs/modes/legende.md`.
   - Temps 1 : contenu. Vidéos dans `public/gifs/` (1 Mo au plus), catalogue `data/legende.json`, `scripts/verifier-legende.js`, `scripts/telecharger-gifs.py`.
   - Puis le temps 1 de la tranche 23 (nettoyage L1 à L5, L7), pour que le mode s'écrive sur les aides communes.
-  - Temps 2 : le mode. Test local validé par Paul ; reste la lecture des vidéos sur le vrai stick (étape 9 du test).
+  - Temps 2 : le mode, avec des titres portés à 120 caractères. Test validé par Paul, dont la lecture des vidéos sur le vrai stick.
 
   *Test : défini dans `docs/modes/legende.md`, dont la lecture des vidéos en boucle sur le vrai stick.*
 
