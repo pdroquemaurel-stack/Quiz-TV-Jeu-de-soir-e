@@ -7,10 +7,10 @@ import { Server } from 'socket.io';
 import { lienExtrait, tirerEssai } from './extraits.js';
 import { journaliser, journaliserErreur } from './journal.js';
 import {
-  assezDeJoueurs, ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle,
-  deconnecterJoueur, deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium,
-  peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, statistiques, synchroniserMinuteur,
-  terminerPartie, trouverHoteParSocket, trouverJoueurParSocket, trouverSalle,
+  ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle, deconnecterJoueur,
+  deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium, peutLancer, peutRejouer,
+  reconnecterJoueur, reglerMode, reconnecterTv, statistiques, synchroniserMinuteur, terminerPartie,
+  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, validerFormat,
 } from './salles.js';
 import { etapeCourante, vueJoueur, vueTv } from './vues.js';
 import { modes } from './modes/index.js';
@@ -125,9 +125,8 @@ export function demarrerServeur(port) {
     surEvenement('hote:lancer', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve) return;
-      const { salle } = trouve;
-      if (salle.etat !== 'lobby' || !assezDeJoueurs(salle)) return;
-      lancerPartie(salle);
+      if (!peutLancer(trouve.salle)) return;
+      lancerPartie(trouve.salle);
     });
 
     surEvenement('hote:choisirMode', (id) => {
@@ -150,6 +149,13 @@ export function demarrerServeur(port) {
     surEvenement('hote:configurer', (format) => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !configurerFormat(trouve.salle, format)) return;
+      diffuser(trouve.salle);
+    });
+
+    // « Démarrer » : de l'étape du format à celle du mode.
+    surEvenement('hote:validerFormat', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !validerFormat(trouve.salle)) return;
       diffuser(trouve.salle);
     });
 
@@ -188,6 +194,7 @@ export function demarrerServeur(port) {
       lancerPartie(salle);
     });
 
+    // Depuis le choix du mode, le tableau ou le grand gagnant : retour au choix du format.
     surEvenement('hote:changerFormat', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !changerFormat(trouve.salle)) return;

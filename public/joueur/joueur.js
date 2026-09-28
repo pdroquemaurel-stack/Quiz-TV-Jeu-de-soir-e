@@ -125,6 +125,10 @@ document.getElementById('bouton-lancer').addEventListener('click', () => {
   socket.emit('hote:lancer');
 });
 
+document.getElementById('bouton-demarrer').addEventListener('click', () => {
+  socket.emit('hote:validerFormat');
+});
+
 document.getElementById('bouton-rejouer').addEventListener('click', () => {
   socket.emit('hote:rejouer');
 });
@@ -278,27 +282,41 @@ function afficherEcran(nom) {
   }
 }
 
+// L'hôte passe par deux étapes : le format (puis « Démarrer »), puis le mode et ses options.
+// Les autres voient le format, et le mode choisi une fois le format validé.
 function afficherAttente(vue) {
   document.getElementById('mon-pseudo').textContent = vue.pseudo;
   document.getElementById('grande-pastille').style.setProperty('--couleur', `var(--joueur-${vue.couleur})`);
   document.getElementById('est-hote').hidden = !vue.estHote;
   document.getElementById('attente-hote').hidden = vue.estHote;
+  const etapeFormat = vue.estHote && !vue.formatValide;
+  const etapeMode = vue.estHote && vue.formatValide;
+  document.getElementById('bouton-demarrer').hidden = !etapeFormat;
+  document.getElementById('etape-mode').hidden = !etapeMode;
+  document.getElementById('changer-format-attente').hidden = !etapeMode;
   const boutonLancer = document.getElementById('bouton-lancer');
-  boutonLancer.hidden = !vue.estHote;
+  boutonLancer.hidden = !etapeMode;
   boutonLancer.disabled = !vue.assezDeJoueurs;
   afficherModes('attente', vue);
   afficherFormat(vue);
   afficherReglages(vue);
+  document.getElementById('reglage-format').hidden = !etapeFormat;
+  document.getElementById('format-choisi').hidden = etapeFormat;
+  if (!vue.formatValide) {
+    document.querySelector('main[data-ecran="attente"] .mode-choisi').hidden = true;
+    document.getElementById('reglages-choisis').hidden = true;
+  }
 }
 
-// Seulement pour un mode qui a des réglages. L'hôte les change, les autres les voient.
+// L'hôte les change (onglet « Options »), les autres les voient.
 // Chaque mode remplit sa section du panneau (remplirReglages de joueur/modes/<mode>.js).
 function afficherReglages(vue) {
   const texte = document.getElementById('reglages-choisis');
   const bouton = document.getElementById('bouton-reglages');
   texte.hidden = !vue.reglages || vue.estHote;
   bouton.hidden = !vue.reglages || !vue.estHote;
-  if (bouton.hidden) panneauReglages.hidden = true;
+  document.getElementById('sans-option').hidden = Boolean(vue.reglages) || !vue.estHote;
+  if (bouton.hidden || !vue.formatValide) panneauReglages.hidden = true;
   if (!vue.reglages) return;
   const resume = `${vue.reglages.titre} : ${vue.reglages.resume}`;
   texte.textContent = resume;
@@ -321,14 +339,12 @@ function boutonReglage(texte, choisi, envoyer) {
   return bouton;
 }
 
-// L'hôte règle le format, les autres le voient.
+// L'hôte règle le format à la première étape, puis le voit en rappel comme les autres.
 function afficherFormat(vue) {
   formatRecu = vue.format;
   const { type, objectif } = vue.format;
   const texte = document.getElementById('format-choisi');
   texte.textContent = type === 'petite' ? 'Petite partie' : `Aventure — premier à ${objectif} points`;
-  texte.hidden = vue.estHote;
-  document.getElementById('reglage-format').hidden = !vue.estHote;
   for (const bouton of document.querySelectorAll('[data-format]')) {
     bouton.classList.toggle('choisi', bouton.dataset.format === type);
   }

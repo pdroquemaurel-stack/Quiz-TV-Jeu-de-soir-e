@@ -76,6 +76,8 @@ export function creerSalle(tvSocketId) {
     questionsVues: [],
     derniereActiviteA: Date.now(),
     format: { type: 'petite', objectif: 5 },
+    // Salle d'attente en deux étapes : l'hôte valide d'abord le format, puis choisit le mode.
+    formatValide: false,
     numeroPartie: 0,
     grandGagnantId: null,
     debutPodiumA: null,
@@ -127,6 +129,18 @@ export function configurerFormat(salle, format) {
   if (!Number.isInteger(objectif) || objectif < OBJECTIF_MIN || objectif > OBJECTIF_MAX) return false;
   salle.format = { type, objectif };
   return true;
+}
+
+// « Démarrer » de l'hôte : on passe au choix du mode. Renvoie true si c'est accepté.
+export function validerFormat(salle) {
+  if (salle.etat !== 'lobby' || salle.formatValide) return false;
+  salle.formatValide = true;
+  return true;
+}
+
+// Le format est validé et il y a assez de joueurs pour le mode choisi.
+export function peutLancer(salle) {
+  return salle.etat === 'lobby' && salle.formatValide && assezDeJoueurs(salle);
 }
 
 // Réglages du mode choisis par l'hôte en salle d'attente (thèmes et difficulté du quiz).
@@ -183,11 +197,14 @@ export function peutRejouer(salle) {
   return (salle.etat === 'tableau' || salle.etat === 'grandGagnant') && assezDeJoueurs(salle);
 }
 
-// Retour en salle d'attente. Les points globaux restent, sauf après un grand gagnant.
+// Retour au choix du format, depuis le choix du mode, le tableau ou le grand gagnant.
+// Les points globaux restent, sauf après un grand gagnant.
 export function changerFormat(salle) {
-  if (salle.etat !== 'tableau' && salle.etat !== 'grandGagnant') return false;
+  const depuisLeMode = salle.etat === 'lobby' && salle.formatValide;
+  if (!depuisLeMode && salle.etat !== 'tableau' && salle.etat !== 'grandGagnant') return false;
   if (salle.etat === 'grandGagnant') nouvelleAventure(salle);
   salle.etat = 'lobby';
+  salle.formatValide = false;
   return true;
 }
 

@@ -70,6 +70,7 @@ export function vueJoueur(salle, joueur) {
     modeChoisi: modeDe(salle).nom,
     assezDeJoueurs: assezDeJoueurs(salle),
     format: salle.format,
+    formatValide: salle.formatValide,
     reglages: vueReglages(salle),
     pointsGlobaux: joueur.pointsGlobaux,
   };

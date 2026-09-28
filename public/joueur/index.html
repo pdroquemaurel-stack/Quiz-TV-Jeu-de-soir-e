@@ -44,7 +44,10 @@
     <p id="attente-hote" class="discret">En attente que l'hôte lance</p>
     <p class="mode-choisi discret"></p>
     <p id="format-choisi" class="discret"></p>
+    <p id="reglages-choisis" class="discret" hidden></p>
+    <!-- Hôte, étape 1 : le format seul, puis « Démarrer ». -->
     <div id="reglage-format" class="reglage-format en-bas" hidden>
+      <p class="titre-etape">Format</p>
       <div class="choix-format">
         <button class="bouton-mode" data-format="petite">Petite partie</button>
         <button class="bouton-mode" data-format="aventure">Aventure</button>
@@ -55,12 +58,21 @@
         <button id="objectif-plus" class="bouton-mode">+</button>
       </div>
     </div>
-    <p id="reglages-choisis" class="discret" hidden></p>
-    <button id="bouton-reglages" class="bouton-mode bouton-reglages en-bas" hidden>
-      <span id="resume-reglages"></span><small>Changer</small>
-    </button>
-    <div class="choix-modes en-bas" hidden></div>
+    <button id="bouton-demarrer" class="bouton en-bas" hidden>Démarrer</button>
+    <!-- Hôte, étape 2 : le mode, ses options, puis « Lancer la partie ». -->
+    <div id="etape-mode" class="etape-mode en-bas" hidden>
+      <p class="titre-etape">Mode de jeu</p>
+      <div class="choix-modes"></div>
+      <div class="onglet-options">
+        <p class="titre-onglet">Options</p>
+        <button id="bouton-reglages" class="bouton-mode bouton-reglages" hidden>
+          <span id="resume-reglages"></span><small>Changer</small>
+        </button>
+        <p id="sans-option" class="discret" hidden>Pas d'option pour ce mode</p>
+      </div>
+    </div>
     <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
+    <button id="changer-format-attente" class="bouton secondaire en-bas bouton-changer-format" hidden>Changer de format</button>
   </main>
 
   <main data-ecran="quiz-repondre" hidden>

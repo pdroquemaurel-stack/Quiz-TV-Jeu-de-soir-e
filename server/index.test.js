@@ -94,6 +94,8 @@ test('seul l\'hôte peut terminer la partie', async () => {
   await attendre(hote, 'joueur:etat');
   autre.emettre('joueur:rejoindre', { code: salle.code, pseudo: 'Autre' });
   await attendre(autre, 'joueur:etat');
+  hote.emettre('hote:validerFormat');
+  await attendre(autre, 'joueur:etat');
   hote.emettre('hote:lancer');
   await attendre(autre, 'joueur:etat');
   assert.equal(salle.etat, 'partie');
@@ -131,6 +133,8 @@ test('chaque mode du registre se lance et se termine par les événements', { ti
   }
   const [hote] = clients;
 
+  hote.emettre('hote:validerFormat');
+  await attendre(hote, 'joueur:etat');
   for (const id of Object.keys(modes)) {
     hote.emettre('hote:choisirMode', id);
     await attendre(hote, 'joueur:etat');
@@ -222,17 +226,21 @@ test('seul l\'hôte peut choisir le mode', async (t) => {
 const EVENEMENTS = [
   'tv:creer', 'joueur:rejoindre', 'joueur:repondre', 'hote:lancer', 'hote:choisirMode',
   'hote:configurer', 'hote:reglerMode', 'hote:suivant', 'hote:terminer', 'hote:rejouer',
-  'hote:changerFormat',
+  'hote:changerFormat', 'hote:validerFormat',
 ];
 const DONNEES_MALFORMEES = [null, 42, [], {}, 'texte', { code: {}, pseudo: [], id: 1, etape: 7 }];
 // Envoyés par l'hôte, ceux-là changeraient l'état pour de bon : seul un non-hôte les envoie.
-const ACTIONS_SANS_DONNEES = ['hote:lancer', 'hote:terminer', 'hote:rejouer', 'hote:changerFormat'];
+const ACTIONS_SANS_DONNEES = [
+  'hote:lancer', 'hote:terminer', 'hote:rejouer', 'hote:changerFormat', 'hote:validerFormat',
+];
 
 test('données malformées sur chaque événement, dans chaque mode : le serveur tient', { timeout: 20000 }, async (t) => {
   const erreurs = t.mock.method(console, 'error', () => {});
   const { port, salle, clients } = await ouvrirSalle(t, ['A', 'B', 'C', 'D']);
   const [hote, autre] = clients;
 
+  hote.emettre('hote:validerFormat');
+  await attendre(hote, 'joueur:etat');
   for (const id of Object.keys(modes)) {
     hote.emettre('hote:choisirMode', id);
     await attendre(hote, 'joueur:etat');
@@ -278,15 +286,18 @@ test('chaque action hote:* est refusée à un non-hôte', { timeout: 10000 }, as
 
   autre.emettre('hote:configurer', { type: 'aventure', objectif: 5 });
   autre.emettre('hote:reglerMode', { categories: ['sport'], difficulte: 'facile' });
+  autre.emettre('hote:validerFormat');
   autre.emettre('hote:lancer');
   await synchroniser(autre, salle);
   assert.equal(salle.etat, 'lobby');
+  assert.equal(salle.formatValide, false);
   assert.equal(salle.format.type, 'petite');
   assert.equal(derniereVue(autre).reglages.resume, 'Tous les thèmes · Normal');
   hote.emettre('hote:reglerMode', { categories: ['sport'], difficulte: 'facile' });
   await synchroniser(hote, salle);
   assert.equal(derniereVue(hote).reglages.resume, 'Sport · Facile');
 
+  hote.emettre('hote:validerFormat');
   hote.emettre('hote:lancer');
   await attendreQue(() => salle.etat === 'partie' && salle.etatMode.phase === 'question');
   hote.emettre('joueur:repondre', 0);
@@ -314,7 +325,30 @@ test('chaque action hote:* est refusée à un non-hôte', { timeout: 10000 }, as
   assert.equal(salle.etat, 'tableau');
 });
 
-test('double « Entrer » puis autre pseudo depuis le même socket : un seul joueur', { timeout: 5000 }, async (t) => {
+test('salle d\'attente en deux étapes : « Lancer » ignoré avant « Démarrer », « Changer de format » y revient', { timeout: 5000 }, async (t) => {
+  const { salle, clients: [hote] } = await ouvrirSalle(t, ['Hôte', 'Autre']);
+
+  hote.emettre('hote:lancer');
+  await synchroniser(hote, salle);
+  assert.equal(salle.etat, 'lobby');
+  assert.equal(derniereVue(hote).formatValide, false);
+
+  hote.emettre('hote:validerFormat');
+  await synchroniser(hote, salle);
+  assert.equal(derniereVue(hote).formatValide, true);
+
+  hote.emettre('hote:changerFormat');
+  await synchroniser(hote, salle);
+  assert.equal(derniereVue(hote).formatValide, false);
+
+  hote.emettre('hote:validerFormat');
+  hote.emettre('hote:lancer');
+  await attendreQue(() => salle.etat === 'partie');
+  hote.emettre('hote:terminer');
+  await attendreQue(() => salle.etat === 'podium');
+});
+
+test('double « Entrer » puis autre pseudo depuis le même socket : un seul joueur',{ timeout: 5000 }, async (t) => {
   const { port, salle, clients } = await ouvrirSalle(t, ['Hôte']);
   const paul = await connecterClient(port);
   clients.push(paul);
@@ -362,6 +396,8 @@ test('dans chaque mode, la clé d\'un joueur ne part ni vers la TV ni vers les a
   tv.emettre('tv:creer', { code: salle.code, jetonTv: salle.jetonTv });
   await attendre(tv, 'salle:etat');
 
+  hote.emettre('hote:validerFormat');
+  await attendre(hote, 'joueur:etat');
   for (const id of Object.keys(modes)) {
     hote.emettre('hote:choisirMode', id);
     await attendre(hote, 'joueur:etat');
@@ -392,6 +428,8 @@ test('dans chaque mode, la clé d\'un joueur ne part ni vers la TV ni vers les a
 test('double « Suivant » à la 10e révélation du quiz : le podium n\'est pas sauté', { timeout: 40000 }, async (t) => {
   const { salle, clients } = await ouvrirSalle(t, ['Hôte', 'Autre']);
   const [hote] = clients;
+  hote.emettre('hote:validerFormat');
+  await attendre(hote, 'joueur:etat');
   hote.emettre('hote:lancer');
 
   for (let numero = 1; numero <= 10; numero++) {
@@ -417,6 +455,8 @@ test('double « Suivant » à la 10e révélation du quiz : le podium n\'est pas
 test('double « Suivant » à l\'élimination en Undercover : le tour de description s\'affiche', { timeout: 10000 }, async (t) => {
   const { salle, clients } = await ouvrirSalle(t, ['A', 'B', 'C', 'D']);
   const [hote] = clients;
+  hote.emettre('hote:validerFormat');
+  await attendre(hote, 'joueur:etat');
   hote.emettre('hote:choisirMode', 'undercover');
   await attendre(hote, 'joueur:etat');
   hote.emettre('hote:lancer');

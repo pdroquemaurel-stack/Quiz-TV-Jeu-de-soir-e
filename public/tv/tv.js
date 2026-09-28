@@ -149,6 +149,11 @@ function afficherLobby(salle) {
   const reglages = document.getElementById('reglages-tv');
   reglages.hidden = !salle.reglages;
   if (salle.reglages) reglages.textContent = `${salle.reglages.titre} : ${salle.reglages.resume}`;
+  // Première étape de l'hôte : le mode n'est pas encore choisi.
+  if (!salle.formatValide) {
+    document.getElementById('nom-mode').textContent = 'L\'hôte choisit le format';
+    for (const id of ['regle-mode', 'minimum-mode', 'reglages-tv']) document.getElementById(id).hidden = true;
+  }
 }
 
 function texteFormat(format) {
@@ -159,6 +164,7 @@ function texteFormat(format) {
 function afficherModeChoisi(mode) {
   document.getElementById('nom-mode').textContent = mode.nom;
   document.getElementById('regle-mode').textContent = mode.regleCourte;
+  document.getElementById('regle-mode').hidden = false;
   const minimum = document.getElementById('minimum-mode');
   minimum.textContent = `${mode.joueursMin} joueurs minimum`;
   minimum.hidden = mode.assezDeJoueurs;

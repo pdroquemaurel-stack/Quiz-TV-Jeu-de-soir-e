@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {
   COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, changerFormat, choisirMode, configurerFormat,
   creerSalle, demarrerPartie, deconnecterJoueur, fermerSalle, nouvelleAventure, passerApresPodium,
-  peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket, trouverSalle,
+  peutLancer, peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket,
+  trouverSalle, validerFormat,
 } from './salles.js';
 import { vueJoueur, vueTv } from './vues.js';
 import { modes, modesAVenir } from './modes/index.js';
@@ -301,6 +302,30 @@ test('format : petite partie par défaut, objectif de 3 à 15 en salle d\'attent
   demarrerPartie(salle);
   assert.equal(configurerFormat(salle, { type: 'petite', objectif: 5 }), false);
   assert.deepEqual(salle.format, { type: 'aventure', objectif: 3 });
+});
+
+test('salle d\'attente en deux étapes : format validé avant de lancer, « Changer de format » y revient', () => {
+  const { salle, joueurs: [a] } = salleAvec(2);
+  assert.equal(salle.formatValide, false);
+  assert.equal(vueJoueur(salle, a).formatValide, false);
+  assert.equal(peutLancer(salle), false);
+  assert.equal(changerFormat(salle), false);
+
+  assert.equal(validerFormat(salle), true);
+  assert.equal(validerFormat(salle), false);
+  assert.equal(peutLancer(salle), true);
+  assert.equal(vueTv(salle).formatValide, true);
+
+  assert.equal(changerFormat(salle), true);
+  assert.equal(salle.formatValide, false);
+  assert.equal(salle.etat, 'lobby');
+
+  validerFormat(salle);
+  finirPartieAvec(salle, 300, 100);
+  assert.equal(validerFormat(salle), false);
+  passerApresPodium(salle);
+  changerFormat(salle);
+  assert.equal(salle.formatValide, false);
 });
 
 test('fin de partie : médailles, points globaux et numéro de partie', () => {
