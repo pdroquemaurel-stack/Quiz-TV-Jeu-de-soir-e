@@ -97,6 +97,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | GéoQuiz | Nouvelle manche (photo) | `etape` |
 | | Un joueur valide son pin (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation (carte des pins) | `revelation` |
+| Mot le plus long | Nouvelle manche (les 9 lettres) | `etape` |
+| | Un joueur valide son mot (`ontRepondu` s'allonge) | `reponse` |
+| | Révélation (les mots des joueurs) | `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

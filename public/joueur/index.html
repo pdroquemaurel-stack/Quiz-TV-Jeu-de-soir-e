@@ -150,6 +150,32 @@
     <button id="bouton-suivant-geoquiz" class="bouton" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="mot-le-plus-long-recherche" hidden>
+    <p class="discret"><span id="mlpl-manche"></span> · Regarde la TV</p>
+    <div id="mlpl-mot" class="mlpl-mot"></div>
+    <div id="mlpl-tuiles" class="mlpl-tuiles"></div>
+    <div class="mlpl-actions">
+      <button id="mlpl-retirer" class="bouton secondaire" aria-label="Retirer la dernière lettre">⌫</button>
+      <button id="mlpl-effacer" class="bouton secondaire">Effacer</button>
+    </div>
+    <button id="mlpl-valider" class="bouton en-bas" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="mot-le-plus-long-mot_valide" hidden>
+    <p class="gros-texte">Mot validé</p>
+    <div id="mlpl-mot-valide" class="mlpl-mot rebond"></div>
+    <p id="mlpl-attente" class="discret"></p>
+  </main>
+
+  <main data-ecran="mot-le-plus-long-resultat" hidden>
+    <div id="mlpl-mot-resultat" class="mlpl-mot"></div>
+    <p id="mlpl-validite" class="mlpl-validite"></p>
+    <p id="mlpl-points" class="carte-resultat rebond"></p>
+    <p id="mlpl-meilleur" class="discret"></p>
+    <p>Score : <strong id="score-mlpl"></strong> · Rang : <strong id="rang-mlpl"></strong></p>
+    <button id="bouton-suivant-mlpl" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="qui-de-nous-voter" hidden>
     <p class="discret">Qui de nous… ? La question est sur la TV</p>
     <div id="candidats" class="candidats"></div>
@@ -490,5 +516,6 @@
     integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="/joueur/modes/geoquiz.js"></script>
+  <script src="/joueur/modes/mot-le-plus-long.js"></script>
 </body>
 </html>

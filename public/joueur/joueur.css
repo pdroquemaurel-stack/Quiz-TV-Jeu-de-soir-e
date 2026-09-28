@@ -853,3 +853,87 @@ main[data-ecran="geoquiz-resultat"] .carte-resultat {
   transform: rotate(-45deg);
   box-sizing: border-box;
 }
+
+/* ---------- Mot le plus long ---------- */
+
+.mlpl-mot {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.mlpl-case {
+  flex: 1;
+  max-width: 42px;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--contour);
+  border-radius: 8px;
+  font-size: 26px;
+  font-weight: bold;
+  background: var(--panneau);
+}
+
+.mlpl-case.vide {
+  border-style: dashed;
+  background: transparent;
+}
+
+.mlpl-tuiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+  margin: 12px 0;
+}
+
+.mlpl-tuile {
+  aspect-ratio: 1;
+  border: 4px solid var(--contour);
+  border-bottom-width: 10px;
+  border-radius: 16px;
+  font-size: 40px;
+  font-weight: bold;
+  color: var(--texte);
+  background: var(--choix-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mlpl-tuile:active {
+  transform: translateY(6px);
+  border-bottom-width: 4px;
+}
+
+.mlpl-tuile:disabled {
+  opacity: 0.25;
+  transform: none;
+  border-bottom-width: 10px;
+}
+
+.mlpl-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.mlpl-actions .bouton {
+  min-height: 60px;
+  font-size: 24px;
+}
+
+.mlpl-validite {
+  font-size: 26px;
+  color: var(--rate);
+}
+
+.mlpl-validite.juste {
+  color: var(--juste);
+}

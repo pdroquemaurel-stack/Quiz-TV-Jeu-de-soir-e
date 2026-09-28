@@ -1,0 +1,143 @@
+/* Écrans « Mot le plus long » de la TV. Chargé après tv.css (voir tv/index.html). */
+
+/* ---------- Tuiles des lettres ---------- */
+
+.mlpl-tuile-tv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 68px;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--texte);
+  background: var(--choix-2);
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 12px;
+}
+
+.mlpl-mot-tv {
+  display: flex;
+  gap: 6px;
+}
+
+/* ---------- Recherche : les 9 lettres en grand ---------- */
+
+.mlpl-consigne {
+  align-self: center;
+  font-size: 48px;
+  color: var(--texte-doux);
+}
+
+.mlpl-tirage {
+  align-self: center;
+  display: flex;
+  gap: 20px;
+  margin: auto 0;
+}
+
+.mlpl-tirage .mlpl-tuile-tv {
+  width: 164px;
+  height: 190px;
+  font-size: 130px;
+  border-width: 6px;
+  border-bottom-width: 16px;
+  border-radius: 28px;
+}
+
+/* ---------- Révélation : les mots, puis le classement à leur place ---------- */
+
+main[data-ecran="mot-le-plus-long-revelation"] .tv-haut {
+  min-height: 0;
+}
+
+/* Le plus long possible, à côté du numéro, une fois tous les mots arrivés. */
+.mlpl-meilleur {
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 40px;
+  background: var(--panneau);
+  border: 5px solid var(--contour);
+  border-bottom-width: 12px;
+  border-radius: 24px;
+  animation: apparaitre 400ms both;
+}
+
+/* Les mots et le classement au même endroit, l'un après l'autre. */
+.mlpl-corps {
+  flex: 1;
+  display: grid;
+}
+
+.mlpl-corps > * {
+  grid-area: 1 / 1;
+}
+
+.mlpl-mots {
+  list-style: none;
+  margin: 0;
+  /* Place laissée au petit QR code du coin. */
+  padding: 0 220px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 40px;
+  animation: disparaitre 400ms 8s forwards;
+}
+
+.mlpl-mots li {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: apparaitre 400ms both;
+}
+
+.mlpl-mots .pastille {
+  flex: none;
+}
+
+.mlpl-mots .mlpl-mot-tv {
+  width: 620px;
+}
+
+/* Le mot gagnant garde ses couleurs, les autres sont sur fond blanc. */
+.mlpl-mots li:not(.gagnant) .mlpl-tuile-tv {
+  background: var(--panneau);
+}
+
+.mlpl-mots .sans-mot {
+  opacity: 0.5;
+}
+
+.mlpl-verdict {
+  flex: 1;
+  white-space: nowrap;
+  color: var(--texte-doux);
+}
+
+.mlpl-verdict.valide {
+  color: var(--juste);
+}
+
+.mlpl-verdict.invalide {
+  color: var(--rate);
+}
+
+.mlpl-classement {
+  align-self: start;
+  margin: 0;
+  animation: apparaitre 400ms 8.4s both;
+}
+
+/* Après un rechargement de la TV : directement le classement. */
+.sans-delai .mlpl-mots {
+  display: none;
+}
+
+.sans-delai .mlpl-meilleur,
+.sans-delai .mlpl-classement {
+  animation-delay: 0s !important;
+}

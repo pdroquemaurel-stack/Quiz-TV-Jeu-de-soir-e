@@ -257,7 +257,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
     [
       ['estimation', false, false], ['qui-de-nous', false, false], ['undercover', false, false],
       ['meme-reponse', false, false], ['bluff', false, false], ['legende', false, false], ['blind-test', false, false], ['geoquiz', true, false],
-      ['futur', false, true],
+      ['mot-le-plus-long', true, false], ['futur', false, true],
     ],
   );
   assert.equal(vueJoueur(salle, autre).modes, undefined);

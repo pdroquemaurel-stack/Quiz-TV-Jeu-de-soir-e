@@ -33,6 +33,7 @@ server/
   modes/legende.js  # mode La légende (docs/modes/legende.md)
   modes/blind-test.js # mode Blind test (docs/modes/blind-test.md)
   modes/geoquiz.js  # mode GéoQuiz (docs/modes/geoquiz.md)
+  modes/mot-le-plus-long.js # mode Mot le plus long (docs/modes/mot-le-plus-long.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -50,6 +51,7 @@ data/legende.json
 data/blind-test.json   # catalogue du blind test : ids Deezer et métadonnées, aucun son
 data/geoquiz.json      # lieux du GéoQuiz : coordonnées, photo Wikimedia, auteur, licence
 data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
+data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lexique 3.83, CC BY-SA 4.0)
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -62,6 +64,8 @@ scripts/verifier-blind-test.js
 scripts/importer-deezer.js   # complète data/blind-test.json depuis des playlists Deezer
 scripts/construire-geoquiz.py  # construit data/geoquiz.json depuis Wikidata et Commons (Python + requests)
 scripts/verifier-geoquiz.js
+scripts/construire-mots.js   # construit data/mots.txt depuis Lexique 3.83
+scripts/verifier-mots.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -84,6 +88,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-blind-test.js` : vérifie `blind-test.json` ; avec `--deezer`, liste en plus les extraits devenus indisponibles
 - `py scripts/construire-geoquiz.py` (après `pip install requests`) : reconstruit le pack de lieux du GéoQuiz et la page d'aperçu `scripts/apercu-geoquiz.html` (non commitée) ; les exclus de `data/geoquiz-exclus.json` sont gardés
 - `node scripts/verifier-geoquiz.js` : vérifie `geoquiz.json` et `geoquiz-exclus.json`
+- `node scripts/construire-mots.js [<Lexique383.tsv>]` : reconstruit `data/mots.txt` depuis Lexique 3.83, téléchargé par le script ou lu dans le fichier donné
+- `node scripts/verifier-mots.js` : vérifie `mots.txt`
 
 ## Ajouter un mode
 

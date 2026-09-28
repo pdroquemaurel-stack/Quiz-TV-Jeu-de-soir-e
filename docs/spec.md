@@ -77,12 +77,13 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 ### Contenu
 - Fichier JSON d'environ 300 questions en français, en 11 catégories dont `maths-logique`, texte uniquement, relues à la main. Un tiers environ porte sur la culture populaire et l'actualité depuis 2010
+- Dictionnaire du Mot le plus long (`data/mots.txt`, tranche 28) : tiré de Lexique 3.83 (B. New et C. Pallier, www.lexique.org), sous licence CC BY-SA 4.0, comme `data/mots.txt` qui en dérive
 
 ## Hors périmètre
 
 Ces éléments sont volontairement repoussés. Le modèle de données ne doit pas les empêcher.
 
-- Les modes de jeu autres que les six déjà en place (Quiz et les cinq modes des tranches 11 à 15) : La réplique est prévue à la tranche 23, les autres sont dans « Plus tard »
+- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26 et 28) : La réplique est prévue à la tranche 23, Le compte est bon, Petit bac et Menteur aux tranches 29 à 31, les autres sont dans « Plus tard »
 - Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz
 - Les questions avec image, son ou vidéo (sauf les GIF de La légende et les extraits du Blind test)
 - Les sons sur les téléphones, et la musique en dehors de la salle d'attente (sauf les extraits joués par la TV au Blind test)
@@ -136,6 +137,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 | Le bluff | 5 / **8** / 12 questions | 30 / **45** / 60 s (écriture) |
 | La légende | 5 / **8** / 12 GIF | 30 / **45** / 60 s (écriture) |
 | GéoQuiz | 3 / **5** / 10 manches | 30 / **60** / 90 s |
+| Mot le plus long | 5 / **6** / 7 manches | 30 / **45** / 60 s |
 | Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
@@ -164,6 +166,10 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 6 | **La légende** (disponible, voir `docs/modes/legende.md`) | 3 à 10 | La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (jamais le sien). 500 points par vote reçu, bonus « Légendaire ! » à l'unanimité. |
 | 7 | **Blind test** (disponible, voir `docs/modes/blind-test.md`) | 3 à 10 | La TV joue des extraits Deezer, les joueurs crient le titre et l'artiste. Chacun son tour maître du jeu : il voit la réponse sur son téléphone et désigne qui a trouvé. Deux formats choisis par l'hôte : Classique (une chanson par manche, 500 points le titre, 500 l'artiste) et Mix (5 chansons en même temps, retirées dès qu'elles sont trouvées, 1000 points les deux, 500 l'un des deux). |
 | 8 | **GéoQuiz** (disponible, voir `docs/modes/geoquiz.md`) | 2 à 10 | Inspiré de GeoGuessr : la TV montre la photo d'un lieu réel, chacun pose un pin sur une carte du monde sur son téléphone. Distance calculée par le serveur, `arrondi(5000 × e^(−km / 2000))` points. 3, 5 ou 10 manches, du plus facile au plus difficile. |
+| 9 | **Mot le plus long** (disponible, voir `docs/modes/mot-le-plus-long.md`) | 2 à 10 | 9 lettres tirées (au moins 2 voyelles et 2 consonnes), 45 secondes pour former en secret, en touchant les tuiles, le mot le plus long. Le mot valide le plus long marque autant de points que de lettres (ex æquo : tous marquent). Mot absent du dictionnaire : 0. La TV montre à la fin le plus long mot possible. |
+| 10 | **Le compte est bon** (tranche 29) | 2 à 10 | 6 plaques (1 à 10 en double, 25, 50, 75, 100) et une cible de 101 à 999. 60 secondes pour construire son calcul pas à pas sur le téléphone, jusqu'à 3 propositions (la plus proche est gardée). Compte exact : 10 points, sinon le plus proche : 5 (ex æquo : tous marquent). 5 manches. |
+| 11 | **Petit bac** (tranche 30) | 2 à 10 | Une lettre et 6 catégories tirées au hasard. Le premier qui a tout rempli appuie sur STOP : les autres ont 10 secondes. Toutes les réponses sont acceptées par défaut, l'hôte refuse celles qui ne passent pas le débat. 1 point par réponse acceptée. 5 manches, une nouvelle lettre à chacune. |
+| 12 | **Menteur** (Perudo, tranche 31) | 2 à 10 | 5 dés cachés par joueur, visibles sur son seul téléphone. Enchères « au moins N dés montrent V » sur tous les dés en jeu, les 1 (pacos) sont jokers. « Menteur ! » révèle les dés sur la TV : le perdant du défi perd un dé. Le premier joueur sans dé perd. |
 
 ## Cas limites
 
@@ -571,6 +577,28 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
   - Temps 4 : options de chaque mode, en plus des réglages existants (tableau et règles dans « Options de l'hôte »). Le choix du milieu reste la valeur d'avant ; au Blind test classique, 10 chansons par défaut. Les options communes passent par `creerOptions` de `server/modes/commun.js` ; le GéoQuiz y range son nombre de manches (`longueur` au lieu de `manches`). Les temps 3 et 4 font un seul commit, à la demande de Paul.
 
   *Test : défini à la fin de chaque temps (instructions données à Paul), sur Render avec la vraie TV et au moins un vrai téléphone.*
+
+### Modes « jeux de lettres, de chiffres et de dés » (tranches 28 à 31)
+
+Une tranche par mode, dans l'ordre. Chacune commence par sa mini-spec `docs/modes/<mode>.md`, validée avant le code, puis suit « Ajouter un mode » de `CLAUDE.md`. Les points à trancher dans la mini-spec sont listés sous chaque tranche.
+
+- **28. Mode « Mot le plus long ».** 9 lettres tirées dans un sac du Scrabble français (au moins 2 voyelles et 2 consonnes, et au moins un mot de 6 lettres possible), chrono de 45 secondes sur la TV, chacun forme son mot en secret en touchant les tuiles de son téléphone. À la fin du chrono, la TV révèle les mots et le plus long possible. Le mot valide le plus long marque autant de points que de lettres, ex æquo : tous marquent ; mot absent du dictionnaire : 0. 5, 6 ou 7 manches (option de l'hôte). Le serveur vérifie le mot (lettres du tirage, présent dans le dictionnaire). 2 à 10 joueurs. Mini-spec : `docs/modes/mot-le-plus-long.md`.
+  - Temps 1 : dictionnaire. `data/mots.txt` (70 000 mots de 2 à 9 lettres, majuscules sans accents) tiré de Lexique 3.83 (CC BY-SA 4.0) par `scripts/construire-mots.js`, vérifié par `scripts/verifier-mots.js`.
+  - Temps 2 : logique serveur, hors registre.
+  - Temps 3 : écrans du téléphone, le mode entre dans le registre.
+  - Temps 4 : écrans de la TV, sons, doc.
+
+  *Test : défini dans `docs/modes/mot-le-plus-long.md`, dont une partie sur Render avec de vrais téléphones.*
+- **29. Mode « Le compte est bon ».** 6 plaques tirées parmi 1 à 10 (en double) et 25, 50, 75, 100, cible de 101 à 999, chrono de 60 secondes. Le téléphone construit le calcul étape par étape (plaque, opération, plaque, « = ») et ne propose que les opérations permises : chaque plaque sert une fois, pas besoin de toutes les utiliser, résultats intermédiaires entiers et positifs. Jusqu'à 3 propositions, la plus proche est gardée. Compte exact : 10 points ; sinon, le plus proche de la cible : 5 points ; ex æquo : tous marquent. 5 manches. Le serveur rejoue chaque calcul reçu pour le valider (serveur autoritaire).
+  - Bonus : la TV affiche à la révélation une solution trouvée par le serveur (recherche exhaustive, avec ses tests).
+  - À trancher : « le plus proche » compte-t-il au-dessus comme au-dessous de la cible ? Les 5 points vont-ils au plus proche s'il n'est qu'à grande distance ? Tirage garantissant qu'une solution exacte existe ?
+- **30. Mode « Petit bac ».** La TV tire une lettre (K, Q, W, X, Y, Z exclues par défaut, activables dans les options de l'hôte) et 6 catégories parmi : Prénom, Pays, Ville, Animal, Fruit ou légume, Métier, Objet, Marque, Sport, Célébrité réelle, Film ou série, Partie du corps, Personnage de fiction. Chacun remplit ses cases ; le premier qui a tout rempli appuie sur STOP, les autres ont 10 secondes (compte à rebours sur la TV, mesuré par le serveur). Validation : la TV affiche les réponses catégorie par catégorie, côte à côte, toutes acceptées (en vert) ; l'hôte décoche sur son téléphone celles refusées après débat à l'oral. 1 point par réponse acceptée, 0 si vide ou refusée. 5 manches, une nouvelle lettre à chacune.
+  - À trancher : chrono maximal si personne n'appuie sur STOP ; réponse ne commençant pas par la lettre refusée d'office par le serveur (accents ignorés) ; deux réponses identiques valent-elles moins (règle classique) ou 1 point chacune ?
+- **31. Mode « Menteur » (Perudo).** Chaque joueur a 5 dés, lancés et visibles sur son seul téléphone (lancer en secouant le téléphone, ou par un bouton). La TV et chaque téléphone montrent le nombre de dés de chacun. Un joueur annonce une enchère (« trois 4 » : au moins trois dés montrent 4 parmi tous les dés en jeu), le suivant surenchérit (quantité plus haute, ou même quantité et valeur plus haute) ou crie « Menteur ! ». Les dés sont alors révélés sur la TV : s'il y a au moins la quantité annoncée, le contestataire perd un dé, sinon l'annonceur. Nouvelle manche : chacun relance ses dés restants.
+  - Pacos (les 1) : jokers, ils comptent pour toutes les valeurs. Passer aux pacos : quantité divisée par 2, arrondie au supérieur. Revenir des pacos à une valeur : quantité de pacos × 2 + 1.
+  - Fin : le premier joueur qui n'a plus de dé perd.
+  - Secret : les dés ne sont envoyés qu'au téléphone concerné (`joueur:etat`), la TV ne les reçoit qu'à la révélation. Le téléphone ne propose que les enchères valides, et le serveur les revérifie.
+  - À trancher : ordre de parole et qui ouvre la manche suivante (le perdant du dé ?) ; peut-on ouvrir une manche sur les pacos ? ; classement des autres joueurs pour les médailles (nombre de dés restants ?) ; chrono pour annoncer ; joueur déconnecté pendant son tour ; lancer en secouant (capteur de mouvement, autorisation à demander sur iPhone).
 
 ### En réserve
 
