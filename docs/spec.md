@@ -140,7 +140,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
 
-Les règles courtes des modes ne citent plus de nombre de questions : il est dans le résumé des options.
+Les options se règlent en salle d'attente et au tableau, après une partie (onglet « Options » sous les modes). Dans le panneau, une rangée d'options trop large pour l'écran défile vers la droite, sans décaler le reste. Les règles courtes des modes ne citent plus de nombre de questions : il est dans le résumé des options.
 
 ### Format et médailles (tous les modes)
 
@@ -279,7 +279,7 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `hote:suivant` | téléphone de l'hôte → serveur | `{ etape }` : l'étape affichée par le téléphone (reçue dans `joueur:etat`). Si ce n'est plus l'étape en cours (double appui, chrono écoulé entre-temps), l'action est ignorée. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
 | `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
-| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format, chansons, tours, ecoute }` pour le Blind test (voir `docs/modes/blind-test.md`). `{ longueur, temps }` pour les autres modes, et en plus pour le quiz (voir « Options de l'hôte »). Toujours le réglage complet : le téléphone renvoie les valeurs reçues avec le seul changement. Accepté seulement en salle d'attente. |
+| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format, chansons, tours, ecoute }` pour le Blind test (voir `docs/modes/blind-test.md`). `{ longueur, temps }` pour les autres modes, et en plus pour le quiz (voir « Options de l'hôte »). Toujours le réglage complet : le téléphone renvoie les valeurs reçues avec le seul changement. Accepté en salle d'attente et au tableau (après une partie, comme le choix du mode). |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau, au grand gagnant et en salle d'attente au choix du mode : retour en salle d'attente, au choix du format. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
@@ -316,7 +316,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
 | Résultat | « Bonne réponse, +740 », « Raté » ou « Pas de réponse », rang actuel. Le bouton touché est marqué dès l'appui, avant la réponse du serveur. Pour l'hôte : bouton « Suivant » |
 | Fin | Rang final, score, médaille et points globaux gagnés (« 🥇 Médaille d'or, +3 » ou « Pas de médaille cette fois »). Pour l'hôte : « Suivant » |
-| Tableau | Rang et points globaux. Pour l'hôte : les boutons de mode, « Partie suivante » (aventure) ou « Rejouer » (petite partie), inactif sous le minimum du mode choisi, et « Changer de format ». Pour les autres : « Mode : … » |
+| Tableau | Rang et points globaux. Pour l'hôte : les boutons de mode, l'onglet « Options » du mode choisi (tranche 27), « Partie suivante » (aventure) ou « Rejouer » (petite partie), inactif sous le minimum du mode choisi, et « Changer de format ». Pour les autres : « Mode : … » |
 | Grand gagnant | « Tu gagnes l'aventure ! » ou « X gagne l'aventure », rang et points globaux. Pour l'hôte : « Nouvelle aventure » et « Changer de format » |
 | En attente de la prochaine question | Pour un joueur arrivé en cours de manche |
 | Reconnexion | Bandeau « Reconnexion… » quand la connexion saute |

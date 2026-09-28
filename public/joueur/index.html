@@ -44,7 +44,7 @@
     <p id="attente-hote" class="discret">En attente que l'hôte lance</p>
     <p class="mode-choisi discret"></p>
     <p id="format-choisi" class="discret"></p>
-    <p id="reglages-choisis" class="discret" hidden></p>
+    <p class="reglages-choisis discret" hidden></p>
     <!-- Hôte, étape 1 : le format seul, puis « Démarrer ». -->
     <div id="reglage-format" class="reglage-format en-bas" hidden>
       <p class="titre-etape">Format</p>
@@ -65,10 +65,10 @@
       <div class="choix-modes"></div>
       <div class="onglet-options">
         <p class="titre-onglet">Options</p>
-        <button id="bouton-reglages" class="bouton-mode bouton-reglages" hidden>
-          <span id="resume-reglages"></span><small>Changer</small>
+        <button class="bouton-mode bouton-reglages" hidden>
+          <span class="resume-reglages"></span><small>Changer</small>
         </button>
-        <p id="sans-option" class="discret" hidden>Pas d'option pour ce mode</p>
+        <p class="sans-option discret" hidden>Pas d'option pour ce mode</p>
       </div>
     </div>
     <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
@@ -368,7 +368,7 @@
     <p class="bt-question-maitre">Qui a trouvé ?</p>
     <div id="bt-choix-gagnant" class="candidats"></div>
     <p class="bt-question-maitre">Qu'a-t-il trouvé ?</p>
-    <div id="bt-choix-quoi" class="choix-reglages trois-colonnes bt-choix-quoi"></div>
+    <div id="bt-choix-quoi" class="choix-reglages bt-choix-quoi"></div>
     <div class="bt-boutons-designation en-bas">
       <button id="bt-annuler" class="bouton secondaire">Annuler</button>
       <button id="bt-valider-mix" class="bouton" disabled>Valider</button>
@@ -398,7 +398,18 @@
     <p id="rang-tableau" class="rang-fin rebond"></p>
     <p><strong id="points-tableau"></strong></p>
     <p class="mode-choisi discret"></p>
-    <div class="choix-modes en-bas" hidden></div>
+    <p class="reglages-choisis discret" hidden></p>
+    <!-- Hôte : prochain mode et ses options, comme en salle d'attente. -->
+    <div class="etape-mode en-bas">
+      <div class="choix-modes" hidden></div>
+      <div class="onglet-options" hidden>
+        <p class="titre-onglet">Options</p>
+        <button class="bouton-mode bouton-reglages" hidden>
+          <span class="resume-reglages"></span><small>Changer</small>
+        </button>
+        <p class="sans-option discret" hidden>Pas d'option pour ce mode</p>
+      </div>
+    </div>
     <button id="bouton-rejouer" class="bouton en-bas" hidden></button>
     <button class="bouton secondaire en-bas bouton-changer-format" hidden>Changer de format</button>
   </main>
@@ -417,9 +428,9 @@
       <p id="titre-reglages" class="gros-texte"></p>
       <div data-reglages="quiz" hidden>
         <p class="titre-option">Thèmes</p>
-        <div id="choix-themes" class="choix-reglages"></div>
+        <div id="choix-themes" class="choix-reglages grille"></div>
         <p class="titre-option">Niveaux</p>
-        <div id="choix-difficulte" class="choix-reglages trois-colonnes"></div>
+        <div id="choix-difficulte" class="choix-reglages"></div>
         <p id="inedites-reglages" class="discret"></p>
       </div>
       <div data-reglages="blind-test" hidden>
@@ -433,7 +444,7 @@
           <p class="titre-option">Chacun est maître du jeu</p>
           <div id="bt-choix-tours" class="choix-reglages"></div>
           <p class="titre-option">Temps d'écoute de chaque mix</p>
-          <div id="bt-choix-ecoute" class="choix-reglages trois-colonnes"></div>
+          <div id="bt-choix-ecoute" class="choix-reglages"></div>
         </div>
       </div>
       <div data-reglages="geoquiz" hidden>
@@ -442,9 +453,9 @@
       <!-- Options communes à presque tous les modes : longueur de la partie et temps pour répondre. -->
       <div id="options-communes" hidden>
         <p class="titre-option">Longueur de la partie</p>
-        <div id="choix-longueur" class="choix-reglages trois-colonnes"></div>
+        <div id="choix-longueur" class="choix-reglages"></div>
         <p class="titre-option">Temps pour répondre</p>
-        <div id="choix-temps" class="choix-reglages trois-colonnes"></div>
+        <div id="choix-temps" class="choix-reglages"></div>
       </div>
       <button id="fermer-reglages" class="bouton">OK</button>
     </div>

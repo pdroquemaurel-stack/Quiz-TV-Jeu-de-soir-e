@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {
   COULEURS_JOUEURS, ajouterJoueur, assezDeJoueurs, changerFormat, choisirMode, configurerFormat,
   creerSalle, demarrerPartie, deconnecterJoueur, fermerSalle, nouvelleAventure, passerApresPodium,
-  peutLancer, peutRejouer, reconnecterJoueur, retirerJoueur, terminerPartie, trouverHoteParSocket,
-  trouverSalle, validerFormat,
+  peutLancer, peutRejouer, reconnecterJoueur, reglerMode, retirerJoueur, terminerPartie,
+  trouverHoteParSocket, trouverSalle, validerFormat,
 } from './salles.js';
 import { vueJoueur, vueTv } from './vues.js';
 import { modes, modesAVenir } from './modes/index.js';
@@ -326,6 +326,22 @@ test('salle d\'attente en deux étapes : format validé avant de lancer, « Chan
   passerApresPodium(salle);
   changerFormat(salle);
   assert.equal(salle.formatValide, false);
+});
+
+test('options du mode : réglables en salle d\'attente et au tableau, pas pendant la partie ni au podium', () => {
+  const { salle } = salleAvec(2);
+  const quinzeQuestions = { ...modes.quiz.reglagesParDefaut(), longueur: 15 };
+  assert.equal(reglerMode(salle, quinzeQuestions), true);
+  demarrerPartie(salle);
+  assert.equal(reglerMode(salle, quinzeQuestions), false);
+  terminerPartie(salle);
+  assert.equal(reglerMode(salle, quinzeQuestions), false, 'podium');
+  passerApresPodium(salle);
+  assert.equal(salle.etat, 'tableau');
+  assert.equal(reglerMode(salle, { ...quinzeQuestions, longueur: 5 }), true);
+  assert.equal(vueJoueur(salle, salle.joueurs[0]).reglages.valeurs.longueur, 5);
+  demarrerPartie(salle);
+  assert.equal(salle.etatMode.questions.length, 5, 'la partie suivante suit les options du tableau');
 });
 
 test('fin de partie : médailles, points globaux et numéro de partie', () => {

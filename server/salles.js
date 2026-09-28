@@ -143,11 +143,11 @@ export function peutLancer(salle) {
   return salle.etat === 'lobby' && salle.formatValide && assezDeJoueurs(salle);
 }
 
-// Réglages du mode choisis par l'hôte en salle d'attente (thèmes et difficulté du quiz).
-// Le mode les valide. Renvoie true s'ils sont acceptés.
+// Réglages du mode choisis par l'hôte en salle d'attente ou au tableau, comme le mode
+// (thèmes du quiz, longueur de la partie…). Le mode les valide. Renvoie true s'ils sont acceptés.
 export function reglerMode(salle, donnees) {
   const mode = modeDe(salle);
-  if (salle.etat !== 'lobby' || !mode.validerReglages) return false;
+  if ((salle.etat !== 'lobby' && salle.etat !== 'tableau') || !mode.validerReglages) return false;
   const reglages = mode.validerReglages(donnees);
   if (!reglages) return false;
   salle.reglagesMode[salle.mode] = reglages;

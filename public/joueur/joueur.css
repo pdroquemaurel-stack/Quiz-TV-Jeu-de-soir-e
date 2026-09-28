@@ -636,25 +636,39 @@ main[data-ecran="quiz-repondre"] {
 }
 
 /* Le panneau défile si le téléphone est trop petit pour les 12 boutons. */
+/* Seul le panneau défile en hauteur ; en largeur, ce sont les rangées d'options. */
 .boite-reglages {
   width: 100%;
   max-width: 420px;
   max-height: calc(100vh - 32px);
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
+/* Une rangée d'options sur une ligne, qui se partagent la largeur. Si elles ne tiennent
+   pas, la rangée seule défile vers la droite. */
 .choix-reglages {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 8px;
-}
-
-.choix-reglages.trois-colonnes {
-  grid-template-columns: 1fr 1fr 1fr;
+  overflow-x: auto;
+  padding-bottom: 6px;
 }
 
 .choix-reglages .bouton-mode {
+  flex: 1 0 auto;
   min-height: 48px;
+  white-space: nowrap;
+}
+
+/* Les thèmes du quiz, trop nombreux pour une ligne : deux colonnes, texte sur deux lignes au besoin. */
+.choix-reglages.grille {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow-x: visible;
+}
+
+.choix-reglages.grille .bouton-mode {
+  white-space: normal;
 }
 
 .titre-option {

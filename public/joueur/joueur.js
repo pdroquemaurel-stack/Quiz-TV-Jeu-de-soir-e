@@ -168,9 +168,12 @@ document.getElementById('objectif-plus').addEventListener('click', () => {
 // Réglages du mode (thèmes du quiz, format du blind test), que l'hôte modifie.
 const panneauReglages = document.getElementById('panneau-reglages');
 
-document.getElementById('bouton-reglages').addEventListener('click', () => {
-  panneauReglages.hidden = false;
-});
+// Un bouton « Changer » en salle d'attente, un autre au tableau.
+for (const bouton of document.querySelectorAll('.bouton-reglages')) {
+  bouton.addEventListener('click', () => {
+    panneauReglages.hidden = false;
+  });
+}
 
 document.getElementById('fermer-reglages').addEventListener('click', () => {
   panneauReglages.hidden = true;
@@ -238,7 +241,7 @@ socket.on('joueur:etat', (vue) => {
   afficherEntete(vue);
   relacherAppuis();
   vibrerAuResultat(vue.ecran);
-  if (vue.ecran !== 'attente') panneauReglages.hidden = true;
+  if (vue.ecran !== 'attente' && vue.ecran !== 'tableau') panneauReglages.hidden = true;
   if (affichagesCommuns[vue.ecran]) {
     afficherEcran(vue.ecran);
     affichagesCommuns[vue.ecran](vue);
@@ -304,23 +307,25 @@ function afficherAttente(vue) {
   document.getElementById('format-choisi').hidden = etapeFormat;
   if (!vue.formatValide) {
     document.querySelector('main[data-ecran="attente"] .mode-choisi').hidden = true;
-    document.getElementById('reglages-choisis').hidden = true;
+    document.querySelector('main[data-ecran="attente"] .reglages-choisis').hidden = true;
   }
 }
 
-// L'hôte les change (onglet « Options »), les autres les voient.
+// En salle d'attente et au tableau : l'hôte les change (onglet « Options »), les autres les voient.
 // Chaque mode remplit sa section du panneau (remplirReglages de joueur/modes/<mode>.js).
 function afficherReglages(vue) {
-  const texte = document.getElementById('reglages-choisis');
-  const bouton = document.getElementById('bouton-reglages');
+  const ecran = document.querySelector(`main[data-ecran="${vue.ecran}"]`);
+  const texte = ecran.querySelector('.reglages-choisis');
+  const bouton = ecran.querySelector('.bouton-reglages');
+  ecran.querySelector('.onglet-options').hidden = !vue.estHote;
   texte.hidden = !vue.reglages || vue.estHote;
   bouton.hidden = !vue.reglages || !vue.estHote;
-  document.getElementById('sans-option').hidden = Boolean(vue.reglages) || !vue.estHote;
+  ecran.querySelector('.sans-option').hidden = Boolean(vue.reglages) || !vue.estHote;
   if (bouton.hidden || !vue.formatValide) panneauReglages.hidden = true;
   if (!vue.reglages) return;
   const resume = `${vue.reglages.titre} : ${vue.reglages.resume}`;
   texte.textContent = resume;
-  document.getElementById('resume-reglages').textContent = resume;
+  ecran.querySelector('.resume-reglages').textContent = resume;
   if (!vue.estHote) return;
   document.getElementById('titre-reglages').textContent = vue.reglages.titre;
   for (const section of panneauReglages.querySelectorAll('[data-reglages]')) {
@@ -443,6 +448,7 @@ function afficherTableau(vue) {
   boutonRejouer.disabled = !vue.assezDeJoueurs;
   afficherChangerFormat('tableau', vue);
   afficherModes('tableau', vue);
+  afficherReglages(vue);
 }
 
 function afficherGrandGagnant(vue) {
