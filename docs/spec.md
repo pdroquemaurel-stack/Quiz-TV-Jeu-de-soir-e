@@ -65,7 +65,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 ### Partie de quiz
 - 10 questions tirées au hasard, sans répétition dans la salle, et équilibrées : 4 faciles, 4 moyennes et 2 difficiles, au plus 2 par catégorie. Les questions jamais vues passent avant cet équilibre, qui est assoupli quand la banque est épuisée
-- Thèmes (un ou plusieurs, ou tous) et difficulté (Facile, Normal, Difficile) choisis par l'hôte en salle d'attente
+- Thèmes et niveaux (Facile, Moyen, Difficile), tous cochés par défaut, que l'hôte décoche en salle d'attente
 - QCM à 4 choix, chrono de 20 s, points dégressifs selon la rapidité
 - Révélation, classement intermédiaire, podium final avec médailles, tableau des points globaux, « Rejouer »
 
@@ -99,7 +99,7 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 ### Quiz culture générale (MVP)
 
 - Une partie compte 10 questions. Chaque question est un QCM à 4 choix avec une seule bonne réponse.
-- **Thèmes et difficulté**, choisis par l'hôte en salle d'attente (par défaut : tous les thèmes, Normal). Le niveau fixe la répartition des 10 questions : Facile = 6 faciles et 4 moyennes, Normal = 4 faciles, 4 moyennes et 2 difficiles, Difficile = 5 moyennes et 5 difficiles. Au plus 2 questions par catégorie, ou davantage si l'hôte a choisi peu de thèmes (10 divisé par le nombre de thèmes, arrondi au-dessus). Le téléphone de l'hôte affiche le nombre de questions jamais vues pour son choix.
+- **Thèmes et niveaux**, choisis par l'hôte en salle d'attente : tout est coché par défaut, et l'hôte décoche ce qu'il ne veut pas (au moins un thème et un niveau restent cochés). Les niveaux cochés fixent la répartition des 10 questions : les trois = 4 faciles, 4 moyennes et 2 difficiles ; Facile + Moyen = 6 faciles et 4 moyennes ; Moyen + Difficile = 5 moyennes et 5 difficiles ; Facile + Difficile = 5 faciles et 5 difficiles ; un seul niveau = 10 questions de ce niveau. Au plus 2 questions par catégorie, ou davantage si l'hôte a choisi peu de thèmes (10 divisé par le nombre de thèmes, arrondi au-dessus). Le téléphone de l'hôte affiche le nombre de questions jamais vues pour son choix.
 - **Tirage** : d'abord les questions jamais vues du choix de l'hôte, puis ses questions déjà vues (les plus anciennes d'abord). Si le choix compte moins de 10 questions, on complète avec les thèmes choisis toutes difficultés confondues, puis avec toute la banque. Une partie a donc toujours 10 questions.
 - Chaque joueur a 20 s pour répondre, en une seule réponse définitive.
 - Une mauvaise réponse ou une absence de réponse rapporte 0 point.
@@ -165,7 +165,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | Moins de 2 joueurs connectés en cours de partie | La partie continue. |
 | TV rechargée ou coupée | La TV se reconnecte à sa salle et reprend l'état en cours. |
 | Serveur redémarré | Partie perdue. La TV recrée une salle et les joueurs voient « Salle introuvable ». |
-| Plus assez de questions inédites | On réautorise les questions déjà vues, en commençant par les plus anciennes. Avec un choix de thèmes et de difficulté, on reste dans ce choix tant qu'il compte 10 questions (voir « Tirage »). |
+| Plus assez de questions inédites | On réautorise les questions déjà vues, en commençant par les plus anciennes. Avec un choix de thèmes et de niveaux, on reste dans ce choix tant qu'il compte 10 questions (voir « Tirage »). |
 
 ## Format des données
 
@@ -224,7 +224,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "grandGagnantId": null,
   "debutPodiumA": 1758641100000,
   "medaillesPartie": { "j_8f3k2a": "or" },
-  "reglagesMode": { "quiz": { "categories": ["cinema-tv"], "difficulte": "facile" } },
+  "reglagesMode": { "quiz": { "categories": ["cinema-tv"], "niveaux": [1, 2] } },
   "etatMode": {
     "phase": "question",
     "questions": ["...10 questions tirées..."],
@@ -241,7 +241,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 
 `format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `formatValide` dit à quelle étape de la salle d'attente en est l'hôte : `false` pour le choix du format (à la création et après « Changer de format »), `true` pour le choix du mode (après « Démarrer »), et il le reste pendant la partie et au tableau. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
-`reglagesMode` range les réglages choisis par l'hôte pour chaque mode, par id de mode : thèmes et difficulté du quiz, format du Blind test (`{ "blind-test": { "format": "mix" } }`). Le mode les valide et les lit, le code commun les range sans les lire. Ils sont gardés d'une partie à l'autre, comme le format.
+`reglagesMode` range les réglages choisis par l'hôte pour chaque mode, par id de mode : thèmes et niveaux du quiz, format du Blind test (`{ "blind-test": { "format": "mix" } }`). Le mode les valide et les lit, le code commun les range sans les lire. Ils sont gardés d'une partie à l'autre, comme le format.
 
 `jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
@@ -259,12 +259,12 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `hote:suivant` | téléphone de l'hôte → serveur | `{ etape }` : l'étape affichée par le téléphone (reçue dans `joueur:etat`). Si ce n'est plus l'étape en cours (double appui, chrono écoulé entre-temps), l'action est ignorée. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
 | `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
-| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, difficulte }` pour le quiz : une liste non vide de catégories connues, et `facile`, `normal` ou `difficile`. `{ format }` pour le Blind test : `classique` ou `mix`. Accepté seulement en salle d'attente, pour un mode qui a des réglages. |
+| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format }` pour le Blind test : `classique` ou `mix`. Accepté seulement en salle d'attente, pour un mode qui a des réglages. |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau, au grand gagnant et en salle d'attente au choix du mode : retour en salle d'attente, au choix du format. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
 | `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. Hors partie, aussi `tableau` (joueurs triés par points globaux, avec rang, médailles et `ecartAuLeader`), `departage`, `pointsMedaille` et `reglages` (voir `joueur:etat`). Jamais la `cle` d'un joueur. |
-| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie), `etape` (la même chaîne que l'étape repérée par la TV, `etat:phase:numero`, à renvoyer avec `hote:suivant`). Toujours sa propre `cle`. Hors partie, aussi `format`, `formatValide`, `pointsGlobaux` et `reglages` (pour le quiz : thèmes et difficulté choisis, leur résumé « Cinéma et TV · Facile », le nombre de questions jamais vues pour ce choix et les options proposées ; `null` pour un mode sans réglages) ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
+| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie), `etape` (la même chaîne que l'étape repérée par la TV, `etat:phase:numero`, à renvoyer avec `hote:suivant`). Toujours sa propre `cle`. Hors partie, aussi `format`, `formatValide`, `pointsGlobaux` et `reglages` (pour le quiz : thèmes et niveaux choisis, leur résumé « Cinéma et TV · Facile », le nombre de questions jamais vues pour ce choix et les options proposées ; `null` pour un mode sans réglages) ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
 
 Ni le téléphone ni la TV ne reçoivent la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.
@@ -291,7 +291,7 @@ Principe : l'information est sur la TV, le téléphone ne montre que ce qu'il fa
 | Écran | Contenu |
 |---|---|
 | Rejoindre | Code pré-rempli depuis le QR code, champ pseudo, bouton « Entrer », messages d'erreur |
-| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte, deux étapes (tranche 27) : d'abord seulement « Petite partie » / « Aventure » (et en aventure le réglage − / + de l'objectif) et « Démarrer » ; ensuite le format en rappel, un bouton par mode (grisé s'il manque des joueurs ; « Bientôt » pour un mode annoncé mais pas encore codé, listé dans `modesAVenir` du registre des modes, vide aujourd'hui : l'affichage « Bientôt » est gardé pour les prochains modes), dessous l'onglet « Options » : le résumé des réglages du mode choisi avec « Changer » (en quiz « Questions : Tous les thèmes · Normal », qui ouvre le choix des thèmes et du niveau, avec le nombre de questions jamais vues), ou « Pas d'option pour ce mode », puis « Lancer la partie » (inactif sous le minimum du mode choisi) et « Changer de format ». Pour les autres : le format, puis, une fois le format validé, « Mode : … » et en quiz les questions choisies |
+| Attente | « Tu es dans la salle », sa couleur. Pour l'hôte, deux étapes (tranche 27) : d'abord seulement « Petite partie » / « Aventure » (et en aventure le réglage − / + de l'objectif) et « Démarrer » ; ensuite le format en rappel, un bouton par mode (grisé s'il manque des joueurs ; « Bientôt » pour un mode annoncé mais pas encore codé, listé dans `modesAVenir` du registre des modes, vide aujourd'hui : l'affichage « Bientôt » est gardé pour les prochains modes), dessous l'onglet « Options » : le résumé des réglages du mode choisi avec « Changer » (en quiz « Questions : Tous les thèmes · Tous niveaux », qui ouvre le choix des thèmes et des niveaux, à cocher ou décocher, avec le nombre de questions jamais vues), ou « Pas d'option pour ce mode », puis « Lancer la partie » (inactif sous le minimum du mode choisi) et « Changer de format ». Pour les autres : le format, puis, une fois le format validé, « Mode : … » et en quiz les questions choisies |
 | Répondre | 4 gros boutons couleur + forme, sans texte, qui occupent tout l'écran |
 | Réponse envoyée | « Réponse envoyée, regarde la TV » avec le bouton choisi |
 | Résultat | « Bonne réponse, +740 », « Raté » ou « Pas de réponse », rang actuel. Le bouton touché est marqué dès l'appui, avant la réponse du serveur. Pour l'hôte : bouton « Suivant » |
@@ -546,7 +546,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
 - **27. Retours du test sur la vraie TV.** Test du 28/09/2026 (TV + Xiaomi TV Stick, un téléphone Android, Wi-Fi). Un commit par temps, après le test de Paul.
   - Temps 1 : salle d'attente de l'hôte en deux étapes. D'abord le format seul (« Petite partie » ou « Aventure », objectif en aventure) et un bouton « Démarrer » (`hote:validerFormat`). Ensuite le choix du mode, avec dessous un onglet « Options » (les réglages du mode choisi, ou « Pas d'option pour ce mode »), « Lancer la partie » et « Changer de format », qui ramène à la première étape. L'étape est gardée par le serveur (`salle.formatValide`), pour qu'un téléphone rechargé la retrouve : `hote:lancer` est refusé tant que le format n'est pas validé, et « Changer de format » (salle d'attente, tableau, grand gagnant) repasse à la première étape. Pendant la première étape, la TV affiche « L'hôte choisit le format ».
-  - Temps 2 : options du quiz. Plus de bouton « Tous » : tous les thèmes sont cochés par défaut, et l'hôte décoche ceux qu'il ne veut pas (le dernier ne se décoche pas). Les niveaux deviennent des cases à cocher (Facile, Moyen, Difficile), tous cochés par défaut, avec les répartitions actuelles : les 3 → 4 faciles, 4 moyennes, 2 difficiles ; Facile + Moyen → 6/4 ; Moyen + Difficile → 5/5 ; Facile + Difficile → 5/5 ; un seul niveau → 10 de ce niveau.
+  - Temps 2 : options du quiz (réglage `niveaux` au lieu de `difficulte`, voir « Quiz culture générale »). Plus de bouton « Tous » : tous les thèmes sont cochés par défaut, et l'hôte décoche ceux qu'il ne veut pas (le dernier ne se décoche pas). Les niveaux deviennent des cases à cocher (Facile, Moyen, Difficile), tous cochés par défaut, avec les répartitions actuelles : les 3 → 4 faciles, 4 moyennes, 2 difficiles ; Facile + Moyen → 6/4 ; Moyen + Difficile → 5/5 ; Facile + Difficile → 5/5 ; un seul niveau → 10 de ce niveau.
   - Temps 3 : relais du maître du jeu au Blind test, en classique comme en mix. Nouvelle phase `relais`, sans chrono, avant chaque chanson (ou mix), y compris la première : le prochain maître voit « C'est toi le maître du jeu ! » et lance lui-même la chanson (« Lancer la chanson »), les autres voient qui va la lancer, la TV affiche le prochain maître. La révélation ne passe plus seule à la suite : le maître sortant ou l'hôte appuie sur « Passer la modération à [prochain maître] ». Si le prochain maître se déconnecte pendant le relais, le relais passe au maître connecté suivant. Le maître désigne toujours qui a trouvé quoi, comme avant.
   - Temps 4 : options de chaque mode, en plus des réglages existants. Le choix du milieu reste la valeur actuelle :
 

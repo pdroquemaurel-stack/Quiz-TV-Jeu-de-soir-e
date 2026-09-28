@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { NIVEAUX } from '../server/modes/quiz.js';
+import { REPARTITIONS } from '../server/modes/quiz.js';
 import {
   alertesQuestions, pairesVoisines, stocksInsuffisants, verifierQuestions,
 } from './verifier-questions.js';
@@ -151,10 +151,13 @@ test('alerte : thème seul sous 10 questions pour un niveau', () => {
   const liste = Array.from({ length: 12 }, (_, i) => questionValide({
     id: `q${String(i).padStart(4, '0')}`, categorie: 'sport', difficulte: i < 8 ? 1 : 3,
   }));
-  const sport = stocksInsuffisants(liste, NIVEAUX).filter(({ categorie }) => categorie === 'sport');
-  // Facile : 8 faciles. Normal : 12. Difficile : 4 difficiles.
+  const sport = stocksInsuffisants(liste, REPARTITIONS).filter(({ categorie }) => categorie === 'sport');
+  // 8 faciles et 4 difficiles : seuls « tous niveaux » et « Facile + Difficile » atteignent 10.
   assert.deepEqual(sport, [
-    { categorie: 'sport', niveau: 'facile', nombre: 8 },
-    { categorie: 'sport', niveau: 'difficile', nombre: 4 },
+    { categorie: 'sport', niveau: '1', nombre: 8 },
+    { categorie: 'sport', niveau: '2', nombre: 0 },
+    { categorie: 'sport', niveau: '3', nombre: 4 },
+    { categorie: 'sport', niveau: '1,2', nombre: 8 },
+    { categorie: 'sport', niveau: '2,3', nombre: 4 },
   ]);
 });

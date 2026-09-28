@@ -166,12 +166,12 @@ export function alertesQuestions(liste) {
   return alertes;
 }
 
-// Pour chaque thème seul et chaque niveau (NIVEAUX du quiz), le nombre de questions
-// du choix, s'il est sous 10 : l'hôte reverrait des questions dès la 1re partie.
-export function stocksInsuffisants(liste, niveaux) {
+// Pour chaque thème seul et chaque choix de niveaux (REPARTITIONS du quiz, « 1,2 »…), le nombre
+// de questions du choix, s'il est sous 10 : l'hôte reverrait des questions dès la 1re partie.
+export function stocksInsuffisants(liste, repartitions) {
   const manques = [];
   for (const categorie of CATEGORIES) {
-    for (const [niveau, { repartition }] of Object.entries(niveaux)) {
+    for (const [niveau, repartition] of Object.entries(repartitions)) {
       const nombre = liste.filter((question) => question.categorie === categorie
         && Object.hasOwn(repartition, question.difficulte)).length;
       if (nombre < NOMBRE_QUESTIONS) manques.push({ categorie, niveau, nombre });
@@ -229,10 +229,12 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   }
 
   // Chargé seulement maintenant : quiz.js lit questions.json dès son import.
-  const { NIVEAUX } = await import('../server/modes/quiz.js');
-  const manques = stocksInsuffisants(liste, NIVEAUX);
+  const { REPARTITIONS, libelleNiveaux } = await import('../server/modes/quiz.js');
+  const manques = stocksInsuffisants(liste, REPARTITIONS);
   if (manques.length) {
     console.log(`\nAttention, ${manques.length} choix de l'hôte sous ${NOMBRE_QUESTIONS} questions (un seul thème) :`);
-    for (const { categorie, niveau, nombre } of manques) console.log(`  ${categorie}, ${niveau} : ${nombre}`);
+    for (const { categorie, niveau, nombre } of manques) {
+      console.log(`  ${categorie}, ${libelleNiveaux(niveau.split(',').map(Number))} : ${nombre}`);
+    }
   }
 }

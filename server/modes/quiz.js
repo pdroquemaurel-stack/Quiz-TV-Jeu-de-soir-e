@@ -31,12 +31,25 @@ export const LIBELLES_CATEGORIE = {
   'maths-logique': 'Maths et logique',
 };
 
-// Niveaux proposés à l'hôte : nombre de questions de chaque difficulté (1 à 3) dans une partie.
-export const NIVEAUX = {
-  facile: { libelle: 'Facile', repartition: { 1: 6, 2: 4 } },
-  normal: { libelle: 'Normal', repartition: { 1: 4, 2: 4, 3: 2 } },
-  difficile: { libelle: 'Difficile', repartition: { 2: 5, 3: 5 } },
+// Niveaux que l'hôte coche ou décoche : la difficulté (1 à 3) des questions.
+export const NIVEAUX = { 1: 'Facile', 2: 'Moyen', 3: 'Difficile' };
+
+// Nombre de questions de chaque difficulté dans une partie, selon les niveaux cochés.
+export const REPARTITIONS = {
+  '1,2,3': { 1: 4, 2: 4, 3: 2 },
+  '1,2': { 1: 6, 2: 4 },
+  '2,3': { 2: 5, 3: 5 },
+  '1,3': { 1: 5, 3: 5 },
+  1: { 1: 10 },
+  2: { 2: 10 },
+  3: { 3: 10 },
 };
+
+// « Tous niveaux », « Facile + Moyen », « Difficile ».
+export function libelleNiveaux(niveaux) {
+  if (niveaux.length === Object.keys(NIVEAUX).length) return 'Tous niveaux';
+  return niveaux.map((niveau) => NIVEAUX[niveau]).join(' + ');
+}
 
 export const banqueQuestions = JSON.parse(
   readFileSync(new URL('../../data/questions.json', import.meta.url), 'utf8'),
@@ -61,37 +74,42 @@ export function melangerReponses(question) {
 
 // ---------- Réglages de l'hôte : thèmes et difficulté ----------
 
+// Par défaut, tout est coché : l'hôte décoche ce qu'il ne veut pas.
 export function reglagesParDefaut() {
-  return { categories: Object.keys(LIBELLES_CATEGORIE), difficulte: 'normal' };
+  return { categories: Object.keys(LIBELLES_CATEGORIE), niveaux: [1, 2, 3] };
 }
 
-// Renvoie des réglages propres (catégories dans l'ordre de la liste), ou null.
-export function validerReglages(donnees) {
-  const { categories, difficulte } = donnees ?? {};
-  if (!Array.isArray(categories) || !Object.hasOwn(NIVEAUX, difficulte)) return null;
-  if (categories.length === 0 || !categories.every((id) => Object.hasOwn(LIBELLES_CATEGORIE, id))) {
+// Une liste non vide d'éléments connus, remise dans l'ordre de la référence et sans doublon, ou null.
+function listeConnue(liste, reference) {
+  if (!Array.isArray(liste) || liste.length === 0 || !liste.every((element) => reference.includes(element))) {
     return null;
   }
-  const ordonnees = Object.keys(LIBELLES_CATEGORIE).filter((id) => categories.includes(id));
-  return { categories: ordonnees, difficulte };
+  return reference.filter((element) => liste.includes(element));
+}
+
+// Renvoie des réglages propres (thèmes et niveaux dans l'ordre des listes), ou null.
+export function validerReglages(donnees) {
+  const categories = listeConnue(donnees?.categories, Object.keys(LIBELLES_CATEGORIE));
+  const niveaux = listeConnue(donnees?.niveaux, Object.keys(NIVEAUX).map(Number));
+  return categories && niveaux ? { categories, niveaux } : null;
 }
 
 function reglagesDe(salle) {
   return salle.reglagesMode?.quiz ?? reglagesParDefaut();
 }
 
-// « Tous les thèmes · Normal », « Cinéma et TV · Facile », « 4 thèmes · Difficile ».
-function resumerReglages({ categories, difficulte }) {
+// « Tous les thèmes · Tous niveaux », « Cinéma et TV · Facile + Moyen », « 4 thèmes · Difficile ».
+function resumerReglages({ categories, niveaux }) {
   const toutes = categories.length === Object.keys(LIBELLES_CATEGORIE).length;
   let themes = `${categories.length} thèmes`;
   if (toutes) themes = 'Tous les thèmes';
   else if (categories.length <= 2) themes = categories.map((id) => LIBELLES_CATEGORIE[id]).join(' + ');
-  return `${themes} · ${NIVEAUX[difficulte].libelle}`;
+  return `${themes} · ${libelleNiveaux(niveaux)}`;
 }
 
 const dansLesThemes = (reglages) => (question) => reglages.categories.includes(question.categorie);
 const dansLeChoix = (reglages) => (question) => dansLesThemes(reglages)(question)
-  && Object.hasOwn(NIVEAUX[reglages.difficulte].repartition, question.difficulte);
+  && reglages.niveaux.includes(question.difficulte);
 
 export function compterInedites(banque, questionsVues, reglages) {
   return banque.filter((question) => dansLeChoix(reglages)(question) && !questionsVues.includes(question.id)).length;
@@ -107,7 +125,7 @@ export function vueReglages(salle) {
     inedites: compterInedites(banqueQuestions, salle.questionsVues, reglages),
     options: {
       categories: Object.entries(LIBELLES_CATEGORIE).map(([id, libelle]) => ({ id, libelle })),
-      difficultes: Object.entries(NIVEAUX).map(([id, { libelle }]) => ({ id, libelle })),
+      niveaux: Object.entries(NIVEAUX).map(([niveau, libelle]) => ({ id: Number(niveau), libelle })),
     },
   };
 }
@@ -122,7 +140,7 @@ const MAX_PAR_CATEGORIE = 2;
 // choisis toutes difficultés confondues, puis toute la banque. Dans chaque groupe,
 // on assouplit les règles l'une après l'autre (difficulté, puis catégorie).
 export function tirerQuestionsEquilibrees(banque, questionsVues, reglages = reglagesParDefaut()) {
-  const { repartition } = NIVEAUX[reglages.difficulte];
+  const repartition = REPARTITIONS[reglages.niveaux.join(',')];
   const maxParCategorie = Math.max(MAX_PAR_CATEGORIE, Math.ceil(NOMBRE_QUESTIONS / reglages.categories.length));
   const ordre = tirerQuestions(banque, questionsVues, banque.length);
   const choix = ordre.filter(dansLeChoix(reglages));

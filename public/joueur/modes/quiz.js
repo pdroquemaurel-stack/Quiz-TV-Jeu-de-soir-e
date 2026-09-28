@@ -25,37 +25,35 @@ function afficherResultatQuiz(vue) {
   document.getElementById('bouton-suivant').hidden = !vue.estHote;
 }
 
-// ---------- Réglages de l'hôte : thèmes et difficulté ----------
+// ---------- Réglages de l'hôte : thèmes et niveaux ----------
 
 // Les réglages reçus du serveur : un appui n'en change qu'une partie.
 let reglagesQuiz = null;
 
 function reglerQuestions(changement) {
-  const { categories, difficulte } = reglagesQuiz;
-  socket.emit('hote:reglerMode', { categories, difficulte, ...changement });
+  const { categories, niveaux } = reglagesQuiz;
+  socket.emit('hote:reglerMode', { categories, niveaux, ...changement });
 }
 
-// changement null : l'appui ne change rien (dernier thème coché).
-function boutonReglageQuiz(texte, choisi, changement) {
-  return boutonReglage(texte, choisi, changement && (() => reglerQuestions(changement)));
+// Tout est coché au départ : un appui coche ou décoche. Le dernier coché ne se décoche pas.
+function boutonsACocher(options, selection, champ) {
+  return options.map(({ id, libelle }) => {
+    const coche = selection.includes(id);
+    const suivants = coche ? selection.filter((autre) => autre !== id) : [...selection, id];
+    const envoyer = suivants.length ? () => reglerQuestions({ [champ]: suivants }) : null;
+    return boutonReglage(libelle, coche, envoyer);
+  });
 }
 
-// « Tous » coché, un appui sur un thème ne garde que lui. Le dernier thème ne se décoche pas.
 function remplirReglagesQuiz(reglages) {
   reglagesQuiz = reglages;
-  const { categories, difficulte, options, inedites } = reglages;
-  const toutes = categories.length === options.categories.length;
-  const themes = options.categories.map(({ id, libelle }) => {
-    const choisi = !toutes && categories.includes(id);
-    let suivantes = choisi ? categories.filter((autre) => autre !== id) : [...categories, id];
-    if (toutes) suivantes = [id];
-    return boutonReglageQuiz(libelle, choisi, suivantes.length ? { categories: suivantes } : null);
-  });
-  const tous = boutonReglageQuiz('Tous', toutes, { categories: options.categories.map(({ id }) => id) });
-  document.getElementById('choix-themes').replaceChildren(tous, ...themes);
-  document.getElementById('choix-difficulte').replaceChildren(...options.difficultes.map(
-    ({ id, libelle }) => boutonReglageQuiz(libelle, id === difficulte, { difficulte: id }),
-  ));
+  const { categories, niveaux, options, inedites } = reglages;
+  document.getElementById('choix-themes').replaceChildren(
+    ...boutonsACocher(options.categories, categories, 'categories'),
+  );
+  document.getElementById('choix-difficulte').replaceChildren(
+    ...boutonsACocher(options.niveaux, niveaux, 'niveaux'),
+  );
   document.getElementById('inedites-reglages').textContent = texteInedites(inedites);
 }
 

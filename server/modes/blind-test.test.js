@@ -310,7 +310,7 @@ test('le quiz garde son résumé, avec le titre « Questions »', () => {
   const salle = creerSalle('tv');
   ajouterJoueur(salle, 'A', 'A');
   assert.equal(vueTv(salle).reglages.titre, 'Questions');
-  assert.equal(vueTv(salle).reglages.resume, 'Tous les thèmes · Normal');
+  assert.equal(vueTv(salle).reglages.resume, 'Tous les thèmes · Tous niveaux');
 });
 
 // --- Format mix ---
