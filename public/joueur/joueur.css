@@ -729,3 +729,59 @@ main[data-ecran="quiz-repondre"] {
 .bt-liste-resultat li + li {
   margin-top: 6px;
 }
+
+/* ---------- GéoQuiz ---------- */
+
+/* La carte prend toute la place : pas de cales de centrage. */
+main.ecran-carte {
+  padding: 10px;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+main.ecran-carte::before,
+main.ecran-carte::after {
+  display: none;
+}
+
+.bandeau-carte {
+  font-size: 20px;
+}
+
+.emplacement-carte {
+  flex: 1;
+  min-height: 200px;
+  display: flex;
+}
+
+.carte-geoquiz {
+  flex: 1;
+  border: 4px solid var(--contour);
+  border-radius: 20px;
+  overflow: hidden;
+  background: #E8EEF1;
+  /* Leaflet interprète lui-même glisser et pincer : le navigateur ne doit ni défiler ni zoomer. */
+  touch-action: none;
+}
+
+.lieu-geoquiz {
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+main[data-ecran="geoquiz-resultat"] .carte-resultat {
+  margin-bottom: 0;
+  padding: 12px;
+}
+
+/* Pin en forme de goutte, pointe en bas sur le lieu tapé. */
+.pin-geoquiz span {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border: 4px solid var(--contour);
+  border-radius: 50% 50% 50% 0;
+  background: var(--couleur);
+  transform: rotate(-45deg);
+  box-sizing: border-box;
+}

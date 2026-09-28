@@ -16,6 +16,12 @@ export const DUREE_DEVINETTE_MS = 60000;
 export const DUREE_REVELATION_MS = 20000;
 const RAYON_TERRE_KM = 6371;
 
+// Clé des fonds de carte CARTO (gratuite, carto.com/basemaps/apikey). Variable d'environnement
+// et non constante : le dépôt est public. Sans clé, les tuiles portent « API KEY REQUIRED ».
+function cleCarte() {
+  return process.env.CLE_CARTO ?? '';
+}
+
 // Nombre de lieux de chaque difficulté (1 facile à 3 difficile) selon le nombre de manches.
 export const REPARTITIONS = {
   3: { 1: 1, 2: 1, 3: 1 },
@@ -257,6 +263,7 @@ function vueManche(salle) {
 function vueRevelation(salle) {
   const { attendus, reponses, questions, indexQuestion } = salle.etatMode;
   const vue = {
+    cleCarte: cleCarte(),
     lieu: vueLieu(questionCourante(salle)),
     resultats: resultats(salle),
     sansReponse: attendus.filter((joueurId) => !reponses[joueurId]),
@@ -273,7 +280,7 @@ function vueRevelation(salle) {
 export function vueJoueur(salle, joueur) {
   if (!participe(salle, joueur.id)) return { ecran: 'attente_question' };
   const { phase, questions, indexQuestion, attendus, pins, reponses } = salle.etatMode;
-  const numeros = { numero: indexQuestion + 1, total: questions.length };
+  const numeros = { numero: indexQuestion + 1, total: questions.length, cleCarte: cleCarte() };
   const reponse = reponses[joueur.id];
   const pinDe = (point) => (point ? { lat: point.lat, lng: point.lng } : null);
   if (phase === 'devinette') {

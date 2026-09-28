@@ -158,6 +158,7 @@ Les vues sont construites champ par champ, jamais en recopiant le lieu. Des test
 
 - **Leaflet 1.9.4** depuis cdnjs (`https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/`), chargé par les deux `index.html`. Aucune dépendance npm.
 - Tuiles **CARTO `light_nolabels`** (sans noms de villes ni de pays), attribution « © OpenStreetMap contributors © CARTO ».
+- **Clé CARTO** : depuis 2026, les tuiles CARTO demandent une clé (gratuite, sans compte, sur carto.com/basemaps/apikey ; 5 millions de tuiles par mois en usage non commercial). Sans elle, les tuiles portent « API KEY REQUIRED ». Le dépôt étant public, la clé est une **variable d'environnement `CLE_CARTO`** (sur Render et en local), lue par `server/modes/geoquiz.js` et transmise aux écrans dans les vues (`cleCarte`). Choix de Paul le 28/09/2026.
 - Zoom de départ : le monde entier. Zoom max **10**. Bouton de zoom masqué (pincement sur le téléphone ; la TV ne se manipule pas).
 - La carte du monde se répète horizontalement ; le serveur ramène la longitude entre −180 et 180, et les lignes pointillées prennent le plus court chemin affiché.
 - Si Leaflet ne se charge pas (CDN inaccessible) : seul GéoQuiz est touché, les autres modes n'utilisent pas Leaflet. Le téléphone affiche « Carte indisponible ».

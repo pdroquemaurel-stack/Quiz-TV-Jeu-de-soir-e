@@ -2,6 +2,7 @@
 import * as blindTest from './blind-test.js';
 import * as bluff from './bluff.js';
 import * as estimation from './estimation.js';
+import * as geoquiz from './geoquiz.js';
 import * as legende from './legende.js';
 import * as memeReponse from './meme-reponse.js';
 import * as quiDeNous from './qui-de-nous.js';
@@ -9,7 +10,7 @@ import * as quiz from './quiz.js';
 import * as undercover from './undercover.js';
 
 export const modes = {
-  quiz, estimation, 'qui-de-nous': quiDeNous, undercover, 'meme-reponse': memeReponse, bluff, legende, 'blind-test': blindTest,
+  quiz, estimation, 'qui-de-nous': quiDeNous, undercover, 'meme-reponse': memeReponse, bluff, legende, 'blind-test': blindTest, geoquiz,
 };
 
 // Modes prévus mais pas encore codés : affichés grisés (« Bientôt »), jamais choisis.

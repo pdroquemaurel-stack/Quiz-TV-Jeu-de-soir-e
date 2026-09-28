@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="/commun/theme.css">
   <link rel="stylesheet" href="/commun/commun.css">
   <link rel="stylesheet" href="/joueur/joueur.css">
+  <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
   <p id="bandeau-reconnexion" class="bandeau" hidden><span class="point"></span> Reconnexion…</p>
@@ -109,6 +113,29 @@
     <p>Score : <strong id="score-estimation"></strong></p>
     <p>Rang : <strong id="rang-estimation"></strong></p>
     <button id="bouton-suivant-estimation" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
+  <main data-ecran="geoquiz-devinette" class="ecran-carte" hidden>
+    <p class="bandeau-carte"><span id="geoquiz-manche"></span> · Où est-ce ? Regarde la TV</p>
+    <div class="emplacement-carte">
+      <!-- Une seule carte, déplacée d'écran en écran par joueur/modes/geoquiz.js. -->
+      <div id="geoquiz-carte" class="carte-geoquiz"></div>
+    </div>
+    <button id="bouton-valider-pin" class="bouton" disabled>Valider</button>
+  </main>
+
+  <main data-ecran="geoquiz-pin_valide" class="ecran-carte" hidden>
+    <p id="geoquiz-attente" class="bandeau-carte"></p>
+    <div class="emplacement-carte"></div>
+  </main>
+
+  <main data-ecran="geoquiz-resultat" class="ecran-carte" hidden>
+    <div class="emplacement-carte"></div>
+    <p id="geoquiz-lieu" class="lieu-geoquiz"></p>
+    <p id="geoquiz-points" class="carte-resultat rebond"></p>
+    <p id="geoquiz-distance" class="discret"></p>
+    <p>Score : <strong id="score-geoquiz"></strong> · Rang : <strong id="rang-geoquiz"></strong></p>
+    <button id="bouton-suivant-geoquiz" class="bouton" hidden>Suivant</button>
   </main>
 
   <main data-ecran="qui-de-nous-voter" hidden>
@@ -377,6 +404,10 @@
         <div id="choix-formats" class="choix-reglages"></div>
         <p id="explication-format" class="discret"></p>
       </div>
+      <div data-reglages="geoquiz" hidden>
+        <div id="choix-manches" class="choix-reglages trois-colonnes"></div>
+        <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles.</p>
+      </div>
       <button id="fermer-reglages" class="bouton">OK</button>
     </div>
   </div>
@@ -406,5 +437,9 @@
   <script src="/joueur/modes/bluff.js"></script>
   <script src="/joueur/modes/legende.js"></script>
   <script src="/joueur/modes/blind-test.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+    integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/joueur/modes/geoquiz.js"></script>
 </body>
 </html>

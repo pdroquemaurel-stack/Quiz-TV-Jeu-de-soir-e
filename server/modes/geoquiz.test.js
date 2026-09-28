@@ -262,12 +262,12 @@ test('secret : pendant la devinette, ni la TV ni les téléphones ne reçoivent 
 
 test('vues du téléphone : devinette, pin validé, résultat, arrivée en cours de manche', () => {
   const { salle, joueurs: [a, b] } = sallePrete({ joueurs: ['A', 'B', 'C'] });
-  assert.deepEqual(vueJoueur(salle, a), { ecran: 'devinette', numero: 1, total: 5, pin: null });
+  assert.deepEqual(vueJoueur(salle, a), { ecran: 'devinette', numero: 1, total: 5, cleCarte: '', pin: null });
   enregistrerReponse(salle, a.id, { lat: 1, lng: 2 });
   assert.deepEqual(vueJoueur(salle, a).pin, { lat: 1, lng: 2 });
   enregistrerReponse(salle, a.id, { lat: 1, lng: 2, valide: true });
   assert.deepEqual(vueJoueur(salle, a), {
-    ecran: 'pin_valide', numero: 1, total: 5, pin: { lat: 1, lng: 2 }, nbValides: 1, nbAttendus: 3,
+    ecran: 'pin_valide', numero: 1, total: 5, cleCarte: '', pin: { lat: 1, lng: 2 }, nbValides: 1, nbAttendus: 3,
   });
   const { joueur: retard } = ajouterJoueur(salle, 'Retard', 's9');
   assert.deepEqual(vueJoueur(salle, retard), { ecran: 'attente_question' });
@@ -295,4 +295,35 @@ test('vue TV de la révélation : lieu, résultats, photo suivante', () => {
   suivant(salle);
   reveler(salle);
   assert.equal(vueTv(salle).photoSuivante, undefined, 'pas de photo après la dernière manche');
+});
+
+// --- Registre et réglages de l'hôte (temps 3) ---
+
+test('GéoQuiz est dans le registre, à partir de 2 joueurs', async () => {
+  const { modes } = await import('./index.js');
+  assert.equal(modes.geoquiz.nom, 'GéoQuiz');
+  assert.equal(modes.geoquiz.joueursMin, 2);
+});
+
+test('réglages : l\'hôte choisit 10 manches en salle d\'attente, la partie en a 10', async () => {
+  const { choisirMode, demarrerPartie: lancer, reglerMode } = await import('../salles.js');
+  const salle = creerSalle('tv');
+  for (const pseudo of ['A', 'B']) ajouterJoueur(salle, pseudo, pseudo);
+  assert.equal(choisirMode(salle, 'geoquiz'), true);
+  assert.equal(reglerMode(salle, { manches: 7 }), false);
+  assert.equal(reglerMode(salle, { manches: 10 }), true);
+  lancer(salle);
+  assert.equal(salle.etatMode.questions.length, 10);
+  assert.equal(reglerMode(salle, { manches: 3 }), false, 'pas pendant la partie');
+});
+
+test('clé CARTO : lue dans CLE_CARTO, transmise au téléphone et à la TV de la révélation', (t) => {
+  t.after(() => { delete process.env.CLE_CARTO; });
+  process.env.CLE_CARTO = 'cle-de-test';
+  const { salle, joueurs: [a] } = sallePrete();
+  assert.equal(vueJoueur(salle, a).cleCarte, 'cle-de-test');
+  assert.equal(vueTv(salle).cleCarte, undefined, 'la TV montre la photo, pas de carte');
+  reveler(salle);
+  assert.equal(vueTv(salle).cleCarte, 'cle-de-test');
+  assert.equal(vueJoueur(salle, a).cleCarte, 'cle-de-test');
 });
