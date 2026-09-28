@@ -1,0 +1,147 @@
+/* Écrans « GéoQuiz » de la TV. Chargé après tv.css (voir tv/index.html).
+   La photo (devinette) ou la carte (révélation) occupe tout l'écran, le reste passe par-dessus. */
+
+.gq-ecran {
+  position: relative;
+  background: var(--contour);
+}
+
+.gq-ecran > :not(.gq-photo, .gq-carte) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Devinette ---------- */
+
+.gq-photo,
+.gq-carte {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gq-photo {
+  object-fit: cover;
+}
+
+/* Photo en hauteur : entière, sur le fond sombre. */
+.gq-photo.portrait {
+  object-fit: contain;
+}
+
+.gq-photo-absente {
+  align-self: center;
+  margin: auto 0;
+  font-size: 72px;
+  color: #fff;
+}
+
+/* Le chrono et les pastilles restent lisibles sur n'importe quelle photo. */
+.gq-ecran .barre-temps {
+  background: var(--panneau);
+}
+
+/* Crédit obligatoire des photos Wikimedia : deux lignes au plus, coupées par « … ». */
+.gq-credit {
+  max-width: calc(100% - 220px);
+  align-self: flex-start;
+  padding: 4px 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 40px;
+  line-height: 1.2;
+  color: #fff;
+  background: rgba(27, 16, 53, 0.7);
+  border-radius: 16px;
+}
+
+main[data-ecran="geoquiz-devinette"] .ont-repondu {
+  margin-top: auto;
+}
+
+/* ---------- Révélation ---------- */
+
+/* z-index : les calques internes de Leaflet (z-index 400 et plus) restent sous le texte. */
+.gq-carte {
+  z-index: 0;
+  background: #E8EEF1;
+  font-size: 40px;
+}
+
+main[data-ecran="geoquiz-revelation"] .tv-haut {
+  min-height: 0;
+}
+
+main[data-ecran="geoquiz-revelation"] .numero {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* Un nom trop long est coupé par « … », le pays reste toujours visible. */
+.gq-lieu {
+  min-width: 0;
+  margin: 0;
+  padding: 10px 36px;
+  display: flex;
+  white-space: nowrap;
+  font-size: 64px;
+  color: #fff;
+  background: var(--juste);
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 32px;
+}
+
+.gq-nom-lieu {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gq-pays {
+  flex: none;
+}
+
+/* Le classement arrive à gauche après 5 s, la carte se recadre alors à sa droite
+   (DELAI_CLASSEMENT_GQ_MS dans geoquiz.js). À gauche, il ne passe pas sous le QR code du coin. */
+.gq-classement {
+  width: 1100px;
+  margin: 0;
+  animation: apparaitre 400ms 5s both;
+}
+
+.gq-classement .gq-distance {
+  min-width: 200px;
+  text-align: right;
+  color: var(--texte-doux);
+}
+
+main[data-ecran="geoquiz-revelation"] .gq-credit {
+  margin-top: auto;
+}
+
+/* Pins de la carte : l'initiale du joueur dans sa couleur, et le vrai lieu en vert. */
+.gq-icone {
+  background: none;
+  border: none;
+}
+
+.pastille.initiale.gq-pin-joueur {
+  width: 72px;
+  height: 72px;
+  border: 5px solid var(--contour);
+}
+
+.gq-pin-lieu {
+  display: block;
+  width: 80px;
+  height: 80px;
+  border: 6px solid var(--contour);
+  border-radius: 50% 50% 50% 0;
+  background: var(--juste);
+  transform: rotate(-45deg);
+  box-sizing: border-box;
+}

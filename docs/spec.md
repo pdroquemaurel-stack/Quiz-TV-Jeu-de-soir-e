@@ -143,6 +143,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 5 | **Le bluff** (disponible, voir `docs/modes/bluff.md`) | 4 à 10 | Question obscure : chacun invente une fausse réponse, puis tout le monde cherche la vraie parmi les bluffs. Points pour avoir trouvé et pour avoir piégé. |
 | 6 | **La légende** (disponible, voir `docs/modes/legende.md`) | 3 à 10 | La TV joue un GIF en boucle, chacun lui invente un titre, puis tout le monde vote pour son préféré (jamais le sien). 500 points par vote reçu, bonus « Légendaire ! » à l'unanimité. |
 | 7 | **Blind test** (disponible, voir `docs/modes/blind-test.md`) | 3 à 10 | La TV joue des extraits Deezer, les joueurs crient le titre et l'artiste. Chacun son tour maître du jeu : il voit la réponse sur son téléphone et désigne qui a trouvé. Deux formats choisis par l'hôte : Classique (une chanson par manche, 500 points le titre, 500 l'artiste) et Mix (5 chansons en même temps, retirées dès qu'elles sont trouvées, 1000 points les deux, 500 l'un des deux). |
+| 8 | **GéoQuiz** (disponible, voir `docs/modes/geoquiz.md`) | 2 à 10 | Inspiré de GeoGuessr : la TV montre la photo d'un lieu réel, chacun pose un pin sur une carte du monde sur son téléphone. Distance calculée par le serveur, `arrondi(5000 × e^(−km / 2000))` points. 3, 5 ou 10 manches, du plus facile au plus difficile. |
 
 ## Cas limites
 
@@ -332,7 +333,7 @@ Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoi
 
 ### Mi TV Stick 4K
 
-- Android TV 11 et 2 Go de RAM : la page TV reste en HTML/CSS/JS sans framework, avec des animations CSS simples (opacité, déplacement) et aucune image lourde. Exceptions : les vidéos MP4 de La légende (tranche 24), une seule jouée à la fois, 1 Mo au plus chacune ; les extraits Deezer du Blind test (tranche 25), jusqu'à 5 `<audio>` joués en même temps (MP3 de 30 s, environ 480 Ko).
+- Android TV 11 et 2 Go de RAM : la page TV reste en HTML/CSS/JS sans framework, avec des animations CSS simples (opacité, déplacement) et aucune image lourde. Exceptions : les vidéos MP4 de La légende (tranche 24), une seule jouée à la fois, 1 Mo au plus chacune ; les extraits Deezer du Blind test (tranche 25), jusqu'à 5 `<audio>` joués en même temps (MP3 de 30 s, environ 480 Ko) ; les photos du GéoQuiz (tranche 26), une à la fois, chargées depuis Wikimedia Commons (1920 px, environ 300 à 600 Ko), la suivante préchargée pendant la révélation, et sa carte Leaflet (bibliothèque chargée depuis cdnjs, tuiles CARTO).
 - **Pour l'instant, la TV tourne dans un navigateur installé sur le stick**, qui ouvre la page `/tv` du serveur. Cela suffit pour jouer : l'APK est en réserve (tranche 9) et ne sera repris que si la soirée test révèle un problème.
 - Réglages du stick avant une soirée : économiseur d'écran et mise en veille réglés sur le délai le plus long. La page TV demande en plus un Wake Lock quand le navigateur le permet (tranche 18).
 - Dans le navigateur, le son reste bloqué jusqu'au premier geste : la touche OK de la télécommande le débloque (voir `docs/sons.md`).
@@ -376,6 +377,7 @@ Limites connues (doc Render) :
 |---|---|---|
 | `URL_PUBLIQUE` | Adresse de base encodée dans le QR code et affichée sous celui-ci | L'IP locale du PC sur le Wi-Fi (par exemple `http://192.168.1.20:3000`), pour que les téléphones puissent l'ouvrir |
 | `MODE_DEV` | `1` autorise une partie à 1 joueur dans tous les modes (lancer, rejouer, choisir le mode) | Désactivé |
+| `CLE_CARTO` | Clé des fonds de carte CARTO du GéoQuiz (gratuite, carto.com/basemaps/apikey). Variable et non constante : le dépôt est public | Vide : les tuiles portent « API KEY REQUIRED » |
 
 Dépendance validée pour le QR code : `qrcode`.
 
@@ -526,6 +528,16 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
   - Temps 3 : format mix, et choix du format par l'hôte (panneau de réglages du téléphone commun au quiz et au Blind test).
 
   *Test : défini dans `docs/modes/legende.md`, dont la lecture des vidéos en boucle sur le vrai stick.*
+
+### Tranche « GéoQuiz » (26)
+
+- **26. Mode « GéoQuiz ».** Inspiré de GeoGuessr : photo d'un lieu réel sur la TV, pin sur une carte du monde (Leaflet) sur chaque téléphone, points selon la distance. 2 à 10 joueurs, 3, 5 ou 10 manches. Mini-spec : `docs/modes/geoquiz.md`.
+  - Temps 1 : pack de 500 lieux (Wikidata et Wikimedia Commons), `scripts/construire-geoquiz.py`, page d'aperçu, `data/geoquiz-exclus.json`, `scripts/verifier-geoquiz.js`.
+  - Temps 2 : logique serveur, hors registre.
+  - Temps 3 : écrans du téléphone, le mode entre dans le registre.
+  - Temps 4 : écrans de la TV, sons, doc.
+
+  *Test : défini dans `docs/modes/geoquiz.md`, dont une partie sur Render avec de vrais téléphones (pincement) et l'affichage des photos et de la carte sur le vrai stick.*
 
 ### En réserve
 

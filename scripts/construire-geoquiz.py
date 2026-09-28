@@ -254,11 +254,16 @@ def choisir_lieux(candidats, quota, max_par_pays):
     return gardes
 
 
+def majuscule_initiale(texte):
+    """Wikidata écrit « parc national de… » : on affiche « Parc national de… »."""
+    return texte[:1].upper() + texte[1:]
+
+
 def vers_pack(lieu):
     return {
         "id": "l" + lieu["qid"][1:],
-        "nom": lieu["nom"],
-        "pays": lieu["pays"],
+        "nom": majuscule_initiale(lieu["nom"]),
+        "pays": majuscule_initiale(lieu["pays"]),
         "lat": lieu["lat"],
         "lng": lieu["lng"],
         "image": lieu["image"],

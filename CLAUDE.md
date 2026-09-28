@@ -32,6 +32,7 @@ server/
   modes/bluff.js    # mode Le bluff (docs/modes/bluff.md)
   modes/legende.js  # mode La légende (docs/modes/legende.md)
   modes/blind-test.js # mode Blind test (docs/modes/blind-test.md)
+  modes/geoquiz.js  # mode GéoQuiz (docs/modes/geoquiz.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -47,6 +48,8 @@ data/meme-reponse.json
 data/bluff.json
 data/legende.json
 data/blind-test.json   # catalogue du blind test : ids Deezer et métadonnées, aucun son
+data/geoquiz.json      # lieux du GéoQuiz : coordonnées, photo Wikimedia, auteur, licence
+data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -57,6 +60,8 @@ scripts/verifier-legende.js
 scripts/telecharger-gifs.py  # complète data/legende.json depuis Imgflip (Python + requests)
 scripts/verifier-blind-test.js
 scripts/importer-deezer.js   # complète data/blind-test.json depuis des playlists Deezer
+scripts/construire-geoquiz.py  # construit data/geoquiz.json depuis Wikidata et Commons (Python + requests)
+scripts/verifier-geoquiz.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -77,6 +82,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `py scripts/telecharger-gifs.py` (après `pip install requests`) : ajoute des GIF Imgflip au catalogue de La légende
 - `node scripts/importer-deezer.js <id de playlist> [<id>…]` : ajoute les chansons de playlists Deezer publiques au catalogue du blind test
 - `node scripts/verifier-blind-test.js` : vérifie `blind-test.json` ; avec `--deezer`, liste en plus les extraits devenus indisponibles
+- `py scripts/construire-geoquiz.py` (après `pip install requests`) : reconstruit le pack de lieux du GéoQuiz et la page d'aperçu `scripts/apercu-geoquiz.html` (non commitée) ; les exclus de `data/geoquiz-exclus.json` sont gardés
+- `node scripts/verifier-geoquiz.js` : vérifie `geoquiz.json` et `geoquiz-exclus.json`
 
 ## Ajouter un mode
 
@@ -105,6 +112,7 @@ Après la mini-spec `docs/modes/<mode>.md` validée :
 
 - **Jamais de push sur `main` pendant une soirée** : chaque push redéploie Render et redémarre le serveur, toutes les parties en cours sont perdues.
 - **`URL_PUBLIQUE` est obligatoire sur Render** (adresse HTTPS du service) : sans elle, le QR code encode l'adresse interne du conteneur, illisible pour les téléphones. Le serveur affiche un avertissement au démarrage si elle manque.
+- **`CLE_CARTO`** (clé gratuite CARTO) : sans elle, la carte du GéoQuiz porte « API KEY REQUIRED ». En local : `$env:CLE_CARTO="…"; npm run dev`.
 - `/sante` donne le nombre de salles, de joueurs connectés et l'heure de démarrage (`demarreA`) : si elle change, le serveur a redémarré.
 
 ## Style de code

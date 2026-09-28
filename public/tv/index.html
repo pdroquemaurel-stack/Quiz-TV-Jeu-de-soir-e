@@ -15,6 +15,11 @@
   <link rel="stylesheet" href="/tv/modes/undercover.css">
   <link rel="stylesheet" href="/tv/modes/legende.css">
   <link rel="stylesheet" href="/tv/modes/blind-test.css">
+  <link rel="stylesheet" href="/tv/modes/geoquiz.css">
+  <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
   <!-- Toujours conçue en 1920×1080, puis mise à l'échelle de la fenêtre par ajusterEchelle(). -->
@@ -384,6 +389,28 @@
       <p class="attente">L'hôte peut lancer une nouvelle aventure</p>
     </main>
 
+    <main data-ecran="geoquiz-devinette" class="gq-ecran" hidden>
+      <img id="gq-photo" class="gq-photo" alt="">
+      <p id="gq-photo-absente" class="gq-photo-absente" hidden>Photo indisponible</p>
+      <div class="tv-haut">
+        <p class="numero" id="gq-numero-devinette"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="gq-barre-temps"></div></div>
+        <p class="chrono" id="gq-chrono"></p>
+      </div>
+      <ul class="etiquettes ont-repondu" id="gq-ont-repondu"></ul>
+      <p class="gq-credit" id="gq-credit-devinette"></p>
+    </main>
+
+    <main data-ecran="geoquiz-revelation" class="gq-ecran" hidden>
+      <div id="gq-carte" class="gq-carte"></div>
+      <div class="tv-haut">
+        <p class="numero" id="gq-numero-revelation"></p>
+        <p class="gq-lieu rebond" id="gq-lieu"></p>
+      </div>
+      <ol class="classement classement-colonne gq-classement" id="gq-classement"></ol>
+      <p class="gq-credit" id="gq-credit-revelation"></p>
+    </main>
+
     <aside id="qr-coin" class="qr-coin" hidden>
       <img id="qr-coin-image" class="qr" alt="QR code pour rejoindre">
       <p id="code-coin"></p>
@@ -405,5 +432,9 @@
   <script src="/tv/modes/bluff.js"></script>
   <script src="/tv/modes/legende.js"></script>
   <script src="/tv/modes/blind-test.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+    integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/tv/modes/geoquiz.js"></script>
 </body>
 </html>

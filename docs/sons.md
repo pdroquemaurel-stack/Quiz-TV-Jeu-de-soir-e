@@ -93,6 +93,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Mix : une chanson trouvée (une carte de plus a un `joueur`) | `revelation` |
 | | Révélation du classique | `victoire` si doublé, `rate` si personne n'a trouvé, sinon `revelation` |
 | | Révélation du mix | `victoire` si les 5 chansons ont été trouvées, sinon aucun |
+| GéoQuiz | Nouvelle manche (photo) | `etape` |
+| | Un joueur valide son pin (`ontRepondu` s'allonge) | `reponse` |
+| | Révélation (carte des pins) | `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 
