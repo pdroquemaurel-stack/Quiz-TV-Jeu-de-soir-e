@@ -7,7 +7,7 @@ import {
 
 export const id = 'qui-de-nous';
 export const nom = 'Qui de nous ?';
-export const regleCourte = 'Vote pour un joueur, marque si tu votes comme le groupe.';
+export const regleCourte = 'Vote pour un joueur, marque si tu votes comme le groupe. Les amitiés tiendront.';
 export const joueursMin = 4;
 
 export const NOMBRE_QUESTIONS = 10;

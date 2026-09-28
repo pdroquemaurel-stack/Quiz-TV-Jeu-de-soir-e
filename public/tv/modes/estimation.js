@@ -72,7 +72,7 @@ function ligneSansReponse(joueur) {
     texte('rang', ''),
     pastille(joueur.couleur),
     texte('pseudo', joueur.pseudo),
-    texte('valeur', 'pas de réponse'),
+    texte('valeur', 'abstention'),
   );
   griserSiDeconnecte(element, joueur);
   return element;

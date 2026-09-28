@@ -85,10 +85,10 @@ const PRIX = {
   piege: {
     emoji: '🪤',
     titre: 'Question piège',
-    detail: (prix) => (prix.rates === prix.sur ? "personne n'a trouvé" : `${prix.rates} ratés sur ${prix.sur}`),
+    detail: (prix) => (prix.rates === prix.sur ? 'personne, bien sûr' : `${prix.rates} ratés sur ${prix.sur}`),
   },
   suspense: { emoji: '⏳', titre: 'Suspense', detail: (prix) => `réponse à ${secondes(prix.dureeMs)} s` },
-  lune: { emoji: '🌙', titre: 'Dans la lune', detail: (prix) => `${prix.fois} sans réponse` },
+  lune: { emoji: '🌙', titre: 'Dans la lune', detail: (prix) => `${prix.fois} fois absent` },
 };
 
 // Les prix remplacent le classement du podium au bout de quelques secondes (CSS).

@@ -8,7 +8,7 @@ import {
 
 export const id = 'legende';
 export const nom = 'La légende';
-export const regleCourte = 'Donnez un titre à chaque GIF, puis votez pour le meilleur.';
+export const regleCourte = 'Donnez un titre à chaque GIF, puis votez pour le meilleur. Soyez drôles, ou essayez.';
 export const joueursMin = 3;
 
 export const NOMBRE_GIF = 8;

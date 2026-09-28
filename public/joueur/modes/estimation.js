@@ -22,10 +22,10 @@ function lireNombre() {
   const brut = champNombre.value.replace(/\s/g, '');
   if (brut === '') return {};
   if (/[,.]/.test(brut)) return { erreur: 'Un nombre entier, sans virgule' };
-  if (brut.includes('-')) return { erreur: 'Pas de nombre négatif' };
+  if (brut.includes('-')) return { erreur: 'Pas de nombre négatif. Reste positif.' };
   if (!/^\d+$/.test(brut)) return { erreur: 'Des chiffres seulement' };
   const nombre = Number(brut);
-  if (nombre > NOMBRE_MAX) return { erreur: 'Nombre trop grand' };
+  if (nombre > NOMBRE_MAX) return { erreur: 'Nombre trop grand. Calme-toi.' };
   return { nombre };
 }
 
@@ -73,11 +73,11 @@ function afficherResultatEstimation(vue) {
   const resultat = document.getElementById('resultat-estimation');
   const detail = document.getElementById('detail-estimation');
   if (vue.nombre === null) {
-    resultat.textContent = 'Pas de réponse';
+    resultat.textContent = phraseDuMoment(PHRASES_SANS_REPONSE, etapeRecue);
     detail.textContent = '';
   } else {
     const place = vue.rangEcart === 1 ? 'Le plus proche' : `${vue.rangEcart}e plus proche`;
-    resultat.textContent = vue.points > 0 ? `${place}, +${vue.points}` : 'Trop loin';
+    resultat.textContent = vue.points > 0 ? `${place}, +${vue.points}. Joli coup d'œil.` : 'Trop loin. Très loin, même.';
     detail.textContent =
       `Ta réponse : ${avecUniteTel(vue.nombre, vue.unite)}, écart ${formatNombre.format(vue.ecart)}`;
   }

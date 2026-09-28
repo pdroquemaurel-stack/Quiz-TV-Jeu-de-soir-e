@@ -86,8 +86,8 @@ function afficherMaitreClassique(vue) {
 
 const CONSIGNES_ECOUTER = {
   relais: 'La musique va démarrer…',
-  ecoute: 'Écoute la TV et crie ta réponse !',
-  designation: 'Le maître du jeu désigne les gagnants…',
+  ecoute: 'Écoute la TV et crie ta réponse. Fort, mais juste.',
+  designation: 'Le maître du jeu désigne les gagnants… Espérons qu\'il écoutait.',
 };
 
 function afficherEcouterBlindTest(vue) {
@@ -256,16 +256,16 @@ function afficherResultatBlindTest(vue) {
 }
 
 function texteResultatClassique(vue) {
-  if (vue.estMaitre) return 'Tu étais le maître du jeu';
+  if (vue.estMaitre) return 'Tu étais le maître du jeu. Pas de points, mais le pouvoir.';
   if (vue.aTrouveTitre && vue.aTrouveArtiste) return '+1000 : titre et artiste !';
   if (vue.aTrouveTitre) return '+500 : le titre';
   if (vue.aTrouveArtiste) return '+500 : l\'artiste';
-  return 'Pas de point cette fois';
+  return 'Pas de point. Tu as bien chanté, au moins.';
 }
 
 function texteResultatMix(vue) {
-  if (vue.estMaitre) return 'Tu étais le maître du jeu';
-  return vue.points > 0 ? `+${vue.points} dans ce mix` : 'Pas de point cette fois';
+  if (vue.estMaitre) return 'Tu étais le maître du jeu. Pas de points, mais le pouvoir.';
+  return vue.points > 0 ? `+${vue.points} dans ce mix` : 'Pas de point. Tu as bien chanté, au moins.';
 }
 
 // ---------- Réglages de l'hôte : format, nombre de chansons ou options du mix ----------

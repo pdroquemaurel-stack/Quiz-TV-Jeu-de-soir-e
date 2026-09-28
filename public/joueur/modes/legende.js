@@ -106,8 +106,8 @@ function afficherResultatLegende(vue) {
 // « Légendaire ! +2500 », « Ton titre a reçu 3 votes, +1500 », « Ton titre n'a reçu aucun vote »…
 function texteResultatLegende(vue) {
   if (vue.pasAssezDeTitres) return 'Pas assez de titres pour voter';
-  if (vue.sonTitre === null) return 'Pas de titre';
-  if (vue.votesRecus === 0) return 'Ton titre n\'a reçu aucun vote';
+  if (vue.sonTitre === null) return 'Pas de titre. Page blanche.';
+  if (vue.votesRecus === 0) return 'Ton titre n\'a reçu aucun vote. Humour incompris.';
   if (vue.legendaire) return `Légendaire ! +${vue.points}`;
   const votes = vue.votesRecus > 1 ? `${vue.votesRecus} votes` : '1 vote';
   return `Ton titre a reçu ${votes}, +${vue.points}`;

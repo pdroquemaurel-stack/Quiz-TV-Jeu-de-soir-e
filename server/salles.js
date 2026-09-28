@@ -16,10 +16,10 @@ const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const COULEURS_JOUEURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const ERREURS = {
-  salle_introuvable: 'Salle introuvable',
-  pseudo_pris: 'Pseudo déjà pris',
-  salle_pleine: `Salle pleine (${JOUEURS_MAX} max)`,
-  pseudo_invalide: `Pseudo de 1 à ${PSEUDO_MAX} caractères`,
+  salle_introuvable: 'Salle introuvable. Vérifie le code.',
+  pseudo_pris: 'Pseudo déjà pris. Sois original.',
+  salle_pleine: `Salle pleine (${JOUEURS_MAX} max). Il fallait venir plus tôt.`,
+  pseudo_invalide: `Pseudo de 1 à ${PSEUDO_MAX} caractères. Pas un roman.`,
 };
 
 export const salles = {};

@@ -8,7 +8,7 @@ import {
 
 export const id = 'meme-reponse';
 export const nom = 'Même réponse';
-export const regleCourte = 'Marque des points en donnant la même réponse que les autres.';
+export const regleCourte = 'Marque des points en donnant la même réponse que les autres. L\'originalité ne paie pas.';
 export const joueursMin = 3;
 
 export const NOMBRE_QUESTIONS = 10;

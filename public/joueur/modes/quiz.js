@@ -14,10 +14,25 @@ function afficherReponseEnvoyeeQuiz(vue) {
     `choix choix-envoye rebond choix-${vue.choix} fond-choix-${vue.choix}`;
 }
 
+const PHRASES_BONNE_REPONSE = [
+  (points) => `Correct, +${points}. Mon humeur s'améliore légèrement.`,
+  (points) => `Bonne réponse, +${points}. Personne ne s'y attendait.`,
+  (points) => `Juste, +${points}. Ne t'habitue pas.`,
+  (points) => `Bonne réponse, +${points}. Je suis presque surpris.`,
+];
+
+const PHRASES_MAUVAISE_REPONSE = [
+  'Faux. Mais avec beaucoup d\'assurance.',
+  'Raté. C\'était pourtant une des quatre.',
+  'Faux. On admire l\'audace.',
+  'Raté. Je ne suis pas déçu, je m\'y attendais.',
+];
+
 function afficherResultatQuiz(vue) {
   const resultat = document.getElementById('resultat');
-  if (vue.juste) resultat.textContent = `Bonne réponse, +${vue.points}`;
-  else resultat.textContent = vue.aRepondu ? 'Raté' : 'Pas de réponse';
+  if (vue.juste) resultat.textContent = phraseDuMoment(PHRASES_BONNE_REPONSE, etapeRecue)(vue.points);
+  else if (vue.aRepondu) resultat.textContent = phraseDuMoment(PHRASES_MAUVAISE_REPONSE, etapeRecue);
+  else resultat.textContent = phraseDuMoment(PHRASES_SANS_REPONSE, etapeRecue);
   resultat.classList.toggle('juste', vue.juste);
   document.getElementById('plus-rapide-resultat').hidden = !vue.plusRapide;
   document.getElementById('score-resultat').textContent = vue.score;
