@@ -1,8 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ajouterJoueur, creerSalle } from '../salles.js';
 import {
-  classement, cleReponse, echeanceDePhase, fusionnerParCle, normaliser, questionCourante, questionSuivanteOuPodium,
+  ajouterJoueur, choisirMode, creerSalle, demarrerPartie, fermerSalle, reglerMode,
+} from '../salles.js';
+import {
+  classement, cleReponse, creerOptions, echeanceDePhase, fusionnerParCle, normaliser, questionCourante, questionSuivanteOuPodium,
   tempsRestantMs, tirerQuestions,
 } from './commun.js';
 import { modes, modesAVenir } from './index.js';
@@ -31,6 +33,47 @@ test('les modes à venir sont décrits, sans doublon ni conflit avec le registre
     assert.ok(!Object.hasOwn(modes, mode.id), mode.id);
     assert.ok(mode.nom && mode.regleCourte, mode.id);
     assert.ok(Number.isInteger(mode.joueursMin), mode.id);
+  }
+});
+
+// --- Options de l'hôte : longueur de la partie et temps pour répondre ---
+
+test('options : le choix du milieu par défaut, seules les valeurs proposées acceptées', () => {
+  const options = creerOptions('essai', { longueurs: [1, 3, 5], unite: ['manche', 'manches'], temps: [15, 20, 30] });
+  assert.deepEqual(options.reglagesParDefaut(), { longueur: 3, temps: 20 });
+  assert.deepEqual(options.validerReglages({ longueur: 1, temps: 30, autre: 'ignoré' }), { longueur: 1, temps: 30 });
+  for (const donnees of [null, {}, { longueur: 2, temps: 20 }, { longueur: 3, temps: '20' }, { longueur: 3 }]) {
+    assert.equal(options.validerReglages(donnees), null, JSON.stringify(donnees));
+  }
+  const salle = { reglagesMode: {} };
+  assert.equal(options.vueReglages(salle).resume, '3 manches · 20 s');
+  salle.reglagesMode.essai = { longueur: 1, temps: 15 };
+  const vue = options.vueReglages(salle);
+  assert.equal(vue.resume, '1 manche · 15 s');
+  assert.deepEqual(vue.valeurs, { longueur: 1, temps: 15 });
+  assert.deepEqual(vue.options.longueurs.map((choix) => choix.libelle), ['1 manche', '3 manches', '5 manches']);
+  assert.deepEqual(vue.options.temps.map((choix) => choix.id), [15, 20, 30]);
+});
+
+// [mode, longueur choisie, temps choisi (s), phase où l'on répond]
+const OPTIONS_CHOISIES = [
+  ['quiz', 15, 30, 'question'], ['estimation', 12, 45, 'question'], ['qui-de-nous', 5, 10, 'vote'],
+  ['meme-reponse', 15, 45, 'saisie'], ['bluff', 5, 60, 'saisie'], ['legende', 12, 30, 'saisie'],
+  ['geoquiz', 3, 90, 'devinette'], ['undercover', 5, 30, 'vote'],
+];
+
+test('options : chaque mode joue la longueur et le temps choisis par l\'hôte', () => {
+  for (const [id, longueur, temps, phase] of OPTIONS_CHOISIES) {
+    const salle = creerSalle('tv');
+    for (const pseudo of ['A', 'B', 'C', 'D', 'E']) ajouterJoueur(salle, pseudo, pseudo);
+    assert.equal(choisirMode(salle, id), true, id);
+    assert.equal(reglerMode(salle, { ...modes[id].reglagesParDefaut(), longueur, temps }), true, id);
+    demarrerPartie(salle);
+    const { questions, paires } = salle.etatMode;
+    assert.equal((questions ?? paires).length, longueur, id);
+    salle.etatMode.phase = phase;
+    assert.equal(modes[id].echeance(salle) - salle.etatMode.debutPhaseA, temps * 1000, id);
+    fermerSalle(salle);
   }
 });
 

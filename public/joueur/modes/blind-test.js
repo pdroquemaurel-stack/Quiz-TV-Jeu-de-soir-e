@@ -50,7 +50,15 @@ boutonValiderBlindTest.addEventListener('click', () => {
   socket.emit('joueur:repondre', { ...selectionBlindTest });
 });
 
-document.getElementById('bt-suivant').addEventListener('click', envoyerSuivant);
+// À la révélation, le maître sortant passe la modération (joueur:repondre) ; l'hôte le peut
+// aussi, avec son « Suivant » habituel.
+let passeParLeMaitre = false;
+
+document.getElementById('bt-suivant').addEventListener('click', (evenement) => {
+  marquerEnvoi(evenement.currentTarget);
+  if (passeParLeMaitre) socket.emit('joueur:repondre', { passer: true });
+  else envoyerSuivant();
+});
 
 function afficherMaitreClassique(vue) {
   const chanson = `${vue.numero}/${vue.total}`;
@@ -76,12 +84,30 @@ function afficherMaitreClassique(vue) {
   marquerSelectionBlindTest();
 }
 
+const CONSIGNES_ECOUTER = {
+  relais: 'La musique va démarrer…',
+  ecoute: 'Écoute la TV et crie ta réponse !',
+  designation: 'Le maître du jeu désigne les gagnants…',
+};
+
 function afficherEcouterBlindTest(vue) {
   document.getElementById('bt-numero-ecouter').textContent = libelleMancheBlindTest(vue);
-  document.getElementById('bt-consigne-ecouter').textContent = vue.phase === 'designation'
-    ? 'Le maître du jeu désigne les gagnants…'
-    : 'Écoute la TV et crie ta réponse !';
+  document.getElementById('bt-consigne-ecouter').textContent = CONSIGNES_ECOUTER[vue.phase];
   document.getElementById('bt-maitre-ecouter').textContent = vue.maitre;
+}
+
+// ---------- Relais : le prochain maître lance la chanson ----------
+
+const boutonLancerBlindTest = document.getElementById('bt-lancer');
+
+boutonLancerBlindTest.addEventListener('click', () => {
+  marquerEnvoi(boutonLancerBlindTest);
+  socket.emit('joueur:repondre', { lancer: true });
+});
+
+function afficherRelaisBlindTest(vue) {
+  document.getElementById('bt-numero-relais').textContent = libelleMancheBlindTest(vue);
+  boutonLancerBlindTest.textContent = vue.format === 'mix' ? 'Lancer le mix' : 'Lancer la chanson';
 }
 
 function libelleMancheBlindTest(vue) {
@@ -221,7 +247,12 @@ function afficherResultatBlindTest(vue) {
   }
   document.getElementById('bt-score').textContent = vue.score;
   document.getElementById('bt-rang').textContent = texteRang(vue.rang);
-  document.getElementById('bt-suivant').hidden = !vue.estHote;
+  passeParLeMaitre = vue.estMaitre;
+  const boutonPasser = document.getElementById('bt-suivant');
+  boutonPasser.hidden = !vue.estMaitre && !vue.estHote;
+  boutonPasser.textContent = vue.prochainMaitre
+    ? `Passer la modération à ${vue.prochainMaitre}`
+    : 'Voir le podium';
 }
 
 function texteResultatClassique(vue) {
@@ -237,23 +268,52 @@ function texteResultatMix(vue) {
   return vue.points > 0 ? `+${vue.points} dans ce mix` : 'Pas de point cette fois';
 }
 
-// ---------- Réglage de l'hôte : le format ----------
+// ---------- Réglages de l'hôte : format, nombre de chansons ou options du mix ----------
 
 const EXPLICATIONS_FORMAT = {
   classique: 'Une chanson à la fois, 30 s pour trouver le titre et l\'artiste.',
   mix: '5 chansons en même temps : retrouvez-les toutes !',
 };
 
-function remplirReglagesBlindTest({ format, options }) {
+const curseurChansons = document.getElementById('bt-curseur-chansons');
+const nombreChansons = document.getElementById('bt-nombre-chansons');
+
+// Le nombre suit le doigt ; il n'est envoyé qu'au lâcher du curseur.
+curseurChansons.addEventListener('input', () => {
+  nombreChansons.textContent = curseurChansons.value;
+});
+curseurChansons.addEventListener('change', () => {
+  envoyerReglages({ chansons: Number(curseurChansons.value) });
+});
+
+function remplirReglagesBlindTest({ format, chansons, tours, ecoute, options }) {
   document.getElementById('choix-formats').replaceChildren(...options.formats.map(({ id, libelle }) => {
-    const envoyer = id === format ? null : () => socket.emit('hote:reglerMode', { format: id });
+    const envoyer = id === format ? null : () => envoyerReglages({ format: id });
     return boutonReglage(libelle, id === format, envoyer);
   }));
   document.getElementById('explication-format').textContent = EXPLICATIONS_FORMAT[format];
+
+  document.getElementById('bt-reglage-chansons').hidden = format !== 'classique';
+  curseurChansons.min = options.chansons.min;
+  curseurChansons.max = options.chansons.max;
+  // Un état reçu pendant que l'hôte fait glisser le curseur ne le fait pas sauter.
+  if (document.activeElement !== curseurChansons) {
+    curseurChansons.value = chansons;
+    nombreChansons.textContent = chansons;
+  }
+
+  document.getElementById('bt-reglages-mix').hidden = format !== 'mix';
+  document.getElementById('bt-choix-tours').replaceChildren(...options.tours.map((nombre) => boutonReglage(
+    nombre > 1 ? `${nombre} fois` : 'Une fois', nombre === tours, () => envoyerReglages({ tours: nombre }),
+  )));
+  document.getElementById('bt-choix-ecoute').replaceChildren(...options.ecoutes.map((secondes) => boutonReglage(
+    `${secondes} s`, secondes === ecoute, () => envoyerReglages({ ecoute: secondes }),
+  )));
 }
 
 modesJoueur['blind-test'] = {
   remplirReglages: remplirReglagesBlindTest,
+  relais: afficherRelaisBlindTest,
   ecouter: afficherEcouterBlindTest,
   maitre_classique: afficherMaitreClassique,
   maitre_mix: afficherMaitreMix,

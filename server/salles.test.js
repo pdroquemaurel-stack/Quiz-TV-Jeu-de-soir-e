@@ -269,7 +269,7 @@ test('choix du mode : la TV reçoit le mode choisi hors partie seulement', () =>
   assert.deepEqual(vueTv(salle).modeChoisi, {
     id: 'quiz',
     nom: 'Quiz',
-    regleCourte: '10 questions, 4 choix : plus tu réponds vite, plus tu marques.',
+    regleCourte: '4 choix : plus tu réponds vite, plus tu marques.',
     joueursMin: 2,
     assezDeJoueurs: false,
   });

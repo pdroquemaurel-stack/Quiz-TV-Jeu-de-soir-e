@@ -285,17 +285,17 @@ test('chaque action hote:* est refusée à un non-hôte', { timeout: 10000 }, as
   const { salle, clients: [hote, autre] } = await ouvrirSalle(t, ['Hôte', 'Autre']);
 
   autre.emettre('hote:configurer', { type: 'aventure', objectif: 5 });
-  autre.emettre('hote:reglerMode', { categories: ['sport'], niveaux: [1, 2] });
+  autre.emettre('hote:reglerMode', { categories: ['sport'], niveaux: [1, 2], longueur: 10, temps: 20 });
   autre.emettre('hote:validerFormat');
   autre.emettre('hote:lancer');
   await synchroniser(autre, salle);
   assert.equal(salle.etat, 'lobby');
   assert.equal(salle.formatValide, false);
   assert.equal(salle.format.type, 'petite');
-  assert.equal(derniereVue(autre).reglages.resume, 'Tous les thèmes · Tous niveaux');
-  hote.emettre('hote:reglerMode', { categories: ['sport'], niveaux: [1, 2] });
+  assert.equal(derniereVue(autre).reglages.resume, 'Tous les thèmes · Tous niveaux · 10 questions · 20 s');
+  hote.emettre('hote:reglerMode', { categories: ['sport'], niveaux: [1, 2], longueur: 10, temps: 20 });
   await synchroniser(hote, salle);
-  assert.equal(derniereVue(hote).reglages.resume, 'Sport · Facile + Moyen');
+  assert.equal(derniereVue(hote).reglages.resume, 'Sport · Facile + Moyen · 10 questions · 20 s');
 
   hote.emettre('hote:validerFormat');
   hote.emettre('hote:lancer');

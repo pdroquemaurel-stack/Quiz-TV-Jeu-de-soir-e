@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 26. Elle a été validée le 28/09/2026 (voir « Choix validés » à la fin). Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes (`docs/modes/estimation.md`) et sur `docs/sons.md`.
 
+> **Tranche 27** : le nombre de manches (3, 5 ou 10) et le temps pour poser son pin (30, 60 ou 90 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 Inspiré de GeoGuessr : la TV montre la photo d'un lieu réel, chacun pose un pin sur une carte du monde sur son téléphone, le plus proche marque le plus.
 
 La tranche se code en quatre temps, chacun testé (et commité avec ton accord) avant de passer au suivant :
@@ -100,7 +103,7 @@ Aucun nouvel événement.
 |---|---|
 | `joueur:repondre` | En `devinette` : `{ lat, lng, valide }`. `valide: false` à chaque tap (brouillon), `valide: true` avec « Valider ». Refusé si `lat` n'est pas un nombre entre −90 et 90, si `lng` n'est pas un nombre fini, si le joueur n'est pas attendu ou a déjà validé. `lng` est ramenée entre −180 et 180 (la carte peut « faire le tour » du monde). Ignoré en `revelation`. |
 | `hote:suivant` | Pendant la révélation : manche suivante (ou podium) |
-| `hote:reglerMode` | En salle d'attente : `{ manches: 3 | 5 | 10 }` |
+| `hote:reglerMode` | En salle d'attente : `{ longueur: 3 | 5 | 10, temps: 30 | 60 | 90 }` (tranche 27 ; avant : `{ manches }`) |
 | `hote:terminer`, `hote:rejouer` | Comme au quiz |
 
 Pourquoi un brouillon envoyé à chaque tap : le pin doit être validé à la fin du chrono, et **le temps est mesuré par le serveur**, jamais par le téléphone. Le serveur doit donc déjà connaître le dernier pin. Un brouillon ne fait pas de diffusion (`diffuser`) : personne d'autre n'a besoin de le savoir.

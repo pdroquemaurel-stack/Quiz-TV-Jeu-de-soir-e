@@ -2,7 +2,7 @@
 // chacun pose un pin sur une carte du monde, le plus proche marque le plus.
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, echeanceDePhase, listerAttendus, noterQuestionsVues, participe,
+  classement as classementCommun, creerOptions, echeanceDePhase, listerAttendus, noterQuestionsVues, participe,
   phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions,
   tousOntRepondu,
 } from './commun.js';
@@ -28,7 +28,6 @@ export const REPARTITIONS = {
   5: { 1: 2, 2: 2, 3: 1 },
   10: { 1: 4, 2: 4, 3: 2 },
 };
-const MANCHES_PAR_DEFAUT = 5;
 
 function lireJson(chemin) {
   return JSON.parse(readFileSync(new URL(chemin, import.meta.url), 'utf8'));
@@ -79,30 +78,12 @@ export function calculerResultats(reponses, lieu) {
     .sort((a, b) => a.km - b.km);
 }
 
-// ---------- Réglages de l'hôte : le nombre de manches ----------
+// ---------- Options de l'hôte : nombre de manches et temps pour poser son pin (en s) ----------
 
-export function reglagesParDefaut() {
-  return { manches: MANCHES_PAR_DEFAUT };
-}
-
-export function validerReglages(donnees) {
-  const manches = donnees?.manches;
-  return Number.isInteger(manches) && Object.hasOwn(REPARTITIONS, manches) ? { manches } : null;
-}
-
-function manchesChoisies(salle) {
-  return (salle.reglagesMode?.[id] ?? reglagesParDefaut()).manches;
-}
-
-export function vueReglages(salle) {
-  const manches = manchesChoisies(salle);
-  return {
-    manches,
-    titre: 'Manches',
-    resume: `${manches} manches`,
-    options: { manches: Object.keys(REPARTITIONS).map(Number) },
-  };
-}
+const options = creerOptions(id, {
+  longueurs: Object.keys(REPARTITIONS).map(Number), unite: ['manche', 'manches'], temps: [30, DUREE_DEVINETTE_MS / 1000, 90],
+});
+export const { reglagesParDefaut, validerReglages, vueReglages } = options;
 
 // ---------- Tirage ----------
 
@@ -132,7 +113,7 @@ export function tirerLieux(banque, questionsVues, manches) {
 
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const questions = tirerLieux(banqueGeoquiz, salle.questionsVues, manchesChoisies(salle));
+  const questions = tirerLieux(banqueGeoquiz, salle.questionsVues, options.lire(salle).longueur);
   noterQuestionsVues(salle, questions);
   salle.etatMode = { questions };
   demarrerManche(salle, 0);
@@ -214,10 +195,10 @@ export function suivant(salle) {
   return true;
 }
 
-const DUREES = { devinette: DUREE_DEVINETTE_MS, revelation: DUREE_REVELATION_MS };
-
+// Le temps pour poser son pin est une option de l'hôte, qui ne change pas pendant la partie.
 export function echeance(salle) {
-  return echeanceDePhase(salle, DUREES);
+  const dureeDevinetteMs = options.lire(salle).temps * 1000;
+  return echeanceDePhase(salle, { devinette: dureeDevinetteMs, revelation: DUREE_REVELATION_MS });
 }
 
 // Appelée quand l'échéance est atteinte.

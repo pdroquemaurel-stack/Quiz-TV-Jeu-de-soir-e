@@ -1,13 +1,13 @@
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, echeanceDePhase, listerAttendus, melanger, noterQuestionsVues, participe,
-  phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions,
-  tousOntRepondu,
+  classement as classementCommun, echeanceDePhase, listerAttendus, melanger, noterQuestionsVues,
+  optionsParDefaut, participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe,
+  tempsRestantMs, tirerQuestions, tousOntRepondu, validerOptions, vueOptions,
 } from './commun.js';
 
 export const id = 'quiz';
 export const nom = 'Quiz';
-export const regleCourte = '10 questions, 4 choix : plus tu réponds vite, plus tu marques.';
+export const regleCourte = '4 choix : plus tu réponds vite, plus tu marques.';
 export const joueursMin = 2;
 
 const NOMBRE_CHOIX = 4;
@@ -55,10 +55,11 @@ export const banqueQuestions = JSON.parse(
   readFileSync(new URL('../../data/questions.json', import.meta.url), 'utf8'),
 );
 
-// points = arrondi(1000 - 500 × t / 20), avec t en secondes, borné entre 0 et 20 s.
-export function calculerPoints(dureeMs) {
-  const t = Math.min(Math.max(dureeMs, 0), DUREE_QUESTION_MS) / 1000;
-  return Math.round(1000 - (500 * t) / 20);
+// points = arrondi(1000 - 500 × t / T), avec t le temps de réponse borné entre 0 et T,
+// et T le temps pour répondre (20 s par défaut, une option de l'hôte).
+export function calculerPoints(dureeMs, dureeQuestionMs = DUREE_QUESTION_MS) {
+  const t = Math.min(Math.max(dureeMs, 0), dureeQuestionMs);
+  return Math.round(1000 - (500 * t) / dureeQuestionMs);
 }
 
 // Copie de la question avec les réponses dans un nouvel ordre,
@@ -72,11 +73,15 @@ export function melangerReponses(question) {
   };
 }
 
-// ---------- Réglages de l'hôte : thèmes et difficulté ----------
+// ---------- Réglages de l'hôte : thèmes, niveaux, nombre de questions et temps pour répondre ----------
+
+export const OPTIONS = {
+  longueurs: [5, NOMBRE_QUESTIONS, 15], unite: ['question', 'questions'], temps: [10, DUREE_QUESTION_MS / 1000, 30],
+};
 
 // Par défaut, tout est coché : l'hôte décoche ce qu'il ne veut pas.
 export function reglagesParDefaut() {
-  return { categories: Object.keys(LIBELLES_CATEGORIE), niveaux: [1, 2, 3] };
+  return { categories: Object.keys(LIBELLES_CATEGORIE), niveaux: [1, 2, 3], ...optionsParDefaut(OPTIONS) };
 }
 
 // Une liste non vide d'éléments connus, remise dans l'ordre de la référence et sans doublon, ou null.
@@ -91,7 +96,8 @@ function listeConnue(liste, reference) {
 export function validerReglages(donnees) {
   const categories = listeConnue(donnees?.categories, Object.keys(LIBELLES_CATEGORIE));
   const niveaux = listeConnue(donnees?.niveaux, Object.keys(NIVEAUX).map(Number));
-  return categories && niveaux ? { categories, niveaux } : null;
+  const options = validerOptions(OPTIONS, donnees);
+  return categories && niveaux && options ? { categories, niveaux, ...options } : null;
 }
 
 function reglagesDe(salle) {
@@ -99,7 +105,7 @@ function reglagesDe(salle) {
 }
 
 // « Tous les thèmes · Tous niveaux », « Cinéma et TV · Facile + Moyen », « 4 thèmes · Difficile ».
-function resumerReglages({ categories, niveaux }) {
+function resumerThemes({ categories, niveaux }) {
   const toutes = categories.length === Object.keys(LIBELLES_CATEGORIE).length;
   let themes = `${categories.length} thèmes`;
   if (toutes) themes = 'Tous les thèmes';
@@ -116,14 +122,18 @@ export function compterInedites(banque, questionsVues, reglages) {
 }
 
 // Public : ni question ni réponse, seulement le choix et le nombre de questions jamais vues.
+// « Tous les thèmes · Tous niveaux · 10 questions · 20 s ».
 export function vueReglages(salle) {
   const reglages = reglagesDe(salle);
+  const { resume, options } = vueOptions(OPTIONS, reglages);
   return {
     ...reglages,
+    valeurs: reglages,
     titre: 'Questions',
-    resume: resumerReglages(reglages),
+    resume: `${resumerThemes(reglages)} · ${resume}`,
     inedites: compterInedites(banqueQuestions, salle.questionsVues, reglages),
     options: {
+      ...options,
       categories: Object.entries(LIBELLES_CATEGORIE).map(([id, libelle]) => ({ id, libelle })),
       niveaux: Object.entries(NIVEAUX).map(([niveau, libelle]) => ({ id: Number(niveau), libelle })),
     },
@@ -132,16 +142,36 @@ export function vueReglages(salle) {
 
 // ---------- Tirage ----------
 
-// Au plus 2 questions par catégorie, davantage quand l'hôte a choisi peu de thèmes.
+// Pour 10 questions : au plus 2 par catégorie, davantage quand l'hôte a choisi peu de thèmes.
 const MAX_PAR_CATEGORIE = 2;
 
+// La répartition des 10 questions (REPARTITIONS), mise à l'échelle du nombre de questions :
+// arrondie en dessous, puis le reste va aux niveaux les plus faciles (5/5 sur 5 questions → 3/2).
+export function repartitionPour(niveaux, nombre) {
+  const repartition = {};
+  for (const [niveau, sur10] of Object.entries(REPARTITIONS[niveaux.join(',')])) {
+    repartition[niveau] = Math.floor((sur10 * nombre) / NOMBRE_QUESTIONS);
+  }
+  let reste = nombre - Object.values(repartition).reduce((total, n) => total + n, 0);
+  for (const niveau of Object.keys(repartition)) {
+    if (reste === 0) break;
+    repartition[niveau]++;
+    reste--;
+  }
+  return repartition;
+}
+
 // Groupes, dans l'ordre : les inédites du choix de l'hôte, puis ses déjà vues
-// (les plus anciennes d'abord). Si le choix ne compte pas 10 questions : les thèmes
+// (les plus anciennes d'abord). Si le choix ne compte pas assez de questions : les thèmes
 // choisis toutes difficultés confondues, puis toute la banque. Dans chaque groupe,
 // on assouplit les règles l'une après l'autre (difficulté, puis catégorie).
 export function tirerQuestionsEquilibrees(banque, questionsVues, reglages = reglagesParDefaut()) {
-  const repartition = REPARTITIONS[reglages.niveaux.join(',')];
-  const maxParCategorie = Math.max(MAX_PAR_CATEGORIE, Math.ceil(NOMBRE_QUESTIONS / reglages.categories.length));
+  const nombre = reglages.longueur;
+  const repartition = repartitionPour(reglages.niveaux, nombre);
+  const maxParCategorie = Math.max(
+    Math.ceil((MAX_PAR_CATEGORIE * nombre) / NOMBRE_QUESTIONS),
+    Math.ceil(nombre / reglages.categories.length),
+  );
   const ordre = tirerQuestions(banque, questionsVues, banque.length);
   const choix = ordre.filter(dansLeChoix(reglages));
   const groupes = [
@@ -162,7 +192,7 @@ export function tirerQuestionsEquilibrees(banque, questionsVues, reglages = regl
   for (const groupe of groupes) {
     for (const regle of regles) {
       for (const question of groupe) {
-        if (choisies.length === NOMBRE_QUESTIONS) break;
+        if (choisies.length === nombre) break;
         if (!choisies.includes(question) && regle(question)) choisies.push(question);
       }
     }
@@ -211,10 +241,15 @@ export function verifierFinAnticipee(salle) {
   if (phaseEnCours(salle) === 'question' && tousOntRepondu(salle)) reveler(salle);
 }
 
+// Le temps pour répondre, une option de l'hôte, qui ne change pas pendant la partie.
+function dureeQuestionMs(salle) {
+  return reglagesDe(salle).temps * 1000;
+}
+
 function pointsGagnes(salle, joueurId) {
   const reponse = salle.etatMode.reponses[joueurId];
   if (!reponse || reponse.choix !== questionCourante(salle).bonneReponse) return 0;
-  return calculerPoints(reponse.recuA - salle.etatMode.debutQuestionA);
+  return calculerPoints(reponse.recuA - salle.etatMode.debutQuestionA, dureeQuestionMs(salle));
 }
 
 export function reveler(salle) {
@@ -272,10 +307,10 @@ export function suivant(salle) {
   return true;
 }
 
-const DUREES = { transition: DUREE_TRANSITION_MS, question: DUREE_QUESTION_MS, revelation: DUREE_REVELATION_MS };
-
 export function echeance(salle) {
-  return echeanceDePhase(salle, DUREES);
+  return echeanceDePhase(salle, {
+    transition: DUREE_TRANSITION_MS, question: dureeQuestionMs(salle), revelation: DUREE_REVELATION_MS,
+  });
 }
 
 // Appelée quand l'échéance est atteinte.
@@ -357,23 +392,24 @@ export function vueJoueur(salle, joueur) {
 
 const MAX_PRIX = 4;
 const SERIE_MIN = 3;
-const SUSPENSE_MIN_MS = 15000;
+// Suspense : une bonne réponse dans le dernier quart du temps (après 15 s sur 20).
+const SUSPENSE_PART_DU_TEMPS = 3 / 4;
 const LUNE_MIN = 2;
 const SOLO_ATTENDUS_MIN = 3;
 
 function prixDeLaPartie(salle) {
-  return calculerPrix(salle.etatMode.historique, salle.joueurs.map((joueur) => joueur.id));
+  return calculerPrix(salle.etatMode.historique, salle.joueurs.map((joueur) => joueur.id), dureeQuestionMs(salle));
 }
 
 // Les prix mérités, dans un ordre fixe, 4 au plus. Seuls les joueurs encore
 // dans la salle (idsJoueurs) peuvent en gagner un. À égalité, tous le reçoivent.
 // historique : [{ texte, attendus: [id], reponses: { id: { juste, dureeMs } } }]
-export function calculerPrix(historique, idsJoueurs) {
+export function calculerPrix(historique, idsJoueurs, dureeQuestionMs = DUREE_QUESTION_MS) {
   const bonnes = historique.flatMap(({ reponses }) => Object.entries(reponses)
     .filter(([id, reponse]) => reponse.juste && idsJoueurs.includes(id))
     .map(([id, { dureeMs }]) => ({ id, dureeMs })));
   const eclair = prixEclair(bonnes);
-  const suspense = prixSuspense(bonnes);
+  const suspense = prixSuspense(bonnes, dureeQuestionMs * SUSPENSE_PART_DU_TEMPS);
   const prix = [
     eclair,
     prixSerie(historique, idsJoueurs),
@@ -401,9 +437,9 @@ function prixEclair(bonnes) {
   return { type: 'eclair', ids: [...new Set(ids)], dureeMs };
 }
 
-// La bonne réponse la plus tardive, si elle arrive après 15 s.
-function prixSuspense(bonnes) {
-  const tardives = bonnes.filter((bonne) => bonne.dureeMs >= SUSPENSE_MIN_MS);
+// La bonne réponse la plus tardive, si elle arrive après suspenseMinMs (15 s sur 20).
+function prixSuspense(bonnes, suspenseMinMs) {
+  const tardives = bonnes.filter((bonne) => bonne.dureeMs >= suspenseMinMs);
   if (tardives.length === 0) return null;
   const dureeMs = Math.max(...tardives.map((bonne) => bonne.dureeMs));
   const ids = tardives.filter((bonne) => bonne.dureeMs === dureeMs).map((bonne) => bonne.id);

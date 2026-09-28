@@ -1,19 +1,25 @@
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, echeanceDePhase, listerAttendus, noterQuestionsVues, participe,
-  phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions,
-  tousOntRepondu,
+  classement as classementCommun, creerOptions, echeanceDePhase, listerAttendus, noterQuestionsVues,
+  participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs,
+  tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
 export const id = 'estimation';
 export const nom = 'Estimation';
-export const regleCourte = '8 questions : saisis un nombre, les 3 plus proches marquent.';
+export const regleCourte = 'Saisis un nombre : les 3 plus proches marquent.';
 export const joueursMin = 3;
 
 export const NOMBRE_QUESTIONS = 8;
 export const DUREE_QUESTION_MS = 30000;
 export const DUREE_REVELATION_MS = 10000;
 export const REPONSE_MAX = 999999999999;
+
+// Options de l'hôte : nombre de questions et temps pour répondre (en s).
+const options = creerOptions(id, {
+  longueurs: [5, NOMBRE_QUESTIONS, 12], unite: ['question', 'questions'], temps: [20, DUREE_QUESTION_MS / 1000, 45],
+});
+export const { reglagesParDefaut, validerReglages, vueReglages } = options;
 
 // Points selon le rang d'écart : 1er, 2e, 3e. Au-delà, 0.
 const POINTS_PAR_RANG = [1000, 600, 300];
@@ -40,7 +46,7 @@ export function calculerEstimations(reponses, bonneReponse) {
 
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const questions = tirerQuestions(banqueEstimation, salle.questionsVues, NOMBRE_QUESTIONS);
+  const questions = tirerQuestions(banqueEstimation, salle.questionsVues, options.lire(salle).longueur);
   noterQuestionsVues(salle, questions);
   salle.etatMode = { questions };
   demarrerQuestion(salle, 0);
@@ -98,10 +104,10 @@ export function suivant(salle) {
   return true;
 }
 
-const DUREES = { question: DUREE_QUESTION_MS, revelation: DUREE_REVELATION_MS };
-
+// Le temps pour répondre est une option de l'hôte, qui ne change pas pendant la partie.
 export function echeance(salle) {
-  return echeanceDePhase(salle, DUREES);
+  const dureeReponseMs = options.lire(salle).temps * 1000;
+  return echeanceDePhase(salle, { question: dureeReponseMs, revelation: DUREE_REVELATION_MS });
 }
 
 // Appelée quand l'échéance est atteinte.

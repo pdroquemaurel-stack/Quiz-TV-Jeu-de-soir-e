@@ -326,7 +326,30 @@ function afficherReglages(vue) {
   for (const section of panneauReglages.querySelectorAll('[data-reglages]')) {
     section.hidden = section.dataset.reglages !== vue.mode;
   }
-  modesJoueur[vue.mode].remplirReglages(vue.reglages);
+  reglagesRecus = vue.reglages;
+  modesJoueur[vue.mode].remplirReglages?.(vue.reglages);
+  remplirOptionsCommunes(vue.reglages.options);
+}
+
+// Les derniers réglages reçus : un appui n'en change qu'une partie, le serveur reçoit le tout.
+let reglagesRecus = null;
+
+function envoyerReglages(changement) {
+  socket.emit('hote:reglerMode', { ...reglagesRecus.valeurs, ...changement });
+}
+
+// Longueur de la partie et temps pour répondre, pour les modes qui les proposent.
+function remplirOptionsCommunes(options) {
+  const section = document.getElementById('options-communes');
+  section.hidden = !options.longueurs;
+  if (section.hidden) return;
+  const { longueur, temps } = reglagesRecus.valeurs;
+  document.getElementById('choix-longueur').replaceChildren(...options.longueurs.map(
+    (choix) => boutonReglage(choix.libelle, choix.id === longueur, () => envoyerReglages({ longueur: choix.id })),
+  ));
+  document.getElementById('choix-temps').replaceChildren(...options.temps.map(
+    (choix) => boutonReglage(choix.libelle, choix.id === temps, () => envoyerReglages({ temps: choix.id })),
+  ));
 }
 
 // Un bouton de réglage. envoyer : ce que l'appui envoie au serveur, ou null s'il ne change rien.

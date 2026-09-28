@@ -21,8 +21,9 @@ La tranche se code en trois temps, chacun testé avant de passer au suivant :
 ## Règles communes aux deux formats
 
 - **3 à 10 joueurs** : le maître et au moins deux joueurs qui répondent.
-- **Ordre des maîtres** : au lancement, le serveur mélange les joueurs connectés. Cette liste figée donne l'ordre des maîtres. **Une partie compte autant de manches que de joueurs dans cette liste** : chacun est maître une fois.
-- **Maître absent** : si le maître d'une manche n'est pas connecté au moment où elle commence, sa manche est sautée (ses chansons ne sont pas jouées) et on passe au suivant. Si toutes les manches restantes sont sautées, on passe au podium.
+- **Ordre des maîtres** (tranche 27) : au lancement, le serveur fixe la liste des maîtres, un par manche, parmi les joueurs connectés. Chacun son tour, dans un ordre tiré au sort à chaque tour, et jamais deux fois d'affilée. **Classique** : autant de manches que de chansons choisies par l'hôte (1 à 20, 10 par défaut) ; quand le nombre ne tombe pas juste, les joueurs les plus hauts au classement global sont maîtres une fois de plus (ils jouent moins, les derniers peuvent remonter), et ces manches en plus passent en premier. **Mix** : chacun est maître une ou deux fois, au choix de l'hôte.
+- **Relais** (tranche 27) : avant chaque manche, y compris la première, le prochain maître voit « C'est toi le maître du jeu ! » et lance lui-même la musique (« Lancer la chanson » ou « Lancer le mix »). Il connaît ainsi son rôle avant d'entendre la chanson. À la révélation, rien n'avance tout seul : le maître sortant (ou l'hôte) appuie sur « Passer la modération à Léa », ou « Voir le podium » après la dernière manche.
+- **Maître absent** : si le maître d'une manche n'est pas connecté quand son relais commence, ou s'il se déconnecte pendant le relais, sa manche est sautée (ses chansons ne sont pas jouées) et le relais passe au suivant. Si toutes les manches restantes sont sautées, on passe au podium.
 - **Joueur arrivé en cours de partie** : il n'est pas dans la liste des maîtres, mais il peut être désigné dès la manche suivante. Il part de 0 point.
 - **Réponses à l'oral** : rien n'est saisi sur les téléphones des joueurs qui répondent. Le jeu repose sur la parole du maître, comme un vrai blind test entre amis.
 - **Le maître ne marque aucun point** pendant sa manche, et ne peut pas se désigner lui-même.
@@ -32,9 +33,9 @@ La tranche se code en trois temps, chacun testé avant de passer au suivant :
 
 ### Choix du format
 
-Le format est un réglage du mode, comme les thèmes du quiz : `reglagesMode["blind-test"] = { format: "classique" | "mix" }`, envoyé par `hote:reglerMode` avec `{ format }`, accepté seulement en salle d'attente. Par défaut : `classique`. Il est gardé d'une partie à l'autre.
+Le format est un réglage du mode, comme les thèmes du quiz, avec ses options (tranche 27) : `reglagesMode["blind-test"] = { format: "classique" | "mix", chansons: 1 à 20, tours: 1 | 2, ecoute: 90 | 120 | 180 }`, envoyé en entier par `hote:reglerMode`, accepté seulement en salle d'attente. Par défaut : `{ format: "classique", chansons: 10, tours: 1, ecoute: 120 }`. `chansons` ne sert qu'en classique, `tours` et `ecoute` (en secondes) qu'en mix. Les réglages sont gardés d'une partie à l'autre.
 
-Le téléphone de l'hôte affiche le choix dans ses réglages (deux boutons « Classique » et « Mix »), la TV l'affiche en salle d'attente sous le nom du mode (« Blind test · Mix »).
+Le téléphone de l'hôte affiche le choix dans l'onglet « Options » : deux boutons « Classique » et « Mix », puis en classique un curseur du nombre de chansons, en mix « Une fois » / « 2 fois » et la durée d'écoute. La TV l'affiche en salle d'attente (« Format : Classique · 10 chansons », « Format : Mix · 1 tour · 120 s »).
 
 ### Exception au secret
 
@@ -120,27 +121,29 @@ L'hôte est un joueur comme les autres : il est maître à son tour. Le bouton �
 
 ## Phases et chronos
 
-`etatMode.phase` vaut `ecoute`, `designation` ou `revelation`.
+`etatMode.phase` vaut `relais`, `ecoute`, `designation` ou `revelation`.
 
 ### Classique
 
 | Phase | Durée | Fin |
 |---|---|---|
+| `relais` | aucune (tranche 27) | « Lancer la chanson » du maître de la manche. S'il se déconnecte : relais du maître suivant, ou podium |
 | `ecoute` | 30 s | « Valider » du maître (révélation directe), ou fin du chrono |
 | `designation` | 15 s | « Valider » du maître, ou fin du chrono (rien n'est compté) |
-| `revelation` | 12 s | Fin du chrono ou « Suivant » de l'hôte. Après la dernière manche : podium |
+| `revelation` | aucune (tranche 27, 12 s avant) | « Passer la modération » du maître sortant ou « Suivant » de l'hôte : relais de la manche suivante. Après la dernière manche : podium |
 
-Une manche dure de 45 s à 1 min. Une partie à 3 joueurs dure donc environ 3 min, à 10 joueurs une dizaine de minutes.
+Une manche dure de 45 s à 1 min, plus le relais. Une partie de 10 chansons dure donc une dizaine de minutes.
 
 ### Mix
 
 | Phase | Durée | Fin |
 |---|---|---|
-| `ecoute` | 120 s au total, décompte mis en pause pendant `designation` | Les 5 chansons trouvées, ou fin du décompte |
+| `relais` | aucune (tranche 27) | « Lancer le mix » du maître de la manche. S'il se déconnecte : relais du maître suivant, ou podium |
+| `ecoute` | 120 s au total (90 ou 180 au choix de l'hôte), décompte mis en pause pendant `designation` | Les 5 chansons trouvées, ou fin du décompte |
 | `designation` | 20 s | « Valider » ou « Annuler » du maître : retour à `ecoute` (ou `revelation` si c'était la 5e). Fin du chrono : annulée, retour à `ecoute` |
-| `revelation` | 15 s | Fin du chrono ou « Suivant » de l'hôte. Après la dernière manche : podium |
+| `revelation` | aucune (tranche 27, 15 s avant) | « Passer la modération » du maître sortant ou « Suivant » de l'hôte : relais de la manche suivante. Après la dernière manche : podium |
 
-Une manche dure environ 2 à 3 min. Avec autant de manches que de joueurs, une partie à 10 joueurs dure près de 30 min : choix validé (voir « Choix validés », point 7).
+Une manche dure environ 2 à 3 min. Avec une manche par joueur, une partie à 10 joueurs dure près de 30 min : choix validé (voir « Choix validés », point 7). L'hôte peut raccourcir l'écoute à 90 s.
 
 Le décompte d'écoute du mix est mesuré par le serveur : `ecouteRestanteMs` est figé à l'entrée en `designation` et repart de `debutPhaseA` au retour en `ecoute`.
 
@@ -203,6 +206,7 @@ Seuls des identifiants et des métadonnées sont versionnés, aucun son. Les ext
 ```
 
 - `questions[i]` est une chanson du catalogue, `maitres[i]` son maître. Les deux listes ont la même longueur.
+- En `relais`, `indexQuestion` est déjà la manche à venir ; ses champs (`depart`, `designation`) ne sont remis à zéro qu'au lancement.
 - `designation` : `null` pendant l'écoute, puis `{ "titre": "j_1b9c7d", "artiste": null }` une fois validée (`null` = personne).
 
 ### Mix
@@ -218,11 +222,13 @@ Seuls des identifiants et des métadonnées sont versionnés, aucun son. Les ext
   "ecouteRestanteMs": 84000,
   "departs": [3, 9, 0, 6, 2],
   "trouvees": { "1": { "joueur": "j_8f3k2a", "trouve": "les-deux" } },
-  "chansonEnDesignation": 3
+  "chansonEnDesignation": 3,
+  "dureeEcouteMixMs": 120000
 }
 ```
 
 - Une « question » est ici un mix de 5 chansons.
+- `dureeEcouteMixMs` : la durée d'écoute choisie par l'hôte (tranche 27), d'où repart `ecouteRestanteMs` à chaque mix.
 - `trouvees` : par index de chanson dans le mix, qui l'a trouvée et quoi (`titre`, `artiste` ou `les-deux`).
 - `chansonEnDesignation` : l'index de la chanson arrêtée par le maître, `null` hors `designation`.
 
@@ -237,10 +243,11 @@ Aucun nouvel événement. Le maître envoie ses choix par `joueur:repondre` ; le
 
 | Événement | Contenu en Blind test |
 |---|---|
-| `hote:reglerMode` | `{ format: "classique" \| "mix" }`, en salle d'attente seulement |
+| `hote:reglerMode` | `{ format, chansons, tours, ecoute }` (voir « Choix du format »), en salle d'attente seulement |
+| `joueur:repondre` (relais) | En `relais` : `{ lancer: true }` du maître de la manche → `ecoute`. En `revelation` : `{ passer: true }` du maître sortant → relais de la manche suivante (ou podium). Refusé de tout autre joueur |
 | `joueur:repondre` (classique) | En `ecoute` ou `designation` : `{ titre, artiste }`, chacun l'`id` d'un joueur désignable ou `null`. Refusé si l'émetteur n'est pas le maître, si un id n'est pas un joueur de la salle ou est celui du maître, si la désignation est déjà validée. Ignoré en `revelation`. |
 | `joueur:repondre` (mix) | En `ecoute` : `{ arreter: index }`, index d'une chanson du mix pas encore trouvée → `designation`. En `designation` : `{ joueur, trouve }` (`trouve` vaut `titre`, `artiste` ou `les-deux`) pour la chanson en cours, ou `{ annuler: true }`. Refusé si l'émetteur n'est pas le maître, index invalide ou déjà trouvé, joueur non désignable, mauvaise phase. |
-| `hote:suivant` | Pendant la révélation : manche suivante (ou podium) |
+| `hote:suivant` | Pendant la révélation : relais de la manche suivante (ou podium), comme le « Passer la modération » du maître sortant |
 | `hote:terminer`, `hote:rejouer` | Comme au quiz |
 
 
@@ -259,6 +266,7 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 
 | Format, phase | Contenu |
 |---|---|
+| `relais` (les deux formats) | `format`, `phase`, `numero`, `total`, `maitre` (id), `extraitsSuivants: [{ id }]` (les extraits de la manche, chargés sans être joués) |
 | Classique, `ecoute` | `phase`, `numero`, `total`, `maitre` (id), `extrait: { id, depart, gain }` (le volume est réglé d'après le gain aussi en classique), `tempsRestantMs`, `tempsEcouleMs` |
 | Classique, `designation` | Idem, sans `extrait` (la musique est coupée) |
 | Classique, `revelation` | Idem, plus `chanson: { titre, artiste, pochette }`, `titre` et `artiste` (id du joueur désigné ou `null`), `extraitSuivant: { id }` (préchargement, absent à la dernière manche), `classement` (avec les points de la manche) |
@@ -272,12 +280,13 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 
 | Écran | Pour qui | Données |
 |---|---|---|
-| `ecouter` | Joueurs qui répondent | `numero`, `total`, nom du `maitre`. « Écoute la TV et crie ta réponse ! » |
+| `relais` | Maître de la manche à venir | `numero`, `total`, `format`. « C'est toi le maître du jeu ! » et « Lancer la chanson » (ou « Lancer le mix ») |
+| `ecouter` | Joueurs qui répondent | `numero`, `total`, `phase`, nom du `maitre`. « La musique va démarrer… » en `relais`, « Écoute la TV et crie ta réponse ! » en `ecoute` |
 | `maitre_classique` | Maître (classique) | `numero`, `total`, `chanson: { titre, artiste, pochette }`, `designables: [{ id, pseudo }]`, `tempsRestantMs` |
 | `maitre_mix` | Maître (mix, `ecoute`) | `chansons` : 5 × `{ titre, artiste, trouvee, joueur }` (`joueur` : pseudo du gagnant, ou `null`) |
 | `maitre_designation` | Maître (mix, `designation`) | La chanson arrêtée, `designables`, `tempsRestantMs` |
 | `attente_designation` | Joueurs qui répondent (mix, `designation`) | « Le maître désigne… » |
-| `resultat` | Tous | Classique : `chanson`, `trouveTitre` et `trouveArtiste` (pseudos ou `null`), `aTrouveTitre`, `aTrouveArtiste`, `estMaitre`, `points` gagnés dans la manche, score et `rang`. Mix : `chansons` (5 × `{ titre, artiste, pochette, trouvePar, trouve }`), `estMaitre`, `points` du mix, score et `rang`. Pour l'hôte : « Suivant » |
+| `resultat` | Tous | Classique : `chanson`, `trouveTitre` et `trouveArtiste` (pseudos ou `null`), `aTrouveTitre`, `aTrouveArtiste`, `estMaitre`, `points` gagnés dans la manche, score et `rang`. Mix : `chansons` (5 × `{ titre, artiste, pochette, trouvePar, trouve }`), `estMaitre`, `points` du mix, score et `rang`. Les deux : `prochainMaitre` (pseudo, ou `null` après la dernière manche). Pour le maître sortant et l'hôte : « Passer la modération à Léa » (ou « Voir le podium ») |
 | `attente_question`, `fin` | Comme au quiz | |
 
 
@@ -285,6 +294,7 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 
 | Où | Écran | Contenu |
 |---|---|---|
+| TV | Relais (les deux formats) | « Chanson 3/6 », le disque à l'arrêt, « Maître du jeu : Paul » avec sa pastille, « La musique démarre depuis son téléphone » |
 | TV | Écoute (classique) | « Chanson 3/6 », « Maître du jeu : Paul » avec sa pastille, un grand disque vinyle qui tourne (animation CSS de rotation, sans filtre), chrono, « Extraits : Deezer », petit QR code |
 | TV | Désignation (classique) | Le disque à l'arrêt, « Paul désigne les gagnants… », chrono de 15 s |
 | TV | Révélation (classique) | Pochette en grand, titre, artiste, et dessous « Titre : Léa +500 », « Artiste : Sam +500 » (ou « Doublé ! Léa +1000 », « Personne n'a trouvé »), puis le classement |
@@ -295,7 +305,8 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 | Téléphone | Maître (classique) | Titre et artiste en grand, pochette, « Le titre : » + boutons joueurs + « Personne », « L'artiste : » idem, « Valider » (inactif tant que les deux lignes n'ont pas de choix) |
 | Téléphone | Maître (mix) | 5 gros boutons « Titre — Artiste » ; les trouvées grisées avec le nom du joueur |
 | Téléphone | Maître, désignation (mix) | La chanson, « Qui ? » (boutons joueurs), « Quoi ? » (Titre, Artiste, Les deux), « Valider », « Annuler » |
-| Téléphone | Résultat | « +1000 : titre et artiste ! », « +500 : l'artiste », « Pas de point cette fois » ; pour le maître, « Tu étais le maître du jeu ». Score et rang |
+| Téléphone | Relais | « C'est toi le maître du jeu ! », rappel de son rôle, « Lancer la chanson » (ou « Lancer le mix ») |
+| Téléphone | Résultat | « +1000 : titre et artiste ! », « +500 : l'artiste », « Pas de point cette fois » ; pour le maître, « Tu étais le maître du jeu ». Score et rang. Pour le maître sortant et l'hôte : « Passer la modération à Léa » (ou « Voir le podium ») |
 
 Contraintes du Mi TV Stick : animations en opacité, déplacement et rotation seulement ; pas de flou ni de `filter`. Pochettes de 250×250 au plus.
 
@@ -304,6 +315,7 @@ Contraintes du Mi TV Stick : animations en opacité, déplacement et rotation se
 
 | Moment | Détection | Son |
 |---|---|---|
+| Relais | `nouvelleEtape` en phase `relais` | Aucun (tranche 27) : le son part au lancement |
 | Nouvelle manche | `nouvelleEtape` en phase `ecoute` | `etape` (juste avant que l'extrait démarre) |
 | Classique : révélation | `nouvelleEtape` en phase `revelation` | `victoire` si doublé, `revelation` si au moins un trouvé, `rate` si personne |
 | Mix : désignation | `nouvelleEtape` en phase `designation` | Aucun (le mix se coupe, cela suffit) |

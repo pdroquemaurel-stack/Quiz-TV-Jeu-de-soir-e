@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 11. Elle complète `docs/spec.md` et reprend les conclusions de la revue d'architecture faite avant l'étape « Modes de jeu ». Elle a été validée le 24/09/2026.
 
+> **Tranche 27** : le nombre de questions (5, 8 ou 12) et le temps pour répondre (20, 30 ou 45 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 La tranche se code en trois temps, chacun testé avant de passer au suivant :
 
 1. **Socle multi-modes** : le quiz passe par un registre de modes, sans changement visible. Tous les tests existants restent verts.

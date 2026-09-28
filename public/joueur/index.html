@@ -327,6 +327,14 @@
     <p class="discret">Maître du jeu : <strong id="bt-maitre-ecouter"></strong></p>
   </main>
 
+  <!-- Relais : le prochain maître apprend son rôle avant la musique, et la lance lui-même. -->
+  <main data-ecran="blind-test-relais" hidden>
+    <p id="bt-numero-relais" class="discret"></p>
+    <p class="gros-texte rebond">C'est toi le maître du jeu !</p>
+    <p class="discret">Tu verras la réponse sur ton téléphone : garde-la secrète, écoute les autres et désigne qui a trouvé.</p>
+    <button id="bt-lancer" class="bouton en-bas"></button>
+  </main>
+
   <main data-ecran="blind-test-maitre_classique" hidden>
     <p id="bt-numero-maitre" class="discret"></p>
     <p class="discret">Tu es le maître du jeu : garde la réponse secrète !</p>
@@ -408,17 +416,35 @@
     <div class="carte boite boite-reglages">
       <p id="titre-reglages" class="gros-texte"></p>
       <div data-reglages="quiz" hidden>
+        <p class="titre-option">Thèmes</p>
         <div id="choix-themes" class="choix-reglages"></div>
+        <p class="titre-option">Niveaux</p>
         <div id="choix-difficulte" class="choix-reglages trois-colonnes"></div>
         <p id="inedites-reglages" class="discret"></p>
       </div>
       <div data-reglages="blind-test" hidden>
         <div id="choix-formats" class="choix-reglages"></div>
         <p id="explication-format" class="discret"></p>
+        <div id="bt-reglage-chansons">
+          <p class="titre-option">Chansons : <strong id="bt-nombre-chansons"></strong></p>
+          <input id="bt-curseur-chansons" class="curseur" type="range" step="1" aria-label="Nombre de chansons">
+        </div>
+        <div id="bt-reglages-mix">
+          <p class="titre-option">Chacun est maître du jeu</p>
+          <div id="bt-choix-tours" class="choix-reglages"></div>
+          <p class="titre-option">Temps d'écoute de chaque mix</p>
+          <div id="bt-choix-ecoute" class="choix-reglages trois-colonnes"></div>
+        </div>
       </div>
       <div data-reglages="geoquiz" hidden>
-        <div id="choix-manches" class="choix-reglages trois-colonnes"></div>
         <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles.</p>
+      </div>
+      <!-- Options communes à presque tous les modes : longueur de la partie et temps pour répondre. -->
+      <div id="options-communes" hidden>
+        <p class="titre-option">Longueur de la partie</p>
+        <div id="choix-longueur" class="choix-reglages trois-colonnes"></div>
+        <p class="titre-option">Temps pour répondre</p>
+        <div id="choix-temps" class="choix-reglages trois-colonnes"></div>
       </div>
       <button id="fermer-reglages" class="bouton">OK</button>
     </div>

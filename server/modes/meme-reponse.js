@@ -1,14 +1,14 @@
 // Mode Même réponse (docs/modes/meme-reponse.md).
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, cleReponse, echeanceDePhase, listerAttendus, noterQuestionsVues,
-  participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs,
-  tirerQuestions, tousOntRepondu,
+  classement as classementCommun, cleReponse, creerOptions, echeanceDePhase, listerAttendus,
+  noterQuestionsVues, participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe,
+  tempsRestantMs, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
 export const id = 'meme-reponse';
 export const nom = 'Même réponse';
-export const regleCourte = '10 questions : marque des points en donnant la même réponse que les autres.';
+export const regleCourte = 'Marque des points en donnant la même réponse que les autres.';
 export const joueursMin = 3;
 
 export const NOMBRE_QUESTIONS = 10;
@@ -70,7 +70,7 @@ export function formerGroupes(reponses, question) {
 
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const questions = tirerQuestions(banqueMemeReponse(), salle.questionsVues, NOMBRE_QUESTIONS);
+  const questions = tirerQuestions(banqueMemeReponse(), salle.questionsVues, options.lire(salle).longueur);
   noterQuestionsVues(salle, questions);
   salle.etatMode = { questions };
   demarrerQuestion(salle, 0);
@@ -130,10 +130,16 @@ export function suivant(salle) {
   return true;
 }
 
-const DUREES = { saisie: DUREE_SAISIE_MS, resultats: DUREE_RESULTATS_MS };
+// Options de l'hôte : nombre de questions et temps pour la saisie (en s).
+const options = creerOptions(id, {
+  longueurs: [5, NOMBRE_QUESTIONS, 15], unite: ['question', 'questions'], temps: [20, DUREE_SAISIE_MS / 1000, 45],
+});
+export const { reglagesParDefaut, validerReglages, vueReglages } = options;
 
+// Le temps pour la saisie est une option de l'hôte, qui ne change pas pendant la partie.
 export function echeance(salle) {
-  return echeanceDePhase(salle, DUREES);
+  const dureeReponseMs = options.lire(salle).temps * 1000;
+  return echeanceDePhase(salle, { saisie: dureeReponseMs, resultats: DUREE_RESULTATS_MS });
 }
 
 // Appelée quand l'échéance est atteinte.

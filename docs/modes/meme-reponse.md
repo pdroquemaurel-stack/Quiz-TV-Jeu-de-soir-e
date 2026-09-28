@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 14. Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes de la tranche 11 (`docs/modes/estimation.md`), sur `docs/modes/qui-de-nous.md` et sur `docs/sons.md`. Elle a été validée le 24/09/2026.
 
+> **Tranche 27** : le nombre de questions (5, 10 ou 15) et le temps de saisie (20, 30 ou 45 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 Ce mode diffère des précédents sur un point : **la réponse est un texte libre**, et le serveur doit décider si deux textes sont « la même réponse ». C'est le cœur de la mini-spec (voir « Même réponse ou pas ? »).
 
 La tranche se code en deux temps, chacun testé avant de passer au suivant :

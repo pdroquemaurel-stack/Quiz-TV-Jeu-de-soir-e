@@ -172,16 +172,8 @@ socket.on('joueur:etat', (vue) => {
   if (vue.ecran !== 'devinette') mancheAffichee = null;
 });
 
-// Réglages de l'hôte : le nombre de manches.
-function remplirReglagesGeoquiz({ manches, options }) {
-  document.getElementById('choix-manches').replaceChildren(...options.manches.map((nombre) => {
-    const envoyer = nombre === manches ? null : () => socket.emit('hote:reglerMode', { manches: nombre });
-    return boutonReglage(String(nombre), nombre === manches, envoyer);
-  }));
-}
-
+// Les options de l'hôte (manches et temps) sont les options communes, remplies par joueur.js.
 modesJoueur.geoquiz = {
-  remplirReglages: remplirReglagesGeoquiz,
   devinette: afficherDevinette,
   pin_valide: afficherPinValide,
   resultat: afficherResultatGeoquiz,

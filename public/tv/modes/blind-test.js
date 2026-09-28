@@ -77,6 +77,18 @@ function etiquetteGagnant(salle, joueurId, points) {
   return etiquette;
 }
 
+// ---------- Relais ----------
+
+// Rien ne joue : les extraits de la manche se chargent, le maître lance la musique.
+function afficherRelaisBlindTest(salle) {
+  arreterExtraitClassique();
+  arreterMix();
+  numeroMixAffiche = null;
+  document.getElementById('bt-numero-relais').textContent = libelleManche(salle.etatMode);
+  afficherMaitreBlindTest(salle, 'bt-maitre-relais');
+  prechargerExtraits(salle.etatMode.extraitsSuivants.map((extrait) => extrait.id));
+}
+
 // ---------- Écoute ----------
 
 function afficherEcouteBlindTest(salle, nouvelleEtape) {
@@ -323,6 +335,7 @@ function revelerMix(salle) {
 }
 
 modesTv['blind-test'] = {
+  relais: afficherRelaisBlindTest,
   ecoute: afficherEcouteBlindTest,
   designation: afficherDesignationBlindTest,
   revelation: afficherRevelationBlindTest,

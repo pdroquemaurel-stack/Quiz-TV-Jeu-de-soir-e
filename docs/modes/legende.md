@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 24. Elle a été validée le 25/09/2026 (voir « Choix validés » à la fin). Elle complète `docs/spec.md` et reprend presque tout le bluff (`docs/modes/bluff.md`) : saisie d'un texte, fusion des textes de même clé, vote anonyme sans sa propre proposition, révélation. La différence : **il n'y a pas de vraie réponse**, on vote pour le titre qu'on préfère, et le support de la manche est un **GIF animé** (une courte vidéo MP4) joué par la TV.
 
+> **Tranche 27** : le nombre de GIF (5, 8 ou 12) et le temps d'écriture (30, 45 ou 60 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 C'est le mécanisme de « La réplique » (M3 de l'audit, tranche 23), avec un GIF à la place d'une amorce texte. La légende est un mode à part ; la mini-spec de La réplique dira si elle devient une seconde source de ce mode.
 
 La tranche se code en deux temps, chacun testé avant de passer au suivant :

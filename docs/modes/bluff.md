@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 15. Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes de la tranche 11 (`docs/modes/estimation.md`), sur `docs/modes/meme-reponse.md` (saisie de texte, clé de comparaison), sur `docs/modes/qui-de-nous.md` (vote) et sur `docs/sons.md`. Elle a été validée le 25/09/2026 (voir « Choix validés » à la fin).
 
+> **Tranche 27** : le nombre de questions (5, 8 ou 12) et le temps d'écriture (30, 45 ou 60 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 Ce mode est le seul à enchaîner **deux saisies par question** : chacun écrit un bluff, puis chacun vote parmi les bluffs et la vraie réponse. C'est aussi celui où le secret est le plus délicat : ni la vraie réponse ni l'auteur d'un bluff ne doivent fuiter avant la révélation.
 
 La tranche se code en deux temps, chacun testé avant de passer au suivant :

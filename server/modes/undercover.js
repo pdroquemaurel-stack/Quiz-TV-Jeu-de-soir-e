@@ -1,7 +1,7 @@
 // Mode Undercover (docs/modes/undercover.md).
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, listerAttendus, melanger, normaliser, noterQuestionsVues,
+  classement as classementCommun, creerOptions, listerAttendus, melanger, normaliser, noterQuestionsVues,
   participe, passerAuPodium, phaseEnCours, rangDe, tempsRestantMs, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 import { compterVotes, trouverElus } from './qui-de-nous.js';
@@ -20,6 +20,12 @@ export const DUREE_FIN_MANCHE_MS = 15000;
 export const POINTS_CIVIL = 1000;
 export const POINTS_INFILTRE = 2000;
 export const LONGUEUR_MAX_PROPOSITION = 30;
+
+// Options de l'hôte : nombre de manches et temps pour voter (en s).
+const options = creerOptions(id, {
+  longueurs: [1, NOMBRE_MANCHES, 5], unite: ['manche', 'manches'], temps: [15, DUREE_VOTE_MS / 1000, 30],
+});
+export const { reglagesParDefaut, validerReglages, vueReglages } = options;
 
 // Lue au premier lancement seulement.
 let banque = null;
@@ -82,7 +88,7 @@ export function pointsDuRole(role, gagnant) {
 
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const paires = tirerQuestions(banqueUndercover(), salle.questionsVues, NOMBRE_MANCHES);
+  const paires = tirerQuestions(banqueUndercover(), salle.questionsVues, options.lire(salle).longueur);
   noterQuestionsVues(salle, paires);
   salle.etatMode = { paires, victoires: { civils: 0, infiltres: 0, misterWhite: 0 } };
   demarrerManche(salle, 0);
@@ -260,10 +266,11 @@ export function suivant(salle) {
 }
 
 // Heure à laquelle la phase en cours se termine d'elle-même, ou null (description).
+// Le temps de vote est une option de l'hôte, qui ne change pas pendant la partie.
 export function echeance(salle) {
   const { debutPhaseA, devinette } = salle.etatMode;
   const phase = phaseEnCours(salle);
-  if (phase === 'vote') return debutPhaseA + DUREE_VOTE_MS;
+  if (phase === 'vote') return debutPhaseA + options.lire(salle).temps * 1000;
   if (phase === 'elimination') return debutPhaseA + DUREE_ELIMINATION_MS;
   if (phase === 'devinette') {
     return devinette.recuA === null

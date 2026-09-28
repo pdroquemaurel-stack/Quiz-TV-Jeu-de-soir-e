@@ -98,16 +98,16 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
 
 ### Quiz culture générale (MVP)
 
-- Une partie compte 10 questions. Chaque question est un QCM à 4 choix avec une seule bonne réponse.
+- Une partie compte 10 questions (5 ou 15 au choix de l'hôte, voir « Options de l'hôte »). Chaque question est un QCM à 4 choix avec une seule bonne réponse.
 - **Thèmes et niveaux**, choisis par l'hôte en salle d'attente : tout est coché par défaut, et l'hôte décoche ce qu'il ne veut pas (au moins un thème et un niveau restent cochés). Les niveaux cochés fixent la répartition des 10 questions : les trois = 4 faciles, 4 moyennes et 2 difficiles ; Facile + Moyen = 6 faciles et 4 moyennes ; Moyen + Difficile = 5 moyennes et 5 difficiles ; Facile + Difficile = 5 faciles et 5 difficiles ; un seul niveau = 10 questions de ce niveau. Au plus 2 questions par catégorie, ou davantage si l'hôte a choisi peu de thèmes (10 divisé par le nombre de thèmes, arrondi au-dessus). Le téléphone de l'hôte affiche le nombre de questions jamais vues pour son choix.
 - **Tirage** : d'abord les questions jamais vues du choix de l'hôte, puis ses questions déjà vues (les plus anciennes d'abord). Si le choix compte moins de 10 questions, on complète avec les thèmes choisis toutes difficultés confondues, puis avec toute la banque. Une partie a donc toujours 10 questions.
-- Chaque joueur a 20 s pour répondre, en une seule réponse définitive.
+- Chaque joueur a 20 s pour répondre (10 ou 30 s au choix de l'hôte), en une seule réponse définitive.
 - Une mauvaise réponse ou une absence de réponse rapporte 0 point.
 - Une bonne réponse rapporte entre 1000 et 500 points selon la rapidité :
 
-  `points = arrondi(1000 - 500 × t / 20)`
+  `points = arrondi(1000 - 500 × t / T)`
 
-  Ici, `t` est le temps écoulé en secondes, mesuré par le serveur à la réception de la réponse. On n'utilise jamais l'horloge du téléphone.
+  Ici, `T` est le temps pour répondre (20 s par défaut) et `t` le temps écoulé en secondes, mesuré par le serveur à la réception de la réponse. On n'utilise jamais l'horloge du téléphone.
 - **Fin anticipée** : la manche se termine dès que tous les joueurs attendus ont répondu, ou à 20 s. Les joueurs attendus sont ceux qui étaient connectés au début de la manche et qui le sont encore. Un joueur arrivé en cours de manche n'est pas attendu. Si un joueur attendu se déconnecte, on vérifie à nouveau si tous les autres ont répondu.
 - Classement par score total. En cas d'égalité, les joueurs partagent le même rang, sans départage, et le rang suivant est sauté : 1, 1, 3.
 - **Transition** : avant chaque question, 2,5 s pour annoncer son numéro et sa catégorie. Le chrono de 20 s et le calcul des points ne partent qu'au début de la question. Aucune réponse n'est acceptée pendant la transition, et les joueurs attendus sont ceux connectés au début de la question.
@@ -117,10 +117,30 @@ Ces éléments sont volontairement repoussés. Le modèle de données ne doit pa
   - 🔥 En série : la plus longue suite de bonnes réponses d'affilée, 3 au moins. Une question non jouée coupe la série.
   - 🦄 Solo : le plus de fois seule bonne réponse d'une question jouée par 3 joueurs ou plus.
   - 🪤 Question piège : la question la plus ratée (une absence de réponse compte comme ratée), si moins de la moitié des joueurs l'ont trouvée.
-  - ⏳ Suspense : la bonne réponse la plus tardive, après 15 s, si ce n'est pas aussi celle de l'éclair.
+  - ⏳ Suspense : la bonne réponse la plus tardive, dans le dernier quart du temps pour répondre (après 15 s sur 20), si ce n'est pas aussi celle de l'éclair.
   - 🌙 Dans la lune : le plus de questions sans réponse, 2 au moins.
 
   Un joueur attendu qui s'est déconnecté sans répondre n'est pas compté dans la question.
+
+### Options de l'hôte (tous les modes, tranche 27)
+
+Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode choisi la longueur de la partie et le temps pour répondre, trois choix chacun. Le choix du milieu est la valeur par défaut, celle d'avant ces options. Les options sont gardées d'une partie à l'autre, comme le format, et résumées sur la TV (« Options : 8 questions · 30 s »). Le serveur mesure toujours le temps.
+
+| Mode | Longueur | Temps pour répondre |
+|---|---|---|
+| Quiz | 5 / **10** / 15 questions | 10 / **20** / 30 s |
+| Estimation | 5 / **8** / 12 questions | 20 / **30** / 45 s |
+| Qui de nous ? | 5 / **10** / 15 questions | 10 / **20** / 30 s (vote) |
+| Undercover | 1 / **3** / 5 manches | 15 / **20** / 30 s (vote) |
+| Même réponse | 5 / **10** / 15 questions | 20 / **30** / 45 s |
+| Le bluff | 5 / **8** / 12 questions | 30 / **45** / 60 s (écriture) |
+| La légende | 5 / **8** / 12 GIF | 30 / **45** / 60 s (écriture) |
+| GéoQuiz | 3 / **5** / 10 manches | 30 / **60** / 90 s |
+| Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
+
+Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
+
+Les règles courtes des modes ne citent plus de nombre de questions : il est dans le résumé des options.
 
 ### Format et médailles (tous les modes)
 
@@ -224,7 +244,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "grandGagnantId": null,
   "debutPodiumA": 1758641100000,
   "medaillesPartie": { "j_8f3k2a": "or" },
-  "reglagesMode": { "quiz": { "categories": ["cinema-tv"], "niveaux": [1, 2] } },
+  "reglagesMode": { "quiz": { "categories": ["cinema-tv"], "niveaux": [1, 2], "longueur": 10, "temps": 20 } },
   "etatMode": {
     "phase": "question",
     "questions": ["...10 questions tirées..."],
@@ -255,11 +275,11 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `joueur:rejoindre` | téléphone → serveur | code, pseudo, id et clé mémorisés éventuels. Sans la clé de cet id, pas de reconnexion : c'est une nouvelle arrivée. |
 | `hote:validerFormat` | téléphone de l'hôte → serveur | rien. « Démarrer » : accepté en salle d'attente, au choix du format. Passe au choix du mode (`formatValide`). |
 | `hote:lancer` | téléphone de l'hôte → serveur | rien. Accepté en salle d'attente, une fois le format validé, avec assez de joueurs pour le mode choisi. |
-| `joueur:repondre` | téléphone → serveur | la réponse, interprétée par le mode : index du choix (Quiz, vote du bluff), nombre entier (Estimation), texte (Même réponse, bluff en saisie, devinette de Mister White), `id` d'un joueur (Qui de nous ?, vote d'Undercover). Le détail et les refus sont dans la mini-spec de chaque mode. |
+| `joueur:repondre` | téléphone → serveur | la réponse, interprétée par le mode : index du choix (Quiz, vote du bluff), nombre entier (Estimation), texte (Même réponse, bluff en saisie, devinette de Mister White), `id` d'un joueur (Qui de nous ?, vote d'Undercover), `{ lancer: true }` et `{ passer: true }` du maître du Blind test (relais, tranche 27). Le détail et les refus sont dans la mini-spec de chaque mode. |
 | `hote:suivant` | téléphone de l'hôte → serveur | `{ etape }` : l'étape affichée par le téléphone (reçue dans `joueur:etat`). Si ce n'est plus l'étape en cours (double appui, chrono écoulé entre-temps), l'action est ignorée. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
 | `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
-| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format }` pour le Blind test : `classique` ou `mix`. Accepté seulement en salle d'attente, pour un mode qui a des réglages. |
+| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format, chansons, tours, ecoute }` pour le Blind test (voir `docs/modes/blind-test.md`). `{ longueur, temps }` pour les autres modes, et en plus pour le quiz (voir « Options de l'hôte »). Toujours le réglage complet : le téléphone renvoie les valeurs reçues avec le seul changement. Accepté seulement en salle d'attente. |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau, au grand gagnant et en salle d'attente au choix du mode : retour en salle d'attente, au choix du format. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
@@ -544,25 +564,11 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
 ### Tranche « Retours du test réel » (27)
 
-- **27. Retours du test sur la vraie TV.** Test du 28/09/2026 (TV + Xiaomi TV Stick, un téléphone Android, Wi-Fi). Un commit par temps, après le test de Paul.
+- **27. Retours du test sur la vraie TV.** Test du 28/09/2026 (TV + Xiaomi TV Stick, un téléphone Android, Wi-Fi). Un commit par temps, après le test de Paul. Le point 3 des retours (« l'hôte indique qui a gagné et ce qu'il a deviné ») est la désignation déjà faite par le maître du jeu : seul le relais est nouveau.
   - Temps 1 : salle d'attente de l'hôte en deux étapes. D'abord le format seul (« Petite partie » ou « Aventure », objectif en aventure) et un bouton « Démarrer » (`hote:validerFormat`). Ensuite le choix du mode, avec dessous un onglet « Options » (les réglages du mode choisi, ou « Pas d'option pour ce mode »), « Lancer la partie » et « Changer de format », qui ramène à la première étape. L'étape est gardée par le serveur (`salle.formatValide`), pour qu'un téléphone rechargé la retrouve : `hote:lancer` est refusé tant que le format n'est pas validé, et « Changer de format » (salle d'attente, tableau, grand gagnant) repasse à la première étape. Pendant la première étape, la TV affiche « L'hôte choisit le format ».
   - Temps 2 : options du quiz (réglage `niveaux` au lieu de `difficulte`, voir « Quiz culture générale »). Plus de bouton « Tous » : tous les thèmes sont cochés par défaut, et l'hôte décoche ceux qu'il ne veut pas (le dernier ne se décoche pas). Les niveaux deviennent des cases à cocher (Facile, Moyen, Difficile), tous cochés par défaut, avec les répartitions actuelles : les 3 → 4 faciles, 4 moyennes, 2 difficiles ; Facile + Moyen → 6/4 ; Moyen + Difficile → 5/5 ; Facile + Difficile → 5/5 ; un seul niveau → 10 de ce niveau.
   - Temps 3 : relais du maître du jeu au Blind test, en classique comme en mix. Nouvelle phase `relais`, sans chrono, avant chaque chanson (ou mix), y compris la première : le prochain maître voit « C'est toi le maître du jeu ! » et lance lui-même la chanson (« Lancer la chanson »), les autres voient qui va la lancer, la TV affiche le prochain maître. La révélation ne passe plus seule à la suite : le maître sortant ou l'hôte appuie sur « Passer la modération à [prochain maître] ». Si le prochain maître se déconnecte pendant le relais, le relais passe au maître connecté suivant. Le maître désigne toujours qui a trouvé quoi, comme avant.
-  - Temps 4 : options de chaque mode, en plus des réglages existants. Le choix du milieu reste la valeur actuelle :
-
-    | Mode | Longueur | Temps pour répondre |
-    |---|---|---|
-    | Quiz | 5 / **10** / 15 questions (répartition des niveaux et plafond par catégorie mis à l'échelle) | 10 / **20** / 30 s |
-    | Estimation | 5 / **8** / 12 questions | 20 / **30** / 45 s |
-    | Qui de nous ? | 5 / **10** / 15 questions | 10 / **20** / 30 s (vote) |
-    | Undercover | 1 / **3** / 5 manches | 15 / **20** / 30 s (vote) |
-    | Même réponse | 5 / **10** / 15 questions | 20 / **30** / 45 s |
-    | Le bluff | 5 / **8** / 12 questions | 30 / **45** / 60 s (écriture) |
-    | La légende | 5 / **8** / 12 GIF | 30 / **45** / 60 s (écriture) |
-    | Blind test | Classique : 1 à 20 chansons (curseur) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
-    | GéoQuiz | 3 / **5** / 10 manches | 30 / **60** / 90 s |
-
-    Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus : les derniers jouent plus de chansons pour remonter.
+  - Temps 4 : options de chaque mode, en plus des réglages existants (tableau et règles dans « Options de l'hôte »). Le choix du milieu reste la valeur d'avant ; au Blind test classique, 10 chansons par défaut. Les options communes passent par `creerOptions` de `server/modes/commun.js` ; le GéoQuiz y range son nombre de manches (`longueur` au lieu de `manches`). Les temps 3 et 4 font un seul commit, à la demande de Paul.
 
   *Test : défini à la fin de chaque temps (instructions données à Paul), sur Render avec la vraie TV et au moins un vrai téléphone.*
 

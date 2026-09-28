@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 13. Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes de la tranche 11 (`docs/modes/estimation.md`) et sur `docs/modes/qui-de-nous.md`. Elle a été validée le 24/09/2026.
 
+> **Tranche 27** : le nombre de manches (1, 3 ou 5) et le temps de vote (15, 20 ou 30 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 Ce mode diffère des précédents sur deux points :
 
 - **un secret par joueur** : chaque téléphone reçoit son propre mot (ou aucun, pour Mister White), et personne d'autre ne le connaît ;

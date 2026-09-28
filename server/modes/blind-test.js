@@ -16,14 +16,12 @@ export const joueursMin = 3;
 
 export const DUREE_ECOUTE_MS = 30000;
 export const DUREE_DESIGNATION_MS = 15000;
-export const DUREE_REVELATION_MS = 12000;
 export const POINTS_TITRE = 500;
 export const POINTS_ARTISTE = 500;
 
 export const CHANSONS_PAR_MIX = 5;
 export const DUREE_ECOUTE_MIX_MS = 120000;
 export const DUREE_DESIGNATION_MIX_MS = 20000;
-export const DUREE_REVELATION_MIX_MS = 15000;
 // Ce qu'a trouvé le gagnant d'une chanson du mix.
 export const POINTS_MIX = { titre: 500, artiste: 500, 'les-deux': 1000 };
 
@@ -32,29 +30,76 @@ const DEPART_MAX_S = 10;
 
 const FORMATS = { classique: 'Classique', mix: 'Mix' };
 
-// ---------- Réglages de l'hôte : le format ----------
+// ---------- Réglages de l'hôte ----------
+// Classique : le nombre de chansons (curseur). Mix : combien de fois chacun est maître,
+// et la durée d'écoute de chaque mix (en s).
+
+export const CHANSONS_MIN = 1;
+export const CHANSONS_MAX = 20;
+export const TOURS_MIX = [1, 2];
+export const ECOUTES_MIX = [90, DUREE_ECOUTE_MIX_MS / 1000, 180];
 
 export function reglagesParDefaut() {
-  return { format: 'classique' };
+  return { format: 'classique', chansons: 10, tours: 1, ecoute: DUREE_ECOUTE_MIX_MS / 1000 };
 }
 
 export function validerReglages(donnees) {
-  const format = donnees?.format;
-  return typeof format === 'string' && Object.hasOwn(FORMATS, format) ? { format } : null;
+  const { format, chansons, tours, ecoute } = donnees ?? {};
+  if (typeof format !== 'string' || !Object.hasOwn(FORMATS, format)) return null;
+  if (!Number.isInteger(chansons) || chansons < CHANSONS_MIN || chansons > CHANSONS_MAX) return null;
+  if (!TOURS_MIX.includes(tours) || !ECOUTES_MIX.includes(ecoute)) return null;
+  return { format, chansons, tours, ecoute };
 }
 
-function formatChoisi(salle) {
-  return (salle.reglagesMode?.[id] ?? reglagesParDefaut()).format;
+function reglagesDe(salle) {
+  return salle.reglagesMode?.[id] ?? reglagesParDefaut();
+}
+
+const pluriel = (nombre, mot) => `${nombre} ${mot}${nombre > 1 ? 's' : ''}`;
+
+// « Classique · 10 chansons », « Mix · 1 tour · 120 s ».
+function resumerReglages({ format, chansons, tours, ecoute }) {
+  if (format === 'classique') return `Classique · ${pluriel(chansons, 'chanson')}`;
+  return `Mix · ${pluriel(tours, 'tour')} · ${ecoute} s`;
 }
 
 export function vueReglages(salle) {
-  const format = formatChoisi(salle);
+  const reglages = reglagesDe(salle);
   return {
-    format,
+    ...reglages,
+    valeurs: reglages,
     titre: 'Format',
-    resume: FORMATS[format],
-    options: { formats: Object.entries(FORMATS).map(([idFormat, libelle]) => ({ id: idFormat, libelle })) },
+    resume: resumerReglages(reglages),
+    options: {
+      formats: Object.entries(FORMATS).map(([idFormat, libelle]) => ({ id: idFormat, libelle })),
+      chansons: { min: CHANSONS_MIN, max: CHANSONS_MAX },
+      tours: TOURS_MIX,
+      ecoutes: ECOUTES_MIX,
+    },
   };
+}
+
+// ---------- Ordre des maîtres ----------
+
+// Les joueurs, du plus haut au plus bas du classement global (au hasard entre ex æquo).
+function parClassementGlobal(salle, joueurIds) {
+  const points = (joueurId) => salle.joueurs.find((joueur) => joueur.id === joueurId).pointsGlobaux;
+  return melanger(joueurIds).sort((a, b) => points(b) - points(a));
+}
+
+// Un maître par manche. joueurs : du plus haut au plus bas du classement global.
+// Chacun son tour, dans un ordre tiré au sort à chaque tour ; quand le nombre ne tombe pas
+// juste, les manches en plus vont aux premiers du classement (les derniers jouent plus pour
+// remonter). Elles passent en premier, et personne n'est maître deux fois d'affilée.
+export function repartirMaitres(joueurs, nombre) {
+  const tours = [melanger(joueurs.slice(0, nombre % joueurs.length))];
+  for (let tour = 0; tour < Math.floor(nombre / joueurs.length); tour++) tours.push(melanger(joueurs));
+  const maitres = [];
+  for (const tour of tours) {
+    if (tour.length > 1 && tour[0] === maitres.at(-1)) [tour[0], tour[1]] = [tour[1], tour[0]];
+    maitres.push(...tour);
+  }
+  return maitres;
 }
 
 // ---------- Règles pures ----------
@@ -100,40 +145,59 @@ export function designationValide(salle, contenu) {
 
 // ---------- Déroulé commun ----------
 
-// Chacun des joueurs connectés au lancement sera maître une fois, dans un ordre tiré au sort.
+// Classique : le nombre de chansons choisi par l'hôte. Mix : chacun des joueurs connectés
+// au lancement est maître une ou deux fois.
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const format = formatChoisi(salle);
-  const maitres = melanger(listerAttendus(salle));
+  const { format, chansons: nombreChansons, tours, ecoute } = reglagesDe(salle);
+  const joueurs = parClassementGlobal(salle, listerAttendus(salle));
+  const maitres = repartirMaitres(joueurs, format === 'mix' ? tours * joueurs.length : nombreChansons);
   const parManche = format === 'mix' ? CHANSONS_PAR_MIX : 1;
   const chansons = tirerQuestions(banqueBlindTest(), salle.questionsVues, maitres.length * parManche);
   noterQuestionsVues(salle, chansons);
   const questions = format === 'mix'
     ? maitres.map((_, manche) => chansons.slice(manche * parManche, (manche + 1) * parManche))
     : chansons;
-  salle.etatMode = { format, questions, maitres };
-  demarrerManche(salle, 0);
+  salle.etatMode = { format, questions, maitres, dureeEcouteMixMs: ecoute * 1000 };
+  preparerRelais(salle, 0);
 }
 
-// Une manche dont le maître est déconnecté est sautée ; plus aucune : podium.
-function demarrerManche(salle, index) {
-  const { maitres, format } = salle.etatMode;
+// La première manche, à partir de index, dont le maître est connecté ; null s'il n'y en a plus.
+function mancheJouable(salle, index) {
+  const { maitres } = salle.etatMode;
   let suivante = index;
   while (suivante < maitres.length && !estConnecte(salle, maitres[suivante])) suivante++;
-  if (suivante >= maitres.length) {
+  return suivante < maitres.length ? suivante : null;
+}
+
+// Avant chaque manche, sans chrono : le maître la lance lui-même depuis son téléphone, ce qui
+// lui annonce son rôle avant la musique. Une manche dont le maître est déconnecté est sautée ;
+// plus aucune : podium.
+function preparerRelais(salle, index) {
+  const manche = mancheJouable(salle, index);
+  if (manche === null) {
     passerAuPodium(salle);
     return;
   }
   Object.assign(salle.etatMode, {
-    phase: 'ecoute',
-    indexQuestion: suivante,
+    phase: 'relais',
+    indexQuestion: manche,
     debutPhaseA: Date.now(),
     attendus: listerAttendus(salle),
   });
-  if (format === 'mix') {
+}
+
+// « Lancer la chanson » du maître : la musique démarre.
+function lancerManche(salle) {
+  Object.assign(salle.etatMode, {
+    phase: 'ecoute',
+    debutPhaseA: Date.now(),
+    attendus: listerAttendus(salle),
+  });
+  if (salle.etatMode.format === 'mix') {
     Object.assign(salle.etatMode, {
       departs: Array.from({ length: CHANSONS_PAR_MIX }, tirerDepart),
-      ecouteRestanteMs: DUREE_ECOUTE_MIX_MS,
+      ecouteRestanteMs: salle.etatMode.dureeEcouteMixMs,
       trouvees: {},
       chansonEnDesignation: null,
     });
@@ -142,19 +206,35 @@ function demarrerManche(salle, index) {
   }
 }
 
-// Seul le maître répond. Renvoie true si c'est accepté.
+// Seul le maître répond. Relais : { lancer: true }. Révélation : { passer: true }, qui passe
+// la modération au maître suivant (l'hôte le peut aussi, avec « Suivant »). Écoute et
+// désignation : ses désignations. Renvoie true si c'est accepté.
 export function enregistrerReponse(salle, joueurId, contenu) {
   const phase = phaseEnCours(salle);
-  if (phase !== 'ecoute' && phase !== 'designation') return false;
-  if (joueurId !== maitreCourant(salle)) return false;
+  if (!phase || joueurId !== maitreCourant(salle)) return false;
+  if (phase === 'relais') {
+    if (contenu?.lancer !== true) return false;
+    lancerManche(salle);
+    return true;
+  }
+  if (phase === 'revelation') {
+    if (contenu?.passer !== true) return false;
+    passerALaSuite(salle);
+    return true;
+  }
   return salle.etatMode.format === 'mix'
     ? enregistrerReponseMix(salle, phase, contenu)
     : enregistrerReponseClassique(salle, contenu);
 }
 
+// Relais : le maître attendu s'est déconnecté, le relais passe au suivant.
 // Classique : la validation termine la manche. Mix : les 5 chansons trouvées aussi.
 export function verifierFinAnticipee(salle) {
   const phase = phaseEnCours(salle);
+  if (phase === 'relais' && !estConnecte(salle, maitreCourant(salle))) {
+    preparerRelais(salle, salle.etatMode.indexQuestion);
+    return;
+  }
   const { format, designation, trouvees } = salle.etatMode;
   if (format === 'classique' && (phase === 'ecoute' || phase === 'designation') && designation) {
     montrerRevelation(salle);
@@ -180,20 +260,20 @@ function montrerRevelation(salle) {
 }
 
 function passerALaSuite(salle) {
-  questionSuivanteOuPodium(salle, demarrerManche);
+  questionSuivanteOuPodium(salle, preparerRelais);
 }
 
-// « Suivant » de l'hôte. Renvoie true si quelque chose a changé.
+// « Suivant » de l'hôte pendant la révélation : la modération passe au maître suivant.
+// Renvoie true si quelque chose a changé.
 export function suivant(salle) {
   if (phaseEnCours(salle) !== 'revelation') return false;
   passerALaSuite(salle);
   return true;
 }
 
-const DUREES_CLASSIQUE = {
-  ecoute: DUREE_ECOUTE_MS, designation: DUREE_DESIGNATION_MS, revelation: DUREE_REVELATION_MS,
-};
-const DUREES_MIX = { designation: DUREE_DESIGNATION_MIX_MS, revelation: DUREE_REVELATION_MIX_MS };
+// Ni le relais ni la révélation n'ont de chrono : ils attendent un appui.
+const DUREES_CLASSIQUE = { ecoute: DUREE_ECOUTE_MS, designation: DUREE_DESIGNATION_MS };
+const DUREES_MIX = { designation: DUREE_DESIGNATION_MIX_MS };
 
 // En mix, l'écoute dure ce qui reste du décompte, mis en pause pendant les désignations.
 export function echeance(salle) {
@@ -206,8 +286,7 @@ export function echeance(salle) {
 // Appelée quand l'échéance est atteinte.
 export function avancer(salle) {
   const phase = phaseEnCours(salle);
-  if (phase === 'revelation') passerALaSuite(salle);
-  else if (salle.etatMode.format === 'mix') avancerMix(salle, phase);
+  if (salle.etatMode.format === 'mix') avancerMix(salle, phase);
   else avancerClassique(salle, phase);
 }
 
@@ -323,11 +402,24 @@ function designables(salle) {
     .map(({ id: idJoueur, pseudo, couleur }) => ({ id: idJoueur, pseudo, couleur }));
 }
 
+// Le maître de la prochaine manche jouable, à la révélation ; null si c'est la dernière.
+function prochainMaitre(salle) {
+  const manche = mancheJouable(salle, salle.etatMode.indexQuestion + 1);
+  return manche === null ? null : salle.etatMode.maitres[manche];
+}
+
 export function vueTv(salle) {
   const phase = phaseEnCours(salle);
+  if (phase === 'relais') return vueTvRelais(salle);
   if (phase) return salle.etatMode.format === 'mix' ? vueTvMix(salle) : vueTvClassique(salle);
   if (salle.etat === 'podium') return { classement: classement(salle) };
   return {};
+}
+
+// Le prochain maître, et les extraits de sa manche, que la TV charge sans les jouer.
+function vueTvRelais(salle) {
+  const chansons = [questionCourante(salle)].flat();
+  return { ...vueCommune(salle), extraitsSuivants: chansons.map((chanson) => ({ id: chanson.id })) };
 }
 
 export function vueJoueur(salle, joueur) {
@@ -335,11 +427,15 @@ export function vueJoueur(salle, joueur) {
   const estMaitre = joueur.id === maitreCourant(salle);
   const { format, phase, indexQuestion, maitres } = salle.etatMode;
   const base = { format, numero: indexQuestion + 1, total: maitres.length };
+  if (phase === 'relais' && estMaitre) return { ...base, ecran: 'relais' };
   if (phase !== 'revelation' && !estMaitre) {
     return { ...base, ecran: 'ecouter', phase, maitre: pseudoDe(salle, maitreCourant(salle)) };
   }
-  if (format === 'mix') return { ...base, ...vueJoueurMix(salle, joueur, estMaitre) };
-  return { ...base, ...vueJoueurClassique(salle, joueur, estMaitre) };
+  const vue = format === 'mix'
+    ? vueJoueurMix(salle, joueur, estMaitre)
+    : vueJoueurClassique(salle, joueur, estMaitre);
+  if (phase === 'revelation') vue.prochainMaitre = pseudoDe(salle, prochainMaitre(salle));
+  return { ...base, ...vue };
 }
 
 // ---------- Vues du classique ----------
@@ -412,9 +508,9 @@ function vueTvMix(salle) {
   const vue = {
     ...vueCommune(salle),
     cartes: questionCourante(salle).map((chanson, index) => vueCarte(salle, chanson, index)),
-    dureeEcouteMs: DUREE_ECOUTE_MIX_MS,
+    dureeEcouteMs: salle.etatMode.dureeEcouteMixMs,
     ecouteRestanteMs: ecouteRestante(salle),
-    tempsEcouteMs: DUREE_ECOUTE_MIX_MS - ecouteRestante(salle),
+    tempsEcouteMs: salle.etatMode.dureeEcouteMixMs - ecouteRestante(salle),
   };
   if (phase === 'designation') vue.chansonEnDesignation = chansonEnDesignation;
   if (phase === 'revelation') {

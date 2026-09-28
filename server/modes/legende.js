@@ -1,14 +1,14 @@
 // Mode La légende (docs/modes/legende.md). Une « question » est ici un GIF du catalogue.
 import { readFileSync } from 'node:fs';
 import {
-  classement as classementCommun, cleReponse, echeanceDePhase, fusionnerParCle, listerAttendus, melanger,
-  noterQuestionsVues, participe, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe,
-  tempsRestantMs, tirerQuestions, tousOntRepondu,
+  classement as classementCommun, cleReponse, creerOptions, echeanceDePhase, fusionnerParCle,
+  listerAttendus, melanger, noterQuestionsVues, participe, phaseEnCours, questionCourante,
+  questionSuivanteOuPodium, rangDe, tempsRestantMs, tirerQuestions, tousOntRepondu,
 } from './commun.js';
 
 export const id = 'legende';
 export const nom = 'La légende';
-export const regleCourte = '8 GIF : donnez-leur un titre, puis votez pour le meilleur.';
+export const regleCourte = 'Donnez un titre à chaque GIF, puis votez pour le meilleur.';
 export const joueursMin = 3;
 
 export const NOMBRE_GIF = 8;
@@ -64,7 +64,7 @@ export function gagnants(resultats) {
 
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const questions = tirerQuestions(banqueLegende(), salle.questionsVues, NOMBRE_GIF);
+  const questions = tirerQuestions(banqueLegende(), salle.questionsVues, options.lire(salle).longueur);
   noterQuestionsVues(salle, questions);
   salle.etatMode = { questions };
   demarrerQuestion(salle, 0);
@@ -167,10 +167,16 @@ export function suivant(salle) {
   return true;
 }
 
-const DUREES = { saisie: DUREE_SAISIE_MS, vote: DUREE_VOTE_MS, revelation: DUREE_REVELATION_MS };
+// Options de l'hôte : nombre de GIF et temps pour l'écriture (en s).
+const options = creerOptions(id, {
+  longueurs: [5, NOMBRE_GIF, 12], unite: ['GIF', 'GIF'], temps: [30, DUREE_SAISIE_MS / 1000, 60],
+});
+export const { reglagesParDefaut, validerReglages, vueReglages } = options;
 
+// Le temps pour l'écriture est une option de l'hôte, qui ne change pas pendant la partie.
 export function echeance(salle) {
-  return echeanceDePhase(salle, DUREES);
+  const dureeReponseMs = options.lire(salle).temps * 1000;
+  return echeanceDePhase(salle, { saisie: dureeReponseMs, vote: DUREE_VOTE_MS, revelation: DUREE_REVELATION_MS });
 }
 
 // Appelée quand l'échéance est atteinte.

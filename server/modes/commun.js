@@ -9,6 +9,51 @@ export function phaseEnCours(salle) {
   return salle.etat === 'partie' ? salle.etatMode.phase : null;
 }
 
+// ---------- Options de l'hôte : longueur de la partie et temps pour répondre ----------
+// choix : { longueurs: [5, 8, 12], unite: ['question', 'questions'], temps: [20, 30, 45] },
+// le temps en secondes. Par défaut, le choix du milieu : la valeur d'avant ces options.
+
+export function optionsParDefaut(choix) {
+  return { longueur: choix.longueurs[1], temps: choix.temps[1] };
+}
+
+// Renvoie { longueur, temps } s'ils font partie des choix, sinon null.
+export function validerOptions(choix, donnees) {
+  const { longueur, temps } = donnees ?? {};
+  if (!choix.longueurs.includes(longueur) || !choix.temps.includes(temps)) return null;
+  return { longueur, temps };
+}
+
+// Les fonctions de réglage du contrat d'un mode qui n'a que ces deux options, et lire(salle),
+// qui donne les options choisies par l'hôte (ou celles par défaut).
+export function creerOptions(idMode, choix) {
+  const reglagesParDefaut = () => optionsParDefaut(choix);
+  const lire = (salle) => salle.reglagesMode?.[idMode] ?? reglagesParDefaut();
+  return {
+    reglagesParDefaut,
+    validerReglages: (donnees) => validerOptions(choix, donnees),
+    vueReglages: (salle) => ({ titre: 'Options', ...vueOptions(choix, lire(salle)) }),
+    lire,
+  };
+}
+
+// « 1 manche », « 8 questions ».
+export function texteLongueur(choix, longueur) {
+  return `${longueur} ${choix.unite[longueur > 1 ? 1 : 0]}`;
+}
+
+// Ce que les écrans montrent des options : valeurs choisies, résumé (« 8 questions · 30 s ») et choix possibles.
+export function vueOptions(choix, reglages) {
+  return {
+    valeurs: reglages,
+    resume: `${texteLongueur(choix, reglages.longueur)} · ${reglages.temps} s`,
+    options: {
+      longueurs: choix.longueurs.map((longueur) => ({ id: longueur, libelle: texteLongueur(choix, longueur) })),
+      temps: choix.temps.map((temps) => ({ id: temps, libelle: `${temps} s` })),
+    },
+  };
+}
+
 // ---------- Enchaînement des questions (modes à questions : etatMode.questions, indexQuestion) ----------
 
 export function questionCourante(salle) {

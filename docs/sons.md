@@ -88,7 +88,8 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | La légende | Nouveau GIF, début du vote | `etape` |
 | | Un titre ou un vote arrive (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation | `victoire` si un titre est « Légendaire ! », sinon `revelation` |
-| Blind test | Nouvelle chanson ou nouveau mix (début de l'écoute, juste avant les extraits). En mix, pas au retour en écoute après une désignation | `etape` |
+| Blind test | Nouvelle chanson ou nouveau mix (début de l'écoute, juste avant les extraits, donc après le relais). En mix, pas au retour en écoute après une désignation | `etape` |
+| Blind test | Relais : le prochain maître va lancer la musique (tranche 27) | Aucun |
 | | Désignation (la musique s'arrête ou se met en pause) | Aucun |
 | | Mix : une chanson trouvée (une carte de plus a un `joueur`) | `revelation` |
 | | Révélation du classique | `victoire` si doublé, `rate` si personne n'a trouvé, sinon `revelation` |

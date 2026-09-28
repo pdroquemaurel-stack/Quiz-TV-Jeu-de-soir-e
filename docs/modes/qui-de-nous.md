@@ -2,6 +2,9 @@
 
 Mini-spec de la tranche 12. Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes de la tranche 11 (`docs/modes/estimation.md`). Elle a été validée le 24/09/2026.
 
+> **Tranche 27** : le nombre de questions (5, 10 ou 15) et le temps de vote (10, 20 ou 30 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
+
+
 La tranche se code en deux temps, chacun testé avant de passer au suivant :
 
 1. **Contenu** : `data/qui-de-nous.json`, son script de vérification et ses tests. Paul peut relire les questions pendant que le mode se code.

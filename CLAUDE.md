@@ -23,7 +23,7 @@ server/
   journal.js        # journal des événements et des erreurs (logs Render)
   extraits.js       # extraits Deezer du blind test : route /extrait/:id et son cache
   modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
-  modes/commun.js   # tirage, classement, joueurs attendus, enchaînement des questions : partagés entre modes
+  modes/commun.js   # tirage, classement, joueurs attendus, enchaînement des questions, options de l'hôte : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
   modes/estimation.js # mode Estimation (docs/modes/estimation.md)
   modes/qui-de-nous.js # mode Qui de nous ? (docs/modes/qui-de-nous.md)
@@ -89,7 +89,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 
 Après la mini-spec `docs/modes/<mode>.md` validée :
 
-1. `server/modes/<mode>.js` : le contrat du registre (`id`, `nom`, `regleCourte`, `joueursMin`, `demarrerPartie`, `enregistrerReponse`, `verifierFinAnticipee`, `suivant`, `echeance`, `avancer`, `vueTv`, `vueJoueur`), avec les aides de `modes/commun.js` (`questionCourante`, `questionSuivanteOuPodium`, `echeanceDePhase`, `tempsRestantMs`…), et ses tests.
+1. `server/modes/<mode>.js` : le contrat du registre (`id`, `nom`, `regleCourte`, `joueursMin`, `demarrerPartie`, `enregistrerReponse`, `verifierFinAnticipee`, `suivant`, `echeance`, `avancer`, `vueTv`, `vueJoueur`), avec les aides de `modes/commun.js` (`questionCourante`, `questionSuivanteOuPodium`, `echeanceDePhase`, `tempsRestantMs`…), ses options de l'hôte (longueur et temps pour répondre, avec `creerOptions`) et ses tests.
 2. `server/modes/index.js` : le mode entre dans le registre.
 3. TV : les écrans dans `public/tv/index.html`, `public/tv/modes/<mode>.js` (avec `afficherAttenteReponses` de `tv.js` pour les écrans d'attente) et `public/tv/modes/<mode>.css`, tous deux chargés par `tv/index.html`.
 4. Téléphone : les écrans dans `public/joueur/index.html`, `public/joueur/modes/<mode>.js`, et leurs styles dans `joueur.css`.

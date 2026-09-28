@@ -13,7 +13,7 @@ function sallePrete({ joueurs = ['A', 'B'], manches } = {}) {
   const salle = creerSalle('tv');
   const liste = joueurs.map((pseudo, i) => ajouterJoueur(salle, pseudo, `s${i}`).joueur);
   salle.mode = 'geoquiz';
-  if (manches) salle.reglagesMode.geoquiz = { manches };
+  if (manches) salle.reglagesMode.geoquiz = { ...reglagesParDefaut(), longueur: manches };
   salle.etat = 'partie';
   demarrerPartie(salle);
   return { salle, joueurs: liste };
@@ -58,17 +58,22 @@ test('résultats : triés du plus proche au plus loin, km arrondi au dixième', 
 
 // --- Réglages ---
 
-test('réglages : 3, 5 ou 10 manches, 5 par défaut', () => {
-  assert.deepEqual(reglagesParDefaut(), { manches: 5 });
-  for (const manches of [3, 5, 10]) assert.deepEqual(validerReglages({ manches }), { manches });
-  for (const donnees of [{ manches: 4 }, { manches: '5' }, { manches: 5.5 }, {}, null, { manches: 'toString' }]) {
+test('réglages : 3, 5 ou 10 manches, 30, 60 ou 90 s, 5 manches de 60 s par défaut', () => {
+  assert.deepEqual(reglagesParDefaut(), { longueur: 5, temps: 60 });
+  for (const longueur of [3, 5, 10]) {
+    for (const temps of [30, 60, 90]) assert.deepEqual(validerReglages({ longueur, temps }), { longueur, temps });
+  }
+  for (const donnees of [
+    { longueur: 4, temps: 60 }, { longueur: '5', temps: 60 }, { longueur: 5, temps: 45 }, { longueur: 5 }, {}, null,
+    { manches: 5 }, { longueur: 'toString', temps: 60 },
+  ]) {
     assert.equal(validerReglages(donnees), null, JSON.stringify(donnees));
   }
   const salle = creerSalle('tv');
-  assert.equal(vueReglages(salle).manches, 5);
-  salle.reglagesMode.geoquiz = { manches: 10 };
-  assert.deepEqual(vueReglages(salle).options.manches, [3, 5, 10]);
-  assert.equal(vueReglages(salle).resume, '10 manches');
+  assert.deepEqual(vueReglages(salle).valeurs, { longueur: 5, temps: 60 });
+  salle.reglagesMode.geoquiz = { longueur: 10, temps: 30 };
+  assert.deepEqual(vueReglages(salle).options.longueurs.map((choix) => choix.id), [3, 5, 10]);
+  assert.equal(vueReglages(salle).resume, '10 manches · 30 s');
 });
 
 // --- Tirage ---
@@ -310,11 +315,11 @@ test('réglages : l\'hôte choisit 10 manches en salle d\'attente, la partie en 
   const salle = creerSalle('tv');
   for (const pseudo of ['A', 'B']) ajouterJoueur(salle, pseudo, pseudo);
   assert.equal(choisirMode(salle, 'geoquiz'), true);
-  assert.equal(reglerMode(salle, { manches: 7 }), false);
-  assert.equal(reglerMode(salle, { manches: 10 }), true);
+  assert.equal(reglerMode(salle, { longueur: 7, temps: 60 }), false);
+  assert.equal(reglerMode(salle, { longueur: 10, temps: 60 }), true);
   lancer(salle);
   assert.equal(salle.etatMode.questions.length, 10);
-  assert.equal(reglerMode(salle, { manches: 3 }), false, 'pas pendant la partie');
+  assert.equal(reglerMode(salle, { longueur: 3, temps: 60 }), false, 'pas pendant la partie');
 });
 
 test('clé CARTO : lue dans CLE_CARTO, transmise au téléphone et à la TV de la révélation', (t) => {

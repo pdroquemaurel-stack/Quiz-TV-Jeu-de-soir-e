@@ -657,6 +657,24 @@ main[data-ecran="quiz-repondre"] {
   min-height: 48px;
 }
 
+.titre-option {
+  margin: 14px 0 6px;
+  font-weight: 600;
+}
+
+#options-communes[hidden],
+#bt-reglage-chansons[hidden],
+#bt-reglages-mix[hidden] {
+  display: none;
+}
+
+/* Curseur du nombre de chansons (Blind test) : assez large pour le pouce. */
+.curseur {
+  width: 100%;
+  height: 40px;
+  accent-color: var(--accent);
+}
+
 .medaille-fin {
   margin-top: 8px;
   font-size: 28px;

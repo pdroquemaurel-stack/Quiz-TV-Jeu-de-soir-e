@@ -26,27 +26,19 @@ function afficherResultatQuiz(vue) {
 }
 
 // ---------- Réglages de l'hôte : thèmes et niveaux ----------
-
-// Les réglages reçus du serveur : un appui n'en change qu'une partie.
-let reglagesQuiz = null;
-
-function reglerQuestions(changement) {
-  const { categories, niveaux } = reglagesQuiz;
-  socket.emit('hote:reglerMode', { categories, niveaux, ...changement });
-}
+// Le nombre de questions et le temps pour répondre sont les options communes (joueur.js).
 
 // Tout est coché au départ : un appui coche ou décoche. Le dernier coché ne se décoche pas.
 function boutonsACocher(options, selection, champ) {
   return options.map(({ id, libelle }) => {
     const coche = selection.includes(id);
     const suivants = coche ? selection.filter((autre) => autre !== id) : [...selection, id];
-    const envoyer = suivants.length ? () => reglerQuestions({ [champ]: suivants }) : null;
+    const envoyer = suivants.length ? () => envoyerReglages({ [champ]: suivants }) : null;
     return boutonReglage(libelle, coche, envoyer);
   });
 }
 
 function remplirReglagesQuiz(reglages) {
-  reglagesQuiz = reglages;
   const { categories, niveaux, options, inedites } = reglages;
   document.getElementById('choix-themes').replaceChildren(
     ...boutonsACocher(options.categories, categories, 'categories'),
