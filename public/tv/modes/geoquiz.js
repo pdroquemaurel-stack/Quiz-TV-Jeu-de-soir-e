@@ -138,7 +138,7 @@ function afficherRevelationGeoquiz(salle, nouvelleEtape) {
 function dessinerCarteGq(salle, cle) {
   const element = document.getElementById('gq-carte');
   if (typeof L === 'undefined') {
-    element.textContent = 'Carte indisponible';
+    element.textContent = 'Carte indisponible. Bonne chance.';
     return;
   }
   if (!carteGq) creerCarteGeoquiz(cle);

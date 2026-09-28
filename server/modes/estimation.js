@@ -7,7 +7,7 @@ import {
 
 export const id = 'estimation';
 export const nom = 'Estimation';
-export const regleCourte = 'Saisis un nombre : les 3 plus proches marquent.';
+export const regleCourte = 'Saisis un nombre : les 3 plus proches marquent. Les autres méditent.';
 export const joueursMin = 3;
 
 export const NOMBRE_QUESTIONS = 8;

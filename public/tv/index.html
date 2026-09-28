@@ -28,7 +28,7 @@
     <!-- Affiché au chargement, tant que le serveur ne répond pas (réveil de Render). -->
     <main data-ecran="connexion">
       <h1 class="titre">Quiz TV</h1>
-      <p class="attente">Connexion au serveur…</p>
+      <p class="attente">Connexion au serveur… Il se réveille. Prenez un siège.</p>
     </main>
 
     <main data-ecran="lobby" hidden>
@@ -47,7 +47,7 @@
           <p class="format-tv" id="format-tv"></p>
           <p class="regle-mode" id="reglages-tv" hidden></p>
         </div>
-        <p class="attente">En attente que l'hôte lance</p>
+        <p class="attente">L'hôte va lancer la partie. Un jour.</p>
       </section>
     </main>
 
@@ -109,7 +109,7 @@
         <p class="chrono" id="qdn-chrono"></p>
       </div>
       <h1 class="question rebond" id="qdn-texte-vote"></h1>
-      <p class="consigne-vote">Votez sur votre téléphone</p>
+      <p class="consigne-vote">Votez sur votre téléphone. Anonymement, rassurez-vous.</p>
       <ul class="etiquettes ont-repondu" id="qdn-ont-vote"></ul>
     </main>
 
@@ -132,7 +132,7 @@
         <p class="numero" id="uc-numero-description"></p>
         <p class="uc-composition" id="uc-composition"></p>
       </div>
-      <p class="consigne-vote">Décrivez votre mot à voix haute, sans le dire. L'hôte lance le vote.</p>
+      <p class="consigne-vote">Décrivez votre mot à voix haute, sans le dire. Subtilement, si possible. L'hôte lance le vote.</p>
       <ol class="uc-ordre" id="uc-ordre"></ol>
       <div class="uc-bloc-elimines" id="uc-bloc-elimines">
         <p class="uc-sous-titre">Hors jeu</p>
@@ -147,7 +147,7 @@
         <p class="chrono" id="uc-chrono"></p>
       </div>
       <h1 class="question rebond" id="uc-titre-vote"></h1>
-      <p class="consigne-vote">Votez sur votre téléphone</p>
+      <p class="consigne-vote">Votez sur votre téléphone. Sans rancune.</p>
       <ul class="etiquettes ont-repondu" id="uc-ont-vote"></ul>
     </main>
 
@@ -166,7 +166,7 @@
         <p class="chrono" id="uc-chrono-devinette"></p>
       </div>
       <h1 class="uc-verdict rebond" id="uc-mister-white"></h1>
-      <p class="uc-detail">Une seule chance de trouver le mot des civils</p>
+      <p class="uc-detail">Une seule chance de trouver le mot des civils. Pas de pression.</p>
       <p class="uc-proposition" id="uc-proposition"></p>
       <p class="uc-resultat-devinette rebond" id="uc-resultat-devinette" hidden></p>
     </main>
@@ -193,7 +193,7 @@
         <p class="chrono" id="mr-chrono"></p>
       </div>
       <h1 class="question rebond" id="mr-texte-saisie"></h1>
-      <p class="consigne-vote">Tapez votre réponse sur votre téléphone</p>
+      <p class="consigne-vote">Tapez votre réponse sur votre téléphone. Pensez comme les autres, pour une fois.</p>
       <ul class="etiquettes ont-repondu" id="mr-ont-repondu"></ul>
     </main>
 
@@ -208,8 +208,8 @@
       <div class="qdn-listes">
         <div class="mr-reponses">
           <ol class="mr-groupes" id="mr-groupes"></ol>
-          <div class="mr-ligne" id="mr-seuls"><span class="mr-titre-ligne">En solo :</span><ul class="etiquettes"></ul></div>
-          <div class="mr-ligne" id="mr-absents"><span class="mr-titre-ligne">Pas de réponse :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="mr-seuls"><span class="mr-titre-ligne">Seuls au monde :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="mr-absents"><span class="mr-titre-ligne">Absents :</span><ul class="etiquettes"></ul></div>
         </div>
         <ol class="classement classement-colonne" id="mr-classement"></ol>
       </div>
@@ -222,7 +222,7 @@
         <p class="chrono" id="bl-chrono-saisie"></p>
       </div>
       <h1 class="question rebond" id="bl-texte-saisie"></h1>
-      <p class="consigne-vote">Invente une fausse réponse, avec son article (le, la, du…)</p>
+      <p class="consigne-vote">Invente une fausse réponse, avec son article (le, la, du…). Mens bien.</p>
       <ul class="etiquettes ont-repondu" id="bl-ont-ecrit"></ul>
     </main>
 
@@ -234,7 +234,7 @@
       </div>
       <h1 class="question" id="bl-texte-vote"></h1>
       <ol class="bl-propositions" id="bl-propositions"></ol>
-      <p class="consigne-vote">Trouve la vraie réponse !</p>
+      <p class="consigne-vote">Trouve la vraie réponse. Méfie-toi de tes amis.</p>
       <ul class="etiquettes ont-repondu" id="bl-ont-vote"></ul>
     </main>
 
@@ -249,8 +249,8 @@
       <div class="qdn-listes">
         <div class="mr-reponses">
           <ol class="bl-cartes" id="bl-cartes"></ol>
-          <div class="mr-ligne" id="bl-personne-ny-a-cru"><span class="mr-titre-ligne">Personne n'y a cru :</span><ul class="etiquettes"></ul></div>
-          <div class="mr-ligne" id="bl-sans-bluff"><span class="mr-titre-ligne">Pas de bluff :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="bl-personne-ny-a-cru"><span class="mr-titre-ligne">Pas crédible :</span><ul class="etiquettes"></ul></div>
+          <div class="mr-ligne" id="bl-sans-bluff"><span class="mr-titre-ligne">N'a rien inventé :</span><ul class="etiquettes"></ul></div>
           <div class="mr-ligne" id="bl-sans-vote"><span class="mr-titre-ligne">Pas de vote :</span><ul class="etiquettes"></ul></div>
         </div>
         <ol class="classement classement-colonne" id="bl-classement"></ol>
@@ -271,7 +271,7 @@
           <p class="lg-bandeau" id="lg-bandeau" hidden></p>
         </div>
       </div>
-      <p class="consigne-vote">Donne un titre à ce GIF !</p>
+      <p class="consigne-vote">Donne un titre à ce GIF. Fais au moins sourire quelqu'un.</p>
       <ul class="etiquettes ont-repondu" id="lg-ont-ecrit"></ul>
       <!-- Le GIF suivant, chargé pendant la révélation et jamais joué. -->
       <video id="lg-video-suivante" preload="auto" muted hidden></video>
@@ -286,7 +286,7 @@
       <div class="lg-colonnes">
         <div class="lg-gauche">
           <div class="lg-cadre" id="lg-cadre-vote"></div>
-          <p class="consigne-vote">Vote pour ton préféré !</p>
+          <p class="consigne-vote">Vote pour ton préféré. Soyons indulgents.</p>
         </div>
         <ol class="bl-propositions lg-propositions" id="lg-propositions"></ol>
       </div>
@@ -297,7 +297,7 @@
       <div class="tv-haut">
         <p class="numero" id="lg-numero-revelation"></p>
         <p class="lg-verdict rebond" id="lg-verdict"></p>
-        <div class="mr-ligne" id="lg-sans-titre"><span class="mr-titre-ligne">Pas de titre :</span><ul class="etiquettes"></ul></div>
+        <div class="mr-ligne" id="lg-sans-titre"><span class="mr-titre-ligne">Pas d'inspiration :</span><ul class="etiquettes"></ul></div>
       </div>
       <div class="lg-colonnes">
         <div class="lg-gauche">
@@ -316,7 +316,7 @@
       <div class="bt-scene">
         <div class="bt-disque"><span class="bt-etiquette-disque">?</span></div>
         <p class="consigne-vote">Maître du jeu : <span id="bt-maitre-relais" class="bt-nom-maitre"></span></p>
-        <p class="bt-maitre">La musique démarre depuis son téléphone</p>
+        <p class="bt-maitre">La musique démarre depuis son téléphone. Quand il aura trouvé le bouton.</p>
       </div>
     </main>
 
@@ -328,9 +328,9 @@
       </div>
       <div class="bt-scene">
         <div class="bt-disque tourne" id="bt-disque-ecoute"><span class="bt-etiquette-disque">?</span></div>
-        <p class="bt-indisponible" id="bt-indisponible" hidden>Extrait indisponible</p>
+        <p class="bt-indisponible" id="bt-indisponible" hidden>Extrait indisponible. Deezer boude.</p>
         <ol class="bt-cartes" id="bt-cartes-ecoute" hidden></ol>
-        <p class="consigne-vote">Titre ? Artiste ? Criez vos réponses !</p>
+        <p class="consigne-vote">Titre ? Artiste ? Criez vos réponses. Les voisins adorent.</p>
         <p class="bt-maitre">Maître du jeu : <span id="bt-maitre-ecoute" class="bt-nom-maitre"></span></p>
       </div>
       <p class="bt-mention">Extraits : Deezer</p>
@@ -345,7 +345,7 @@
       <div class="bt-scene">
         <div class="bt-disque" id="bt-disque-designation"><span class="bt-etiquette-disque">?</span></div>
         <ol class="bt-cartes" id="bt-cartes-designation" hidden></ol>
-        <p class="consigne-vote"><span id="bt-maitre-designation" class="bt-nom-maitre"></span> désigne les gagnants…</p>
+        <p class="consigne-vote"><span id="bt-maitre-designation" class="bt-nom-maitre"></span> désigne les gagnants… en toute impartialité.</p>
         <p class="bt-ecoute-figee" id="bt-ecoute-figee" hidden></p>
       </div>
     </main>
@@ -369,7 +369,7 @@
     </main>
 
     <main data-ecran="podium" hidden>
-      <h1 class="titre">Partie terminée</h1>
+      <h1 class="titre">Partie terminée. Enfin.</h1>
       <p class="plus-designe" id="plus-designe" hidden></p>
       <div class="podium">
         <div class="marche marche-2"><ul class="noms" id="podium-2"></ul><div class="socle">2</div></div>
@@ -381,30 +381,30 @@
         <ul class="prix-podium" id="prix-podium" hidden></ul>
         <ol class="classement" id="classement-podium"></ol>
       </div>
-      <p class="attente">Points globaux dans un instant</p>
+      <p class="attente">Voici le classement. Certains devraient s'asseoir. Points globaux ensuite.</p>
     </main>
 
     <main data-ecran="tableau" hidden>
       <h1 class="titre">Points globaux</h1>
       <p class="sous-titre-tableau">
         <span id="sous-titre-tableau"></span>
-        <span class="departage rebond" id="departage" hidden>Départage !</span>
+        <span class="departage rebond" id="departage" hidden>Départage. Enfin du suspense.</span>
       </p>
       <ol class="classement tableau-global" id="tableau-global"></ol>
       <p class="prochain-mode">Prochain mode : <strong id="prochain-mode"></strong></p>
-      <p class="attente">L'hôte peut relancer</p>
+      <p class="attente">L'hôte peut relancer. Il le fera, je le connais.</p>
     </main>
 
     <main data-ecran="grandGagnant" hidden>
       <h1 class="titre">Victoire finale</h1>
       <p class="grand-gagnant rebond" id="grand-gagnant"></p>
       <ol class="classement tableau-global" id="tableau-final"></ol>
-      <p class="attente">L'hôte peut lancer une nouvelle aventure</p>
+      <p class="attente">L'hôte peut lancer une nouvelle aventure. Personne ne l'en empêchera.</p>
     </main>
 
     <main data-ecran="geoquiz-devinette" class="gq-ecran" hidden>
       <img id="gq-photo" class="gq-photo" alt="">
-      <p id="gq-photo-absente" class="gq-photo-absente" hidden>Photo indisponible</p>
+      <p id="gq-photo-absente" class="gq-photo-absente" hidden>Photo indisponible. Imaginez.</p>
       <div class="tv-haut">
         <p class="numero" id="gq-numero-devinette"></p>
         <div class="barre-temps"><div class="barre-temps-remplie" id="gq-barre-temps"></div></div>
@@ -452,8 +452,8 @@
       <p id="code-coin"></p>
     </aside>
 
-    <p id="bandeau-son" class="bandeau-son" hidden>Cliquez pour activer le son</p>
-    <p id="bandeau-connexion" class="bandeau-connexion" hidden>Connexion au serveur…</p>
+    <p id="bandeau-son" class="bandeau-son" hidden>Cliquez pour activer le son. Le silence me va aussi.</p>
+    <p id="bandeau-connexion" class="bandeau-connexion" hidden>Connexion perdue. Je patiente, j'ai l'habitude.</p>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

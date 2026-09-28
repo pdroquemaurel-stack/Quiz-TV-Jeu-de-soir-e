@@ -37,12 +37,12 @@ function afficherResultatsMemeReponse(salle, nouvelleEtape) {
   );
 }
 
-// « Tout le monde d'accord ! », « Fraise ! », « Fraise et Cerise ! », « Chacun sa réponse », « Personne n'a répondu ».
+// « Unanimes. Inquiétant. », « Fraise ! », « Fraise et Cerise ! », « Chacun pour soi. », « Aucune réponse. Soit. ».
 function texteVerdict(groupes, unanimite) {
-  if (groupes.length === 0) return 'Personne n\'a répondu';
-  if (unanimite) return 'Tout le monde d\'accord !';
+  if (groupes.length === 0) return 'Aucune réponse. Soit.';
+  if (unanimite) return 'Unanimes. Inquiétant.';
   const enTete = groupes.filter((groupe) => groupe.enTete).map((groupe) => groupe.libelle);
-  if (enTete.length === 0) return 'Chacun sa réponse';
+  if (enTete.length === 0) return 'Chacun pour soi.';
   return `${enTete.join(' et ')} !`;
 }
 

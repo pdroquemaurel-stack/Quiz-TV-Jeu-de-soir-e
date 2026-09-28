@@ -121,7 +121,7 @@ function afficherDevinette(vue) {
 function afficherPinValide(vue) {
   maCouleur = vue.couleur;
   document.getElementById('geoquiz-attente').textContent =
-    `En attente des autres joueurs… (${vue.nbValides}/${vue.nbAttendus})`;
+    `Les autres cherchent encore… (${vue.nbValides}/${vue.nbAttendus})`;
   if (!placerCarte('geoquiz-pin_valide', vue.cleCarte)) return;
   verrouiller(true);
   calque.clearLayers();
@@ -145,7 +145,7 @@ function afficherResultatGeoquiz(vue) {
   const { lieu, pin, km, points } = vue;
   document.getElementById('geoquiz-lieu').textContent = `${lieu.nom} (${lieu.pays})`;
   const resultat = document.getElementById('geoquiz-points');
-  resultat.textContent = pin ? `+${points}` : 'Pas de pin, 0 point';
+  resultat.textContent = pin ? `+${points}` : 'Pas de pin, 0 point. Tu as préféré ne pas savoir.';
   resultat.classList.toggle('juste', points > 0);
   document.getElementById('geoquiz-distance').textContent = pin ? `Ton pin : à ${texteDistance(km)}` : '';
   document.getElementById('score-geoquiz').textContent = vue.score;

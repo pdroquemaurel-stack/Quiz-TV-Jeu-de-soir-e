@@ -2,7 +2,7 @@
 // Les scripts des modes partagent la même portée : les noms propres au mode finissent par « Uc ».
 
 const ROLES_UC = { civil: 'civil', undercover: 'undercover', mister_white: 'Mister White' };
-const TEXTE_MISTER_WHITE = "Tu es Mister White : tu n'as pas de mot. Écoute les autres et bluffe !";
+const TEXTE_MISTER_WHITE = "Tu es Mister White : tu n'as pas de mot. Écoute les autres et bluffe avec aplomb.";
 
 // Dernier état reçu : le bouton « Voir mon mot » réaffiche sans attendre le serveur.
 let derniereVueUc = null;
@@ -89,8 +89,8 @@ function afficherVoteEnvoyeUc(vue) {
 // ---------- Élimination ----------
 
 const REVELATIONS_UC = {
-  civil: "C'était un civil",
-  undercover: "C'était un undercover !",
+  civil: "C'était un civil. Oups.",
+  undercover: "C'était un undercover. Bien joué.",
   mister_white: "C'était Mister White !",
 };
 
@@ -105,16 +105,16 @@ function afficherEliminationUc(vue) {
   } else if (devinette) {
     verdict.textContent = devinette.proposition
       ? `${devinette.misterWhite} propose « ${devinette.proposition} »`
-      : `${devinette.misterWhite} n'a rien proposé`;
-    detail.textContent = devinette.trouve ? 'Trouvé : Mister White gagne !' : 'Raté !';
+      : `${devinette.misterWhite} n'a rien proposé. Audacieux.`;
+    detail.textContent = devinette.trouve ? 'Trouvé : Mister White gagne !' : 'Raté. Belle tentative.';
   } else if (elimine) {
     verdict.textContent = `${elimine.pseudo} est éliminé`;
     detail.textContent = REVELATIONS_UC[elimine.role];
   } else if (departage) {
-    verdict.textContent = 'Égalité !';
+    verdict.textContent = 'Égalité. Évidemment.';
     detail.textContent = `Départage entre ${departage.join(' et ')}`;
   } else {
-    verdict.textContent = 'Personne n\'est éliminé';
+    verdict.textContent = 'Personne n\'est éliminé. Quelle indécision.';
     detail.textContent = '';
   }
 }
@@ -184,7 +184,7 @@ function afficherDevinerUc(vue) {
 function afficherFinMancheUc(vue) {
   afficherCommunUc(vue);
   const resultat = document.getElementById('uc-resultat-manche');
-  resultat.textContent = vue.points > 0 ? `Ton camp gagne, +${vue.points}` : 'Ton camp perd';
+  resultat.textContent = vue.points > 0 ? `Ton camp gagne, +${vue.points}. Tu n'y es peut-être pour rien.` : 'Ton camp perd. Solidairement.';
   resultat.classList.toggle('juste', vue.points > 0);
   const exclamation = vue.role === 'civil' ? '' : ' !';
   document.getElementById('uc-role-fin').textContent = `Tu étais ${ROLES_UC[vue.role]}${exclamation}`;

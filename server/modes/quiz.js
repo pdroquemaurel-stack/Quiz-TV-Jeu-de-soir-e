@@ -7,7 +7,7 @@ import {
 
 export const id = 'quiz';
 export const nom = 'Quiz';
-export const regleCourte = '4 choix : plus tu réponds vite, plus tu marques.';
+export const regleCourte = '4 choix : plus tu réponds vite, plus tu marques. Réfléchir est permis.';
 export const joueursMin = 2;
 
 const NOMBRE_CHOIX = 4;

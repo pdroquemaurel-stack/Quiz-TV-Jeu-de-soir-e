@@ -14,7 +14,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
-  <p id="bandeau-reconnexion" class="bandeau" hidden><span class="point"></span> Reconnexion…</p>
+  <p id="bandeau-reconnexion" class="bandeau" hidden><span class="point"></span> Reconnexion… Ne bouge pas.</p>
 
   <header id="entete" class="entete" hidden>
     <span id="ma-pastille" class="pastille"></span>
@@ -37,11 +37,11 @@
   </main>
 
   <main data-ecran="attente" hidden>
-    <p>Tu es dans la salle</p>
+    <p>Tu es dans la salle. C'était l'étape facile.</p>
     <span id="grande-pastille" class="pastille grande-pastille rebond"></span>
     <p id="mon-pseudo" class="gros-texte"></p>
-    <p id="est-hote" hidden><span class="forme couronne"></span> Tu es l'hôte</p>
-    <p id="attente-hote" class="discret">En attente que l'hôte lance</p>
+    <p id="est-hote" hidden><span class="forme couronne"></span> Tu es l'hôte. Tout repose sur toi. Courage.</p>
+    <p id="attente-hote" class="discret">L'hôte va lancer la partie. Un jour.</p>
     <p class="mode-choisi discret"></p>
     <p id="format-choisi" class="discret"></p>
     <p class="reglages-choisis discret" hidden></p>
@@ -68,7 +68,7 @@
         <button class="bouton-mode bouton-reglages" hidden>
           <span class="resume-reglages"></span><small>Changer</small>
         </button>
-        <p class="sans-option discret" hidden>Pas d'option pour ce mode</p>
+        <p class="sans-option discret" hidden>Pas d'option. Moins de choix, moins d'erreurs.</p>
       </div>
     </div>
     <button id="bouton-lancer" class="bouton en-bas" hidden>Lancer la partie</button>
@@ -85,19 +85,19 @@
   </main>
 
   <main data-ecran="attente_question" hidden>
-    <p class="gros-texte">En attente de la prochaine question</p>
+    <p class="gros-texte">La prochaine question arrive. Garde ton calme.</p>
     <p class="discret">Regarde la TV</p>
   </main>
 
   <main data-ecran="quiz-reponse_envoyee" hidden>
     <div id="choix-envoye" class="choix choix-envoye rebond"><span class="forme"></span></div>
-    <p class="gros-texte">Réponse envoyée</p>
+    <p class="gros-texte">Réponse envoyée. Pas de retour possible.</p>
     <p class="discret">Regarde la TV</p>
   </main>
 
   <main data-ecran="quiz-resultat" hidden>
     <p id="resultat" class="carte-resultat rebond"></p>
-    <p id="plus-rapide-resultat" class="plus-rapide-resultat" hidden>⚡ Réponse la plus rapide !</p>
+    <p id="plus-rapide-resultat" class="plus-rapide-resultat" hidden>⚡ Le plus rapide. Presque trop.</p>
     <p>Score : <strong id="score-resultat"></strong></p>
     <p>Rang : <strong id="rang-resultat"></strong></p>
     <button id="bouton-suivant" class="bouton en-bas" hidden>Suivant</button>
@@ -114,7 +114,7 @@
   </main>
 
   <main data-ecran="estimation-reponse_envoyee" hidden>
-    <p class="gros-texte">Réponse envoyée</p>
+    <p class="gros-texte">Réponse envoyée. On verra bien.</p>
     <p id="nombre-envoye" class="nombre-envoye rebond"></p>
     <p class="discret">Regarde la TV</p>
   </main>
@@ -177,7 +177,7 @@
   </main>
 
   <main data-ecran="qui-de-nous-voter" hidden>
-    <p class="discret">Qui de nous… ? La question est sur la TV</p>
+    <p class="discret">Qui de nous… ? La question est sur la TV. Sois honnête.</p>
     <div id="candidats" class="candidats"></div>
   </main>
 
@@ -202,7 +202,7 @@
   <main data-ecran="undercover-mot" hidden>
     <p class="uc-manche discret"></p>
     <div class="bloc-mot"><p class="mot-secret" hidden></p><button class="bouton secondaire voir-mot">Voir mon mot</button></div>
-    <p class="discret">Décris ton mot à voix haute quand c'est ton tour. L'ordre est sur la TV.</p>
+    <p class="discret">Décris ton mot à voix haute quand c'est ton tour. L'ordre est sur la TV. Sans le dire, évidemment.</p>
     <button class="bouton en-bas bouton-hote-uc" hidden></button>
   </main>
 
@@ -221,10 +221,10 @@
   </main>
 
   <main data-ecran="undercover-elimine" hidden>
-    <p class="carte-resultat rebond">Tu es éliminé</p>
+    <p class="carte-resultat rebond">Tu es éliminé. Ça arrive aux meilleurs.</p>
     <p id="uc-role-elimine" class="gros-texte"></p>
     <p id="uc-mot-elimine" class="discret"></p>
-    <p class="discret">Regarde la suite sur la TV</p>
+    <p class="discret">Regarde la suite sur la TV, en spectateur.</p>
     <button class="bouton en-bas bouton-hote-uc" hidden></button>
   </main>
 
@@ -254,7 +254,7 @@
   </main>
 
   <main data-ecran="undercover-attente_manche" hidden>
-    <p class="gros-texte">Tu joues à la prochaine manche</p>
+    <p class="gros-texte">Tu joues à la prochaine manche. Patience.</p>
     <p class="discret">Regarde la TV</p>
     <button class="bouton en-bas bouton-hote-uc" hidden></button>
   </main>
@@ -274,7 +274,7 @@
 
   <main data-ecran="meme-reponse-resultat" hidden>
     <p id="mr-resultat" class="carte-resultat rebond"></p>
-    <p id="mr-en-tete" class="gros-texte" hidden>Réponse la plus donnée !</p>
+    <p id="mr-en-tete" class="gros-texte" hidden>Réponse la plus donnée. Tu es très… normal.</p>
     <p id="mr-rattachement" class="discret"></p>
     <p>Score : <strong id="mr-score"></strong></p>
     <p>Rang : <strong id="mr-rang"></strong></p>
@@ -284,7 +284,7 @@
   <main data-ecran="bluff-ecrire" hidden>
     <p id="bl-numero" class="discret"></p>
     <p id="bl-question" class="gros-texte"></p>
-    <p class="discret">Invente une fausse réponse crédible, avec son article s'il en faut un (le, la, du, des…)</p>
+    <p class="discret">Invente une fausse réponse crédible, avec son article s'il en faut un (le, la, du, des…). Sois convaincant.</p>
     <input id="bl-champ" class="champ-mot" type="text" maxlength="30" autocomplete="off" enterkeyhint="done" aria-label="Ton bluff">
     <button id="bl-valider" class="bouton en-bas" disabled>Valider</button>
   </main>
@@ -317,7 +317,7 @@
 
   <main data-ecran="legende-ecrire" hidden>
     <p id="lg-numero" class="discret"></p>
-    <p class="gros-texte">Regarde la TV et donne un titre à ce GIF</p>
+    <p class="gros-texte">Regarde la TV et donne un titre à ce GIF. Sois drôle, si possible.</p>
     <textarea id="lg-champ" class="champ-mot champ-titre" rows="5" maxlength="120" autocomplete="off" enterkeyhint="done" aria-label="Ton titre"></textarea>
     <p id="lg-compteur" class="discret">0 / 120</p>
     <button id="lg-valider" class="bouton en-bas" disabled>Valider</button>
@@ -356,7 +356,7 @@
   <!-- Relais : le prochain maître apprend son rôle avant la musique, et la lance lui-même. -->
   <main data-ecran="blind-test-relais" hidden>
     <p id="bt-numero-relais" class="discret"></p>
-    <p class="gros-texte rebond">C'est toi le maître du jeu !</p>
+    <p class="gros-texte rebond">C'est toi le maître du jeu. Grand pouvoir, etc.</p>
     <p class="discret">Tu verras la réponse sur ton téléphone : garde-la secrète, écoute les autres et désigne qui a trouvé.</p>
     <button id="bt-lancer" class="bouton en-bas"></button>
   </main>
@@ -433,7 +433,7 @@
         <button class="bouton-mode bouton-reglages" hidden>
           <span class="resume-reglages"></span><small>Changer</small>
         </button>
-        <p class="sans-option discret" hidden>Pas d'option pour ce mode</p>
+        <p class="sans-option discret" hidden>Pas d'option. Moins de choix, moins d'erreurs.</p>
       </div>
     </div>
     <button id="bouton-rejouer" class="bouton en-bas" hidden></button>
@@ -474,7 +474,7 @@
         </div>
       </div>
       <div data-reglages="geoquiz" hidden>
-        <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles.</p>
+        <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles. Comme dans la vie.</p>
       </div>
       <!-- Options communes à presque tous les modes : longueur de la partie et temps pour répondre. -->
       <div id="options-communes" hidden>
@@ -490,7 +490,7 @@
   <div id="confirmation" class="voile" hidden>
     <div class="carte boite rebond">
       <p class="gros-texte">Terminer la partie maintenant ?</p>
-      <p class="discret">On passe directement au podium.</p>
+      <p class="discret">On passe directement au podium. Personne ne t'en voudra. Presque.</p>
       <button id="confirmer-terminer" class="bouton danger">Oui, terminer</button>
       <button id="annuler-terminer" class="bouton secondaire">Annuler</button>
     </div>

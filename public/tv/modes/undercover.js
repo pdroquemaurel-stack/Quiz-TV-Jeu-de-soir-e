@@ -20,7 +20,7 @@ function listerPseudos(pseudos, liaison = 'et') {
 
 function texteComposition({ undercovers, misterWhite }) {
   const intrus = `${undercovers} undercover${undercovers > 1 ? 's' : ''}`;
-  return `${misterWhite ? `${intrus} et 1 Mister White` : intrus} parmi vous`;
+  return `${misterWhite ? `${intrus} et 1 Mister White` : intrus} parmi vous. Méfiance.`;
 }
 
 // Étiquette d'un joueur avec son rôle, une fois celui-ci public.
@@ -55,7 +55,7 @@ function afficherVoteUndercover(salle, nouvelleEtape) {
     const pseudos = (departage ?? []).map((id) => joueurUndercover(salle, id).pseudo);
     document.getElementById('uc-titre-vote').textContent = departage
       ? `Départage : ${listerPseudos(pseudos, 'ou')} ?`
-      : 'Qui éliminer ?';
+      : 'Qui éliminer ? Choisissez bien. Ou pas.';
   }
   afficherAttenteReponses(salle, nouvelleEtape, {
     barre: 'uc-barre-temps', chrono: 'uc-chrono', pastilles: 'uc-ont-vote',
@@ -63,9 +63,9 @@ function afficherVoteUndercover(salle, nouvelleEtape) {
 }
 
 const REVELATIONS = {
-  civil: 'Rôle : civil',
-  undercover: 'Rôle : undercover !',
-  mister_white: "C'était Mister White !",
+  civil: 'Rôle : civil. Une erreur judiciaire.',
+  undercover: 'Rôle : undercover. Bien vu, pour une fois.',
+  mister_white: "C'était Mister White. Il bluffait mal.",
 };
 
 // Sans éliminé (égalité, aucun vote), pas de son : le vote ou le tour suivant joue le sien.
@@ -80,14 +80,14 @@ function afficherEliminationUndercover(salle, nouvelleEtape) {
   const detail = document.getElementById('uc-detail');
   if (elimine) {
     const joueur = joueurUndercover(salle, elimine.id);
-    verdict.replaceChildren(pastille(joueur.couleur), ` ${joueur.pseudo} sort du jeu`);
+    verdict.replaceChildren(pastille(joueur.couleur), ` ${joueur.pseudo} sort. Dignement.`);
     detail.textContent = REVELATIONS[elimine.role];
   } else if (departage) {
-    verdict.textContent = 'Égalité !';
+    verdict.textContent = 'Égalité. Évidemment.';
     detail.textContent = `Vote de départage entre ${listerPseudos(departage.map(pseudoDe))}`;
   } else {
-    verdict.textContent = 'Personne ne sort du jeu';
-    detail.textContent = exAequo.length > 1 ? 'Encore une égalité' : 'Aucun vote';
+    verdict.textContent = 'Personne ne sort. Quelle indécision.';
+    detail.textContent = exAequo.length > 1 ? 'Encore une égalité. Vous le faites exprès.' : 'Aucun vote. Vous dormez ?';
   }
   document.getElementById('uc-votes').replaceChildren(...votes.map(({ votant, cible }) => {
     const element = document.createElement('li');
@@ -116,20 +116,20 @@ function afficherDevinetteUndercover(salle, nouvelleEtape) {
   resultat.hidden = !devinette.resultatConnu;
   if (!devinette.resultatConnu) {
     lancerChrono(chrono, tempsRestantMs);
-    proposition.textContent = 'Recherche en cours…';
+    proposition.textContent = 'Recherche en cours… On retient son souffle.';
     return;
   }
   proposition.textContent = devinette.proposition
     ? `Proposition : « ${devinette.proposition} »`
-    : 'Pas de proposition';
-  resultat.textContent = devinette.trouve ? 'Trouvé !' : 'Raté';
+    : 'Pas de proposition. Stratégie audacieuse.';
+  resultat.textContent = devinette.trouve ? 'Trouvé. Chapeau.' : 'Raté. Ça arrive.';
   resultat.classList.toggle('trouve', devinette.trouve);
 }
 
 const GAGNANTS = {
-  civils: 'Les civils gagnent !',
-  infiltres: 'Les infiltrés gagnent !',
-  mister_white: 'Mister White gagne !',
+  civils: 'Les civils gagnent. L\'honnêteté paie, parfois.',
+  infiltres: 'Les infiltrés gagnent. Vous ne vous méfiez de rien.',
+  mister_white: 'Mister White gagne. Sans mot, et sans honte.',
 };
 
 function afficherFinMancheUndercover(salle, nouvelleEtape) {

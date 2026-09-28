@@ -135,11 +135,11 @@ function textesDuBandeau({ propositions, pasAssezDeTitres }) {
 }
 
 function verdictLegende({ propositions, legendaire, pasAssezDeTitres }) {
-  if (pasAssezDeTitres) return 'Pas assez de titres pour voter';
+  if (pasAssezDeTitres) return 'Pas assez de titres. Pas de vote.';
   const gagnants = propositions.filter((proposition) => proposition.gagnant);
   if (legendaire) return 'Légendaire !';
-  if (gagnants.length === 0) return 'Aucun vote';
-  if (gagnants.length > 1) return 'Égalité !';
+  if (gagnants.length === 0) return 'Aucun vote. Dur.';
+  if (gagnants.length > 1) return 'Égalité. Pas de jaloux.';
   return '';
 }
 

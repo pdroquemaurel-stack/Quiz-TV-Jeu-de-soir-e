@@ -32,11 +32,11 @@ function afficherResultatsQuiDeNous(salle, nouvelleEtape) {
   );
 }
 
-// « Paul ! », « Paul et Léa ! », ou « Personne n'a voté ».
+// « Paul ! », « Paul et Léa ! », ou « Aucun vote. Prudent. ».
 function afficherElus(joueurs) {
   const cadre = document.getElementById('qdn-elus');
   if (joueurs.length === 0) {
-    cadre.replaceChildren('Personne n\'a voté');
+    cadre.replaceChildren('Aucun vote. Prudent.');
     return;
   }
   const morceaux = [];
@@ -79,7 +79,7 @@ function completerPodiumQuiDeNous(salle) {
   const titre = plusDesignes.length > 1 ? 'Les plus désignés' : 'Le plus désigné';
   const nom = document.createElement('strong');
   nom.textContent = noms;
-  ligne.replaceChildren(`${titre} de la partie : `, nom, ` (${votes} vote${votes > 1 ? 's' : ''})`);
+  ligne.replaceChildren(`${titre} de la partie, sans surprise : `, nom, ` (${votes} vote${votes > 1 ? 's' : ''})`);
   ligne.hidden = false;
 }
 
