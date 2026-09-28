@@ -95,9 +95,9 @@ function sonRevelationBluff({ tousOntTrouve, personneNaTrouve }) {
 }
 
 function verdictBluff({ personneNaBluffe, tousOntTrouve, personneNaTrouve }) {
-  if (personneNaBluffe) return 'Personne n\'a bluffé';
-  if (tousOntTrouve) return 'Personne ne s\'est fait avoir !';
-  if (personneNaTrouve) return 'Tout le monde s\'est fait avoir !';
+  if (personneNaBluffe) return 'Aucun bluff. Bizarre.';
+  if (tousOntTrouve) return 'Aucun piégé. Méfiants.';
+  if (personneNaTrouve) return 'Tous piégés. Bravo.';
   return '';
 }
 

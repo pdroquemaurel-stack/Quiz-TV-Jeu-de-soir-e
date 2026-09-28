@@ -294,8 +294,8 @@ function remplirTrouveClassique(salle, idLigne, joueurId) {
 }
 
 function verdictClassique(titre, artiste) {
-  if (titre !== null && titre === artiste) return 'Doublé !';
-  if (titre === null && artiste === null) return 'Personne n\'a trouvé';
+  if (titre !== null && titre === artiste) return 'Doublé. Rien à redire.';
+  if (titre === null && artiste === null) return 'Personne n\'a trouvé. Pourtant c\'était un tube.';
   return '';
 }
 
@@ -311,7 +311,7 @@ function revelerMix(salle) {
   const { cartes } = salle.etatMode;
   const toutes = cartes.every((carte) => carte.joueur);
   if (toutes) sonner('victoire');
-  afficherVerdict(toutes ? 'Toutes trouvées !' : '');
+  afficherVerdict(toutes ? 'Toutes trouvées. Je suis presque impressionné.' : '');
   let retournees = 0;
   document.getElementById('bt-liste-mix').replaceChildren(...cartes.map((carte) => {
     const element = document.createElement('li');

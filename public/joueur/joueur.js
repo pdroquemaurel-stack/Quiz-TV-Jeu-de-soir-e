@@ -25,6 +25,21 @@ function envoyerSuivant() {
   socket.emit('hote:suivant', { etape: etapeRecue });
 }
 
+// Une phrase parmi plusieurs, choisie d'après l'étape : la même pendant tout l'écran
+// (chaque état reçu redessine), une autre à l'étape suivante.
+function phraseDuMoment(phrases, etape) {
+  let somme = 0;
+  for (const lettre of etape) somme += lettre.charCodeAt(0);
+  return phrases[somme % phrases.length];
+}
+
+// Quiz, Estimation et Même réponse, quand le joueur n'a pas répondu à temps.
+const PHRASES_SANS_REPONSE = [
+  'Temps écoulé. Comme mes rêves de jeunesse.',
+  'Pas de réponse. Un choix, en soi.',
+  'Trop tard. La question ne t\'a pas attendu.',
+];
+
 // Android seulement : iOS ne connaît pas navigator.vibrate. Chrome refuse
 // (avec une erreur en console) tant que la page n'a pas été touchée.
 function vibrer(dureeMs) {
@@ -204,7 +219,7 @@ socket.on('erreur', (erreur) => {
   const partieDisparue = erreur.code === 'salle_introuvable' && codeNonSaisi;
   if (partieDisparue) oublierCodeUrl();
   messageErreur.textContent = partieDisparue
-    ? 'Cette partie n\'existe plus. Scanne le nouveau QR code sur la TV'
+    ? 'Cette partie n\'existe plus. Scanne le nouveau QR code sur la TV. Rien n\'est éternel.'
     : erreur.message;
   messageErreur.hidden = false;
 });
@@ -435,7 +450,7 @@ function afficherFin(vue) {
   document.getElementById('score-fin').textContent = vue.score;
   document.getElementById('medaille-fin').textContent = vue.medaille
     ? `${MEDAILLES[vue.medaille]}, +${vue.gain}`
-    : 'Pas de médaille cette fois';
+    : 'Pas de médaille. Tu as participé, c\'est déjà ça.';
   document.getElementById('bouton-suivant-fin').hidden = !vue.estHote;
 }
 
@@ -453,8 +468,8 @@ function afficherTableau(vue) {
 
 function afficherGrandGagnant(vue) {
   document.getElementById('titre-grand-gagnant').textContent = vue.estGrandGagnant
-    ? '🏆 Tu gagnes l\'aventure !'
-    : `🏆 ${vue.grandGagnant} gagne l'aventure`;
+    ? '🏆 Tu gagnes l\'aventure. Garde ta modestie.'
+    : `🏆 ${vue.grandGagnant} gagne l'aventure. Tu applaudis.`;
   document.getElementById('rang-grand-gagnant').textContent = texteRang(vue.rangGlobal);
   document.getElementById('points-grand-gagnant').textContent = textePoints(vue.pointsGlobaux);
   const boutonNouvelle = document.getElementById('bouton-nouvelle-aventure');

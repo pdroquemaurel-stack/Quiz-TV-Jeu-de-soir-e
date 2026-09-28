@@ -92,21 +92,21 @@ function afficherResultatBluff(vue) {
   document.getElementById('bl-suivant').hidden = !vue.estHote;
 }
 
-// « Bien vu ! C'était : Sel, +1000 », « Raté ! C'était : Sel », « Pas de vote. C'était : Sel ».
+// « Bien vu. C'était : Sel, +1000 », « Raté. C'était : Sel. Tu t'es fait avoir. », « Pas de vote. C'était : Sel ».
 function texteVeriteBluff(vue) {
   const verite = `C'était : ${vue.vraieReponse}`;
-  if (vue.aTrouve) return `Bien vu ! ${verite}, +${vue.points - vue.pointsBluff}`;
-  if (vue.aVote) return `Raté ! ${verite}`;
+  if (vue.aTrouve) return `Bien vu. ${verite}, +${vue.points - vue.pointsBluff}`;
+  if (vue.aVote) return `Raté. ${verite}. Tu t'es fait avoir.`;
   if (vue.personneNaBluffe) return verite;
   return `Pas de vote. ${verite}`;
 }
 
 function texteBluff(vue) {
-  if (vue.bluffVrai) return 'Ton bluff était la vraie réponse !';
-  if (vue.sonBluff === null) return 'Pas de bluff';
-  if (vue.pieges === 0) return 'Ton bluff n\'a piégé personne';
+  if (vue.bluffVrai) return 'Ton bluff était la vraie réponse. Raté, mais avec panache.';
+  if (vue.sonBluff === null) return 'Pas de bluff. Trop honnête.';
+  if (vue.pieges === 0) return 'Ton bluff n\'a piégé personne. Pas très convaincant.';
   const joueurs = vue.pieges > 1 ? `${vue.pieges} joueurs` : '1 joueur';
-  return `Ton bluff a piégé ${joueurs}, +${vue.pointsBluff}`;
+  return `Ton bluff a piégé ${joueurs}, +${vue.pointsBluff}. Menteur doué.`;
 }
 
 modesJoueur.bluff = {

@@ -44,11 +44,11 @@ function afficherReponseEnvoyeeMr(vue) {
 
 function afficherResultatMr(vue) {
   const resultat = document.getElementById('mr-resultat');
-  if (vue.texte === null) resultat.textContent = 'Pas de réponse';
+  if (vue.texte === null) resultat.textContent = phraseDuMoment(PHRASES_SANS_REPONSE, etapeRecue);
   else if (vue.taille >= 2) {
     const autres = vue.taille - 1;
-    resultat.textContent = `Même réponse que ${autres} autre${autres > 1 ? 's' : ''}, +${vue.points}`;
-  } else resultat.textContent = `Tu es seul avec : ${vue.libelle}`;
+    resultat.textContent = `Même réponse que ${autres} autre${autres > 1 ? 's' : ''}, +${vue.points}. Grands esprits.`;
+  } else resultat.textContent = `Seul avec : ${vue.libelle}. Personne ne te suit.`;
   resultat.classList.toggle('juste', vue.points > 0);
 
   document.getElementById('mr-en-tete').hidden = !vue.enTete;

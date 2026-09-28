@@ -36,9 +36,9 @@ function listerNoms(noms) {
 
 function afficherResultatQuiDeNous(vue) {
   const resultat = document.getElementById('resultat-qdn');
-  if (vue.vote === null) resultat.textContent = 'Pas de vote';
-  else if (vue.commeLeGroupe) resultat.textContent = `Comme le groupe, +${vue.points}`;
-  else resultat.textContent = 'Pas comme le groupe';
+  if (vue.vote === null) resultat.textContent = 'Pas de vote. Neutralité suisse.';
+  else if (vue.commeLeGroupe) resultat.textContent = `Comme le groupe, +${vue.points}. Tu es dans le moule.`;
+  else resultat.textContent = 'Pas comme le groupe. Esprit libre, zéro point.';
   resultat.classList.toggle('juste', vue.commeLeGroupe);
 
   document.getElementById('elus-qdn').textContent = vue.elus.length === 0

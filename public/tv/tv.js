@@ -151,7 +151,7 @@ function afficherLobby(salle) {
   if (salle.reglages) reglages.textContent = `${salle.reglages.titre} : ${salle.reglages.resume}`;
   // Première étape de l'hôte : le mode n'est pas encore choisi.
   if (!salle.formatValide) {
-    document.getElementById('nom-mode').textContent = 'L\'hôte choisit le format';
+    document.getElementById('nom-mode').textContent = 'L\'hôte choisit le format. Laissons-le réfléchir.';
     for (const id of ['regle-mode', 'minimum-mode', 'reglages-tv']) document.getElementById(id).hidden = true;
   }
 }
@@ -166,7 +166,7 @@ function afficherModeChoisi(mode) {
   document.getElementById('regle-mode').textContent = mode.regleCourte;
   document.getElementById('regle-mode').hidden = false;
   const minimum = document.getElementById('minimum-mode');
-  minimum.textContent = `${mode.joueursMin} joueurs minimum`;
+  minimum.textContent = `${mode.joueursMin} joueurs minimum. Le compte n'y est pas.`;
   minimum.hidden = mode.assezDeJoueurs;
 }
 
@@ -284,6 +284,20 @@ function afficherAttenteReponses(salle, nouvelleEtape, ids, ontRepondu) {
   if (nouvelles > 0) sonner('reponse');
 }
 
+// Une phrase parmi plusieurs, choisie d'après l'étape : la même pendant tout l'écran
+// (chaque état reçu redessine), une autre à l'étape suivante.
+function phraseDuMoment(phrases, etape) {
+  let somme = 0;
+  for (const lettre of etape) somme += lettre.charCodeAt(0);
+  return phrases[somme % phrases.length];
+}
+
+const PHRASES_CLASSEMENT = [
+  'Voici le classement. Certains devraient s\'asseoir. Points globaux ensuite.',
+  'Le classement. J\'ai vu pire. Rarement. Points globaux ensuite.',
+  'Les résultats. Je n\'ai rien truqué, hélas. Points globaux ensuite.',
+];
+
 const EMOJI_MEDAILLE = { or: '🥇', argent: '🥈', bronze: '🥉' };
 
 // Tous les joueurs de rang 3 ou mieux : les ex æquo partagent la même marche.
@@ -313,6 +327,9 @@ function afficherPodium(salle) {
       return element;
     }),
   );
+  // Le numéro de partie fait varier la phrase d'un podium à l'autre.
+  document.querySelector('main[data-ecran="podium"] .attente').textContent =
+    phraseDuMoment(PHRASES_CLASSEMENT, `${etapeAffichee}:${salle.numeroPartie}`);
   // Un mode peut ajouter une ligne au podium commun (« Le plus désigné »…) ou ses prix.
   document.getElementById('plus-designe').hidden = true;
   document.getElementById('prix-podium').hidden = true;

@@ -8,7 +8,7 @@ import { compterVotes, trouverElus } from './qui-de-nous.js';
 
 export const id = 'undercover';
 export const nom = 'Undercover';
-export const regleCourte = "Un intrus a un mot proche, Mister White n'en a pas : démasquez-les.";
+export const regleCourte = "Un intrus a un mot proche, Mister White n'en a pas : démasquez-les. Faites-vous confiance, mais pas trop.";
 export const joueursMin = 4;
 
 export const NOMBRE_MANCHES = 3;
