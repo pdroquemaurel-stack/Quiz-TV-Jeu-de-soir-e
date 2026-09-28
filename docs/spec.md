@@ -407,7 +407,7 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende).
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **26** (GéoQuiz).
 - **En cours** : **27** (retours du test sur la vraie TV).
 - **À venir**, après l'audit (`AUDIT.md`) : **10**, puis **23** temps 2 (La réplique). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
@@ -554,13 +554,13 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
 ### Tranche « GéoQuiz » (26)
 
-- **26. Mode « GéoQuiz ».** Inspiré de GeoGuessr : photo d'un lieu réel sur la TV, pin sur une carte du monde (Leaflet) sur chaque téléphone, points selon la distance. 2 à 10 joueurs, 3, 5 ou 10 manches. Mini-spec : `docs/modes/geoquiz.md`.
+- **26. Mode « GéoQuiz ».** ✅ Terminée. Inspiré de GeoGuessr : photo d'un lieu réel sur la TV, pin sur une carte du monde (Leaflet) sur chaque téléphone, points selon la distance. 2 à 10 joueurs, 3, 5 ou 10 manches. Mini-spec : `docs/modes/geoquiz.md`.
   - Temps 1 : pack de 500 lieux (Wikidata et Wikimedia Commons), `scripts/construire-geoquiz.py`, page d'aperçu, `data/geoquiz-exclus.json`, `scripts/verifier-geoquiz.js`.
   - Temps 2 : logique serveur, hors registre.
   - Temps 3 : écrans du téléphone, le mode entre dans le registre.
   - Temps 4 : écrans de la TV, sons, doc.
 
-  *Test : défini dans `docs/modes/geoquiz.md`, dont une partie sur Render avec de vrais téléphones (pincement) et l'affichage des photos et de la carte sur le vrai stick.*
+  *Test : défini dans `docs/modes/geoquiz.md`, dont une partie sur Render avec de vrais téléphones (pincement) et l'affichage des photos et de la carte sur le vrai stick. Validé par Paul le 28/09/2026, avec la clé `CLE_CARTO` sur Render.*
 
 ### Tranche « Retours du test réel » (27)
 
