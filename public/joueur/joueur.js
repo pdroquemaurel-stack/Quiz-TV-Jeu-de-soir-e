@@ -74,7 +74,7 @@ function relacherAppuis() {
 
 // Une vibration à l'arrivée sur un résultat, la même que l'on ait gagné ou perdu :
 // elle ne doit rien révéler au voisin avant la TV.
-const ECRANS_RESULTAT = ['resultat', 'fin_manche'];
+const ECRANS_RESULTAT = ['resultat', 'fin_manche', 'bilan'];
 let ecranPrecedent = '';
 
 function vibrerAuResultat(ecran) {
@@ -102,15 +102,21 @@ function oublierSalle() {
   for (const nom of ['codeSalle', 'pseudo', 'idJoueur', 'cleJoueur']) stockage.removeItem(nom);
 }
 
-// À chaque (re)connexion du socket, y compris au chargement de la page.
+// À chaque (re)connexion du socket, y compris au chargement de la page. Au chargement,
+// on attend les scripts des modes : l'état reçu en réponse a besoin de leurs écrans.
 socket.on('connect', () => {
   bandeau.hidden = true;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reprendreSalle, { once: true });
+  else reprendreSalle();
+});
+
+function reprendreSalle() {
   const memoire = salleMemorisee();
   if (!memoire) return;
   codeEnCours = memoire.code;
   codeNonSaisi = true;
   socket.emit('joueur:rejoindre', memoire);
-});
+}
 
 socket.on('disconnect', () => {
   bandeau.hidden = false;

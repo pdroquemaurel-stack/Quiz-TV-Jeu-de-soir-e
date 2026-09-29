@@ -1061,3 +1061,220 @@ main.ecran-lceb .mlpl-actions .bouton {
 .lceb-titre.juste {
   color: var(--juste);
 }
+
+/* ---------- Petit bac ---------- */
+
+/* Écrans longs (6 cases, 10 réponses) : en haut, sans les cales qui centrent. */
+main.ecran-pb {
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+main.ecran-pb::before,
+main.ecran-pb::after {
+  display: none;
+}
+
+/* Sans les cales, les boutons du bas restent sous le pouce. */
+main.ecran-pb .en-bas {
+  margin-top: auto;
+}
+
+/* Collé en haut : la lettre et STOP restent visibles quand le clavier est ouvert. */
+.pb-bandeau {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  padding: 10px 16px;
+  border-bottom: 4px solid var(--contour);
+  background: var(--fond);
+}
+
+.pb-bandeau.apres-stop {
+  color: #fff;
+  background: var(--rate);
+}
+
+.pb-lettre {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--contour);
+  border-radius: 16px;
+  font-size: 44px;
+  font-weight: bold;
+  color: var(--texte);
+  background: var(--choix-2);
+}
+
+.pb-info {
+  flex: 1;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.pb-stop {
+  min-width: 110px;
+  min-height: 60px;
+  padding: 8px 14px;
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 18px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  background: var(--rate);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-bandeau.apres-stop .pb-stop {
+  color: var(--texte);
+  background: var(--panneau);
+}
+
+.pb-stop:disabled {
+  opacity: 0.35;
+}
+
+.pb-cases {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.pb-case {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.pb-categorie {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--texte-doux);
+}
+
+/* 16 px au moins : en dessous, l'iPhone zoome sur la case. */
+.pb-champ {
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 12px;
+  border: 4px solid var(--contour);
+  border-radius: 14px;
+  font-size: 24px;
+  color: var(--texte);
+  background: var(--panneau);
+  box-sizing: border-box;
+}
+
+.pb-champ.hors-lettre {
+  border-color: #F28C00;
+  outline: 3px solid #F28C00;
+}
+
+.pb-aide {
+  min-height: 0;
+  font-size: 16px;
+  color: #B56400;
+}
+
+.pb-liste {
+  width: 100%;
+  max-width: 420px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 22px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.pb-liste .acceptee { color: var(--juste); }
+.pb-liste .refusee strong { text-decoration: line-through; }
+.pb-liste .refusee { color: var(--rate); }
+
+#pb-ma-reponse {
+  overflow-wrap: anywhere;
+}
+
+#pb-ma-reponse.sans-reponse {
+  color: var(--texte);
+  background: var(--panneau);
+}
+
+.pb-lignes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Une ligne de l'hôte : tout l'ensemble bascule d'un appui. */
+.pb-ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 12px;
+  border: 4px solid var(--contour);
+  border-radius: 14px;
+  font-size: 20px;
+  text-align: left;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-ligne.acceptee { background: var(--juste); }
+.pb-ligne.refusee { background: var(--rate); }
+
+.pb-ligne.vide {
+  color: var(--texte-doux);
+  background: var(--panneau);
+  border-style: dashed;
+}
+
+.pb-pseudo {
+  width: 30%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-texte {
+  flex: 1;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.pb-ligne.refusee .pb-texte { text-decoration: line-through; }
+
+.pb-texte small {
+  display: block;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.pb-marque {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+/* Sur la première catégorie, « Catégorie suivante » prend toute la largeur. */
+#pb-precedente[hidden] + #pb-suivante {
+  grid-column: 1 / -1;
+}

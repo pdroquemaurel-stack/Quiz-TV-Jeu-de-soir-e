@@ -7,7 +7,7 @@ import {
   suivant, tirerManches, validerReglages, verifierFinAnticipee, vueJoueur, vueReglages, vueTv,
 } from './petit-bac.js';
 
-// Le mode n'est pas encore dans le registre (temps 2) : on appelle ses fonctions directement.
+// On appelle les fonctions du mode directement, sans passer par le registre.
 function sallePrete({ joueurs = ['A', 'B'], manches } = {}) {
   const salle = creerSalle('tv');
   const liste = joueurs.map((pseudo, i) => ajouterJoueur(salle, pseudo, `s${i}`).joueur);

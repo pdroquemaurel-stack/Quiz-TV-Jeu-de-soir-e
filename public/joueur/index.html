@@ -214,6 +214,45 @@
     <button id="bouton-suivant-lceb" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="petit-bac-ecriture" class="ecran-pb" hidden>
+    <!-- Collé en haut : visible même clavier ouvert. -->
+    <div id="pb-bandeau" class="pb-bandeau">
+      <span id="pb-lettre" class="pb-lettre"></span>
+      <span id="pb-info" class="pb-info"></span>
+      <button id="pb-stop" class="pb-stop" disabled>STOP</button>
+    </div>
+    <div id="pb-cases" class="pb-cases"></div>
+  </main>
+
+  <main data-ecran="petit-bac-fini" hidden>
+    <p id="pb-titre-fini" class="gros-texte rebond"></p>
+    <ul id="pb-liste-fini" class="pb-liste"></ul>
+    <p id="pb-attente" class="discret"></p>
+  </main>
+
+  <main data-ecran="petit-bac-validation" hidden>
+    <p id="pb-debat" class="discret"></p>
+    <p id="pb-ma-reponse" class="carte-resultat"></p>
+    <p id="pb-provisoires" class="discret"></p>
+  </main>
+
+  <main data-ecran="petit-bac-validation_hote" class="ecran-pb" hidden>
+    <p id="pb-debat-hote" class="gros-texte"></p>
+    <p class="discret">Touche une réponse pour l'accepter ou la refuser.</p>
+    <div id="pb-lignes" class="pb-lignes"></div>
+    <div class="mlpl-actions en-bas">
+      <button id="pb-precedente" class="bouton secondaire">← Précédente</button>
+      <button id="pb-suivante" class="bouton">Catégorie suivante →</button>
+    </div>
+  </main>
+
+  <main data-ecran="petit-bac-bilan" hidden>
+    <p id="pb-points" class="carte-resultat rebond"></p>
+    <ul id="pb-liste-bilan" class="pb-liste"></ul>
+    <p>Score : <strong id="score-pb"></strong> · Rang : <strong id="rang-pb"></strong></p>
+    <button id="bouton-suivant-pb" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="qui-de-nous-voter" hidden>
     <p class="discret">Qui de nous… ? La question est sur la TV. Sois honnête.</p>
     <div id="candidats" class="candidats"></div>
@@ -514,6 +553,10 @@
       <div data-reglages="geoquiz" hidden>
         <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles. Comme dans la vie.</p>
       </div>
+      <div data-reglages="petit-bac" hidden>
+        <p class="titre-option">Lettres rares (K, Q, W, X, Y, Z)</p>
+        <div id="pb-choix-rares" class="choix-reglages"></div>
+      </div>
       <!-- Options communes à presque tous les modes : longueur de la partie et temps pour répondre. -->
       <div id="options-communes" hidden>
         <p class="titre-option">Longueur de la partie</p>
@@ -556,5 +599,6 @@
   <script src="/joueur/modes/geoquiz.js"></script>
   <script src="/joueur/modes/mot-le-plus-long.js"></script>
   <script src="/joueur/modes/le-compte-est-bon.js"></script>
+  <script src="/joueur/modes/petit-bac.js"></script>
 </body>
 </html>
