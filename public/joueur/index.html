@@ -176,6 +176,44 @@
     <button id="bouton-suivant-mlpl" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="le-compte-est-bon-recherche" class="ecran-lceb" hidden>
+    <p class="discret"><span id="lceb-manche"></span> · Regarde la TV</p>
+    <p class="lceb-cible">Cible <strong id="lceb-cible"></strong></p>
+    <ol id="lceb-calcul" class="lceb-calcul"></ol>
+    <div id="lceb-cases" class="lceb-cases"></div>
+    <div id="lceb-operations" class="lceb-operations">
+      <button data-op="+">+</button>
+      <button data-op="-" aria-label="moins">−</button>
+      <button data-op="*" aria-label="fois">×</button>
+      <button data-op="/" aria-label="divisé par">÷</button>
+    </div>
+    <div class="mlpl-actions">
+      <button id="lceb-annuler" class="bouton secondaire">↶ Annuler</button>
+      <button id="lceb-effacer" class="bouton secondaire">Effacer</button>
+    </div>
+    <button id="lceb-proposer" class="bouton" disabled>=</button>
+    <p id="lceb-propositions" class="discret"></p>
+    <button id="lceb-fini" class="lceb-fini" hidden>J'ai fini</button>
+  </main>
+
+  <main data-ecran="le-compte-est-bon-fini" hidden>
+    <p id="lceb-titre-fini" class="gros-texte lceb-titre rebond"></p>
+    <p id="lceb-cible-fini" class="discret"></p>
+    <ol id="lceb-liste-fini" class="lceb-calcul"></ol>
+    <p id="lceb-attente" class="discret"></p>
+  </main>
+
+  <main data-ecran="le-compte-est-bon-resultat" hidden>
+    <p id="lceb-cible-resultat" class="discret"></p>
+    <p id="lceb-mon-resultat" class="gros-texte"></p>
+    <ol id="lceb-mon-calcul" class="lceb-calcul"></ol>
+    <p id="lceb-points" class="carte-resultat rebond"></p>
+    <p class="discret">La solution de l'ordinateur</p>
+    <ol id="lceb-solution" class="lceb-calcul"></ol>
+    <p>Score : <strong id="score-lceb"></strong> · Rang : <strong id="rang-lceb"></strong></p>
+    <button id="bouton-suivant-lceb" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="qui-de-nous-voter" hidden>
     <p class="discret">Qui de nous… ? La question est sur la TV. Sois honnête.</p>
     <div id="candidats" class="candidats"></div>
@@ -517,5 +555,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="/joueur/modes/geoquiz.js"></script>
   <script src="/joueur/modes/mot-le-plus-long.js"></script>
+  <script src="/joueur/modes/le-compte-est-bon.js"></script>
 </body>
 </html>
