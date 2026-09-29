@@ -1,0 +1,298 @@
+/* Écrans « Petit bac » de la TV. Chargé après tv.css (voir tv/index.html). */
+
+/* ---------- Écriture : la lettre et les 6 catégories ---------- */
+
+.pb-ecriture-corps {
+  align-self: center;
+  margin: auto 0;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+.pb-lettre-tv {
+  width: 380px;
+  height: 400px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 300px;
+  line-height: 1;
+  color: var(--texte);
+  background: var(--choix-2);
+  border: 8px solid var(--contour);
+  border-bottom-width: 20px;
+  border-radius: 48px;
+}
+
+.pb-categories-tv {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 520px);
+  gap: 24px;
+}
+
+.pb-categories-tv li {
+  padding: 18px 28px;
+  font-size: 56px;
+  background: var(--panneau);
+  border: 5px solid var(--contour);
+  border-bottom-width: 12px;
+  border-radius: 24px;
+}
+
+/* Après le STOP : bandeau rouge, compte à rebours géant, barre rouge. */
+.pb-stop-tv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 8px 40px;
+  font-size: 72px;
+  font-weight: bold;
+  color: #fff;
+  background: var(--rate);
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 32px;
+  animation: rebondir 450ms cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+
+.pb-stop-tv[hidden] {
+  display: none;
+}
+
+.pb-stop-tv p {
+  margin: 0;
+}
+
+.pb-compte-stop {
+  font-size: 120px;
+  line-height: 1;
+}
+
+.apres-stop .barre-temps-remplie {
+  background: var(--rate);
+}
+
+/* Le compte à rebours du bandeau remplace le chrono rond. */
+.apres-stop .chrono {
+  visibility: hidden;
+}
+
+/* ---------- Validation : une catégorie à la fois, une carte par joueur ---------- */
+
+main[data-ecran="petit-bac-validation"] .tv-haut,
+main[data-ecran="petit-bac-bilan"] .tv-haut {
+  min-height: 0;
+}
+
+/* Deux rangées de cartes à loger : moins d'espace entre les blocs. */
+main[data-ecran="petit-bac-validation"] {
+  gap: 16px;
+}
+
+.pb-lettre-petite {
+  margin: 0;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  line-height: 1;
+  background: var(--choix-2);
+  border: 5px solid var(--contour);
+  border-bottom-width: 12px;
+  border-radius: 24px;
+}
+
+.pb-categorie-tv {
+  margin: 0;
+  font-size: 72px;
+  font-weight: bold;
+}
+
+.pb-onglets {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 40px;
+}
+
+.pb-onglets li {
+  padding: 0 20px;
+  color: var(--texte-doux);
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-radius: 16px;
+}
+
+.pb-onglets .vue {
+  color: var(--texte);
+}
+
+.pb-onglets .en-cours {
+  color: var(--texte);
+  background: var(--choix-2);
+}
+
+.pb-cartes {
+  list-style: none;
+  /* Place laissée au petit QR code du coin. */
+  padding: 0 220px 0 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-content: start;
+  gap: 14px;
+}
+
+.pb-cartes li {
+  min-width: 0;
+  padding: 10px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #fff;
+  border: 5px solid var(--contour);
+  border-bottom-width: 12px;
+  border-radius: 24px;
+}
+
+.pb-cartes.arrivee li {
+  animation: apparaitre 400ms both;
+}
+
+.pb-cartes .acceptee {
+  background: var(--juste);
+}
+
+.pb-cartes .refusee {
+  background: var(--rate);
+}
+
+.pb-cartes .vide {
+  color: var(--texte-doux);
+  background: var(--panneau);
+  border-style: dashed;
+}
+
+.pb-cartes .secousse {
+  animation: trembler 150ms ease-in-out 3;
+}
+
+.pb-qui {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 40px;
+}
+
+.pb-qui .pastille {
+  flex: none;
+}
+
+.pb-pseudo-tv {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 4 lignes au plus : deux rangées de 5 cartes tiennent toujours dans l'écran. */
+.pb-reponse-tv {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  font-size: 44px;
+  font-weight: bold;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.pb-cartes .refusee .pb-reponse-tv {
+  text-decoration: line-through;
+}
+
+.pb-marque-tv {
+  margin-left: auto;
+  font-size: 56px;
+  line-height: 1;
+}
+
+.pb-hors-lettre {
+  font-size: 40px;
+}
+
+/* ---------- Bilan : les points de la manche, puis le classement à leur place ---------- */
+
+.pb-corps {
+  flex: 1;
+  display: grid;
+}
+
+.pb-corps > * {
+  grid-area: 1 / 1;
+}
+
+.pb-points-tv {
+  list-style: none;
+  margin: 0;
+  padding: 0 220px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 40px;
+  animation: disparaitre 400ms 8s forwards;
+}
+
+.pb-points-tv li {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: apparaitre 400ms both;
+}
+
+.pb-points-tv .pastille {
+  flex: none;
+}
+
+.pb-points-tv .pb-pseudo-tv {
+  width: 420px;
+}
+
+.pb-points-tv .gain {
+  width: 110px;
+}
+
+.pb-marques {
+  display: flex;
+  gap: 16px;
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.pb-marque-oui { color: var(--juste); }
+.pb-marque-non { color: var(--rate); }
+.pb-marque-vide { color: var(--texte-doux); }
+
+.pb-classement {
+  align-self: start;
+  margin: 0;
+  animation: apparaitre 400ms 8.4s both;
+}
+
+/* Après un rechargement de la TV : directement le classement. */
+.sans-delai .pb-points-tv {
+  display: none;
+}
+
+.sans-delai .pb-classement {
+  animation-delay: 0s !important;
+}

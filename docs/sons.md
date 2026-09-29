@@ -103,6 +103,12 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | Le compte est bon | Nouvelle manche (la cible et les 6 plaques) | `etape` |
 | | Un joueur a fini (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation (les résultats des joueurs) | `revelation` |
+| Petit bac | Nouvelle manche (la lettre et les 6 catégories) | `etape` |
+| | STOP (`stop` passe d'absent à un joueur) | `lancement` |
+| | Un joueur a fini après le STOP (`ontRepondu` s'allonge) | `reponse` |
+| | Validation : nouvelle catégorie affichée (au début de la validation aussi) | `etape` |
+| | Validation : l'hôte refuse une réponse (une carte passe d'acceptée à refusée). Rien quand il la réaccepte | `rate` |
+| | Bilan (les points de la manche) | `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

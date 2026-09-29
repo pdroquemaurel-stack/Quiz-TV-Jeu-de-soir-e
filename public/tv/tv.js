@@ -14,14 +14,20 @@ ajusterEchelle();
 window.addEventListener('resize', ajusterEchelle);
 
 // sessionStorage : un rechargement ou une coupure retrouve la salle,
-// un nouvel onglet (ou l'app relancée) en crée une nouvelle.
+// un nouvel onglet (ou l'app relancée) en crée une nouvelle. Au chargement, on attend
+// les scripts des modes : l'état reçu en réponse a besoin de leurs écrans.
 socket.on('connect', () => {
   document.getElementById('bandeau-connexion').hidden = true;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reprendreSalle, { once: true });
+  else reprendreSalle();
+});
+
+function reprendreSalle() {
   socket.emit('tv:creer', {
     code: sessionStorage.getItem('codeSalle'),
     jetonTv: sessionStorage.getItem('jetonTv'),
   });
-});
+}
 
 // Avant le premier état, l'écran « Connexion au serveur… » est déjà affiché.
 // Ensuite, le bandeau signale la coupure par-dessus l'écran figé.

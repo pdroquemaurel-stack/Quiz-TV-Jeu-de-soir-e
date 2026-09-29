@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="/tv/modes/geoquiz.css">
   <link rel="stylesheet" href="/tv/modes/mot-le-plus-long.css">
   <link rel="stylesheet" href="/tv/modes/le-compte-est-bon.css">
+  <link rel="stylesheet" href="/tv/modes/petit-bac.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -473,6 +474,46 @@
       </div>
     </main>
 
+    <main data-ecran="petit-bac-ecriture" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="pb-numero-ecriture"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="pb-barre-temps"></div></div>
+        <p class="chrono" id="pb-chrono"></p>
+      </div>
+      <!-- Après le STOP : qui l'a crié et le compte à rebours des 10 s. -->
+      <div class="pb-stop-tv" id="pb-stop-tv" hidden>
+        <p id="pb-stop-texte"></p>
+        <p class="pb-compte-stop" id="pb-compte-stop"></p>
+      </div>
+      <div class="pb-ecriture-corps">
+        <p class="pb-lettre-tv" id="pb-lettre-ecriture"></p>
+        <ul class="pb-categories-tv" id="pb-categories-ecriture"></ul>
+      </div>
+      <ul class="etiquettes ont-repondu" id="pb-ont-repondu"></ul>
+    </main>
+
+    <main data-ecran="petit-bac-validation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="pb-numero-validation"></p>
+        <p class="pb-lettre-petite" id="pb-lettre-validation"></p>
+        <p class="pb-categorie-tv" id="pb-categorie-validation"></p>
+      </div>
+      <ol class="pb-onglets" id="pb-onglets"></ol>
+      <ol class="pb-cartes" id="pb-cartes"></ol>
+    </main>
+
+    <main data-ecran="petit-bac-bilan" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="pb-numero-bilan"></p>
+        <p class="pb-lettre-petite" id="pb-lettre-bilan"></p>
+      </div>
+      <!-- Les points de la manche, puis le classement général à leur place. -->
+      <div class="pb-corps">
+        <ol class="pb-points-tv" id="pb-points-tv"></ol>
+        <ol class="classement pb-classement" id="pb-classement"></ol>
+      </div>
+    </main>
+
     <aside id="qr-coin" class="qr-coin" hidden>
       <img id="qr-coin-image" class="qr" alt="QR code pour rejoindre">
       <p id="code-coin"></p>
@@ -500,5 +541,6 @@
   <script src="/tv/modes/geoquiz.js"></script>
   <script src="/tv/modes/mot-le-plus-long.js"></script>
   <script src="/tv/modes/le-compte-est-bon.js"></script>
+  <script src="/tv/modes/petit-bac.js"></script>
 </body>
 </html>

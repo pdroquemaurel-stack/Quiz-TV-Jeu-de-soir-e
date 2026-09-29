@@ -83,7 +83,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 Ces éléments sont volontairement repoussés. Le modèle de données ne doit pas les empêcher.
 
-- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26 et 28) : La réplique est prévue à la tranche 23, Le compte est bon, Petit bac et Menteur aux tranches 29 à 31, les autres sont dans « Plus tard »
+- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26 et 28 à 30) : La réplique est prévue à la tranche 23, Menteur à la tranche 31, les autres sont dans « Plus tard »
 - Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz
 - Les questions avec image, son ou vidéo (sauf les GIF de La légende et les extraits du Blind test)
 - Les sons sur les téléphones, et la musique en dehors de la salle d'attente (sauf les extraits joués par la TV au Blind test)
@@ -139,6 +139,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 | GéoQuiz | 3 / **5** / 10 manches | 30 / **60** / 90 s |
 | Mot le plus long | 5 / **6** / 7 manches | 30 / **45** / 60 s |
 | Le compte est bon | 3 / **5** / 7 manches | 45 / **60** / 90 s |
+| Petit bac | 3 / **5** / 7 manches, et lettres rares (K, Q, W, X, Y, Z) : **sans** / avec | 60 / **90** / 120 s (sans STOP) |
 | Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
@@ -169,7 +170,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 8 | **GéoQuiz** (disponible, voir `docs/modes/geoquiz.md`) | 2 à 10 | Inspiré de GeoGuessr : la TV montre la photo d'un lieu réel, chacun pose un pin sur une carte du monde sur son téléphone. Distance calculée par le serveur, `arrondi(5000 × e^(−km / 2000))` points. 3, 5 ou 10 manches, du plus facile au plus difficile. |
 | 9 | **Mot le plus long** (disponible, voir `docs/modes/mot-le-plus-long.md`) | 2 à 10 | 9 lettres tirées (au moins 2 voyelles et 2 consonnes), 45 secondes pour former en secret, en touchant les tuiles, le mot le plus long. Le mot valide le plus long marque autant de points que de lettres (ex æquo : tous marquent). Mot absent du dictionnaire : 0. La TV montre à la fin le plus long mot possible. |
 | 10 | **Le compte est bon** (disponible, voir `docs/modes/le-compte-est-bon.md`) | 2 à 10 | 6 plaques (1 à 10 en double, 25, 50, 75, 100) et une cible de 101 à 999, toujours atteignable. 60 secondes pour construire son calcul pas à pas sur le téléphone, jusqu'à 3 propositions (la plus proche est gardée). Compte exact : 10 points, sinon le plus proche, au-dessus ou au-dessous : 5 (ex æquo : tous marquent). La TV montre à la fin une solution la plus courte, trouvée par le serveur. |
-| 11 | **Petit bac** (tranche 30) | 2 à 10 | Une lettre et 6 catégories tirées au hasard. Le premier qui a tout rempli appuie sur STOP : les autres ont 10 secondes. Toutes les réponses sont acceptées par défaut, l'hôte refuse celles qui ne passent pas le débat. 1 point par réponse acceptée. 5 manches, une nouvelle lettre à chacune. |
+| 11 | **Petit bac** (disponible, voir `docs/modes/petit-bac.md`) | 2 à 10 | Une lettre et 6 catégories tirées au hasard. Le premier dont les 6 cases commencent par la lettre appuie sur STOP : les autres ont 10 secondes (90 s au plus sans STOP). La TV montre les réponses catégorie par catégorie, acceptées par défaut sauf celles qui ne commencent pas par la lettre ; l'hôte refuse ou réaccepte après le débat. 1 point par réponse acceptée, réponses identiques comprises. 3, 5 ou 7 manches, une nouvelle lettre à chacune. |
 | 12 | **Menteur** (Perudo, tranche 31) | 2 à 10 | 5 dés cachés par joueur, visibles sur son seul téléphone. Enchères « au moins N dés montrent V » sur tous les dés en jeu, les 1 (pacos) sont jokers. « Menteur ! » révèle les dés sur la TV : le perdant du défi perd un dé. Le premier joueur sans dé perd. |
 
 ## Cas limites
@@ -596,8 +597,13 @@ Une tranche par mode, dans l'ordre. Chacune commence par sa mini-spec `docs/mode
   - Temps 3 : écrans de la TV, sons, doc.
 
   *Test : défini dans `docs/modes/le-compte-est-bon.md`, dont une partie sur Render avec de vrais téléphones.*
-- **30. Mode « Petit bac ».** La TV tire une lettre (K, Q, W, X, Y, Z exclues par défaut, activables dans les options de l'hôte) et 6 catégories parmi : Prénom, Pays, Ville, Animal, Fruit ou légume, Métier, Objet, Marque, Sport, Célébrité réelle, Film ou série, Partie du corps, Personnage de fiction. Chacun remplit ses cases ; le premier qui a tout rempli appuie sur STOP, les autres ont 10 secondes (compte à rebours sur la TV, mesuré par le serveur). Validation : la TV affiche les réponses catégorie par catégorie, côte à côte, toutes acceptées (en vert) ; l'hôte décoche sur son téléphone celles refusées après débat à l'oral. 1 point par réponse acceptée, 0 si vide ou refusée. 5 manches, une nouvelle lettre à chacune.
-  - À trancher : chrono maximal si personne n'appuie sur STOP ; réponse ne commençant pas par la lettre refusée d'office par le serveur (accents ignorés) ; deux réponses identiques valent-elles moins (règle classique) ou 1 point chacune ?
+- **30. Mode « Petit bac ».** ✅ Terminée. La TV tire une lettre (K, Q, W, X, Y, Z exclues par défaut, activables dans les options de l'hôte) et 6 catégories parmi : Prénom, Pays, Ville, Animal, Fruit ou légume, Métier, Objet, Marque, Sport, Célébrité réelle, Film ou série, Partie du corps, Personnage de fiction. Chacun remplit ses cases sur son téléphone (chaque changement part au serveur, pas de bouton « Valider ») ; le premier dont les 6 cases commencent par la lettre appuie sur STOP, les autres ont 10 secondes (compte à rebours sur la TV et le téléphone, mesuré par le serveur). Validation, sans chrono : la TV affiche les réponses catégorie par catégorie, une carte par joueur, acceptées (en vert) sauf celles qui ne commencent pas par la lettre ; l'hôte refuse ou réaccepte sur son téléphone après débat à l'oral. Bilan de 15 s, puis le classement. 1 point par réponse acceptée, 0 si vide ou refusée, réponses identiques comprises. 3, 5 ou 7 manches (option de l'hôte, 5 par défaut), une nouvelle lettre et 6 nouvelles catégories à chacune. 2 à 10 joueurs. Mini-spec : `docs/modes/petit-bac.md`.
+  - Tranché dans la mini-spec `docs/modes/petit-bac.md` : 90 s au plus sans STOP (60, 90 ou 120 s, option de l'hôte) ; une réponse qui ne commence pas par la lettre (accents et article en tête ignorés) est refusée d'office, l'hôte peut la réaccepter ; deux réponses identiques valent 1 point chacune ; 3, 5 ou 7 manches.
+  - Temps 1 : logique serveur, hors registre.
+  - Temps 2 : écrans du téléphone, le mode entre dans le registre.
+  - Temps 3 : écrans de la TV, sons, doc.
+
+  *Test : défini dans `docs/modes/petit-bac.md`, dont une partie sur Render avec de vrais téléphones.*
 - **31. Mode « Menteur » (Perudo).** Chaque joueur a 5 dés, lancés et visibles sur son seul téléphone (lancer en secouant le téléphone, ou par un bouton). La TV et chaque téléphone montrent le nombre de dés de chacun. Un joueur annonce une enchère (« trois 4 » : au moins trois dés montrent 4 parmi tous les dés en jeu), le suivant surenchérit (quantité plus haute, ou même quantité et valeur plus haute) ou crie « Menteur ! ». Les dés sont alors révélés sur la TV : s'il y a au moins la quantité annoncée, le contestataire perd un dé, sinon l'annonceur. Nouvelle manche : chacun relance ses dés restants.
   - Pacos (les 1) : jokers, ils comptent pour toutes les valeurs. Passer aux pacos : quantité divisée par 2, arrondie au supérieur. Revenir des pacos à une valeur : quantité de pacos × 2 + 1.
   - Fin : le premier joueur qui n'a plus de dé perd.

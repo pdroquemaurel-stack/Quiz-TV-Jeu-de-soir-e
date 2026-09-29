@@ -162,10 +162,11 @@ Le téléphone vérifie lui-même, pour l'affichage, si une case commence par la
 Tout est écrit en **40 px au moins** (règle de lisibilité de la TV).
 
 - **Écriture** : à gauche, la **lettre** dans une grande tuile (environ 400 px de haut) ; à droite, les **6 catégories** en cartes de 56 px, sur 2 colonnes de 3 ; en haut « Manche 2/5 » et le chrono avec sa barre ; en bas les pastilles des joueurs qui ont fini (`afficherAttenteReponses` de `tv.js`).
-- **STOP** : un bandeau rouge sur toute la largeur, « STOP ! Léa a fini », et le compte à rebours de 10 à 0 en très grand (120 px). La barre du chrono passe au rouge et repart de 10 s.
+- **STOP** : un bandeau rouge sur toute la largeur, « STOP ! Léa a fini », et le compte à rebours de 10 à 0 en très grand (120 px), qui remplace le chrono rond. La barre du chrono passe au rouge et repart de 10 s.
 - **Validation** : une catégorie à la fois.
-  - En haut : la lettre, « Manche 2/5 », et les 6 catégories en onglets (40 px), celle en cours en jaune, celles déjà vues cochées.
-  - Au centre : le nom de la catégorie en 72 px, puis **une carte par joueur**, en grille de **5 colonnes sur 2 rangées** (10 joueurs au plus). Chaque carte fait environ 350 × 260 px : pastille et pseudo en 40 px, réponse en **48 px** (30 caractères tiennent sur 3 lignes de 13 caractères). Fond vert avec ✓ si acceptée ; fond rouge, texte barré et ✗ si refusée (« pas un M » en 40 px dessous si refusée d'office) ; grise avec « — » si vide.
+  - En haut : « Manche 2/5 », la lettre et le nom de la catégorie en 72 px ; dessous, les 6 catégories en onglets (40 px, sur une ou deux lignes), celle en cours en jaune, celles déjà vues cochées.
+  - Puis **une carte par joueur**, en grille de **5 colonnes sur 2 rangées** (10 joueurs au plus), en laissant la place du QR code du coin : chaque carte fait environ 290 px de large. Sur la première ligne, pastille, pseudo et ✓/✗ en 40 px (un pseudo trop long est coupé, la pastille garde l'initiale). Dessous, la réponse en **44 px, sur 4 lignes au plus** (points de suspension au-delà) : les réponses réalistes de 30 caractères tiennent entières (« Inspecteur Gadget et son chien » sur 3 lignes), seules des réponses faites de lettres très larges (« WWWW… ») sont coupées, et l'hôte voit toujours la réponse entière sur son téléphone. Fond vert si acceptée ; fond rouge et texte barré si refusée (« pas un M » en 40 px dessous si refusée d'office) ; pointillés et « — » si vide.
+  - Mesuré en 1920×1080 : même dans le pire cas (deux onglets sur deux lignes, 10 réponses de 4 lignes refusées d'office), les cartes s'arrêtent à 1037 px, dans la marge du bas. À 48 px, « Le Seigneur des anneaux » ne tenait pas sur 3 lignes : d'où 44 px et 4 lignes.
   - Quand l'hôte bascule une réponse, sa carte change de couleur tout de suite, avec une petite secousse.
   - Pourquoi une catégorie à la fois : les 6 catégories × 10 joueurs ensemble demanderaient des colonnes d'environ 270 px, soit 10 caractères par ligne à 40 px, et 11 rangées de 85 px. Ça ne tient pas lisiblement.
 - **Bilan** (15 s) :
@@ -212,7 +213,9 @@ Uniquement des ajouts :
 
 - `server/modes/index.js` : `petit-bac` entre dans le registre (temps 2).
 - `public/joueur/index.html`, `public/joueur/joueur.css`, `public/joueur/modes/petit-bac.js` : écrans du téléphone, dont l'interrupteur « Lettres rares » des options par `remplirReglages`, comme les thèmes du quiz (temps 2).
+- `public/joueur/joueur.js` : `bilan` fait vibrer le téléphone comme les autres écrans de résultat, et le téléphone attend la fin du chargement de la page avant de reprendre sa salle (sinon l'état reçu pouvait arriver avant les écrans du mode) (temps 2).
 - `public/tv/index.html`, `public/tv/modes/petit-bac.js` et `.css` : écrans de la TV (temps 3).
+- `public/tv/tv.js` : la TV attend elle aussi la fin du chargement de la page avant de reprendre sa salle, comme le téléphone (temps 3).
 - `docs/spec.md` : ligne du mode dans « Modes de jeu supplémentaires » (« disponible »), tranche 30, « Options de l'hôte » (3 / **5** / 7 manches, 60 / **90** / 120 s, lettres rares) (temps 3).
 - `docs/sons.md`, `CLAUDE.md` (structure) (temps 3).
 
@@ -277,7 +280,7 @@ Tranchés par Paul le 29/09/2026 : toutes les propositions ci-dessous.
 9. **Compte à rebours du STOP sur le téléphone** aussi (en plus de la TV), calculé depuis `tempsRestantMs` envoyé par le serveur : les joueurs ont les yeux sur leur téléphone quand ils tapent. C'est de l'affichage : le serveur seul décide de la fin.
 10. **Validation sans chrono, au rythme de l'hôte**, catégorie par catégorie, avec « ← Précédente » pour revenir sur une erreur. Autre choix : un chrono par catégorie (par exemple 30 s) qui passe tout seul, mais il couperait les débats, qui sont le sel du jeu.
 11. **Les autres joueurs**, pendant la validation, ne voient sur leur téléphone que leur propre réponse et son ✓/✗ en direct, plus leurs points provisoires : les réponses de tous sont sur la TV.
-12. **TV : une catégorie à la fois**, cartes de 5 colonnes × 2 rangées, réponse en 48 px. Les 6 catégories × 10 joueurs à 40 px ne tiennent pas (voir « Écrans »).
+12. **TV : une catégorie à la fois**, cartes de 5 colonnes × 2 rangées, réponse en 48 px (44 px sur 4 lignes après mesure, voir « Écrans »). Les 6 catégories × 10 joueurs à 40 px ne tiennent pas (voir « Écrans »).
 13. **Catégories retirées à chaque manche** (6 parmi 13), et pas seulement la lettre : plus de variété. Autre choix : les mêmes 6 catégories pour toute la partie, comme sur une feuille de papier.
 14. **Bilan de 15 s** : les points de la manche, puis le classement à 8 s. L'hôte peut passer plus tôt.
 15. **Sons** : `lancement` au STOP (le seul moment où il faut que tout le monde lève la tête), `rate` quand l'hôte refuse une réponse, `etape` à chaque catégorie. Aucun nouveau son.
