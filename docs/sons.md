@@ -100,6 +100,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | Mot le plus long | Nouvelle manche (les 9 lettres) | `etape` |
 | | Un joueur valide son mot (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation (les mots des joueurs) | `revelation` |
+| Le compte est bon | Nouvelle manche (la cible et les 6 plaques) | `etape` |
+| | Un joueur a fini (`ontRepondu` s'allonge) | `reponse` |
+| | Révélation (les résultats des joueurs) | `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

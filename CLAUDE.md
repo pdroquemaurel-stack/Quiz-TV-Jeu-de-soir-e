@@ -34,6 +34,7 @@ server/
   modes/blind-test.js # mode Blind test (docs/modes/blind-test.md)
   modes/geoquiz.js  # mode GéoQuiz (docs/modes/geoquiz.md)
   modes/mot-le-plus-long.js # mode Mot le plus long (docs/modes/mot-le-plus-long.md)
+  modes/le-compte-est-bon.js # mode Le compte est bon (docs/modes/le-compte-est-bon.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem

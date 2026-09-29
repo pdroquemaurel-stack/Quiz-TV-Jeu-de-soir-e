@@ -1,0 +1,189 @@
+/* Écrans « Le compte est bon » de la TV. Chargé après tv.css (voir tv/index.html). */
+
+/* ---------- Plaques ---------- */
+
+.lceb-plaque-tv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  height: 72px;
+  padding: 0 12px;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--texte);
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 12px;
+}
+
+/* ---------- Recherche : la cible et les 6 plaques en grand ---------- */
+
+.lceb-consigne {
+  align-self: center;
+  font-size: 48px;
+  color: var(--texte-doux);
+}
+
+.lceb-cible-tv {
+  align-self: center;
+  padding: 0 60px;
+  font-size: 220px;
+  line-height: 1.1;
+  color: #fff;
+  background: var(--accent);
+  border: 6px solid var(--contour);
+  border-bottom-width: 16px;
+  border-radius: 40px;
+}
+
+.lceb-plaques-tv {
+  align-self: center;
+  display: flex;
+  gap: 28px;
+  margin: auto 0;
+}
+
+.lceb-plaques-tv .lceb-plaque-tv {
+  min-width: 200px;
+  height: 170px;
+  font-size: 110px;
+  border-width: 6px;
+  border-bottom-width: 16px;
+  border-radius: 28px;
+}
+
+/* ---------- Révélation : les résultats, puis les calculs, puis le classement ---------- */
+
+main[data-ecran="le-compte-est-bon-revelation"] .tv-haut {
+  min-height: 0;
+}
+
+/* Rappel de la cible et des plaques, à côté du numéro. */
+.lceb-rappel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 48px;
+}
+
+.lceb-rappel-cible {
+  margin-right: 24px;
+  padding: 0 24px;
+  color: #fff;
+  background: var(--accent);
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 16px;
+}
+
+/* Les trois blocs au même endroit, l'un après l'autre. */
+.lceb-corps {
+  flex: 1;
+  display: grid;
+}
+
+.lceb-corps > * {
+  grid-area: 1 / 1;
+}
+
+.lceb-resultats {
+  list-style: none;
+  margin: 0;
+  /* Place laissée au petit QR code du coin. */
+  padding: 0 220px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 40px;
+  animation: disparaitre 400ms 8s forwards;
+}
+
+.lceb-resultats li {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: apparaitre 400ms both;
+}
+
+.lceb-resultats .pastille {
+  flex: none;
+}
+
+.lceb-resultat-tv {
+  min-width: 150px;
+  font-size: 48px;
+  text-align: right;
+}
+
+.lceb-resultats .gagnant .lceb-resultat-tv {
+  padding: 0 12px;
+  background: var(--choix-2);
+  border: 4px solid var(--contour);
+  border-radius: 12px;
+}
+
+.lceb-ecart {
+  flex: 1;
+  white-space: nowrap;
+  color: var(--texte-doux);
+}
+
+.lceb-ecart.exact {
+  color: var(--juste);
+}
+
+.lceb-resultats .sans-proposition {
+  opacity: 0.5;
+}
+
+/* Le calcul du meilleur et la solution de l'ordinateur, côte à côte. */
+.lceb-calculs {
+  align-self: start;
+  padding-right: 220px;
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  animation: apparaitre 400ms 8.4s both, disparaitre 400ms 14s forwards;
+}
+
+.lceb-calcul-tv {
+  min-width: 560px;
+  padding: 24px 40px;
+  background: var(--panneau);
+  border: 5px solid var(--contour);
+  border-bottom-width: 12px;
+  border-radius: 28px;
+}
+
+.lceb-calcul-titre {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+.lceb-calcul-tv ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 56px;
+  line-height: 1.35;
+}
+
+.lceb-classement {
+  align-self: start;
+  margin: 0;
+  animation: apparaitre 400ms 14.4s both;
+}
+
+/* Après un rechargement de la TV : directement le classement. */
+.sans-delai .lceb-resultats,
+.sans-delai .lceb-calculs {
+  display: none;
+}
+
+.sans-delai .lceb-classement {
+  animation-delay: 0s !important;
+}

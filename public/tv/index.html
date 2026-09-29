@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="/tv/modes/blind-test.css">
   <link rel="stylesheet" href="/tv/modes/geoquiz.css">
   <link rel="stylesheet" href="/tv/modes/mot-le-plus-long.css">
+  <link rel="stylesheet" href="/tv/modes/le-compte-est-bon.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -447,6 +448,31 @@
       </div>
     </main>
 
+    <main data-ecran="le-compte-est-bon-recherche" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="lceb-numero-recherche"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="lceb-barre-temps"></div></div>
+        <p class="chrono" id="lceb-chrono"></p>
+      </div>
+      <p class="lceb-consigne">Atteins la cible sur ton téléphone</p>
+      <p class="lceb-cible-tv" id="lceb-cible-recherche"></p>
+      <div class="lceb-plaques-tv" id="lceb-plaques-recherche"></div>
+      <ul class="etiquettes ont-repondu" id="lceb-ont-repondu"></ul>
+    </main>
+
+    <main data-ecran="le-compte-est-bon-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="lceb-numero-revelation"></p>
+        <p class="lceb-rappel" id="lceb-rappel"></p>
+      </div>
+      <!-- Les résultats des joueurs, puis les deux calculs, puis le classement, au même endroit. -->
+      <div class="lceb-corps">
+        <ol class="lceb-resultats" id="lceb-resultats"></ol>
+        <div class="lceb-calculs" id="lceb-calculs"></div>
+        <ol class="classement lceb-classement" id="lceb-classement"></ol>
+      </div>
+    </main>
+
     <aside id="qr-coin" class="qr-coin" hidden>
       <img id="qr-coin-image" class="qr" alt="QR code pour rejoindre">
       <p id="code-coin"></p>
@@ -473,5 +499,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="/tv/modes/geoquiz.js"></script>
   <script src="/tv/modes/mot-le-plus-long.js"></script>
+  <script src="/tv/modes/le-compte-est-bon.js"></script>
 </body>
 </html>
