@@ -7,7 +7,7 @@ import {
   verifierFinAnticipee, vueJoueur, vueReglages, vueTv,
 } from './nuancier.js';
 
-// Le mode n'est pas encore dans le registre (temps 2) : on appelle ses fonctions directement.
+// On appelle les fonctions du mode directement, sans passer par les événements.
 function sallePrete({ joueurs = ['A', 'B'] } = {}) {
   const salle = creerSalle('tv');
   const liste = joueurs.map((pseudo, i) => ajouterJoueur(salle, pseudo, `s${i}`).joueur);
@@ -221,16 +221,18 @@ test('vues du téléphone : brouillon retrouvé, couleur validée, résultat san
   const { salle, joueurs: [a, b] } = sallePrete();
   const depart = vueJoueur(salle, a);
   assert.equal(depart.ecran, 'nuancier');
-  assert.deepEqual(depart.couleur, salle.etatMode.depart);
+  assert.deepEqual(depart.curseurs, salle.etatMode.depart);
+  // « couleur » est déjà la couleur du joueur dans joueur:etat (vues.js) : le mode ne doit pas l'écraser.
+  assert.ok(!('couleur' in depart));
   assert.equal(depart.saturation, saturationDe(logoCourant(salle).cible));
   assert.deepEqual(Object.keys(depart.logo), ['nom', 'fichier', 'question', 'zones']);
 
   enregistrerReponse(salle, a.id, { teinte: 30, luminosite: 60, valide: false });
-  assert.deepEqual(vueJoueur(salle, a).couleur, { teinte: 30, luminosite: 60 });
+  assert.deepEqual(vueJoueur(salle, a).curseurs, { teinte: 30, luminosite: 60 });
   enregistrerReponse(salle, a.id, { teinte: 31, luminosite: 61, valide: true });
   const validee = vueJoueur(salle, a);
   assert.equal(validee.ecran, 'couleur_validee');
-  assert.deepEqual(validee.couleur, { teinte: 31, luminosite: 61 });
+  assert.deepEqual(validee.curseurs, { teinte: 31, luminosite: 61 });
   assert.equal(validee.nbValides, 1);
   assert.equal(validee.nbAttendus, 2);
 
@@ -239,7 +241,6 @@ test('vues du téléphone : brouillon retrouvé, couleur validée, résultat san
   const resultat = vueJoueur(salle, a);
   assert.equal(resultat.ecran, 'resultat');
   assert.equal(resultat.points, resultat.ressemblance * 10);
-  assert.equal(resultat.score, a.score);
   assert.equal(resultat.rang, 1, 'mêmes couleurs : ex æquo');
   assert.equal(vueJoueur(salle, b).rang, 1);
   assert.ok(!('couleur' in resultat));

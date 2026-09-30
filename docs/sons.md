@@ -109,6 +109,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Validation : nouvelle catégorie affichée (au début de la validation aussi) | `etape` |
 | | Validation : l'hôte refuse une réponse (une carte passe d'acceptée à refusée). Rien quand il la réaccepte | `rate` |
 | | Bilan (les points de la manche) | `revelation` |
+| Nuancier | Nouvelle manche (le logo masqué) | `etape` |
+| | Un joueur valide sa couleur (`ontRepondu` s'allonge) | `reponse` |
+| | Révélation (le vrai logo et les couleurs des joueurs) | `victoire` si un joueur atteint 100 %, sinon `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

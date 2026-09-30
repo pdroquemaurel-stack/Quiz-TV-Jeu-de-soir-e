@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="/tv/modes/mot-le-plus-long.css">
   <link rel="stylesheet" href="/tv/modes/le-compte-est-bon.css">
   <link rel="stylesheet" href="/tv/modes/petit-bac.css">
+  <link rel="stylesheet" href="/tv/modes/nuancier.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -101,6 +102,32 @@
       <div class="estimation-listes">
         <ol class="estimations" id="estimation-liste"></ol>
         <ol class="classement classement-colonne" id="estimation-classement"></ol>
+      </div>
+    </main>
+
+    <main data-ecran="nuancier-choix" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="nuancier-numero-choix"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="nuancier-barre-temps"></div></div>
+        <p class="chrono" id="nuancier-chrono"></p>
+      </div>
+      <div class="nuancier-logo rebond" id="nuancier-logo-choix"></div>
+      <h1 class="question nuancier-question rebond" id="nuancier-question-choix"></h1>
+      <ul class="etiquettes ont-repondu" id="nuancier-ont-repondu"></ul>
+    </main>
+
+    <main data-ecran="nuancier-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="nuancier-numero-revelation"></p>
+        <h1 class="nuancier-titre-revelation" id="nuancier-question-revelation"></h1>
+      </div>
+      <div class="nuancier-colonnes">
+        <div class="nuancier-colonne-logo">
+          <div class="nuancier-logo rebond" id="nuancier-logo-revelation"></div>
+          <p class="nuancier-cible"><span class="nuancier-carre" id="nuancier-carre-cible"></span> La vraie couleur</p>
+        </div>
+        <ol class="nuancier-resultats" id="nuancier-resultats"></ol>
+        <ol class="classement classement-colonne" id="nuancier-classement"></ol>
       </div>
     </main>
 
@@ -544,5 +571,6 @@
   <script src="/tv/modes/mot-le-plus-long.js"></script>
   <script src="/tv/modes/le-compte-est-bon.js"></script>
   <script src="/tv/modes/petit-bac.js"></script>
+  <script src="/tv/modes/nuancier.js"></script>
 </body>
 </html>

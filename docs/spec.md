@@ -83,7 +83,7 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 Ces éléments sont volontairement repoussés. Le modèle de données ne doit pas les empêcher.
 
-- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26 et 28 à 30) : La réplique est prévue à la tranche 23, Menteur à la tranche 31, les autres sont dans « Plus tard »
+- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26, 28 à 30 et 32) : La réplique est prévue à la tranche 23, Menteur à la tranche 31, les autres sont dans « Plus tard »
 - Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz
 - Les questions avec image, son ou vidéo (sauf les GIF de La légende et les extraits du Blind test)
 - Les sons sur les téléphones, et la musique en dehors de la salle d'attente (sauf les extraits joués par la TV au Blind test)
@@ -140,6 +140,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 | Mot le plus long | 5 / **6** / 7 manches | 30 / **45** / 60 s |
 | Le compte est bon | 3 / **5** / 7 manches | 45 / **60** / 90 s |
 | Petit bac | 3 / **5** / 7 manches, et lettres rares (K, Q, W, X, Y, Z) : **sans** / avec | 60 / **90** / 120 s (sans STOP) |
+| Nuancier | 5 / **7** / 10 manches | 15 / **20** / 30 s |
 | Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
@@ -172,6 +173,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 10 | **Le compte est bon** (disponible, voir `docs/modes/le-compte-est-bon.md`) | 2 à 10 | 6 plaques (1 à 10 en double, 25, 50, 75, 100) et une cible de 101 à 999, toujours atteignable. 60 secondes pour construire son calcul pas à pas sur le téléphone, jusqu'à 3 propositions (la plus proche est gardée). Compte exact : 10 points, sinon le plus proche, au-dessus ou au-dessous : 5 (ex æquo : tous marquent). La TV montre à la fin une solution la plus courte, trouvée par le serveur. |
 | 11 | **Petit bac** (disponible, voir `docs/modes/petit-bac.md`) | 2 à 10 | Une lettre et 6 catégories tirées au hasard. Le premier dont les 6 cases commencent par la lettre appuie sur STOP : les autres ont 10 secondes (90 s au plus sans STOP). La TV montre les réponses catégorie par catégorie, acceptées par défaut sauf celles qui ne commencent pas par la lettre ; l'hôte refuse ou réaccepte après le débat. 1 point par réponse acceptée, réponses identiques comprises. 3, 5 ou 7 manches, une nouvelle lettre à chacune. |
 | 12 | **Menteur** (Perudo, tranche 31) | 2 à 10 | 5 dés cachés par joueur, visibles sur son seul téléphone. Enchères « au moins N dés montrent V » sur tous les dés en jeu, les 1 (pacos) sont jokers. « Menteur ! » révèle les dés sur la TV : le perdant du défi perd un dé. Le premier joueur sans dé perd. |
+| 13 | **Nuancier** (disponible, voir `docs/modes/nuancier.md`) | 2 à 10 | La TV montre le logo d'une marque connue dont une zone de couleur a été retirée. Chacun recrée la couleur sur son téléphone avec deux curseurs (teinte et luminosité, saturation de la cible). Ressemblance = `max(0, arrondi(100 − ΔE × 1,5))` %, ΔE CIE76 dans l'espace Lab, points = ressemblance × 10. 5, 7 ou 10 manches. |
 
 ## Cas limites
 
@@ -609,6 +611,15 @@ Une tranche par mode, dans l'ordre. Chacune commence par sa mini-spec `docs/mode
   - Fin : le premier joueur qui n'a plus de dé perd.
   - Secret : les dés ne sont envoyés qu'au téléphone concerné (`joueur:etat`), la TV ne les reçoit qu'à la révélation. Le téléphone ne propose que les enchères valides, et le serveur les revérifie.
   - À trancher : ordre de parole et qui ouvre la manche suivante (le perdant du dé ?) ; peut-on ouvrir une manche sur les pacos ? ; classement des autres joueurs pour les médailles (nombre de dés restants ?) ; chrono pour annoncer ; joueur déconnecté pendant son tour ; lancer en secouant (capteur de mouvement, autorisation à demander sur iPhone).
+
+### Tranche « Nuancier » (32, réalisée avant la 31)
+
+- **32. Mode « Nuancier ».** La TV montre le logo d'une marque connue en France dont une zone de couleur est masquée (gris, contour en pointillés), avec le nom de la marque et une question (« Quel est le bleu d'IKEA ? »). Chacun recrée la couleur avec deux curseurs, teinte et luminosité, la saturation étant fixée sur celle de la cible ; le téléphone recolore le logo en direct. Chrono de 20 s (15, 20 ou 30 s, option de l'hôte), la couleur en cours est validée d'office à la fin s'il a touché un curseur. Révélation sur la TV seulement : le vrai logo, puis chaque couleur à côté de la vraie, sa ressemblance et ses points. 7 manches (5, 7 ou 10, option de l'hôte), sans répétition. 2 à 10 joueurs. Les logos SVG viennent de Wikimedia Commons, préparés par Paul avec `scripts/prep-nuancier.html` (zone choisie, id ajoutés, zone neutralisée pour que le fichier ne contienne pas la réponse) et déposés dans `public/logos/nuancier/`. Mini-spec : `docs/modes/nuancier.md`.
+  - Temps 1 : outil de préparation `scripts/prep-nuancier.html`.
+  - Temps 2 : affichage des logos (`public/commun/nuancier.js`, Shadow DOM), planche `/tv?nuancier`, `data/nuancier.json`, `scripts/verifier-nuancier.js`, logique serveur hors registre.
+  - Temps 3 : le mode entre dans le registre, écrans du téléphone et de la TV, sons, doc.
+
+  *Test : défini dans `docs/modes/nuancier.md`, dont une partie sur Render avec de vrais téléphones et l'affichage des logos sur le vrai stick.*
 
 ### En réserve
 

@@ -127,6 +127,30 @@
     <button id="bouton-suivant-estimation" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="nuancier-nuancier" class="ecran-nuancier" hidden>
+    <p class="bandeau-carte"><span id="nuancier-manche"></span> · <span id="nuancier-question"></span></p>
+    <div id="nuancier-logo" class="logo-nuancier"></div>
+    <label class="titre-curseur" for="nuancier-teinte">Teinte</label>
+    <input id="nuancier-teinte" class="curseur-couleur" type="range" min="0" max="359" step="1">
+    <label class="titre-curseur" for="nuancier-luminosite">Luminosité</label>
+    <input id="nuancier-luminosite" class="curseur-couleur" type="range" min="5" max="95" step="1">
+    <button id="bouton-valider-couleur" class="bouton en-bas">Valider</button>
+  </main>
+
+  <main data-ecran="nuancier-couleur_validee" class="ecran-nuancier" hidden>
+    <div id="nuancier-logo-valide" class="logo-nuancier"></div>
+    <p id="nuancier-attente" class="gros-texte"></p>
+    <p class="discret">Regarde la TV</p>
+  </main>
+
+  <main data-ecran="nuancier-resultat" hidden>
+    <p id="nuancier-ressemblance" class="carte-resultat rebond"></p>
+    <p id="nuancier-points" class="discret"></p>
+    <p>Score : <strong id="score-nuancier"></strong> · Rang : <strong id="rang-nuancier"></strong></p>
+    <p class="discret">Regarde la TV</p>
+    <button id="bouton-suivant-nuancier" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="geoquiz-devinette" class="ecran-carte" hidden>
     <p class="bandeau-carte"><span id="geoquiz-manche"></span> · Où est-ce ? Regarde la TV</p>
     <div class="emplacement-carte">
@@ -600,5 +624,7 @@
   <script src="/joueur/modes/mot-le-plus-long.js"></script>
   <script src="/joueur/modes/le-compte-est-bon.js"></script>
   <script src="/joueur/modes/petit-bac.js"></script>
+  <script src="/commun/nuancier.js"></script>
+  <script src="/joueur/modes/nuancier.js"></script>
 </body>
 </html>

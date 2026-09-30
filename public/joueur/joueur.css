@@ -1278,3 +1278,70 @@ main.ecran-pb .en-bas {
 #pb-precedente[hidden] + #pb-suivante {
   grid-column: 1 / -1;
 }
+
+/* ---------- Nuancier ---------- */
+
+/* Le logo prend la place libre, les curseurs restent sous le pouce : pas de cales de centrage. */
+main.ecran-nuancier {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 10px 16px 16px;
+}
+
+main.ecran-nuancier::before,
+main.ecran-nuancier::after {
+  display: none;
+}
+
+.logo-nuancier {
+  flex: 1;
+  min-height: 140px;
+  padding: 12px;
+  border: 4px solid var(--contour);
+  border-radius: 20px;
+  background: var(--panneau);
+  /* Logo introuvable : le nom de la marque à sa place. */
+  font-size: 36px;
+}
+
+.titre-curseur {
+  margin-top: 6px;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Le fond (dégradé) est peint par joueur/modes/nuancier.js. */
+.curseur-couleur {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 52px;
+  margin: 0;
+  border: 4px solid var(--contour);
+  border-radius: 16px;
+  /* Glisser le curseur ne fait pas défiler la page. */
+  touch-action: none;
+}
+
+.curseur-couleur::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 60px;
+  border: 4px solid var(--contour);
+  border-radius: 10px;
+  background: var(--panneau);
+}
+
+.curseur-couleur::-moz-range-thumb {
+  width: 20px;
+  height: 52px;
+  border: 4px solid var(--contour);
+  border-radius: 10px;
+  background: var(--panneau);
+}
+
+main.ecran-nuancier .en-bas {
+  margin-top: 12px;
+  align-self: center;
+}

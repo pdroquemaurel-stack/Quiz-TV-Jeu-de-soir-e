@@ -7,6 +7,7 @@ import * as leCompteEstBon from './le-compte-est-bon.js';
 import * as legende from './legende.js';
 import * as memeReponse from './meme-reponse.js';
 import * as motLePlusLong from './mot-le-plus-long.js';
+import * as nuancier from './nuancier.js';
 import * as petitBac from './petit-bac.js';
 import * as quiDeNous from './qui-de-nous.js';
 import * as quiz from './quiz.js';
@@ -14,7 +15,7 @@ import * as undercover from './undercover.js';
 
 export const modes = {
   quiz, estimation, 'qui-de-nous': quiDeNous, undercover, 'meme-reponse': memeReponse, bluff, legende, 'blind-test': blindTest, geoquiz,
-  'mot-le-plus-long': motLePlusLong, 'le-compte-est-bon': leCompteEstBon, 'petit-bac': petitBac,
+  'mot-le-plus-long': motLePlusLong, 'le-compte-est-bon': leCompteEstBon, 'petit-bac': petitBac, nuancier,
 };
 
 // Modes prévus mais pas encore codés : affichés grisés (« Bientôt »), jamais choisis.

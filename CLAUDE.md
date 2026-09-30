@@ -36,13 +36,16 @@ server/
   modes/mot-le-plus-long.js # mode Mot le plus long (docs/modes/mot-le-plus-long.md)
   modes/le-compte-est-bon.js # mode Le compte est bon (docs/modes/le-compte-est-bon.md)
   modes/petit-bac.js # mode Petit bac (docs/modes/petit-bac.md)
+  modes/nuancier.js # mode Nuancier (docs/modes/nuancier.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   tv/sons.js        # sons et musique synthétisés par la TV (docs/sons.md)
   tv/extraits.js    # lecture des extraits Deezer, planche /tv?extraits
-  commun/           # CSS et JS partagés
+  tv/planche-nuancier.js # planche /tv?nuancier : les logos du Nuancier, masqués puis à la couleur cible
+  commun/           # CSS et JS partagés, dont commun/nuancier.js (affichage des logos du Nuancier)
   gifs/             # vidéos MP4 de La légende (<id Imgflip>.mp4, 1 Mo max)
+  logos/nuancier/   # logos SVG du Nuancier (Wikimedia Commons), passés dans scripts/prep-nuancier.html
 data/questions.json
 data/estimation.json
 data/qui-de-nous.json
@@ -54,6 +57,7 @@ data/blind-test.json   # catalogue du blind test : ids Deezer et métadonnées, 
 data/geoquiz.json      # lieux du GéoQuiz : coordonnées, photo Wikimedia, auteur, licence
 data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
 data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lexique 3.83, CC BY-SA 4.0)
+data/nuancier.json     # logos du Nuancier : fichier, question, couleur cible, id des formes de la zone
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -68,6 +72,8 @@ scripts/construire-geoquiz.py  # construit data/geoquiz.json depuis Wikidata et 
 scripts/verifier-geoquiz.js
 scripts/construire-mots.js   # construit data/mots.txt depuis Lexique 3.83
 scripts/verifier-mots.js
+scripts/prep-nuancier.html  # outil de préparation d'un logo du Nuancier, ouvert en double-cliquant, hors du jeu
+scripts/verifier-nuancier.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -92,6 +98,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-geoquiz.js` : vérifie `geoquiz.json` et `geoquiz-exclus.json`
 - `node scripts/construire-mots.js [<Lexique383.tsv>]` : reconstruit `data/mots.txt` depuis Lexique 3.83, téléchargé par le script ou lu dans le fichier donné
 - `node scripts/verifier-mots.js` : vérifie `mots.txt`
+- `scripts/prep-nuancier.html` (double-clic) : prépare un logo SVG du Nuancier, donne son entrée JSON et le SVG à déposer dans `public/logos/nuancier/`
+- `node scripts/verifier-nuancier.js` : vérifie `nuancier.json` et les logos de `public/logos/nuancier/`
 
 ## Ajouter un mode
 

@@ -269,11 +269,11 @@ export function vueJoueur(salle, joueur) {
   const reponse = reponses[joueur.id];
   if (phase === 'choix') {
     const manche = { ...numeros, logo: vueLogo(logo), saturation: saturationDe(logo.cible) };
-    if (!reponse) return { ecran: 'nuancier', ...manche, couleur: { ...(brouillons[joueur.id] ?? depart) } };
+    if (!reponse) return { ecran: 'nuancier', ...manche, curseurs: { ...(brouillons[joueur.id] ?? depart) } };
     return {
       ecran: 'couleur_validee',
       ...manche,
-      couleur: { teinte: reponse.teinte, luminosite: reponse.luminosite },
+      curseurs: { teinte: reponse.teinte, luminosite: reponse.luminosite },
       nbValides: Object.keys(reponses).length,
       nbAttendus: attendus.length,
     };
@@ -284,7 +284,6 @@ export function vueJoueur(salle, joueur) {
     ...numeros,
     ressemblance: ligne?.ressemblance ?? null,
     points: ligne?.points ?? 0,
-    score: joueur.score,
     rang: rangDe(salle, joueur),
   };
 }

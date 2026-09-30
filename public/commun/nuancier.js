@@ -5,10 +5,10 @@
 const GRIS_ZONE = '#D9D9D9';
 const CONTOUR_ZONE = '#555555';
 const STYLE_LOGO = `
-  :host { display: block; }
-  svg { display: block; width: 100%; height: 100%; }
-  p { display: flex; align-items: center; justify-content: center; height: 100%; margin: 0;
-      font-size: 1.6em; font-weight: bold; text-align: center; }
+  :host { display: flex; }
+  svg, p { flex: 1; min-width: 0; min-height: 0; }
+  p { display: flex; align-items: center; justify-content: center; margin: 0;
+      font-size: 1.6em; font-weight: bold; text-align: center; overflow-wrap: anywhere; }
 `;
 
 // fichier → promesse du texte SVG : un logo n'est chargé qu'une fois.
@@ -16,13 +16,13 @@ const textesDesLogos = new Map();
 
 function texteDuLogo(fichier) {
   if (!textesDesLogos.has(fichier)) {
+    // Un fichier absent (404) est gardé comme tel ; une coupure réseau, non :
+    // on réessaiera au prochain affichage.
     const texte = fetch(`/logos/nuancier/${encodeURIComponent(fichier)}`)
-      .then((reponse) => (reponse.ok ? reponse.text() : null))
-      .catch(() => null)
-      .then((resultat) => {
-        // Un échec n'est pas gardé : on réessaiera au prochain affichage.
-        if (resultat === null) textesDesLogos.delete(fichier);
-        return resultat;
+      .then((reponse) => (reponse.ok ? reponse.text() : ''))
+      .catch(() => {
+        textesDesLogos.delete(fichier);
+        return '';
       });
     textesDesLogos.set(fichier, texte);
   }

@@ -1,6 +1,6 @@
 # Tranche 32 — Nuancier
 
-Mini-spec de la tranche 32, à faire avant la tranche 31 (Menteur). **Brouillon, en attente de validation.** Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes (`docs/modes/estimation.md`), sur le GéoQuiz (brouillon envoyé en continu, `docs/modes/geoquiz.md`) et sur `docs/sons.md`.
+Mini-spec de la tranche 32, à faire avant la tranche 31 (Menteur). Elle a été validée le 30/09/2026. Elle complète `docs/spec.md` et s'appuie sur le socle multi-modes (`docs/modes/estimation.md`), sur le GéoQuiz (brouillon envoyé en continu, `docs/modes/geoquiz.md`) et sur `docs/sons.md`.
 
 La TV montre le logo d'une marque connue dont une zone de couleur a été retirée. Chacun recrée la couleur sur son téléphone avec deux curseurs ; le plus ressemblant marque le plus.
 
@@ -163,8 +163,8 @@ Aucun nouvel événement.
 
 | Écran | Contenu |
 |---|---|
-| `nuancier` | `numero`, `total`, `logo: { nom, fichier, question, zones }`, `saturation`, `couleur` (son brouillon, sinon le départ) : la position revient après un rechargement |
-| `couleur_validee` | `logo`, `saturation`, `couleur`, `nbValides`, `nbAttendus` |
+| `nuancier` | `numero`, `total`, `logo: { nom, fichier, question, zones }`, `saturation`, `curseurs: { teinte, luminosite }` (son brouillon, sinon le départ) : la position revient après un rechargement. Pas `couleur`, déjà pris par la couleur du joueur dans `joueur:etat` |
+| `couleur_validee` | `logo`, `saturation`, `curseurs`, `nbValides`, `nbAttendus` |
 | `resultat` | `ressemblance` (ou `null`), `points`, `score`, `rang` ; « Suivant » pour l'hôte |
 | `attente_question` | Joueur arrivé en cours de manche |
 
@@ -200,7 +200,7 @@ Aucun nouvel événement.
 | Joueur qui revient pendant la même manche | Retrouve sa couleur (brouillon ou validée). |
 | Arrivée en cours de partie | 0 point, joue à partir de la manche suivante. |
 | Personne ne répond | Révélation normale : le vrai logo, « pas de réponse » pour tous. |
-| SVG introuvable | Le logo est remplacé par le nom de la marque en gros ; la manche se joue quand même (la question suffit). Le journal serveur n'est pas concerné : c'est `verifier-nuancier.js` qui détecte un fichier manquant. |
+| SVG introuvable | Le logo est remplacé par le nom de la marque en gros ; sur le téléphone, c'est ce nom qui prend la couleur choisie. La manche se joue quand même (la question suffit). Le journal serveur n'est pas concerné : c'est `verifier-nuancier.js` qui détecte un fichier manquant. |
 | L'hôte termine pendant une manche | Podium avec les scores actuels, la manche en cours n'est pas comptée. |
 
 
