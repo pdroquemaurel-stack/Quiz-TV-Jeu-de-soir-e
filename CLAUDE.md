@@ -15,6 +15,7 @@ Jeu de soirée entre amis : la TV (page web ouverte dans le navigateur du Mi TV 
 ## Structure
 
 ```
+admin.html          # espace admin (double-clic) : ajouter du contenu, tester, mettre en ligne, pour un non-initié
 server/
   index.js          # Express + Socket.IO, routes /tv, /joueur, /sante
   salles.js         # création, recherche, fermeture des salles, joueurs, hôte
@@ -112,7 +113,7 @@ Après la mini-spec `docs/modes/<mode>.md` validée :
 4. Téléphone : les écrans dans `public/joueur/index.html`, `public/joueur/modes/<mode>.js`, et leurs styles dans `joueur.css`.
 5. Contenu : `data/<mode>.json` et `scripts/verifier-<mode>.js`, avec leurs tests.
 6. Sons : la table « Quand jouer quoi » de `docs/sons.md`.
-7. Doc : `docs/spec.md` (« Modes de jeu supplémentaires », tranches) et ce fichier (structure, commandes).
+7. Doc : `docs/spec.md` (« Modes de jeu supplémentaires », tranches), ce fichier (structure, commandes) et la fiche du mode dans `admin.html` (liste `JEUX`).
 
 ## Règles d'architecture (non négociables)
 

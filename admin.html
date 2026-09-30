@@ -1,0 +1,677 @@
+<!doctype html>
+<!-- Espace admin de Quiz TV : où ajouter du contenu, quelles commandes lancer, comment tester et mettre en ligne.
+     À ouvrir en double-cliquant dessus : ni serveur ni dépendance, la page n'exécute rien et n'est pas servie par Render.
+     Quand un jeu ou un script change, mets à jour la liste JEUX ci-dessous. -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz TV · Admin</title>
+  <style>
+    :root {
+      --fond: #f4f4f6; --carte: #fff; --texte: #1c1c22; --doux: #5f6070; --bord: #dcdce3;
+      --accent: #3d4fd6; --accent-doux: #e8ebff; --code: #eef0f4;
+      --vert: #1b7f3a; --vert-doux: #e3f4e8; --rouge: #b3261e; --rouge-doux: #fdeceb;
+      --orange: #9a5b00; --orange-doux: #fff3dc;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fond: #16161b; --carte: #202028; --texte: #ececf1; --doux: #a3a4b3; --bord: #34343f;
+        --accent: #8d9bff; --accent-doux: #262b4d; --code: #2a2a34;
+        --vert: #6fd08c; --vert-doux: #1c3324; --rouge: #ff8a80; --rouge-doux: #3b1f1d;
+        --orange: #ffc766; --orange-doux: #3a2e17;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.55 system-ui, sans-serif; background: var(--fond); color: var(--texte); }
+    a { color: var(--accent); }
+    code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; overflow-wrap: anywhere; }
+    pre { background: var(--code); padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
+    h1 { font-size: 26px; margin: 0; }
+    h2 { font-size: 22px; margin: 0 0 12px; }
+    h3 { font-size: 16px; margin: 18px 0 6px; }
+    ol, ul { padding-left: 22px; margin: 6px 0; }
+    li { margin: 4px 0; }
+
+    main { min-width: 0; }
+    .page { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+    nav { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; }
+    nav a { display: block; padding: 5px 10px; border-radius: 6px; text-decoration: none; color: var(--texte); }
+    nav a:hover { background: var(--accent-doux); }
+    nav .titre-nav { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--doux); margin: 14px 10px 4px; }
+    @media (max-width: 800px) {
+      .page { grid-template-columns: minmax(0, 1fr); }
+      nav { position: static; max-height: none; display: flex; flex-wrap: wrap; gap: 4px; }
+      nav .titre-nav { width: 100%; }
+    }
+
+    section { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 20px; margin-bottom: 20px; scroll-margin-top: 16px; }
+    .intro { color: var(--doux); margin: 6px 0 0; }
+    .aide { color: var(--doux); font-size: 14px; }
+
+    .encadre { border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+    .encadre.danger { background: var(--rouge-doux); color: var(--rouge); }
+    .encadre.astuce { background: var(--vert-doux); color: var(--vert); }
+    .encadre.attention { background: var(--orange-doux); color: var(--orange); }
+    .encadre p { margin: 4px 0; }
+
+    .commande { display: flex; align-items: stretch; gap: 8px; margin: 8px 0 2px; }
+    .commande code { flex: 1; min-width: 0; overflow-wrap: normal; display: block; padding: 9px 12px; font-size: 14px; overflow-x: auto; white-space: pre; }
+    .commande + .aide { margin: 0 0 10px; }
+    button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--bord); background: var(--carte); color: var(--texte); cursor: pointer; }
+    button:hover { border-color: var(--accent); }
+    button.copie { white-space: nowrap; }
+    button.copie.fait { background: var(--vert); color: #fff; border-color: var(--vert); }
+
+    #recherche { width: 100%; padding: 10px 14px; font-size: 16px; border: 1px solid var(--bord); border-radius: 8px; background: var(--fond); color: var(--texte); }
+    #taches { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+    #taches li { margin: 0; }
+    #taches a { display: block; padding: 10px 12px; border: 1px solid var(--bord); border-radius: 8px; text-decoration: none; color: var(--texte); height: 100%; }
+    #taches a:hover { border-color: var(--accent); background: var(--accent-doux); }
+    #taches .jeu { display: block; font-size: 12px; color: var(--doux); }
+
+    .grille-jeux { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+    .grille-jeux a { padding: 10px 12px; border: 1px solid var(--bord); border-radius: 8px; text-decoration: none; color: var(--texte); }
+    .grille-jeux a:hover { border-color: var(--accent); background: var(--accent-doux); }
+    .grille-jeux small { display: block; color: var(--doux); }
+
+    .fichiers { list-style: none; padding: 0; }
+    .fichiers li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .etiquette { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--accent-doux); color: var(--accent); }
+
+    table { border-collapse: collapse; width: 100%; font-size: 14px; table-layout: fixed; }
+    td:first-child, th:first-child { width: 35%; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--bord); vertical-align: top; }
+    .liste-cocher { list-style: none; padding: 0; }
+    .liste-cocher label { cursor: pointer; }
+    #adresse-render { width: min(420px, 100%); padding: 8px; font: inherit; border: 1px solid var(--bord); border-radius: 6px; background: var(--fond); color: var(--texte); }
+    .liens-render a { margin-right: 12px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <nav id="nav">
+    <div class="titre-nav">Commencer</div>
+    <a href="#je-veux">🔎 Je veux…</a>
+    <a href="#principe">📌 Le principe en 1 minute</a>
+    <a href="#installation">🧰 Première installation</a>
+    <a href="#modifier-json">✏️ Modifier un fichier de contenu</a>
+    <div class="titre-nav">Les jeux</div>
+    <div id="nav-jeux"></div>
+    <div class="titre-nav">Tester et publier</div>
+    <a href="#tester">🖥️ Tester en local</a>
+    <a href="#publier">🚀 Mettre en ligne (main)</a>
+    <a href="#probleme">🆘 En cas de problème</a>
+    <a href="#lexique">📖 Lexique</a>
+  </nav>
+
+  <main>
+    <section>
+      <h1>Quiz TV · Espace admin</h1>
+      <p class="intro">Tout ce qu'il faut pour ajouter ou corriger le contenu des jeux, le tester et le mettre en ligne.
+        Cette page n'exécute rien : elle te dit quoi ouvrir, et les boutons « Copier » te donnent les commandes à coller dans PowerShell.</p>
+      <h3>Dossier du projet</h3>
+      <div id="dossier-projet"></div>
+      <p class="aide">Chaque commande de cette page se lance dans PowerShell, <strong>depuis ce dossier</strong>. Colle d'abord cette ligne, une fois par fenêtre PowerShell.</p>
+    </section>
+
+    <section id="je-veux">
+      <h2>🔎 Je veux…</h2>
+      <input id="recherche" type="search" placeholder="Tape un mot : question, GIF, chanson, logo, lieu, tester, en ligne…" autocomplete="off">
+      <ul id="taches"></ul>
+    </section>
+
+    <section id="principe">
+      <h2>📌 Le principe en 1 minute</h2>
+      <ul>
+        <li>Le <strong>contenu</strong> de chaque jeu (questions, mots, chansons, logos…) est dans des fichiers du dossier <code>data/</code>, et parfois des images ou vidéos dans <code>public/</code>. Il n'y a pas de base de données.</li>
+        <li>Chaque jeu a un <strong>script de vérification</strong> qui relit son fichier et signale les erreurs. On le lance après chaque modification.</li>
+        <li>Le jeu en ligne tourne sur <strong>Render</strong>, qui prend automatiquement la branche <code>main</code> de GitHub. Donc : une modification n'est visible en soirée qu'une fois <em>poussée</em> sur <code>main</code>.</li>
+      </ul>
+      <h3>La routine, pour n'importe quel ajout</h3>
+      <ol>
+        <li>Récupérer la dernière version : <code>git pull</code>.</li>
+        <li>Modifier le fichier (ou lancer l'outil du jeu). Voir la fiche du jeu.</li>
+        <li>Lancer le script de vérification du jeu, puis <code>npm test</code>.</li>
+        <li>Essayer en local (<a href="#tester">Tester en local</a>).</li>
+        <li>Enregistrer et envoyer : <code>git add</code>, <code>git commit</code>, <code>git push</code> (<a href="#publier">Mettre en ligne</a>).</li>
+      </ol>
+      <div class="encadre danger"><p><strong>Jamais de push sur <code>main</code> pendant une soirée</strong> : Render redémarre le serveur et toutes les parties en cours sont perdues.</p></div>
+      <div class="encadre astuce"><p>Tu peux aussi demander à Claude dans ce projet, par exemple : « Ajoute 20 questions au quiz en sport, niveau 2, en suivant admin.html ». Relis toujours ce qu'il propose avant de pousser.</p></div>
+    </section>
+
+    <section id="installation">
+      <h2>🧰 Première installation (une seule fois par ordinateur)</h2>
+      <ol>
+        <li><strong>Node.js</strong> version 22 ou plus (<a href="https://nodejs.org/fr" target="_blank" rel="noopener">nodejs.org</a>). Vérifier :
+          <div data-commande="node --version"></div></li>
+        <li><strong>Git</strong> (<a href="https://git-scm.com/" target="_blank" rel="noopener">git-scm.com</a>), puis récupérer le projet :
+          <div data-commande="git clone https://github.com/pdroquemaurel-stack/Quiz-TV-Jeu-de-soir-e.git"></div></li>
+        <li>Installer les bibliothèques du serveur (à refaire si <code>package.json</code> change) :
+          <div data-commande="npm install"></div></li>
+        <li>Seulement pour La légende et le GéoQuiz : <strong>Python</strong> (<a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a>) et sa bibliothèque <code>requests</code> :
+          <div data-commande="py -m pip install requests"></div></li>
+        <li>Un <strong>éditeur de texte</strong> pour les fichiers JSON. VS Code est conseillé : il colore le fichier et souligne les virgules oubliées.</li>
+      </ol>
+    </section>
+
+    <section id="modifier-json">
+      <h2>✏️ Modifier un fichier de contenu (JSON)</h2>
+      <p>Les fichiers <code>data/*.json</code> sont des listes : <code>[</code> au début, <code>]</code> à la fin, et entre les deux des blocs <code>{ … }</code> séparés par des virgules. Un bloc = une question, une paire, une chanson…</p>
+      <h3>Ajouter un élément</h3>
+      <ol>
+        <li>Ouvre le fichier dans ton éditeur et va tout en bas.</li>
+        <li>Copie le dernier bloc <code>{ … }</code> et colle-le juste après, en mettant une <strong>virgule</strong> entre les deux.</li>
+        <li>Change l'<strong>id</strong> : prends le numéro suivant (après <code>q0300</code> vient <code>q0301</code>). Garde le même nombre de chiffres.</li>
+        <li>Remplace le reste par ton contenu, en gardant les guillemets droits <code>"</code>.</li>
+      </ol>
+      <h3>Corriger ou retirer un élément</h3>
+      <ul>
+        <li>Retrouve-le avec <strong>Ctrl+F</strong> sur un mot de son texte.</li>
+        <li>Pour corriger : change le texte, <strong>garde l'id</strong>.</li>
+        <li>Pour retirer : efface tout le bloc, et la virgule qui devient en trop. Ne réutilise jamais cet id.</li>
+      </ul>
+      <h3>Les pièges classiques</h3>
+      <ul>
+        <li>Une virgule oubliée entre deux blocs, ou une virgule en trop après le dernier bloc : le fichier devient illisible. Le script de vérification le signale.</li>
+        <li>Des guillemets « typographiques » ou ” à la place de <code>"</code> autour des valeurs. À l'intérieur d'un texte, « … » et l'apostrophe ’ sont permis.</li>
+        <li>Pas besoin de variantes pour les majuscules, les accents, les articles ou les pluriels en s/x : le jeu les ignore déjà en comparant.</li>
+        <li>Préfixes d'id réservés : <code>q</code> quiz, <code>e</code> estimation, <code>n</code> qui de nous, <code>u</code> undercover, <code>m</code> même réponse, <code>b</code> bluff, <code>g</code> légende, <code>d</code> blind test, <code>l</code> géoquiz, <code>n-…</code> nuancier.</li>
+      </ul>
+    </section>
+
+    <div id="fiches-jeux"></div>
+
+    <section id="tester">
+      <h2>🖥️ Tester en local (sur ton ordinateur)</h2>
+      <ol>
+        <li>Ouvre PowerShell dans le dossier du projet (ligne <code>cd</code> en haut de la page).</li>
+        <li>Lance le serveur en mode développeur (une partie à 1 joueur est alors permise dans tous les jeux) :
+          <div data-commande='$env:MODE_DEV="1"; npm run dev'></div>
+          <p class="aide">Le serveur redémarre tout seul quand un fichier du serveur change. Pour un fichier <code>data/</code>, s'il ne redémarre pas, arrête-le et relance-le. Pour l'arrêter : <strong>Ctrl+C</strong> dans PowerShell.</p></li>
+        <li>Ouvre la TV dans Chrome : <a href="http://localhost:3000/tv" target="_blank" rel="noopener">http://localhost:3000/tv</a> (fenêtre en plein écran, touche F11, pour voir comme sur la TV).</li>
+        <li>Ouvre un ou plusieurs joueurs : <a href="http://localhost:3000/joueur?dev" target="_blank" rel="noopener">http://localhost:3000/joueur?dev</a>. Avec <code>?dev</code>, <strong>chaque onglet est un joueur différent</strong>. Tape le code affiché sur la TV et un pseudo.</li>
+        <li>Le premier joueur est l'hôte : il choisit le jeu, les options et lance la partie.</li>
+      </ol>
+      <div class="encadre attention"><p>Sur le PC du travail, le pare-feu empêche les téléphones de rejoindre le serveur local : joue avec des onglets <code>/joueur?dev</code>. Le vrai test avec téléphones se fait sur Render.</p></div>
+      <h3>Les planches de vérification (TV)</h3>
+      <table>
+        <tr><th>Adresse</th><th>À quoi elle sert</th></tr>
+        <tr><td><a href="http://localhost:3000/tv?nuancier" target="_blank" rel="noopener">/tv?nuancier</a></td><td>Tous les logos du Nuancier, masqués puis à la bonne couleur. Alerte rouge si un fichier ou une zone manque.</td></tr>
+        <tr><td><a href="http://localhost:3000/tv?extraits" target="_blank" rel="noopener">/tv?extraits</a></td><td>Écouter des extraits du Blind test.</td></tr>
+        <tr><td><a href="http://localhost:3000/tv?sons" target="_blank" rel="noopener">/tv?sons</a></td><td>Écouter les sons et la musique du jeu.</td></tr>
+        <tr><td><a href="http://localhost:3000/sante" target="_blank" rel="noopener">/sante</a></td><td>État du serveur : salles, joueurs connectés, heure de démarrage.</td></tr>
+      </table>
+      <h3>Le GéoQuiz en local</h3>
+      <p>La carte a besoin de la clé CARTO, sinon elle affiche « API KEY REQUIRED ». Remplace <code>…</code> par la clé (la même que sur Render) :</p>
+      <div data-commande='$env:MODE_DEV="1"; $env:CLE_CARTO="…"; npm run dev'></div>
+      <h3>Tous les tests automatiques</h3>
+      <div data-commande="npm test" data-aide="Doit finir par « fail 0 ». Lance-le avant chaque mise en ligne : il relit aussi tous les fichiers de contenu."></div>
+    </section>
+
+    <section id="publier">
+      <h2>🚀 Mettre en ligne : mettre à jour <code>main</code> sur GitHub</h2>
+      <div class="encadre danger"><p><strong>Pas pendant une soirée.</strong> Chaque push sur <code>main</code> redéploie Render et redémarre le serveur : les parties en cours sont perdues.</p></div>
+
+      <h3>Avant d'envoyer</h3>
+      <ul class="liste-cocher">
+        <li><label><input type="checkbox"> Aucune soirée en cours</label></li>
+        <li><label><input type="checkbox"> Le script de vérification du jeu ne signale aucune erreur</label></li>
+        <li><label><input type="checkbox"> <code>npm test</code> finit par « fail 0 »</label></li>
+        <li><label><input type="checkbox"> J'ai essayé en local (ou la planche du jeu est correcte)</label></li>
+      </ul>
+
+      <h3>Cas 1 : tu as modifié toi-même, dans le dossier principal du projet</h3>
+      <ol>
+        <li>Vérifie que tu es sur <code>main</code> et regarde les fichiers modifiés :
+          <div data-commande="git status" data-aide="La 1re ligne doit dire « On branch main ». La liste ne doit contenir que les fichiers que tu as voulu changer."></div></li>
+        <li>Prépare les fichiers à enregistrer (ici, tout ce que <code>git status</code> a listé) :
+          <div data-commande="git add -A"></div></li>
+        <li>Enregistre avec une phrase qui décrit le changement :
+          <div data-commande='git commit -m "Quiz : 20 nouvelles questions de sport"'></div></li>
+        <li>Envoie sur GitHub :
+          <div data-commande="git push" data-aide="Si c'est refusé (« rejected »), quelqu'un a poussé avant toi : lance git pull, puis à nouveau git push."></div></li>
+      </ol>
+
+      <h3>Cas 2 : le travail est sur une branche (par exemple une branche <code>claude/…</code>)</h3>
+      <ol>
+        <li>Pousse la branche si ce n'est pas fait (depuis son dossier) :
+          <div data-commande="git push -u origin HEAD"></div></li>
+        <li>Sur GitHub, ouvre les <a href="https://github.com/pdroquemaurel-stack/Quiz-TV-Jeu-de-soir-e/pulls" target="_blank" rel="noopener">pull requests</a> (ou le bandeau jaune « Compare &amp; pull request »), crée la pull request vers <code>main</code>, relis les changements, puis <strong>Merge pull request</strong>.</li>
+        <li>Remets ensuite ton dossier principal à jour :
+          <div data-commande="git pull"></div></li>
+      </ol>
+
+      <h3>Après l'envoi : vérifier le déploiement</h3>
+      <p>Render redéploie tout seul en quelques minutes. Pour être sûr qu'il a pris la nouvelle version, ouvre <code>/sante</code> : l'heure <code>demarreA</code> doit avoir changé.</p>
+      <p><label for="adresse-render">Adresse du jeu sur Render (retenue par ce navigateur) :</label><br>
+        <input id="adresse-render" type="url" placeholder="https://….onrender.com"></p>
+      <p class="liens-render" id="liens-render"></p>
+      <p class="aide">Le tableau de bord Render (logs, variables <code>URL_PUBLIQUE</code> et <code>CLE_CARTO</code>) : <a href="https://dashboard.render.com/" target="_blank" rel="noopener">dashboard.render.com</a>.</p>
+    </section>
+
+    <section id="probleme">
+      <h2>🆘 En cas de problème</h2>
+      <table>
+        <tr><th>Ce que je vois</th><th>Quoi faire</th></tr>
+        <tr><td>Le script de vérification dit « fichier illisible » ou « JSON »</td><td>Une virgule ou un guillemet mal placé. Regarde autour du dernier bloc modifié (VS Code le souligne en rouge).</td></tr>
+        <tr><td>J'ai tout cassé dans un fichier et je veux revenir à la version d'avant (non commitée)</td><td><div data-commande="git restore data/questions.json" data-aide="Remplace le chemin par celui du fichier. Tes changements non commités sur ce fichier sont perdus."></div></td></tr>
+        <tr><td><code>npm run dev</code> dit que le port 3000 est déjà pris</td><td>Un serveur tourne déjà dans une autre fenêtre PowerShell : fais Ctrl+C dedans, ou utilise celui-là.</td></tr>
+        <tr><td><code>npm test</code> échoue</td><td>Lis la première ligne « not ok » : elle nomme le fichier en cause. Si c'est un fichier de contenu, lance son script de vérification pour le détail.</td></tr>
+        <tr><td>Sur Render, le QR code ne marche pas</td><td>La variable <code>URL_PUBLIQUE</code> manque sur Render (adresse HTTPS du service).</td></tr>
+        <tr><td>La carte du GéoQuiz affiche « API KEY REQUIRED »</td><td>La variable <code>CLE_CARTO</code> manque (sur Render, ou dans ta commande en local).</td></tr>
+        <tr><td><code>git push</code> est refusé (« rejected »)</td><td><code>git pull</code>, puis <code>git push</code> à nouveau.</td></tr>
+        <tr><td>Je veux ajouter un <strong>nouveau jeu</strong></td><td>Ce n'est pas du contenu : voir « Ajouter un mode » dans <a href="CLAUDE.md">CLAUDE.md</a>, et commencer par une mini-spec dans <a href="docs/modes/">docs/modes/</a>.</td></tr>
+      </table>
+    </section>
+
+    <section id="lexique">
+      <h2>📖 Lexique</h2>
+      <table>
+        <tr><td><strong>PowerShell</strong></td><td>La fenêtre où l'on tape les commandes (menu Démarrer › PowerShell). On colle avec clic droit ou Ctrl+V, on lance avec Entrée.</td></tr>
+        <tr><td><strong>JSON</strong></td><td>Le format des fichiers de contenu : du texte structuré avec <code>[ ]</code>, <code>{ }</code>, des guillemets et des virgules.</td></tr>
+        <tr><td><strong>id</strong></td><td>L'identifiant unique d'un élément (<code>q0042</code>). Le jeu s'en sert pour ne pas reposer deux fois la même question dans une soirée.</td></tr>
+        <tr><td><strong>Git</strong></td><td>L'outil qui garde l'historique de toutes les versions du projet.</td></tr>
+        <tr><td><strong>commit</strong></td><td>Un enregistrement, avec une phrase qui décrit le changement. Il reste sur ton ordinateur tant qu'il n'est pas poussé.</td></tr>
+        <tr><td><strong>push</strong></td><td>Envoyer ses commits sur GitHub. <strong>pull</strong> : récupérer ceux des autres.</td></tr>
+        <tr><td><strong>branche</strong></td><td>Une version parallèle du projet. <code>main</code> est la branche officielle, celle que Render met en ligne.</td></tr>
+        <tr><td><strong>pull request</strong></td><td>Sur GitHub, la demande de fusionner une branche dans <code>main</code>. « Merge » la fusionne.</td></tr>
+        <tr><td><strong>Render</strong></td><td>L'hébergeur du jeu en ligne. Il redéploie à chaque push sur <code>main</code>.</td></tr>
+        <tr><td><strong>local / localhost</strong></td><td>Le serveur qui tourne sur ton ordinateur, à l'adresse <code>http://localhost:3000</code>. Personne d'autre ne le voit.</td></tr>
+        <tr><td><strong>hôte</strong></td><td>Le premier joueur entré dans la salle : il choisit le jeu et lance la partie.</td></tr>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+// ---------- Contenu des fiches : un objet par jeu ----------
+// fichiers : [chemin, rôle]. commandes : [commande, explication]. Les textes peuvent contenir du HTML.
+
+const JEUX = [
+  {
+    id: 'quiz', nom: 'Quiz', icone: '❓', resume: 'QCM à 4 choix, 11 thèmes, 3 niveaux',
+    fichiers: [['data/questions.json', 'les questions']],
+    ajouter: [
+      'Ajoute un bloc comme dans l\'exemple (voir <a href="#modifier-json">Modifier un fichier de contenu</a>).',
+      '<code>reponses</code> : exactement 4 propositions.',
+      '<code>bonneReponse</code> : la position de la bonne réponse, <strong>en comptant à partir de 0</strong> (0 = la 1re, 3 = la 4e).',
+      '<code>categorie</code> : <code>geographie</code>, <code>histoire</code>, <code>sciences</code>, <code>nature</code>, <code>art-litterature</code>, <code>cinema-tv</code>, <code>musique</code>, <code>sport</code>, <code>gastronomie</code>, <code>langue-divers</code> ou <code>maths-logique</code>.',
+      '<code>difficulte</code> : 1 facile, 2 moyen, 3 difficile.',
+    ],
+    corriger: ['Corriger une question fausse ou ambiguë, ou la retirer.'],
+    regles: [
+      'Question de 110 caractères au plus, chaque proposition de 30 au plus.',
+      'Une seule bonne réponse, vérifiable, sans ambiguïté.',
+      'Environ un tiers de culture populaire et d\'actualité depuis 2010.',
+    ],
+    exemple: `{
+  "id": "q0301",
+  "texte": "Quel est le plus long fleuve de France ?",
+  "reponses": ["La Seine", "La Loire", "Le Rhône", "La Garonne"],
+  "bonneReponse": 1,
+  "categorie": "geographie",
+  "difficulte": 1
+}`,
+    commandes: [['node scripts/verifier-questions.js', 'Affiche le nombre de questions par thème et par niveau, et signale un thème qui a moins de 10 questions pour un niveau : l\'hôte y reverrait des questions dès la 1re partie.']],
+    taches: ['Ajouter des questions au quiz', 'Corriger une question fausse du quiz', 'Renforcer un thème du quiz qui manque de questions'],
+  },
+  {
+    id: 'estimation', nom: 'Estimation', icone: '🔢', resume: 'Deviner un nombre, le plus proche gagne',
+    fichiers: [['data/estimation.json', 'les questions']],
+    ajouter: [
+      '<code>reponse</code> : un nombre entier, sans guillemets, stable et vérifiable.',
+      '<code>unite</code> : 12 caractères au plus, vide (<code>""</code>) pour un simple nombre.',
+      '<code>categorie</code> et <code>difficulte</code> : les mêmes que le quiz.',
+    ],
+    corriger: ['Mettre à jour une valeur qui a changé (population, record…).'],
+    regles: [
+      'Le texte finit par « ? » et précise ce qui est mesuré (« à vol d\'oiseau », « en 2020 »).',
+      'Pour un très grand nombre, la question fixe l\'unité pour garder une saisie courte (« en millions d\'habitants »).',
+      'Varier les ordres de grandeur, des dizaines aux milliards.',
+    ],
+    exemple: `{"id":"e0081","texte":"Quelle est l'altitude de l'Everest, en mètres ?","reponse":8849,"unite":"m","categorie":"geographie","difficulte":1}`,
+    commandes: [['node scripts/verifier-estimation.js', 'Affiche le nombre de questions et les erreurs.']],
+    taches: ['Ajouter des questions d\'Estimation', 'Corriger une valeur dépassée en Estimation'],
+  },
+  {
+    id: 'qui-de-nous', nom: 'Qui de nous ?', icone: '👉', resume: 'Voter pour le joueur le plus susceptible de…',
+    fichiers: [['data/qui-de-nous.json', 'les questions']],
+    ajouter: ['Seulement <code>id</code> et <code>texte</code>.'],
+    corriger: ['Retirer une question qui a mis quelqu\'un mal à l\'aise.'],
+    regles: [
+      'Le texte commence par « Qui de nous », finit par « ? », 110 caractères au plus.',
+      'Taquin mais jamais blessant : pas de physique, poids, santé, argent, religion, politique ni sexualité.',
+      'Varier : voyages, cuisine, travail, fêtes, téléphone, sport, maladresses, survie…',
+    ],
+    exemple: `{
+  "id": "n0121",
+  "texte": "Qui de nous est le plus susceptible de rater son avion ?"
+}`,
+    commandes: [['node scripts/verifier-qui-de-nous.js', 'Signale aussi deux textes identiques.']],
+    taches: ['Ajouter des questions à Qui de nous ?'],
+  },
+  {
+    id: 'undercover', nom: 'Undercover', icone: '🕵️', resume: 'Deux mots proches, trouver l\'infiltré',
+    fichiers: [['data/undercover.json', 'les paires de mots']],
+    ajouter: [
+      'Une paire = exactement 2 mots, chacun avec ses <code>variantes</code> (pluriel, autre orthographe, avec ou sans tiret). Liste vide <code>[]</code> permise.',
+      'Chaque mot peut être celui des civils : les deux ont donc leurs variantes.',
+    ],
+    corriger: ['Ajouter une variante quand Mister White a tapé le bon mot et qu\'il a été refusé.'],
+    regles: [
+      'Deux noms communs <strong>proches mais distincts</strong>, connus de tous (Café / Thé, Métro / Tramway).',
+      'Un seul mot autant que possible, 20 caractères au plus. Pas de noms propres.',
+      'Une variante de l\'un ne doit jamais correspondre à l\'autre mot.',
+    ],
+    exemple: `{"id": "u0061", "mots": [{"mot": "Plage", "variantes": ["Plages"]}, {"mot": "Piscine", "variantes": ["Piscines"]}]}`,
+    commandes: [['node scripts/verifier-undercover.js', 'Signale aussi une paire en double, même dans l\'autre ordre.']],
+    taches: ['Ajouter des paires de mots à Undercover', 'Accepter une orthographe refusée à Mister White'],
+  },
+  {
+    id: 'meme-reponse', nom: 'Même réponse', icone: '🤝', resume: 'Répondre comme les autres',
+    fichiers: [['data/meme-reponse.json', 'les questions et leurs réponses connues']],
+    ajouter: [
+      '<code>reponses</code> : de 4 à 15 réponses connues. Le mot de <code>reponse</code> est celui affiché sur la TV.',
+      '<code>variantes</code> : synonymes, abréviations, pluriels irréguliers, fautes très courantes.',
+    ],
+    corriger: ['Ajouter une réponse ou une variante vue en soirée et mal regroupée.'],
+    regles: [
+      'Des questions où quelques réponses dominent (« Cite un animal de la ferme »). Ni réponse unique, ni question trop ouverte.',
+      'Réponses courtes (1 ou 2 mots, 30 caractères au plus). Forme « Cite… » ou « Un… / Une… ».',
+      'Deux formes ne doivent pas se confondre une fois accents et pluriels retirés : le script le vérifie.',
+    ],
+    exemple: `{"id":"m0121","texte":"Cite un fruit rouge","reponses":[{"reponse":"Fraise","variantes":[]},{"reponse":"Cerise","variantes":[]},{"reponse":"Framboise","variantes":[]},{"reponse":"Pomme","variantes":["Pomme rouge"]}]}`,
+    commandes: [['node scripts/verifier-meme-reponse.js', 'Signale les formes qui se confondent dans une même question.']],
+    taches: ['Ajouter des questions à Même réponse', 'Regrouper une réponse mal comptée à Même réponse'],
+  },
+  {
+    id: 'bluff', nom: 'Le bluff', icone: '🎭', resume: 'Inventer une fausse réponse crédible',
+    fichiers: [['data/bluff.json', 'les phrases à trou']],
+    ajouter: [
+      '<code>texte</code> : une phrase avec exactement un <code>___</code> (3 tirets bas).',
+      '<code>reponse</code> : la vraie réponse, <strong>avec son article</strong> (« La licorne »), 30 caractères au plus.',
+      '<code>variantes</code> : les autres façons de taper la vraie réponse.',
+    ],
+    corriger: ['Ajouter une variante quand un joueur a tapé la vraie réponse et qu\'elle a été prise pour un bluff.', 'Retirer une anecdote douteuse.'],
+    regles: [
+      '<strong>Pas d\'article ni de possessif juste avant le trou</strong> (le, la, un, du, son, l\'…) : il trahirait la réponse.',
+      'Vrai et vérifiable. Au moindre doute, on retire la question.',
+      'Surprenant, réponse courte (1 à 3 mots), pas de dates ni de nombres.',
+      'Aussi des définitions de mots rares (« Un copocléphile collectionne ___ »).',
+    ],
+    exemple: `{"id":"b0121","texte":"L'animal national de l'Écosse est ___","reponse":"La licorne","variantes":[]}`,
+    commandes: [['node scripts/verifier-bluff.js', 'Signale un article avant le trou, un trou manquant ou en double.']],
+    taches: ['Ajouter des anecdotes au bluff', 'Accepter une vraie réponse prise pour un bluff'],
+  },
+  {
+    id: 'legende', nom: 'La légende', icone: '🎬', resume: 'Légender des GIF',
+    fichiers: [['data/legende.json', 'le catalogue des GIF'], ['public/gifs/', 'les vidéos MP4 (clique pour les regarder)']],
+    ajouter: [
+      'Ouvre <code>scripts/telecharger-gifs.py</code> dans ton éditeur et augmente <code>MAX_GIFS</code> en haut du fichier (par exemple de 100 à 150). Augmente aussi <code>NB_PAGES</code> s\'il n\'en trouve pas assez.',
+      'Lance le script (commande ci-dessous) : il ajoute les nouveaux GIF à la fin du catalogue et leurs vidéos dans <code>public/gifs/</code>.',
+      'Regarde les nouvelles vidéos dans <a href="public/gifs/">public/gifs/</a> et exclus celles qui ne conviennent pas.',
+    ],
+    corriger: [
+      'Exclure un GIF : mets <code>"garder": false</code> dans son bloc <strong>et supprime sa vidéo</strong> de <code>public/gifs/</code> (sinon le script signale une erreur).',
+      'Pour retrouver un GIF : son id est <code>g</code> + le nom de la vidéo (<code>222516354.mp4</code> → <code>g222516354</code>).',
+    ],
+    regles: ['1 Mo au plus par vidéo (le script de téléchargement écarte les plus lourdes).', 'Éviter les GIF trop courts (image fixe) ou trop petits (flous sur la TV).'],
+    exemple: `{"id":"g222516354","nom":"Disappearing kid gif","fichier":"gifs/222516354.mp4","garder":true}`,
+    commandes: [
+      ['py scripts/telecharger-gifs.py', 'Télécharge de nouveaux GIF depuis Imgflip. Il ne modifie jamais les GIF déjà au catalogue.'],
+      ['node scripts/verifier-legende.js', 'Nombre de GIF gardés et exclus, poids total. Signale une vidéo manquante, trop lourde ou en trop.'],
+    ],
+    taches: ['Ajouter des GIF à La légende', 'Retirer un GIF de La légende'],
+  },
+  {
+    id: 'blind-test', nom: 'Blind test', icone: '🎵', resume: 'Reconnaître des extraits Deezer',
+    fichiers: [['data/blind-test.json', 'le catalogue des chansons (aucun son : les extraits viennent de Deezer)']],
+    ajouter: [
+      'Trouve une playlist publique sur <a href="https://www.deezer.com/" target="_blank" rel="noopener">deezer.com</a>. Son id est le nombre à la fin de l\'adresse (<code>deezer.com/fr/playlist/<strong>1234567</strong></code>).',
+      'Lance l\'import (commande ci-dessous), avec un ou plusieurs ids séparés par des espaces.',
+      'Relis les nouvelles chansons à la fin du fichier : retire « Remastered », « Radio Edit » ou « feat. … » des titres ; les invités du « feat. » vont dans l\'artiste (« Mark Ronson, Bruno Mars »).',
+    ],
+    corriger: [
+      'Extrait mort : lance la vérification avec <code>--deezer</code>, puis mets <code>"garder": false</code> aux chansons listées.',
+      'Chanson trop obscure ou en double : <code>"garder": false</code>.',
+    ],
+    regles: ['Pas deux fois la même chanson (même titre et même artiste), même sous deux ids Deezer.', 'Au moins 50 chansons gardées, 100 ou plus conseillées.'],
+    exemple: `{"id":"d975366","deezer":975366,"titre":"I Will Survive","artiste":"Gloria Gaynor","pochette":"https://…","gain":-8.2,"garder":true}`,
+    commandes: [
+      ['node scripts/importer-deezer.js 1234567', 'Remplace 1234567 par l\'id de la playlist. N\'ajoute que les chansons nouvelles et jouables.'],
+      ['node scripts/verifier-blind-test.js', 'Nombre de chansons gardées et exclues, doublons.'],
+      ['node scripts/verifier-blind-test.js --deezer', 'Interroge Deezer et liste les extraits devenus indisponibles (sans rien modifier).'],
+    ],
+    planche: '/tv?extraits',
+    taches: ['Ajouter des chansons au Blind test', 'Un extrait du Blind test ne marche plus', 'Corriger un titre ou un artiste du Blind test'],
+  },
+  {
+    id: 'geoquiz', nom: 'GéoQuiz', icone: '🌍', resume: 'Placer une photo sur la carte',
+    fichiers: [['data/geoquiz.json', 'les 500 lieux (construit par le script)'], ['data/geoquiz-exclus.json', 'les lieux exclus à la main']],
+    ajouter: [
+      'Le pack se <strong>reconstruit en entier</strong> depuis Wikidata avec le script Python (commande ci-dessous). Les quotas (250 faciles, 150 moyens, 100 difficiles, 12 lieux par pays au plus) se règlent dans <code>DIFFICULTES</code>, en haut de <code>scripts/construire-geoquiz.py</code>.',
+      'Le script crée aussi une page d\'aperçu : <a href="scripts/apercu-geoquiz.html">scripts/apercu-geoquiz.html</a> (existe seulement après l\'avoir lancé).',
+    ],
+    corriger: [
+      'Exclure un lieu (photo inutilisable, lieu trop obscur) : cherche son nom avec Ctrl+F dans <code>geoquiz.json</code>, copie son id (<code>l243</code>), et ajoute-le dans <code>geoquiz-exclus.json</code> : <code>["l243", "l90"]</code>.',
+      'Ou, dans la page d\'aperçu : coche les lieux à exclure, puis clique le bouton qui donne la liste à coller dans <code>geoquiz-exclus.json</code>.',
+    ],
+    regles: ['Les exclus restent exclus même après une reconstruction.', 'Il faut au moins 10 lieux par difficulté une fois les exclus retirés.'],
+    exemple: `["l243", "l90"]`,
+    commandes: [
+      ['py scripts/construire-geoquiz.py', 'Reconstruit data/geoquiz.json et la page d\'aperçu. Demande une connexion Internet (bloquée sur le PC du travail ?).'],
+      ['node scripts/verifier-geoquiz.js', 'Vérifie le pack et la liste des exclus.'],
+    ],
+    taches: ['Retirer un lieu du GéoQuiz (mauvaise photo)', 'Reconstruire les lieux du GéoQuiz'],
+  },
+  {
+    id: 'mot-le-plus-long', nom: 'Mot le plus long', icone: '🔤', resume: '9 lettres, le plus long mot',
+    fichiers: [['data/mots.txt', 'le dictionnaire, un mot par ligne (tiré de Lexique 3.83)']],
+    ajouter: [
+      'Le dictionnaire se <strong>reconstruit</strong> depuis Lexique 3.83 (commande ci-dessous). Le script le télécharge ; si le pare-feu bloque, télécharge <code>Lexique383.tsv</code> sur <a href="http://www.lexique.org/databases/Lexique383/" target="_blank" rel="noopener">lexique.org</a> et donne son chemin au script.',
+    ],
+    corriger: [],
+    regles: ['Mots de 2 à 9 lettres, majuscules sans accents, triés.'],
+    pieges: ['Un mot ajouté ou retiré à la main dans <code>mots.txt</code> serait <strong>perdu à la prochaine reconstruction</strong>. Pour un vrai besoin, demande d\'abord une liste d\'ajouts ou d\'exclusions (à coder).'],
+    commandes: [
+      ['node scripts/construire-mots.js', 'Télécharge Lexique et réécrit data/mots.txt.'],
+      ['node scripts/construire-mots.js C:\\chemin\\vers\\Lexique383.tsv', 'Même chose avec un fichier déjà téléchargé.'],
+      ['node scripts/verifier-mots.js', 'Vérifie le dictionnaire.'],
+    ],
+    taches: ['Reconstruire le dictionnaire du Mot le plus long'],
+  },
+  {
+    id: 'nuancier', nom: 'Nuancier', icone: '🎨', resume: 'Retrouver la couleur d\'un logo',
+    fichiers: [['data/nuancier.json', 'le catalogue des logos'], ['public/logos/nuancier/', 'les logos SVG'], ['scripts/prep-nuancier.html', 'l\'outil de préparation (clique pour l\'ouvrir)']],
+    ajouter: [
+      'Cherche des logos sur <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> (au format SVG) et copie l\'adresse de leur page (<code>https://commons.wikimedia.org/wiki/File:…</code>).',
+      'Ouvre <a href="scripts/prep-nuancier.html">scripts/prep-nuancier.html</a> dans <strong>Chrome ou Edge</strong>, colle la liste d\'adresses, une par ligne.',
+      'Pour chaque logo : « Valider et suivant » ou « Écarter ». Les logos avec un avertissement sont mis de côté (« À revoir »).',
+      '« Enregistrer dans le projet » : choisis le dossier du projet. Les SVG et les entrées sont écrits au bon endroit.',
+      'Vérifie avec le script, puis sur la planche <code>/tv?nuancier</code>.',
+    ],
+    corriger: [
+      'Nom ou question : directement dans <code>data/nuancier.json</code>.',
+      'Logo cassé : retire son bloc de <code>nuancier.json</code> et son SVG, puis repasse-le dans l\'outil.',
+      'Retirer un logo : supprime son bloc et son fichier SVG.',
+    ],
+    regles: ['La question ne nomme jamais la couleur (« Quelle est la couleur d\'Orange ? »).', 'La couleur cible ne doit pas rester visible ailleurs sur le logo.'],
+    exemple: `{"id":"n-ikea","nom":"IKEA","fichier":"ikea.svg","question":"Quelle est la couleur d'IKEA ?","cible":"#0058A3","zones":["path12","path14"]}`,
+    commandes: [['node scripts/verifier-nuancier.js', 'Vérifie le catalogue et les fichiers SVG.']],
+    planche: '/tv?nuancier',
+    taches: ['Ajouter des logos au Nuancier', 'Corriger le nom ou la question d\'un logo', 'Un logo du Nuancier s\'affiche mal'],
+  },
+  {
+    id: 'petit-bac', nom: 'Petit bac', icone: '📝', resume: 'Une lettre, 6 catégories',
+    fichiers: [['server/modes/petit-bac.js', 'la liste CATEGORIES, au début du fichier (c\'est du code)']],
+    ajouter: [
+      'Ajoute ou retire une catégorie dans la liste <code>CATEGORIES</code>, entre apostrophes droites et séparées par des virgules.',
+      'Les lettres rares, proposées en option à l\'hôte, sont dans <code>LETTRES_RARES</code> juste en dessous.',
+    ],
+    corriger: [],
+    regles: ['Au moins 6 catégories : 6 sont tirées à chaque manche.', 'Des catégories où chaque lettre donne plusieurs réponses possibles.'],
+    exemple: `export const CATEGORIES = [
+  'Prénom', 'Pays', 'Ville', 'Animal', 'Fruit ou légume', 'Métier', 'Objet', 'Marque', 'Sport',
+  'Célébrité réelle', 'Film ou série', 'Partie du corps', 'Personnage de fiction',
+];`,
+    pieges: ['C\'est un fichier du serveur : <code>npm test</code> est indispensable après la modification.'],
+    commandes: [['npm test', 'Il n\'y a pas de script de vérification propre au Petit bac.']],
+    taches: ['Ajouter une catégorie au Petit bac'],
+  },
+  {
+    id: 'le-compte-est-bon', nom: 'Le compte est bon', icone: '🧮', resume: 'Atteindre un nombre avec 6 plaques',
+    fichiers: [],
+    ajouter: ['Rien à ajouter : le serveur tire les plaques et le nombre à chaque partie.'],
+    corriger: [], regles: [], commandes: [], taches: [],
+  },
+];
+
+// Tâches qui ne concernent pas un jeu en particulier.
+const TACHES_GENERALES = [
+  ['Tester mes changements sur mon ordinateur', 'tester'],
+  ['Mettre en ligne sur GitHub (branche main)', 'publier'],
+  ['Installer le projet sur un nouvel ordinateur', 'installation'],
+  ['Comprendre comment modifier un fichier JSON', 'modifier-json'],
+  ['J\'ai une erreur, quelque chose ne marche pas', 'probleme'],
+  ['Vérifier que Render a bien redémarré', 'publier'],
+  ['Lancer tous les tests automatiques', 'tester'],
+  ['Ajouter un nouveau jeu', 'probleme'],
+];
+
+// ---------- Affichage ----------
+
+function echapper(texte) {
+  return texte.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function blocCommande(commande, aide) {
+  const aideHtml = aide ? `<p class="aide">${aide}</p>` : '';
+  return `<div class="commande"><code>${echapper(commande)}</code>`
+    + `<button class="copie" type="button" data-texte="${echapper(commande).replace(/"/g, '&quot;')}">Copier</button></div>${aideHtml}`;
+}
+
+function liste(elements) {
+  return `<ul>${elements.map((element) => `<li>${element}</li>`).join('')}</ul>`;
+}
+
+// Les dossiers se parcourent dans le navigateur ; les .py et .js s'ouvrent dans l'éditeur, pas ici.
+function lienFichier(chemin) {
+  const visible = /\/$|\.(json|txt|html|md)$/.test(chemin);
+  return visible ? `<a href="${chemin}">Voir</a>` : '';
+}
+
+function ficheJeu(jeu) {
+  let html = `<section id="jeu-${jeu.id}"><h2>${jeu.icone} ${jeu.nom}</h2><p class="intro">${jeu.resume}.</p>`;
+  if (jeu.fichiers.length) {
+    html += '<h3>Fichiers</h3><ul class="fichiers">'
+      + jeu.fichiers.map(([chemin, role]) => `<li><code>${chemin}</code> <span class="aide">${role}</span> ${lienFichier(chemin)}</li>`).join('')
+      + '</ul>';
+  }
+  if (jeu.ajouter.length) html += `<h3>Ajouter</h3>${liste(jeu.ajouter)}`;
+  if (jeu.corriger.length) html += `<h3>Corriger ou retirer</h3>${liste(jeu.corriger)}`;
+  if (jeu.regles.length) html += `<h3>Règles à respecter</h3>${liste(jeu.regles)}`;
+  if (jeu.pieges) html += jeu.pieges.map((piege) => `<div class="encadre attention"><p>⚠️ ${piege}</p></div>`).join('');
+  if (jeu.exemple) html += `<h3>Exemple</h3><pre>${echapper(jeu.exemple)}</pre>`;
+  if (jeu.commandes.length) {
+    html += '<h3>Commandes</h3>' + jeu.commandes.map(([commande, aide]) => blocCommande(commande, aide)).join('');
+    if (jeu.commandes.some(([commande]) => commande.includes('verifier'))) {
+      html += '<p class="aide">Puis <code>npm test</code>, et <a href="#tester">un essai en local</a>'
+        + (jeu.planche ? ` (planche <a href="http://localhost:3000${jeu.planche}" target="_blank" rel="noopener">${jeu.planche}</a>)` : '')
+        + ' avant de <a href="#publier">mettre en ligne</a>.</p>';
+    }
+  }
+  return html + '</section>';
+}
+
+function afficherJeux() {
+  document.getElementById('fiches-jeux').innerHTML = JEUX.map(ficheJeu).join('');
+  document.getElementById('nav-jeux').innerHTML = JEUX.map((jeu) => `<a href="#jeu-${jeu.id}">${jeu.icone} ${jeu.nom}</a>`).join('');
+}
+
+function toutesLesTaches() {
+  const taches = [];
+  for (const jeu of JEUX) {
+    for (const texte of jeu.taches) taches.push({ texte, cible: `jeu-${jeu.id}`, jeu: `${jeu.icone} ${jeu.nom}` });
+  }
+  for (const [texte, cible] of TACHES_GENERALES) taches.push({ texte, cible, jeu: 'Général' });
+  return taches;
+}
+
+function sansAccents(texte) {
+  return texte.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function afficherTaches() {
+  const recherche = sansAccents(document.getElementById('recherche').value.trim());
+  const taches = toutesLesTaches().filter((tache) => sansAccents(`${tache.texte} ${tache.jeu}`).includes(recherche));
+  document.getElementById('taches').innerHTML = taches.length
+    ? taches.map((tache) => `<li><a href="#${tache.cible}"><span class="jeu">${tache.jeu}</span>${tache.texte}</a></li>`).join('')
+    : '<li class="aide">Rien trouvé. Essaie un autre mot, ou parcours la liste des jeux à gauche.</li>';
+}
+
+// Le dossier du projet se déduit de l'adresse de cette page (file:///C:/…/admin.html).
+function afficherDossier() {
+  const zone = document.getElementById('dossier-projet');
+  if (location.protocol !== 'file:') {
+    zone.innerHTML = blocCommande('cd "C:\\chemin\\vers\\Quiz-TV-Jeu-de-soir-e"');
+    return;
+  }
+  const chemin = decodeURIComponent(location.pathname).replace(/\/[^/]*$/, '').replace(/^\/([A-Za-z]:)/, '$1').replace(/\//g, '\\');
+  zone.innerHTML = blocCommande(`cd "${chemin}"`);
+}
+
+// Blocs de commande écrits dans le HTML : <div data-commande="…" data-aide="…">.
+function afficherCommandesFixes() {
+  for (const zone of document.querySelectorAll('[data-commande]')) {
+    zone.outerHTML = blocCommande(zone.dataset.commande, zone.dataset.aide);
+  }
+}
+
+async function copier(bouton) {
+  const texte = bouton.dataset.texte;
+  try {
+    await navigator.clipboard.writeText(texte);
+  } catch {
+    // Repli pour les navigateurs qui refusent le presse-papiers sur une page ouverte depuis le disque.
+    const zone = document.createElement('textarea');
+    zone.value = texte;
+    document.body.append(zone);
+    zone.select();
+    document.execCommand('copy');
+    zone.remove();
+  }
+  bouton.textContent = 'Copié ✓';
+  bouton.classList.add('fait');
+  setTimeout(() => { bouton.textContent = 'Copier'; bouton.classList.remove('fait'); }, 1500);
+}
+
+// ---------- Adresse Render, retenue par ce navigateur ----------
+
+function lireAdresse() {
+  try { return localStorage.getItem('adminAdresseRender') || ''; } catch { return ''; }
+}
+
+function afficherLiensRender() {
+  const adresse = document.getElementById('adresse-render').value.trim().replace(/\/+$/, '');
+  try { localStorage.setItem('adminAdresseRender', adresse); } catch { /* navigation privée */ }
+  document.getElementById('liens-render').innerHTML = /^https?:\/\//.test(adresse)
+    ? ['sante', 'tv', 'joueur'].map((page) => `<a href="${adresse}/${page}" target="_blank" rel="noopener">/${page}</a>`).join('')
+    : '<span class="aide">Colle l\'adresse ci-dessus pour avoir les liens directs vers /sante et /tv.</span>';
+}
+
+afficherJeux();
+afficherDossier();
+afficherCommandesFixes();
+afficherTaches();
+document.getElementById('recherche').addEventListener('input', afficherTaches);
+document.getElementById('adresse-render').value = lireAdresse();
+document.getElementById('adresse-render').addEventListener('input', afficherLiensRender);
+afficherLiensRender();
+document.addEventListener('click', (evenement) => {
+  const bouton = evenement.target.closest('button.copie');
+  if (bouton) copier(bouton);
+});
+</script>
+</body>
+</html>
