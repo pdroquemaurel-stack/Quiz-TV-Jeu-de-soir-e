@@ -6,6 +6,7 @@ import QRCode from 'qrcode';
 import { Server } from 'socket.io';
 import { lienExtrait, tirerEssai } from './extraits.js';
 import { journaliser, journaliserErreur } from './journal.js';
+import { banqueNuancier } from './modes/nuancier.js';
 import {
   ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle, deconnecterJoueur,
   deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium, peutLancer, peutRejouer,
@@ -84,6 +85,8 @@ export function demarrerServeur(port) {
   });
   // Pour la planche /tv?extraits seulement.
   app.get('/extraits/essai', (req, res) => res.json(tirerEssai()));
+  // Pour la planche /tv?nuancier seulement. Les cibles y sont, comme dans le dépôt public.
+  app.get('/nuancier/planche', (req, res) => res.json(banqueNuancier));
   app.use(express.static(dossierPublic));
 
   io.on('connection', (socket) => {

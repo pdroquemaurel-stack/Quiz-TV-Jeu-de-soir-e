@@ -1,0 +1,5 @@
+[
+  {"id": "n-ikea", "nom": "IKEA", "fichier": "ikea.svg", "question": "Quel est le bleu d'IKEA ?", "cible": "#0058A3", "zones": ["zone-1"]},
+  {"id": "n-mcdonalds", "nom": "McDonald's", "fichier": "mcdonalds.svg", "question": "Quel est le jaune de McDonald's ?", "cible": "#FFC72C", "zones": ["zone-1"]},
+  {"id": "n-orange", "nom": "Orange", "fichier": "orange.svg", "question": "Quel est l'orange d'Orange ?", "cible": "#FF7900", "zones": ["zone-1"]}
+]

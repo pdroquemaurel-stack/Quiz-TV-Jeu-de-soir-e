@@ -187,6 +187,17 @@ test('/extraits/essai donne 5 chansons du catalogue, sans pochette ni id Deezer'
   serveur.close();
 });
 
+test('/nuancier/planche donne tout le catalogue du Nuancier', async () => {
+  const serveur = await demarrerServeur(0);
+  const { port } = serveur.address();
+
+  const catalogue = await (await fetch(`http://localhost:${port}/nuancier/planche`)).json();
+
+  assert.ok(catalogue.length >= 1);
+  for (const logo of catalogue) assert.deepEqual(Object.keys(logo), ['id', 'nom', 'fichier', 'question', 'cible', 'zones']);
+  serveur.close();
+});
+
 test('seul l\'hôte peut choisir le mode', async (t) => {
   modes.fictif = {
     id: 'fictif', nom: 'Fictif', regleCourte: '', joueursMin: 1, echeance: () => null, vueTv: () => ({}),

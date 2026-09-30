@@ -8,7 +8,7 @@ La tranche se code en trois temps, chacun testé (et commité avec ton accord) a
 
 1. **Outil de préparation** : `scripts/prep-nuancier.html`, page autonome ouverte dans le navigateur du PC, hors du jeu.
 2. **Affichage d'un logo et serveur** :
-   - `public/commun/nuancier.js` (charger un SVG, masquer ou recolorer ses zones), `data/nuancier.json` avec 2 ou 3 exemples, `scripts/verifier-nuancier.js`, et la planche `/tv?nuancier` qui montre tous les logos masqués puis recolorés ;
+   - `public/commun/nuancier.js` (charger un SVG, masquer ou recolorer ses zones), `data/nuancier.json` avec 3 exemples, `scripts/verifier-nuancier.js`, et la planche `/tv?nuancier` (`public/tv/planche-nuancier.js`) qui montre tous les logos masqués puis recolorés ;
    - `server/modes/nuancier.js` (couleurs, ΔE, points, manches, chrono) et ses tests. Hors registre : invisible en jeu.
 3. **Téléphone, TV, sons et doc** : le mode entre dans le registre. Téléphone : curseurs, aperçu en direct, validation, résultat. TV : manche, révélation, classement. Sons, mise à jour de `spec.md`, `sons.md` et `CLAUDE.md`.
 
@@ -72,9 +72,13 @@ Paul télécharge les logos en SVG sur Wikimedia Commons, les passe dans l'outil
 
 ### Affichage (`public/commun/nuancier.js`, partagé par la TV et le téléphone)
 
-- Le SVG est chargé (`fetch`) et inséré dans la page, pour pouvoir toucher à ses formes.
-- Chaque forme de `zones` est soit **masquée** (gris clair, contour en pointillés), soit **recolorée**. La couleur passe par `element.style.fill` (et le contour éventuel par `style.stroke`) : le style en ligne l'emporte sur l'attribut `fill`, l'attribut `style` d'origine et la balise `<style>` du SVG.
-- Un seul logo à la fois par page : les `<style>` des SVG insérés s'appliquent à toute la page, deux logos pourraient se gêner.
+- Le SVG est chargé (`fetch`, une fois par fichier) et inséré dans la page, pour pouvoir toucher à ses formes. Il vit dans un **Shadow DOM** : ses `<style>` et ses `id` ne touchent ni la page ni les autres logos, et plusieurs logos peuvent s'afficher sur la même page.
+- Chaque forme de `zones` est soit **masquée** (gris clair, contour en pointillés), soit **recolorée**. La couleur passe par le style en ligne avec `!important` (`style.setProperty('fill', …, 'important')`) : il l'emporte sur l'attribut `fill`, l'attribut `style` d'origine et la balise `<style>` du SVG.
+- Logo introuvable : le nom de la marque s'affiche en gros à sa place.
+
+### Planche `/tv?nuancier`
+
+Tous les logos du catalogue, chacun deux fois : zone masquée, puis zone à la couleur cible, avec une alerte si le fichier ou une zone est introuvable. Pour vérifier les fichiers sur le PC et sur le stick. Elle lit le catalogue par la route `/nuancier/planche`, qui contient les cibles : rien de plus que ce que montre déjà le dépôt GitHub public.
 
 ### Le secret dans le fichier SVG
 

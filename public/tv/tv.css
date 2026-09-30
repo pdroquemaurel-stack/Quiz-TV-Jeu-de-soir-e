@@ -745,6 +745,68 @@ main[data-ecran="connexion"] {
   display: none;
 }
 
+/* Planche /tv?nuancier : par-dessus tout l'écran, avec défilement. */
+.planche-nuancier {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  gap: 24px;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--fond);
+}
+
+.planche-nuancier .carte-logo {
+  padding: 16px;
+  border: 3px solid var(--contour);
+  border-radius: 16px;
+  background: var(--panneau);
+  color: var(--texte);
+  font-size: 22px;
+}
+
+.planche-nuancier .carte-logo h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.planche-nuancier .carte-logo p {
+  margin: 4px 0;
+}
+
+.planche-nuancier .paire-logos {
+  display: flex;
+  gap: 16px;
+}
+
+.planche-nuancier .paire-logos figure {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+}
+
+.planche-nuancier .cadre-logo {
+  height: 200px;
+  font-size: 32px;
+}
+
+.planche-nuancier .pastille-cible {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--contour);
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.planche-nuancier .alerte-logo {
+  color: var(--rate);
+  font-weight: bold;
+}
+
 /* ---------- Format, tableau des points globaux et grand gagnant ---------- */
 
 .format-tv {
