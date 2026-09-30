@@ -60,7 +60,7 @@ Paul télécharge les logos en SVG sur Wikimedia Commons, les passe dans l'outil
   "id": "n-ikea",
   "nom": "IKEA",
   "fichier": "ikea.svg",
-  "question": "Quel est le bleu d'IKEA ?",
+  "question": "Quelle est la couleur d'IKEA ?",
   "cible": "#0058A3",
   "zones": ["path12", "path14"]
 }
@@ -97,8 +97,8 @@ Page autonome, ouverte en double-cliquant dessus : ni serveur ni dépendance. El
 1. **Importer** un fichier SVG de l'ordinateur.
 2. Le logo s'affiche en grand. Au survol, la forme sous la souris est surlignée. Un clic ajoute ou retire une forme de la zone.
 3. La **palette** montre les couleurs du logo, lues avec `getComputedStyle`, de la plus étendue à la moins étendue. Un clic sur une couleur en fait la zone : toutes ses formes, y compris les couleurs quasi identiques (aucun canal à plus de 12 sur 255 d'écart, comme les deux bleus du logo IKEA), sinon l'une resterait visible et donnerait la réponse. Les couleurs injouables (sans teinte, trop sombres ou trop claires) sont grisées. La couleur la plus étendue parmi les jouables est choisie d'office.
-4. Une forme sans `id` en reçoit un (`zone-1`, `zone-2`…). Avertissements pour une cible sans teinte, une luminosité hors de 5 à 95, la cible visible sur une autre forme, sur un contour ou dans un dégradé.
-5. Le nom de la marque vient du nom du fichier (`Logo_Lacoste_2026.svg` → « Lacoste »), la question de la couleur (« Quel est le vert de Lacoste ? », « Quel est l'orange d'Orange ? »), l'`id` et le fichier du nom (`n-lacoste`, `lacoste.svg`). Tout reste modifiable ; ce qui a été modifié à la main n'est plus recalculé.
+4. Une forme de la zone sans `id`, avec un `id` en double ou bizarre (Illustrator met `<Path>` à des dizaines de formes) en reçoit un nouveau (`zone-1`, `zone-2`…) : le jeu retrouve chaque forme par son `id`. Avertissements pour une cible sans teinte, une luminosité hors de 5 à 95, la cible visible sur une autre forme, sur un contour ou dans un dégradé.
+5. Le nom de la marque vient du nom du fichier (`Logo_Lacoste_2026.svg` → « Lacoste »), la question aussi (« Quelle est la couleur de Lacoste ? », « Quelle est la couleur d'Orange ? »), sans jamais nommer la couleur : c'est au joueur de la trouver, l'`id` et le fichier du nom (`n-lacoste`, `lacoste.svg`). Tout reste modifiable ; ce qui a été modifié à la main n'est plus recalculé.
 6. La page donne l'entrée JSON prête à copier et un bouton pour télécharger le SVG modifié : `id` ajoutés, zone en gris neutre, et la cible (avec ses couleurs quasi identiques) remplacée par du gris partout dans le code, `<style>` compris.
 
 ### Un lot d'adresses Commons (temps 4)

@@ -46,6 +46,12 @@ function enSlug(texte) {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+// Un id de forme utilisable comme zone : lettres, chiffres, « _ » et « - ». Pas « <Path> »,
+// que met Illustrator à des dizaines de formes à la fois.
+function idPropre(id) {
+  return /^[A-Za-z_][\w-]*$/.test(id);
+}
+
 // ---------- Wikimedia Commons ----------
 
 // Le nom du fichier SVG d'une adresse Commons, ou null :
@@ -116,13 +122,11 @@ function nomDeCouleur(hex) {
 
 const VOYELLE_EN_TETE = /^[aeiouyàâäéèêëîïôöûüœ]/i;
 
-// « Quel est le vert de Lacoste ? », « Quel est l'orange d'Orange ? ».
-function questionPour(marque, hex) {
+// « Quelle est la couleur de Lacoste ? », « Quelle est la couleur d'Orange ? ».
+// Jamais le nom de la couleur : c'est au joueur de la trouver.
+function questionPour(marque) {
   const de = VOYELLE_EN_TETE.test(marque) ? "d'" : 'de ';
-  const couleur = nomDeCouleur(hex);
-  if (!couleur) return `Quelle est la couleur ${de}${marque} ?`;
-  const le = VOYELLE_EN_TETE.test(couleur) ? "l'" : 'le ';
-  return `Quel est ${le}${couleur} ${de}${marque} ?`;
+  return `Quelle est la couleur ${de}${marque} ?`;
 }
 
 // La couleur à deviner la plus probable : la plus étendue des couleurs jouables.

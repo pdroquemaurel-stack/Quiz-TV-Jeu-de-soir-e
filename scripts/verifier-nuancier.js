@@ -14,9 +14,9 @@ function texteNonVide(valeur) {
 
 const echapper = (texte) => texte.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-// Vrai si le SVG contient une forme avec cet id.
-function contientId(svg, id) {
-  return new RegExp(`\\sid=["']${echapper(id)}["']`).test(svg);
+// Nombre de formes du SVG qui ont cet id (une seule attendue).
+function compterId(svg, id) {
+  return (svg.match(new RegExp(`\\sid=["']${echapper(id)}["']`, 'g')) ?? []).length;
 }
 
 // Vrai si la cible est écrite dans le SVG, en hexadécimal long (#0058a3) ou court (#abc) :
@@ -61,7 +61,10 @@ function erreursLogo(logo, svgs) {
   if (svg === undefined) return [...erreurs, `logo absent : public/logos/nuancier/${logo.fichier}`];
   if (zonesValides) {
     for (const zone of logo.zones) {
-      if (!contientId(svg, zone)) erreurs.push(`zone « ${zone} » absente du SVG`);
+      const nombre = compterId(svg, zone);
+      if (nombre === 0) erreurs.push(`zone « ${zone} » absente du SVG`);
+      // Le jeu ne retrouverait que la première : les autres ne seraient ni masquées ni recolorées.
+      else if (nombre > 1) erreurs.push(`zone « ${zone} » présente ${nombre} fois dans le SVG`);
     }
   }
   if (cibleValide && cibleDansLeSvg(svg, logo.cible)) {

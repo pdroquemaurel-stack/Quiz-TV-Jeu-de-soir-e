@@ -85,7 +85,7 @@
       <label for="nom">Nom de la marque</label>
       <input type="text" id="nom" placeholder="IKEA">
       <label for="question">Question</label>
-      <input type="text" id="question" placeholder="Quel est le bleu d'IKEA ?">
+      <input type="text" id="question" placeholder="Quelle est la couleur d'IKEA ?">
       <label for="id">Identifiant</label>
       <input type="text" id="id" placeholder="n-ikea">
       <label for="nom-fichier">Nom du fichier</label>
@@ -137,7 +137,7 @@
   let survolee = null;
   let idsAjoutes = 0;
   let sourceCourante = null; // page Commons du logo affiché
-  // Identifiant, fichier et question suivent le nom et la cible, tant qu'on ne les a pas modifiés.
+  // Identifiant, fichier et question suivent le nom de la marque, tant qu'on ne les a pas modifiés.
   let idModifie = false;
   let fichierModifie = false;
   let questionModifiee = false;
@@ -273,8 +273,10 @@
     if (survolee) survolee.classList.add('prep-survol');
   }
 
+  // Une forme de la zone doit se retrouver par son id, seule : sinon elle en reçoit un nouveau.
   function ajouterALaZone(forme) {
-    if (!forme.id) forme.id = nouvelId();
+    const memeId = [...svg.querySelectorAll('[id]')].filter((element) => element.id === forme.id);
+    if (!idPropre(forme.id) || memeId.length > 1) forme.id = nouvelId();
     zones.push(forme);
     forme.classList.add('prep-zone');
   }
@@ -330,7 +332,7 @@
   function proposerQuestion() {
     if (questionModifiee) return;
     const nom = champs.nom.value.trim();
-    champs.question.value = nom && cible() ? questionPour(nom, cible()) : '';
+    champs.question.value = nom ? questionPour(nom) : '';
   }
 
   champs.nom.addEventListener('input', () => { suivreLeNom(); mettreAJour(); });

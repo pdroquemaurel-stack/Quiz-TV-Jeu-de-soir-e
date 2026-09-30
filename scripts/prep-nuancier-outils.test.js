@@ -8,7 +8,7 @@ import vm from 'node:vm';
 const outils = { URL };
 vm.runInNewContext(readFileSync(new URL('./prep-nuancier-outils.js', import.meta.url), 'utf8'), outils);
 const {
-  ajouterAuCatalogue, couleurProbable, marqueDepuisFichier, nomDeCouleur, nomDeFichierCommons, procheDe, questionPour,
+  ajouterAuCatalogue, couleurProbable, idPropre, marqueDepuisFichier, nomDeCouleur, nomDeFichierCommons, procheDe, questionPour,
   texteDuCatalogue, urlApiCommons, urlSourceCommons,
 } = outils;
 
@@ -62,6 +62,11 @@ test('nom de la couleur', () => {
   assert.equal(nomDeCouleur('#181713'), null);
 });
 
+test('id de forme propre : pas les id d\'Illustrator', () => {
+  for (const id of ['path12', 'zone-1', 'Calque_1', 'monoprix']) assert.equal(idPropre(id), true, id);
+  for (const id of ['<Path>', '<Compound Path>', '', '1abc', 'a b']) assert.equal(idPropre(id), false, id);
+});
+
 test('couleurs proches : à 12 près sur chaque canal', () => {
   assert.equal(procheDe('#0058AB', '#0058A3'), true);
   assert.equal(procheDe('#0058A3', '#0058A3'), true);
@@ -69,12 +74,11 @@ test('couleurs proches : à 12 près sur chaque canal', () => {
   assert.equal(procheDe('#FFDA1A', '#0058A3'), false);
 });
 
-test('question : article et élision', () => {
-  assert.equal(questionPour('Lacoste', '#00A650'), 'Quel est le vert de Lacoste ?');
-  assert.equal(questionPour('IKEA', '#0058A3'), "Quel est le bleu d'IKEA ?");
-  assert.equal(questionPour('Orange', '#FF7900'), "Quel est l'orange d'Orange ?");
-  assert.equal(questionPour('Émeraude', '#E2001A'), "Quel est le rouge d'Émeraude ?");
-  assert.equal(questionPour('Kiabi', '#777777'), 'Quelle est la couleur de Kiabi ?');
+test('question : jamais le nom de la couleur, élision devant une voyelle', () => {
+  assert.equal(questionPour('Lacoste'), 'Quelle est la couleur de Lacoste ?');
+  assert.equal(questionPour('IKEA'), "Quelle est la couleur d'IKEA ?");
+  assert.equal(questionPour('Orange'), "Quelle est la couleur d'Orange ?");
+  assert.equal(questionPour('Émeraude'), "Quelle est la couleur d'Émeraude ?");
 });
 
 test('couleur probable : la plus étendue des couleurs jouables', () => {

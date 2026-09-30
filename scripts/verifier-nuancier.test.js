@@ -60,6 +60,7 @@ test('nuancier : zones vides ou absentes du SVG', () => {
   erreurAttendue([logo({ zones: ['zone-2'] })], svgs(), 'zone « zone-2 » absente');
   // « zone-1 » ne doit pas être trouvé dans « zone-10 ».
   erreurAttendue([logo()], svgs(SVG.replace('zone-1', 'zone-10')), 'zone « zone-1 » absente');
+  erreurAttendue([logo()], svgs(SVG.replace('id="fond"', 'id="zone-1"')), 'zone « zone-1 » présente 2 fois');
 });
 
 test('nuancier : fichier mal nommé, absent, ou logo sans entrée', () => {
