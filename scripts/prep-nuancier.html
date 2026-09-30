@@ -17,20 +17,27 @@
     input[type=text] { width: 100%; box-sizing: border-box; padding: 8px; font-size: 15px; }
     textarea { width: 100%; box-sizing: border-box; height: 110px; font-family: monospace; font-size: 13px; }
     button { padding: 8px 14px; font-size: 14px; cursor: pointer; }
+    button.principal { background: #1b7f3a; color: #fff; border: none; border-radius: 6px; }
+    button:disabled { opacity: 0.4; cursor: default; }
     .aide { color: #666; font-size: 13px; }
+    .boutons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     #scene {
       min-height: 70vh; display: flex; align-items: center; justify-content: center; border-radius: 10px;
       /* Damier : un logo blanc reste visible. */
       background: repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0 / 24px 24px;
     }
     #scene svg { width: 90%; height: 65vh; }
+    #etat-lot { font-weight: 600; }
+    #palette { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+    #palette button { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #fff; border: 2px solid #ccc; border-radius: 6px; }
+    #palette button.choisie { border-color: #1b7f3a; outline: 2px solid #1b7f3a; }
     #cible-ligne { display: flex; gap: 8px; align-items: center; }
     #cible-ligne input[type=text] { width: 120px; }
     #pastille { width: 36px; height: 36px; border-radius: 6px; border: 1px solid #999; }
-    #formes li { font-family: monospace; font-size: 13px; }
+    #formes li, #lot-acceptes li { font-family: monospace; font-size: 13px; }
     .carre { display: inline-block; width: 12px; height: 12px; border: 1px solid #999; vertical-align: middle; }
-    #alertes li { color: #b3261e; }
-    #alertes li.ok { color: #1b7f3a; }
+    #alertes li, .a-revoir { color: #b3261e; }
+    #alertes li.ok, .enregistre { color: #1b7f3a; }
     /* Surlignage de l'éditeur seulement : retiré à l'export. */
     .prep-survol { stroke: #ff00ff !important; stroke-width: 4px !important; vector-effect: non-scaling-stroke; cursor: pointer; }
     .prep-zone { stroke: #00b050 !important; stroke-width: 4px !important; stroke-dasharray: 8 4; vector-effect: non-scaling-stroke; }
@@ -39,21 +46,31 @@
 <body>
 <main>
   <div>
-    <h1>Préparation d'un logo du Nuancier</h1>
-    <div id="scene"><p class="aide">Importe un fichier SVG pour commencer.</p></div>
+    <h1>Préparation des logos du Nuancier</h1>
+    <div id="scene"><p class="aide">Colle des adresses Commons ou importe un fichier SVG pour commencer.</p></div>
   </div>
 
   <div>
     <section>
-      <h2>1. Logo</h2>
-      <input type="file" id="fichier" accept=".svg,image/svg+xml">
-      <p class="aide">Survole le logo, puis clique sur une ou plusieurs formes pour en faire la zone à deviner. Un nouveau clic retire la forme.</p>
-      <button id="vider">Vider la sélection</button>
+      <h2>1. Logos à ajouter</h2>
+      <label for="urls">Adresses Wikimedia Commons, une par ligne</label>
+      <textarea id="urls" placeholder="https://commons.wikimedia.org/wiki/File:Logo_Lacoste_2026.svg"></textarea>
+      <div class="boutons"><button id="charger-lot" class="principal">Charger les logos</button></div>
+      <p id="etat-lot"></p>
+      <div id="actions-lot" class="boutons" hidden>
+        <button id="valider-suivant" class="principal">Valider et suivant</button>
+        <button id="ecarter">Écarter</button>
+        <button id="tout-accepter">Tout accepter</button>
+      </div>
+      <p class="aide">Ou un seul fichier de l'ordinateur : <input type="file" id="fichier" accept=".svg,image/svg+xml"></p>
     </section>
 
     <section>
       <h2>2. Zone et couleur cible</h2>
+      <p class="aide">Clique sur une couleur pour en faire la zone à deviner (toutes ses formes), ou sur les formes du logo une à une.</p>
+      <div id="palette"></div>
       <ul id="formes"><li class="aide">Aucune forme choisie.</li></ul>
+      <button id="vider">Vider la sélection</button>
       <label for="cible">Couleur cible</label>
       <div id="cible-ligne">
         <div id="pastille"></div>
@@ -75,8 +92,20 @@
       <input type="text" id="nom-fichier" placeholder="ikea.svg">
     </section>
 
+    <section id="section-lot" hidden>
+      <h2>4. Logos validés</h2>
+      <ul id="lot-acceptes"></ul>
+      <ul id="lot-a-revoir"></ul>
+      <div class="boutons">
+        <button id="enregistrer-projet" class="principal">Enregistrer dans le projet</button>
+        <button id="telecharger-lot">Télécharger à la place</button>
+      </div>
+      <p class="aide">« Enregistrer » te demande le dossier du projet (celui qui contient <code>data</code> et <code>public</code>), puis écrit les SVG dans <code>public/logos/nuancier/</code> et les ajoute à <code>data/nuancier.json</code>.</p>
+      <p id="rapport"></p>
+    </section>
+
     <section>
-      <h2>4. Résultat</h2>
+      <h2>Un seul logo, à la main</h2>
       <label for="json">Entrée à coller dans <code>data/nuancier.json</code></label>
       <textarea id="json" readonly></textarea>
       <p><button id="copier">Copier le JSON</button> <button id="telecharger">Télécharger le SVG modifié</button></p>
@@ -85,9 +114,12 @@
   </div>
 </main>
 
+<script src="prep-nuancier-outils.js"></script>
 <script>
   // Les formes qu'on peut choisir comme zone.
   const FORMES = 'path, rect, circle, ellipse, polygon, polyline, line, text';
+  // Ce qui n'est pas dessiné tel quel : ses formes ne comptent pas.
+  const NON_DESSINE = 'defs, clipPath, mask, pattern, symbol, marker';
   const GRIS_NEUTRE = '#9e9e9e';
 
   const scene = document.getElementById('scene');
@@ -104,9 +136,18 @@
   let zones = [];           // les formes choisies, dans l'ordre des clics
   let survolee = null;
   let idsAjoutes = 0;
-  // L'identifiant et le nom du fichier suivent le nom de la marque, tant qu'on ne les a pas modifiés.
+  let sourceCourante = null; // page Commons du logo affiché
+  // Identifiant, fichier et question suivent le nom et la cible, tant qu'on ne les a pas modifiés.
   let idModifie = false;
   let fichierModifie = false;
+  let questionModifiee = false;
+
+  // Le lot : les logos de la liste d'adresses, ceux validés, ceux à revoir.
+  let fileLot = [];         // [{ nomFichier }]
+  let indexLot = 0;
+  let acceptes = [];        // [{ entree, svg }] : svg est le texte du fichier à écrire
+  let aRevoir = [];         // [{ nom, raison }]
+  let dossierProjet = null;
 
   // ---------- Couleurs ----------
 
@@ -119,25 +160,6 @@
 
   function hexValide(hex) {
     return /^#[0-9A-F]{6}$/i.test(hex);
-  }
-
-  // « #0058A3 » → { t: 0-359, s: 0-100, l: 0-100 } (TSL, en anglais HSL).
-  function versTsl(hex) {
-    const [r, v, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-    const max = Math.max(r, v, b);
-    const min = Math.min(r, v, b);
-    const l = (max + min) / 2;
-    const d = max - min;
-    let t = 0;
-    let s = 0;
-    if (d > 0) {
-      s = d / (1 - Math.abs(2 * l - 1));
-      if (max === r) t = ((v - b) / d) % 6;
-      else if (max === v) t = (b - r) / d + 2;
-      else t = (r - v) / d + 4;
-      t = (t * 60 + 360) % 360;
-    }
-    return { t: Math.round(t) % 360, s: Math.round(s * 100), l: Math.round(l * 100) };
   }
 
   function couleurDe(forme) {
@@ -153,21 +175,66 @@
     return contour;
   }
 
-  // ---------- Import du logo ----------
+  function formesDessinees() {
+    return [...svg.querySelectorAll(FORMES)].filter((forme) => !forme.closest(NON_DESSINE));
+  }
+
+  // Les couleurs du logo : [{ hex, formes, aire }], de la plus étendue à la moins étendue.
+  // Les couleurs quasi identiques (procheDe) forment un seul groupe, au nom de la plus étendue :
+  // sinon l'une resterait visible et donnerait la réponse.
+  // L'aire est celle des rectangles affichés, une approximation suffisante pour comparer.
+  function groupesDeCouleurs() {
+    const groupes = [];
+    for (const forme of formesDessinees()) {
+      const hex = couleurDe(forme);
+      if (!hex) continue;
+      let groupe = groupes.find((g) => procheDe(g.premiere, hex));
+      if (!groupe) {
+        groupe = { premiere: hex, formes: [], aires: new Map() };
+        groupes.push(groupe);
+      }
+      const { width, height } = forme.getBoundingClientRect();
+      groupe.formes.push(forme);
+      groupe.aires.set(hex, (groupe.aires.get(hex) ?? 0) + width * height);
+    }
+    return groupes
+      .map(({ formes, aires }) => {
+        const [hex] = [...aires].reduce((meilleure, paire) => (paire[1] > meilleure[1] ? paire : meilleure));
+        const aire = [...aires.values()].reduce((somme, valeur) => somme + valeur, 0);
+        return { hex, formes, aire };
+      })
+      .sort((a, b) => b.aire - a.aire);
+  }
+
+  // ---------- Chargement d'un logo ----------
 
   document.getElementById('fichier').addEventListener('change', async (evenement) => {
     const fichier = evenement.target.files[0];
     if (!fichier) return;
-    chargerSvg(await fichier.text(), fichier.name);
+    preparerLogo(await fichier.text(), fichier.name, null);
   });
 
-  function chargerSvg(texte, nomDuFichier) {
+  // Affiche le logo, remet les champs à zéro et propose la couleur la plus probable.
+  // Renvoie false si le texte n'est pas un SVG lisible.
+  function preparerLogo(texte, nomDuFichier, source) {
+    if (!chargerSvg(texte)) return false;
+    sourceCourante = source;
+    idModifie = false;
+    fichierModifie = false;
+    questionModifiee = false;
+    champs.nom.value = marqueDepuisFichier(nomDuFichier);
+    champs.cible.value = '';
+    suivreLeNom();
+    const probable = couleurProbable(groupesDeCouleurs());
+    if (probable) choisirCouleur(probable);
+    else mettreAJour();
+    return true;
+  }
+
+  function chargerSvg(texte) {
     const doc = new DOMParser().parseFromString(texte, 'image/svg+xml');
     const racine = doc.documentElement;
-    if (racine.nodeName !== 'svg' || doc.querySelector('parsererror')) {
-      alert("Ce fichier n'est pas un SVG lisible.");
-      return;
-    }
+    if (racine.nodeName !== 'svg' || doc.querySelector('parsererror')) return false;
     for (const script of racine.querySelectorAll('script')) script.remove();
     ajouterViewBox(racine);
     svg = document.importNode(racine, true);
@@ -175,12 +242,10 @@
     zones = [];
     survolee = null;
     idsAjoutes = 0;
-    if (!champs.nom.value) champs.nom.value = nomDepuisFichier(nomDuFichier);
-    suivreLeNom();
     svg.addEventListener('mouseover', surSurvol);
     svg.addEventListener('mouseout', () => survoler(null));
     svg.addEventListener('click', surClic);
-    mettreAJour();
+    return true;
   }
 
   // Sans viewBox, le logo ne s'agrandit pas avec la page (ni dans le jeu) : on la déduit de width et height.
@@ -189,11 +254,6 @@
     const largeur = parseFloat(racine.getAttribute('width'));
     const hauteur = parseFloat(racine.getAttribute('height'));
     if (largeur > 0 && hauteur > 0) racine.setAttribute('viewBox', `0 0 ${largeur} ${hauteur}`);
-  }
-
-  // « IKEA_logo.svg » → « IKEA logo ».
-  function nomDepuisFichier(nomDuFichier) {
-    return nomDuFichier.replace(/\.svg$/i, '').replace(/[_-]+/g, ' ').replace(/\s*logo\s*/i, ' ').trim();
   }
 
   // ---------- Survol et sélection ----------
@@ -213,6 +273,17 @@
     if (survolee) survolee.classList.add('prep-survol');
   }
 
+  function ajouterALaZone(forme) {
+    if (!forme.id) forme.id = nouvelId();
+    zones.push(forme);
+    forme.classList.add('prep-zone');
+  }
+
+  function viderZone() {
+    for (const zone of zones) zone.classList.remove('prep-zone');
+    zones = [];
+  }
+
   function surClic(evenement) {
     const forme = formeSous(evenement);
     if (!forme) return;
@@ -220,12 +291,19 @@
       zones = zones.filter((zone) => zone !== forme);
       forme.classList.remove('prep-zone');
     } else {
-      if (!forme.id) forme.id = nouvelId();
-      zones.push(forme);
-      forme.classList.add('prep-zone');
+      ajouterALaZone(forme);
       // La première forme choisie propose la cible.
       if (zones.length === 1) champs.cible.value = couleurDe(forme) ?? '';
     }
+    mettreAJour();
+  }
+
+  // Toutes les formes de cette couleur deviennent la zone : la couleur n'est plus visible ailleurs.
+  function choisirCouleur(hex) {
+    viderZone();
+    const groupe = groupesDeCouleurs().find((g) => g.hex === hex);
+    for (const forme of groupe?.formes ?? []) ajouterALaZone(forme);
+    champs.cible.value = hex;
     mettreAJour();
   }
 
@@ -237,18 +315,11 @@
   }
 
   document.getElementById('vider').addEventListener('click', () => {
-    for (const zone of zones) zone.classList.remove('prep-zone');
-    zones = [];
+    viderZone();
     mettreAJour();
   });
 
-  // ---------- Marque, identifiant, fichier ----------
-
-  // « Crédit Agricole » → « credit-agricole ».
-  function enSlug(texte) {
-    return texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  }
+  // ---------- Marque, identifiant, fichier, question ----------
 
   function suivreLeNom() {
     const slug = enSlug(champs.nom.value);
@@ -256,13 +327,19 @@
     if (!fichierModifie) champs.nomFichier.value = slug ? `${slug}.svg` : '';
   }
 
+  function proposerQuestion() {
+    if (questionModifiee) return;
+    const nom = champs.nom.value.trim();
+    champs.question.value = nom && cible() ? questionPour(nom, cible()) : '';
+  }
+
   champs.nom.addEventListener('input', () => { suivreLeNom(); mettreAJour(); });
   champs.id.addEventListener('input', () => { idModifie = true; mettreAJour(); });
   champs.nomFichier.addEventListener('input', () => { fichierModifie = true; mettreAJour(); });
-  champs.question.addEventListener('input', mettreAJour);
+  champs.question.addEventListener('input', () => { questionModifiee = true; mettreAJour(); });
   champs.cible.addEventListener('input', mettreAJour);
 
-  // ---------- Affichage : formes, cible, alertes, JSON ----------
+  // ---------- Affichage : palette, formes, cible, alertes, JSON ----------
 
   function cible() {
     const valeur = champs.cible.value.trim().toUpperCase();
@@ -270,10 +347,29 @@
   }
 
   function mettreAJour() {
+    proposerQuestion();
+    afficherPalette();
     afficherFormes();
     afficherCible();
     afficherAlertes();
     champs.json.value = zones.length ? JSON.stringify(entree()) : '';
+    document.getElementById('valider-suivant').disabled = !estPret();
+  }
+
+  function afficherPalette() {
+    const palette = document.getElementById('palette');
+    if (!svg) return palette.replaceChildren();
+    palette.replaceChildren(...groupesDeCouleurs().map(({ hex, formes }) => {
+      const bouton = document.createElement('button');
+      bouton.classList.toggle('choisie', hex === cible());
+      bouton.disabled = !couleurJouable(hex);
+      bouton.title = bouton.disabled ? 'Sans teinte, trop sombre ou trop claire : injouable' : '';
+      bouton.innerHTML = '<span class="carre"></span>';
+      bouton.querySelector('.carre').style.background = hex;
+      bouton.append(`${nomDeCouleur(hex) ?? 'sans teinte'} ${hex} (${formes.length})`);
+      bouton.addEventListener('click', () => choisirCouleur(hex));
+      return bouton;
+    }));
   }
 
   function afficherFormes() {
@@ -299,9 +395,10 @@
   }
 
   function afficherAlertes() {
-    const alertes = listerAlertes();
     const liste = document.getElementById('alertes');
-    if (svg && zones.length && !alertes.length) {
+    if (!svg) return liste.replaceChildren();
+    const alertes = listerAlertes();
+    if (!alertes.length) {
       liste.innerHTML = '<li class="ok">Tout est prêt.</li>';
       return;
     }
@@ -312,45 +409,45 @@
     }));
   }
 
+  function estPret() {
+    return Boolean(svg) && listerAlertes().length === 0;
+  }
+
   function listerAlertes() {
-    if (!svg || !zones.length) return [];
+    if (!svg) return [];
+    if (!zones.length) return ['Aucune zone : choisis une couleur dans la palette.'];
     const alertes = [];
     const hex = cible();
-    const couleurs = new Set(zones.map(couleurDe));
-    if (couleurs.size > 1) alertes.push(`Les formes choisies n'ont pas la même couleur : ${[...couleurs].map((c) => c ?? 'sans couleur unie').join(', ')}.`);
     if (!hex) {
       alertes.push('La couleur cible doit être au format #RRGGBB.');
       return alertes;
     }
+    // « Proche » : une couleur quasi identique à la cible compte comme la cible.
+    const proche = (couleur) => Boolean(couleur) && procheDe(couleur, hex);
+    const differentes = [...new Set(zones.map(couleurDe))].filter((couleur) => !proche(couleur));
+    if (differentes.length) alertes.push(`Des formes choisies n'ont pas la couleur cible : ${differentes.map((c) => c ?? 'sans couleur unie').join(', ')}.`);
     const { s, l } = versTsl(hex);
     if (s < 10) alertes.push(`Couleur presque sans teinte (saturation ${s} %) : le curseur de teinte ne servira à rien.`);
     if (l < 5 || l > 95) alertes.push(`Luminosité ${l} % hors de 5 à 95 : la couleur sera inatteignable avec les curseurs.`);
-    const autres = [...svg.querySelectorAll(FORMES)].filter((forme) => !zones.includes(forme) && couleurDe(forme) === hex);
+    const autres = formesDessinees().filter((forme) => !zones.includes(forme) && proche(couleurDe(forme)));
     if (autres.length) alertes.push(`La couleur cible est visible sur ${autres.length} autre(s) forme(s) du logo (${autres.map((f) => f.id || f.nodeName).join(', ')}) : elle donnerait la réponse.`);
-    const contours = zones.filter((zone) => contourDe(zone) === hex);
-    if (contours.length) alertes.push(`Le contour de ${contours.map((z) => z.id).join(', ')} a la couleur cible : il ne sera pas masqué.`);
-    const trace = resteDansLeCode(exporterSvg(), hex);
-    if (trace) alertes.push(`La couleur cible reste dans le code du SVG exporté (« ${trace} ») : retire-la à la main, sinon un joueur peut la lire.`);
+    // La cible est remplacée par du gris dans tout le code exporté : rien d'autre ne doit l'utiliser.
+    const contours = formesDessinees().filter((forme) => proche(contourDe(forme)));
+    if (contours.length) alertes.push(`${contours.length} contour(s) ont la couleur cible (${contours.map((f) => f.id || f.nodeName).join(', ')}) : ils deviendraient gris.`);
+    const degrades = [...svg.querySelectorAll('stop')].filter((stop) => proche(versHex(getComputedStyle(stop).stopColor)));
+    if (degrades.length) alertes.push('Un dégradé utilise la couleur cible : il deviendrait gris.');
     if (!champs.nom.value.trim()) alertes.push('Il manque le nom de la marque.');
     if (!champs.question.value.trim().endsWith('?')) alertes.push('La question doit finir par « ? ».');
     if (!/^n-[a-z0-9-]+$/.test(champs.id.value)) alertes.push("L'identifiant doit être « n- » suivi de minuscules, chiffres et tirets.");
     if (!/^[a-z0-9-]+\.svg$/.test(champs.nomFichier.value)) alertes.push('Le nom du fichier doit être en minuscules, chiffres et tirets, et finir par .svg.');
+    if (acceptes.some(({ entree: autre }) => autre.id === champs.id.value || autre.fichier === champs.nomFichier.value)) {
+      alertes.push('Un logo validé du lot a déjà cet identifiant ou ce nom de fichier.');
+    }
     return alertes;
   }
 
-  // La cible écrite en hexadécimal, long (#0058a3) ou court (#abc), avec un peu de contexte, ou null.
-  function resteDansLeCode(texte, hex) {
-    const motifs = [hex.slice(1)];
-    if (hex[1] === hex[2] && hex[3] === hex[4] && hex[5] === hex[6]) motifs.push(hex[1] + hex[3] + hex[5]);
-    for (const motif of motifs) {
-      const trouve = texte.match(new RegExp(`.{0,30}#${motif}(?![0-9a-f]).{0,10}`, 'i'));
-      if (trouve) return trouve[0].trim();
-    }
-    return null;
-  }
-
   function entree() {
-    return {
+    const resultat = {
       id: champs.id.value,
       nom: champs.nom.value.trim(),
       fichier: champs.nomFichier.value,
@@ -358,12 +455,17 @@
       cible: cible() ?? champs.cible.value.trim(),
       zones: zones.map((zone) => zone.id),
     };
+    if (sourceCourante) resultat.source = sourceCourante;
+    return resultat;
   }
 
   // ---------- Export ----------
 
-  // Le SVG tel qu'il ira dans le jeu : sans les marques de l'éditeur, zone en gris neutre.
+  // Le SVG tel qu'il ira dans le jeu : sans les marques de l'éditeur, zone en gris neutre,
+  // et la cible (avec les couleurs quasi identiques de la zone) remplacée par du gris partout
+  // dans le code (une règle <style>, par exemple), pour qu'un joueur ne puisse pas la lire.
   function exporterSvg() {
+    const aRetirer = new Set([cible(), ...zones.map(couleurDe)].filter(Boolean));
     const copie = svg.cloneNode(true);
     for (const element of copie.querySelectorAll('.prep-survol, .prep-zone')) {
       element.classList.remove('prep-survol', 'prep-zone');
@@ -374,16 +476,27 @@
       forme.removeAttribute('fill');
       forme.style.fill = GRIS_NEUTRE;
     }
-    return new XMLSerializer().serializeToString(copie);
+    return [...aRetirer].reduce(retirerCouleur, new XMLSerializer().serializeToString(copie));
+  }
+
+  // La couleur écrite en hexadécimal, long (#0058a3) ou court (#abc), devient GRIS_NEUTRE.
+  function retirerCouleur(texte, hex) {
+    const motifs = [hex.slice(1)];
+    if (hex[1] === hex[2] && hex[3] === hex[4] && hex[5] === hex[6]) motifs.push(hex[1] + hex[3] + hex[5]);
+    return motifs.reduce((resultat, motif) => resultat.replace(new RegExp(`#${motif}(?![0-9a-f])`, 'gi'), GRIS_NEUTRE), texte);
+  }
+
+  function telechargerFichier(nom, texte, type) {
+    const lien = document.createElement('a');
+    lien.href = URL.createObjectURL(new Blob([texte], { type }));
+    lien.download = nom;
+    lien.click();
+    URL.revokeObjectURL(lien.href);
   }
 
   document.getElementById('telecharger').addEventListener('click', () => {
     if (!svg || !zones.length) return alert("Choisis d'abord au moins une forme.");
-    const lien = document.createElement('a');
-    lien.href = URL.createObjectURL(new Blob([exporterSvg()], { type: 'image/svg+xml' }));
-    lien.download = champs.nomFichier.value || 'logo.svg';
-    lien.click();
-    URL.revokeObjectURL(lien.href);
+    telechargerFichier(champs.nomFichier.value || 'logo.svg', exporterSvg(), 'image/svg+xml');
   });
 
   document.getElementById('copier').addEventListener('click', async () => {
@@ -395,6 +508,159 @@
       champs.json.select();
       document.execCommand('copy');
     }
+  });
+
+  // ---------- Lot d'adresses Commons ----------
+
+  async function telechargerDepuisCommons(nomFichier) {
+    const reponse = await fetch(urlApiCommons(nomFichier));
+    if (!reponse.ok) throw new Error(`Commons ne répond pas (${reponse.status})`);
+    const pages = Object.values((await reponse.json()).query?.pages ?? {});
+    const adresse = pages[0]?.imageinfo?.[0]?.url;
+    if (!adresse) throw new Error('fichier introuvable sur Commons');
+    const fichier = await fetch(adresse);
+    if (!fichier.ok) throw new Error(`téléchargement refusé (${fichier.status})`);
+    return fichier.text();
+  }
+
+  document.getElementById('charger-lot').addEventListener('click', () => {
+    const lignes = document.getElementById('urls').value.split('\n').map((ligne) => ligne.trim()).filter(Boolean);
+    fileLot = [];
+    indexLot = 0;
+    for (const ligne of lignes) {
+      const nomFichier = nomDeFichierCommons(ligne);
+      if (nomFichier) fileLot.push({ nomFichier });
+      else aRevoir.push({ nom: ligne, raison: 'adresse Commons d\'un SVG non reconnue' });
+    }
+    ouvrirLogoDuLot();
+  });
+
+  // Ouvre le logo en cours du lot. Un logo qui ne se charge pas est mis de côté et on passe
+  // au suivant. Renvoie false quand le lot est fini.
+  async function ouvrirLogoDuLot() {
+    while (indexLot < fileLot.length) {
+      const { nomFichier } = fileLot[indexLot];
+      afficherLot(`Logo ${indexLot + 1}/${fileLot.length} : chargement de ${nomFichier}…`);
+      try {
+        const texte = await telechargerDepuisCommons(nomFichier);
+        if (!preparerLogo(texte, nomFichier, urlSourceCommons(nomFichier))) throw new Error('SVG illisible');
+        afficherLot(`Logo ${indexLot + 1}/${fileLot.length} : ${nomFichier}`);
+        return true;
+      } catch (erreur) {
+        aRevoir.push({ nom: nomFichier, raison: erreur.message });
+        indexLot += 1;
+      }
+    }
+    afficherLot(fileLot.length ? 'Lot terminé.' : '');
+    return false;
+  }
+
+  function accepterLogoCourant() {
+    acceptes.push({ entree: entree(), svg: exporterSvg() });
+  }
+
+  function logoCourantDuLot() {
+    return fileLot[indexLot]?.nomFichier;
+  }
+
+  document.getElementById('valider-suivant').addEventListener('click', () => {
+    if (!estPret()) return;
+    accepterLogoCourant();
+    indexLot += 1;
+    ouvrirLogoDuLot();
+  });
+
+  document.getElementById('ecarter').addEventListener('click', () => {
+    aRevoir.push({ nom: logoCourantDuLot(), raison: 'écarté' });
+    indexLot += 1;
+    ouvrirLogoDuLot();
+  });
+
+  // Le logo affiché et tous les suivants, avec la couleur proposée. Ceux qui ont une alerte
+  // sont mis de côté, avec la raison.
+  document.getElementById('tout-accepter').addEventListener('click', async () => {
+    let encore = indexLot < fileLot.length;
+    while (encore) {
+      if (estPret()) accepterLogoCourant();
+      else aRevoir.push({ nom: logoCourantDuLot(), raison: listerAlertes()[0] });
+      indexLot += 1;
+      encore = await ouvrirLogoDuLot();
+    }
+  });
+
+  function afficherLot(etat) {
+    document.getElementById('etat-lot').textContent = etat;
+    document.getElementById('actions-lot').hidden = indexLot >= fileLot.length;
+    document.getElementById('section-lot').hidden = !acceptes.length && !aRevoir.length;
+    document.getElementById('lot-acceptes').replaceChildren(...acceptes.map(({ entree: e }) => {
+      const ligne = document.createElement('li');
+      ligne.innerHTML = '<span class="carre"></span> ';
+      ligne.querySelector('.carre').style.background = e.cible;
+      ligne.append(`${e.nom} · ${e.question}`);
+      return ligne;
+    }));
+    document.getElementById('lot-a-revoir').replaceChildren(...aRevoir.map(({ nom, raison }) => {
+      const ligne = document.createElement('li');
+      ligne.className = 'a-revoir';
+      ligne.textContent = `À revoir : ${nom} (${raison})`;
+      return ligne;
+    }));
+    const boutonEnregistrer = document.getElementById('enregistrer-projet');
+    boutonEnregistrer.disabled = !acceptes.length;
+    document.getElementById('telecharger-lot').disabled = !acceptes.length;
+  }
+
+  // ---------- Enregistrement du lot ----------
+
+  async function ecrireFichier(dossier, nom, texte) {
+    const fichier = await dossier.getFileHandle(nom, { create: true });
+    const flux = await fichier.createWritable();
+    await flux.write(texte);
+    await flux.close();
+  }
+
+  // Écrit les SVG dans public/logos/nuancier/ et les entrées à la fin de data/nuancier.json.
+  // Un logo dont l'id ou le fichier est déjà au catalogue n'est pas écrit.
+  document.getElementById('enregistrer-projet').addEventListener('click', async () => {
+    const rapport = document.getElementById('rapport');
+    if (!window.showDirectoryPicker) {
+      rapport.textContent = 'Ce navigateur ne sait pas écrire dans un dossier : utilise Chrome ou Edge, ou « Télécharger à la place ».';
+      return;
+    }
+    try {
+      dossierProjet ??= await showDirectoryPicker({ mode: 'readwrite' });
+      const data = await dossierProjet.getDirectoryHandle('data');
+      const fichierCatalogue = await data.getFileHandle('nuancier.json');
+      const catalogue = JSON.parse(await (await fichierCatalogue.getFile()).text());
+      const { catalogue: complet, ajoutees, ignorees } = ajouterAuCatalogue(catalogue, acceptes.map((a) => a.entree));
+      const publicDossier = await dossierProjet.getDirectoryHandle('public');
+      const logos = await (await publicDossier.getDirectoryHandle('logos', { create: true }))
+        .getDirectoryHandle('nuancier', { create: true });
+      for (const entreeAjoutee of ajoutees) {
+        await ecrireFichier(logos, entreeAjoutee.fichier, acceptes.find((a) => a.entree === entreeAjoutee).svg);
+      }
+      await ecrireFichier(data, 'nuancier.json', texteDuCatalogue(complet));
+      acceptes = acceptes.filter((a) => !ajoutees.includes(a.entree) && !ignorees.some((i) => i.entree === a.entree));
+      aRevoir.push(...ignorees.map(({ entree: e, raison }) => ({ nom: e.nom, raison })));
+      rapport.className = 'enregistre';
+      rapport.textContent = `${ajoutees.length} logo(s) ajouté(s) au projet, ${complet.length} au catalogue. `
+        + 'Lance ensuite node scripts/verifier-nuancier.js.';
+      afficherLot(document.getElementById('etat-lot').textContent);
+    } catch (erreur) {
+      if (erreur.name === 'AbortError') return;
+      dossierProjet = null;
+      rapport.className = 'a-revoir';
+      rapport.textContent = erreur.name === 'NotFoundError'
+        ? 'Ce dossier n\'est pas celui du projet : choisis celui qui contient data et public.'
+        : `Enregistrement impossible : ${erreur.message}`;
+    }
+  });
+
+  // Sans accès au dossier : chaque SVG, et les nouvelles entrées à coller dans data/nuancier.json.
+  document.getElementById('telecharger-lot').addEventListener('click', () => {
+    for (const { entree: e, svg: texte } of acceptes) telechargerFichier(e.fichier, texte, 'image/svg+xml');
+    const lignes = acceptes.map(({ entree: e }) => `  ${JSON.stringify(e)}`).join(',\n');
+    telechargerFichier('nuancier-ajouts.json', `${lignes}\n`, 'application/json');
   });
 </script>
 </body>

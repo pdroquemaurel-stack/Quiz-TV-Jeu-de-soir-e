@@ -194,7 +194,9 @@ test('/nuancier/planche donne tout le catalogue du Nuancier', async () => {
   const catalogue = await (await fetch(`http://localhost:${port}/nuancier/planche`)).json();
 
   assert.ok(catalogue.length >= 1);
-  for (const logo of catalogue) assert.deepEqual(Object.keys(logo), ['id', 'nom', 'fichier', 'question', 'cible', 'zones']);
+  for (const logo of catalogue) {
+    for (const champ of ['id', 'nom', 'fichier', 'question', 'cible', 'zones']) assert.ok(champ in logo, champ);
+  }
   serveur.close();
 });
 

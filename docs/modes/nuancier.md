@@ -69,6 +69,7 @@ Paul télécharge les logos en SVG sur Wikimedia Commons, les passe dans l'outil
 - `id` : `n-` suivi de minuscules, chiffres et tirets, unique. Le préfixe évite toute collision dans `questionsVues`, commune à tous les modes.
 - `cible` : `#` et 6 chiffres hexadécimaux.
 - `zones` : au moins un `id` de forme du SVG.
+- `source` (facultatif, temps 4) : la page Commons du logo, `https://commons.wikimedia.org/wiki/File:…`, pour retrouver son origine et sa licence. Ajoutée par le mode lot de l'outil de préparation.
 
 ### Affichage (`public/commun/nuancier.js`, partagé par la TV et le téléphone)
 
@@ -89,13 +90,24 @@ Si la couleur cible apparaît encore ailleurs dans le fichier (dans une balise `
 
 ## Outil de préparation (`scripts/prep-nuancier.html`)
 
-Page autonome, ouverte en double-cliquant dessus : ni serveur ni dépendance. Elle n'est pas servie par Render.
+Page autonome, ouverte en double-cliquant dessus : ni serveur ni dépendance. Elle n'est pas servie par Render. Ses fonctions pures (nom de la marque, nom de la couleur, question, adresses Commons, fusion dans le catalogue) sont dans `scripts/prep-nuancier-outils.js`, script classique chargé par la page et testé par `node:test`.
+
+### Un logo à la fois
 
 1. **Importer** un fichier SVG de l'ordinateur.
 2. Le logo s'affiche en grand. Au survol, la forme sous la souris est surlignée. Un clic ajoute ou retire une forme de la zone.
-3. La couleur d'origine de chaque forme est lue avec `getComputedStyle` et proposée comme cible (modifiable). Si les formes choisies n'ont pas la même couleur, la page le signale. Une forme sans `id` en reçoit un (`zone-1`, `zone-2`…). Avertissements aussi pour une cible sans teinte (gris, noir, blanc : la teinte ne sert à rien) et une cible de luminosité hors de 5 à 95 (inatteignable).
-4. Paul saisit le nom de la marque et la question. L'`id` et le nom du fichier sont proposés à partir du nom (`IKEA` → `n-ikea`, `ikea.svg`).
-5. La page donne l'entrée JSON prête à copier et un bouton pour télécharger le SVG modifié (`id` ajoutés, zone neutralisée).
+3. La **palette** montre les couleurs du logo, lues avec `getComputedStyle`, de la plus étendue à la moins étendue. Un clic sur une couleur en fait la zone : toutes ses formes, y compris les couleurs quasi identiques (aucun canal à plus de 12 sur 255 d'écart, comme les deux bleus du logo IKEA), sinon l'une resterait visible et donnerait la réponse. Les couleurs injouables (sans teinte, trop sombres ou trop claires) sont grisées. La couleur la plus étendue parmi les jouables est choisie d'office.
+4. Une forme sans `id` en reçoit un (`zone-1`, `zone-2`…). Avertissements pour une cible sans teinte, une luminosité hors de 5 à 95, la cible visible sur une autre forme, sur un contour ou dans un dégradé.
+5. Le nom de la marque vient du nom du fichier (`Logo_Lacoste_2026.svg` → « Lacoste »), la question de la couleur (« Quel est le vert de Lacoste ? », « Quel est l'orange d'Orange ? »), l'`id` et le fichier du nom (`n-lacoste`, `lacoste.svg`). Tout reste modifiable ; ce qui a été modifié à la main n'est plus recalculé.
+6. La page donne l'entrée JSON prête à copier et un bouton pour télécharger le SVG modifié : `id` ajoutés, zone en gris neutre, et la cible (avec ses couleurs quasi identiques) remplacée par du gris partout dans le code, `<style>` compris.
+
+### Un lot d'adresses Commons (temps 4)
+
+1. Paul colle une liste d'adresses Commons, une par ligne (`https://commons.wikimedia.org/wiki/File:…`, `Fichier:`, `?title=` ou adresse directe de `upload.wikimedia.org`).
+2. Pour chaque adresse, la page demande à l'API de Commons l'adresse du fichier original (`origin=*`, appel permis depuis une page) et le télécharge, puis le prépare comme ci-dessus. `source` reçoit la page Commons.
+3. Pour chaque logo : « Valider et suivant » (seulement sans avertissement), « Écarter », ou « Tout accepter » pour celui-ci et tous les suivants. Un logo avec un avertissement, introuvable, illisible, ou dont l'`id` ou le fichier est déjà dans le lot, est mis de côté avec la raison (« À revoir »).
+4. « Enregistrer dans le projet » : Paul choisit le dossier du projet (Chrome ou Edge, `showDirectoryPicker`), la page écrit les SVG dans `public/logos/nuancier/` et les entrées à la fin de `data/nuancier.json`, une par ligne. Un logo dont l'`id` ou le fichier est déjà au catalogue n'est pas écrit. Sans ce navigateur : « Télécharger à la place » (les SVG, et les entrées dans `nuancier-ajouts.json` à coller).
+5. Ensuite, comme toujours : `node scripts/verifier-nuancier.js`, la planche `/tv?nuancier`, le commit.
 
 
 ## Phases et chronos

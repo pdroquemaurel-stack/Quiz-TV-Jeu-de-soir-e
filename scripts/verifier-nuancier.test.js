@@ -48,6 +48,13 @@ test('nuancier : cible mal formée ou inatteignable', () => {
   erreurAttendue([logo({ cible: '#FFFFFF' })], svgs(), 'inatteignable');
 });
 
+test('nuancier : source facultative, page Commons si elle est là', () => {
+  const source = 'https://commons.wikimedia.org/wiki/File:IKEA_logo.svg';
+  assert.deepEqual(verifierNuancier([logo({ source })], svgs()), []);
+  erreurAttendue([logo({ source: 'https://example.com/ikea.svg' })], svgs(), 'source doit commencer');
+  erreurAttendue([logo({ source: null })], svgs(), 'source doit commencer');
+});
+
 test('nuancier : zones vides ou absentes du SVG', () => {
   erreurAttendue([logo({ zones: [] })], svgs(), 'liste non vide');
   erreurAttendue([logo({ zones: ['zone-2'] })], svgs(), 'zone « zone-2 » absente');

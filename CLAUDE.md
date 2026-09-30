@@ -72,7 +72,8 @@ scripts/construire-geoquiz.py  # construit data/geoquiz.json depuis Wikidata et 
 scripts/verifier-geoquiz.js
 scripts/construire-mots.js   # construit data/mots.txt depuis Lexique 3.83
 scripts/verifier-mots.js
-scripts/prep-nuancier.html  # outil de préparation d'un logo du Nuancier, ouvert en double-cliquant, hors du jeu
+scripts/prep-nuancier.html  # outil de préparation des logos du Nuancier (un fichier ou un lot d'adresses Commons), ouvert en double-cliquant, hors du jeu
+scripts/prep-nuancier-outils.js # ses fonctions pures, script classique chargé par la page
 scripts/verifier-nuancier.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
@@ -98,7 +99,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-geoquiz.js` : vérifie `geoquiz.json` et `geoquiz-exclus.json`
 - `node scripts/construire-mots.js [<Lexique383.tsv>]` : reconstruit `data/mots.txt` depuis Lexique 3.83, téléchargé par le script ou lu dans le fichier donné
 - `node scripts/verifier-mots.js` : vérifie `mots.txt`
-- `scripts/prep-nuancier.html` (double-clic) : prépare un logo SVG du Nuancier, donne son entrée JSON et le SVG à déposer dans `public/logos/nuancier/`
+- `scripts/prep-nuancier.html` (double-clic, Chrome ou Edge) : prépare les logos du Nuancier, depuis un fichier ou une liste d'adresses Commons, et les écrit dans `public/logos/nuancier/` et `data/nuancier.json`
 - `node scripts/verifier-nuancier.js` : vérifie `nuancier.json` et les logos de `public/logos/nuancier/`
 
 ## Ajouter un mode

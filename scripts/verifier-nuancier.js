@@ -2,7 +2,9 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { LUMINOSITE_MAX, LUMINOSITE_MIN, tslDe } from '../server/modes/nuancier.js';
 
-const CHAMPS = ['id', 'nom', 'fichier', 'question', 'cible', 'zones'];
+// source (la page Commons du logo) est facultative : les premières entrées ont été écrites à la main.
+const CHAMPS = ['id', 'nom', 'fichier', 'question', 'cible', 'zones', 'source'];
+const DEBUT_SOURCE = 'https://commons.wikimedia.org/wiki/File:';
 // Une partie de 10 manches (le plus long réglage) sans revoir un logo.
 export const MIN_CONSEILLE = 10;
 
@@ -47,6 +49,9 @@ function erreursLogo(logo, svgs) {
   }
   const zonesValides = Array.isArray(logo.zones) && logo.zones.length > 0 && logo.zones.every(texteNonVide);
   if (!zonesValides) erreurs.push('zones doit être une liste non vide d\'id de formes');
+  if ('source' in logo && (typeof logo.source !== 'string' || !logo.source.startsWith(DEBUT_SOURCE))) {
+    erreurs.push(`source doit commencer par ${DEBUT_SOURCE}`);
+  }
 
   if (typeof logo.fichier !== 'string' || !/^[a-z0-9-]+\.svg$/.test(logo.fichier)) {
     erreurs.push('fichier doit être en minuscules, chiffres et tirets, et finir par .svg');

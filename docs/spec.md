@@ -618,6 +618,7 @@ Une tranche par mode, dans l'ordre. Chacune commence par sa mini-spec `docs/mode
   - Temps 1 : outil de préparation `scripts/prep-nuancier.html`.
   - Temps 2 : affichage des logos (`public/commun/nuancier.js`, Shadow DOM), planche `/tv?nuancier`, `data/nuancier.json`, `scripts/verifier-nuancier.js`, logique serveur hors registre.
   - Temps 3 : le mode entre dans le registre, écrans du téléphone et de la TV, sons, doc.
+  - Temps 4 : mode lot de l'outil de préparation. Une liste d'adresses Commons, chaque logo téléchargé et préparé d'office (couleur la plus étendue, marque, question), validé d'un clic ou « Tout accepter », puis écrit directement dans le projet. Champ facultatif `source` (page Commons) dans le catalogue.
 
   *Test : défini dans `docs/modes/nuancier.md`, dont une partie sur Render avec de vrais téléphones et l'affichage des logos sur le vrai stick.*
 

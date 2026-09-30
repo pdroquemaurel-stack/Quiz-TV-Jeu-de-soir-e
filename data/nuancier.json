@@ -1,5 +1,14 @@
 [
-  {"id": "n-ikea", "nom": "IKEA", "fichier": "ikea.svg", "question": "Quel est le bleu d'IKEA ?", "cible": "#0058A3", "zones": ["zone-1"]},
-  {"id": "n-mcdonalds", "nom": "McDonald's", "fichier": "mcdonalds.svg", "question": "Quel est le jaune de McDonald's ?", "cible": "#FFC72C", "zones": ["zone-1"]},
-  {"id": "n-orange", "nom": "Orange", "fichier": "orange.svg", "question": "Quel est l'orange d'Orange ?", "cible": "#FF7900", "zones": ["zone-1"]}
+  {"id":"n-apple-computer-rainbow","nom":"Apple","fichier":"apple-computer-rainbow.svg","question":"Quel est le vert d'Apple ?","cible":"#75BD21","zones":["zone-1"],"source":"https://commons.wikimedia.org/wiki/File:Apple_Computer_Logo_rainbow.svg"},
+  {"id":"n-bio-c-bon","nom":"Bio C'Bon","fichier":"bio-c-bon.svg","question":"Quelle est la couleur de Bio C'Bon ?","cible":"#006133","zones":["path859"],"source":"https://commons.wikimedia.org/wiki/File:Logo_Bio_C'Bon.svg"},
+  {"id":"n-e-leclerc-pictogram","nom":"E.Leclerc","fichier":"e-leclerc-pictogram.svg","question":"Quelle est la couleur d'E.Leclerc ?","cible":"#2C4D98","zones":["zone-1"],"source":"https://commons.wikimedia.org/wiki/File:E.Leclerc_-_Pictogram_(France,_1949-2012).svg"},
+  {"id":"n-intermarche-supermarkets","nom":"Intermarché","fichier":"intermarche-supermarkets.svg","question":"Quelle est la couleur d'Intermarché ?","cible":"#ED1D24","zones":["zone-1"],"source":"https://commons.wikimedia.org/wiki/File:Intermarché_logo_2009_supermarkets.svg"},
+  {"id":"n-lidl","nom":"Lidl","fichier":"lidl.svg","question":"Quelle est la couleur de Lidl ?","cible":"#FFF000","zones":["zone-4","zone-8"],"source":"https://commons.wikimedia.org/wiki/File:Lidl_logo.svg"},
+  {"id":"n-monoprix","nom":"Monoprix","fichier":"monoprix.svg","question":"Quelle est la couleur de Monoprix ?","cible":"#E30613","zones":["monoprix"],"source":"https://commons.wikimedia.org/wiki/File:Monoprix_logo.svg"},
+  {"id":"n-decathlon","nom":"Decathlon","fichier":"decathlon.svg","question":"Quelle est la couleur de Decathlon ?","cible":"#1482C2","zones":["path4285"],"source":"https://commons.wikimedia.org/wiki/File:Decathlon_-_logo_(1990-2024).svg"},
+  {"id":"n-leroy-merlin","nom":"Leroy Merlin","fichier":"leroy-merlin.svg","question":"Quelle est la couleur de Leroy Merlin ?","cible":"#7BB51C","zones":["zone-1"],"source":"https://commons.wikimedia.org/wiki/File:Leroy_Merlin_-_logo_(France,_1995-).svg"},
+  {"id":"n-fnac","nom":"Fnac","fichier":"fnac.svg","question":"Quelle est la couleur de Fnac ?","cible":"#EBB300","zones":["zone-1","zone-2","zone-3"],"source":"https://commons.wikimedia.org/wiki/File:Fnac_Logo.svg"},
+  {"id":"n-darty","nom":"Darty","fichier":"darty.svg","question":"Quelle est la couleur de Darty ?","cible":"#E30613","zones":["path562"],"source":"https://commons.wikimedia.org/wiki/File:Darty.svg"},
+  {"id":"n-la-poste","nom":"La Poste","fichier":"la-poste.svg","question":"Quelle est la couleur de La Poste ?","cible":"#003DA5","zones":["path10703"],"source":"https://commons.wikimedia.org/wiki/File:La_Poste_(Frankreich)_logo.svg"},
+  {"id":"n-france-5","nom":"France 5","fichier":"france-5.svg","question":"Quelle est la couleur de France 5 ?","cible":"#00D282","zones":["zone-1"],"source":"https://commons.wikimedia.org/wiki/File:France_5_2018.svg"}
 ]
