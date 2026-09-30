@@ -79,6 +79,8 @@ test('question : jamais le nom de la couleur, élision devant une voyelle', () =
   assert.equal(questionPour('IKEA'), "Quelle est la couleur d'IKEA ?");
   assert.equal(questionPour('Orange'), "Quelle est la couleur d'Orange ?");
   assert.equal(questionPour('Émeraude'), "Quelle est la couleur d'Émeraude ?");
+  assert.equal(questionPour('YouTube'), 'Quelle est la couleur de YouTube ?');
+  assert.equal(questionPour('Yves Rocher'), "Quelle est la couleur d'Yves Rocher ?");
 });
 
 test('couleur probable : la plus étendue des couleurs jouables', () => {

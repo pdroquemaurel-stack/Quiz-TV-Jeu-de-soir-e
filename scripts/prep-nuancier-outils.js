@@ -120,7 +120,8 @@ function nomDeCouleur(hex) {
   return 'rose';
 }
 
-const VOYELLE_EN_TETE = /^[aeiouyàâäéèêëîïôöûüœ]/i;
+// Un Y suivi d'une voyelle se prononce comme une consonne : « de YouTube », mais « d'Yves Rocher ».
+const VOYELLE_EN_TETE = /^(?:[aeiouàâäéèêëîïôöûüœ]|y(?![aeiouàâäéèêëîïôöûü]))/i;
 
 // « Quelle est la couleur de Lacoste ? », « Quelle est la couleur d'Orange ? ».
 // Jamais le nom de la couleur : c'est au joueur de la trouver.
