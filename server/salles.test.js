@@ -258,6 +258,7 @@ test('choix du mode : seul l\'hôte reçoit le sélecteur, avec les modes à ven
       ['estimation', false, false], ['qui-de-nous', false, false], ['undercover', false, false],
       ['meme-reponse', false, false], ['bluff', false, false], ['legende', false, false], ['blind-test', false, false], ['geoquiz', true, false],
       ['mot-le-plus-long', true, false], ['le-compte-est-bon', true, false], ['petit-bac', true, false], ['nuancier', true, false],
+      ['defi-encheres', false, false],
       ['futur', false, true],
     ],
   );

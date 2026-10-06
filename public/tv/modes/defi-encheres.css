@@ -1,0 +1,113 @@
+/* Écrans « Le défi des enchères » de la TV. Chargé après tv.css (voir tv/index.html). */
+
+/* Le défi tient sur 2 lignes à 56 px. */
+main[data-ecran^="defi-encheres-"] .question {
+  height: 200px;
+  font-size: 56px;
+}
+
+/* Enchères : le montant en très grand, son auteur dessous. */
+.de-enchere {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.de-montant {
+  margin: 0;
+  font-size: 300px;
+  line-height: 1;
+  color: var(--accent);
+  -webkit-text-stroke: 8px var(--contour);
+  paint-order: stroke fill;
+}
+
+/* À chaque surenchère : déplacement et échelle seulement (pas de filtre sur le stick). */
+.de-montant.surenchere {
+  animation: surencherir 400ms cubic-bezier(0.3, 1.6, 0.6, 1);
+}
+
+@keyframes surencherir {
+  from { transform: scale(1.35) translateY(-20px); }
+  to { transform: scale(1) translateY(0); }
+}
+
+.de-joueur {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 64px;
+}
+
+main[data-ecran="defi-encheres-encheres"] .attente {
+  text-align: center;
+}
+
+/* Annonce : centrée dans la place laissée sous le numéro de manche. */
+.de-adjuge {
+  margin-top: auto;
+  text-align: center;
+  font-size: 140px;
+  color: var(--accent);
+  transform: rotate(-3deg);
+}
+
+#de-arbitre-annonce {
+  margin-bottom: auto;
+}
+
+/* Défi : compteur en très grand et barre de progression vers l'enchère. */
+.de-compteur {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 260px;
+  line-height: 1;
+}
+
+.de-objectif {
+  font-size: 140px;
+  color: var(--texte-doux);
+}
+
+.de-progression {
+  height: 48px;
+  margin: 0 220px 0 0;
+  overflow: hidden;
+  border: 6px solid var(--contour);
+  border-radius: 24px;
+  background: var(--piste);
+}
+
+.de-progression-remplie {
+  height: 100%;
+  background: var(--juste);
+  transform-origin: left;
+  transition: transform 300ms ease-out;
+}
+
+/* Révélation. */
+.de-verdict {
+  flex: 1;
+  margin: 0;
+  font-size: 80px;
+  color: var(--juste);
+}
+
+.de-verdict.rate {
+  color: var(--rate);
+}
+
+.de-detail {
+  font-size: 48px;
+}
+
+main[data-ecran="defi-encheres-revelation"] .classement {
+  animation: apparaitre 400ms 1s both;
+}

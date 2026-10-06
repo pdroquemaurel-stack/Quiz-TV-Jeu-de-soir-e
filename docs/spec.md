@@ -141,6 +141,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 | Le compte est bon | 3 / **5** / 7 manches | 45 / **60** / 90 s |
 | Petit bac | 3 / **5** / 7 manches, et lettres rares (K, Q, W, X, Y, Z) : **sans** / avec | 60 / **90** / 120 s (sans STOP) |
 | Nuancier | 5 / **7** / 10 manches | 15 / **20** / 30 s |
+| Le défi des enchères | 5 / **8** / 12 manches | Aucun choix : le défi dure toujours 1 min |
 | Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
@@ -174,6 +175,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 11 | **Petit bac** (disponible, voir `docs/modes/petit-bac.md`) | 2 à 10 | Une lettre et 6 catégories tirées au hasard. Le premier dont les 6 cases commencent par la lettre appuie sur STOP : les autres ont 10 secondes (90 s au plus sans STOP). La TV montre les réponses catégorie par catégorie, acceptées par défaut sauf celles qui ne commencent pas par la lettre ; l'hôte refuse ou réaccepte après le débat. 1 point par réponse acceptée, réponses identiques comprises. 3, 5 ou 7 manches, une nouvelle lettre à chacune. |
 | 12 | **Menteur** (Perudo, tranche 31) | 2 à 10 | 5 dés cachés par joueur, visibles sur son seul téléphone. Enchères « au moins N dés montrent V » sur tous les dés en jeu, les 1 (pacos) sont jokers. « Menteur ! » révèle les dés sur la TV : le perdant du défi perd un dé. Le premier joueur sans dé perd. |
 | 13 | **Nuancier** (disponible, voir `docs/modes/nuancier.md`) | 2 à 10 | La TV montre le logo d'une marque connue dont une zone de couleur a été retirée. Chacun recrée la couleur sur son téléphone avec deux curseurs (teinte et luminosité, saturation de la cible). Ressemblance = `max(0, arrondi(100 − ΔE × 1,5))` %, ΔE CIE76 dans l'espace Lab, points = ressemblance × 10. 5, 7 ou 10 manches. |
+| 14 | **Le défi des enchères** (disponible, voir `docs/modes/defi-encheres.md`) | 3 à 10 | « En 1 minute, combien de départements français peux-tu citer ? » Enchères au bouton « +1 », adjugées après 7 s sans surenchère. Le relevant cite ses réponses à voix haute pendant 1 min, un arbitre tiré au sort les compte (▲▼) en direct sur la TV. Relevé : le relevant marque son enchère ; raté : +1 pour chaque autre joueur sauf l'arbitre. 5, 8 ou 12 manches. |
 
 ## Cas limites
 
@@ -419,7 +421,8 @@ Chaque tranche se termine par un test concret. Les numéros des tranches ne chan
 
 - **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **26** (GéoQuiz).
 - **En cours** : **27** (retours du test sur la vraie TV).
-- **À venir**, après l'audit (`AUDIT.md`) : **10**, puis **23** temps 2 (La réplique). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **À venir, en priorité** (demandé le 06/10/2026) : les 8 nouveaux jeux, un par un et dans l'ordre, **33 à 40** (voir « Nouveaux jeux prioritaires »).
+- **À venir ensuite**, après l'audit (`AUDIT.md`) : **31** (Menteur), **10**, puis **23** temps 2 (La réplique). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -622,6 +625,22 @@ Une tranche par mode, dans l'ordre. Chacune commence par sa mini-spec `docs/mode
 
   *Test : défini dans `docs/modes/nuancier.md`, dont une partie sur Render avec de vrais téléphones et l'affichage des logos sur le vrai stick.*
 
+### Nouveaux jeux prioritaires (tranches 33 à 40)
+
+Demandés par Paul le 06/10/2026, à faire avant toutes les autres tranches à venir, **un par un et dans l'ordre** : chaque jeu a sa mini-spec validée, son code, son test par Paul et son commit avant de passer au suivant. Les règles ci-dessous sont celles de la demande ; chaque mini-spec tranchera ses points ambigus.
+
+- **33. Mode « Le défi des enchères ».** Un défi (« En 1 minute, combien de départements français peux-tu citer ? »), des enchères au bouton « +1 », adjugées après 7 s sans surenchère ; le relevant cite ses réponses à voix haute pendant 1 min, un arbitre tiré au sort les compte avec ▲▼, compteur en direct sur la TV. Relevé : le relevant marque son enchère ; raté : +1 pour chaque autre joueur sauf l'arbitre. 5, 8 ou 12 manches. 3 à 10 joueurs. Une trentaine de défis. Mini-spec : `docs/modes/defi-encheres.md`.
+  - Un seul temps : serveur, écrans TV et téléphone, 32 défis (`data/defi-encheres.json`), `scripts/verifier-defi-encheres.js`, sons, doc.
+
+  *Test : défini dans `docs/modes/defi-encheres.md`, une partie sur Render avec de vrais téléphones.*
+- **34. Mode « Qui suis-je ? ».** Le joueur actif, dos à la TV, devine un personnage (nom et image si possible) par des questions oui/non à voix haute ; chrono de 2 min, boutons « Trouvé ! » (validé par les autres) et « Passer » ; points selon le temps restant ; une centaine de personnages connus en France.
+- **35. Mode « Wiki course ».** Atteindre une page Wikipédia cible en ne cliquant que sur les liens internes, depuis un départ commun (ou aléatoire, en option). Deux formats : course libre, ou manches chronométrées (10, 15 ou 20 s pour choisir un lien, 15 manches au plus). API publique de Wikipédia FR (« summary » pour la cible, « mobile-html » pour les pages), pages affichées dans l'app sans iframe, clics relayés par le serveur, parcours complets à la fin.
+- **36. Mode « Time's Up ».** Chacun saisit 3 mots (ou les pioche au hasard), deux équipes, 30 s par joueur pour faire deviner un maximum de mots à son équipe (« Trouvé » / « Passer » sur son téléphone) ; manche 1 description libre, manche 2 un seul mot, manche 3 mime, avec les mêmes mots.
+- **37. Mode « Chasse express ».** La TV annonce un objet à rapporter (« un objet rouge ») avec un chrono ; le premier revenu appuie sur « J'ai trouvé ! », les autres valident ou contestent par vote. Une cinquantaine de défis faisables dans un appartement.
+- **38. Mode « Cherche & trouve ».** Brancher sur Quiz TV le jeu autonome existant (illustrations géantes en tuiles, OpenSeadragon, scènes plage, zoo, stade, 6 détails par partie, leurres). Chacun explore l'image sur son téléphone et tape le détail ; jusqu'à 1 000 points, −5 par seconde (200 au moins si trouvé), −100 par tap raté.
+- **39. Mode « Dessine et devine ».** Un joueur dessine un mot sur son téléphone, le dessin s'affiche en direct sur la TV, les autres proposent ; points au premier qui trouve et au dessinateur ; 60 s par tour, mots par niveau de difficulté. Remplace M6 (Dessine !) de « Plus tard ».
+- **40. Mode « Le duel des avocats ».** Deux avocats tirés au hasard, une affaire absurde, un camp secret chacun (15 s de réflexion), deux plaidoiries de 30 s, vote du jury, verdict au coup de marteau. Une cinquantaine d'affaires.
+
 ### En réserve
 
 Le navigateur du stick suffit pour jouer : l'APK n'est plus urgente. On la reprendra si la soirée test révèle un problème (écran qui s'éteint, touche Retour qui quitte la page, son bloqué, texte flou…).
@@ -635,7 +654,7 @@ Le navigateur du stick suffit pour jouer : l'APK n'est plus urgente. On la repre
 
 Sans numéro de tranche pour l'instant. Les identifiants renvoient à `AUDIT.md`.
 
-- **Nouveaux modes**, dans l'ordre : M7 (Vrai ou faux éclair), M1 (Le sondage), M2 (Dans l'ordre), M4 (Deux vérités, un mensonge), M5 (Le mot interdit), M6 (Dessine !).
+- **Nouveaux modes**, dans l'ordre : M7 (Vrai ou faux éclair), M1 (Le sondage), M2 (Dans l'ordre), M4 (Deux vérités, un mensonge), M5 (Le mot interdit). M6 (Dessine !) devient la tranche 39.
 - **Évolutions des modes existants** : EV1 (Le bluff), EV2 (Undercover), EV3 (Qui de nous ?).
 - **Mécaniques** : MEC1 à MEC6 (séries, jokers, manches à thème, question finale à pari, rattrapage, équipes).
 - **Finitions** : T5, T6, T7, T8, T9, R8, R10, R11, TEL6, TEL8, TEL9, TV9, P3, A6, L6, AMB4 à AMB7, F3, F5, F6.

@@ -1345,3 +1345,34 @@ main.ecran-nuancier .en-bas {
   margin-top: 12px;
   align-self: center;
 }
+
+/* ---------- Le défi des enchères ---------- */
+
+.de-enchere-joueur {
+  font-size: 32px;
+}
+
+.de-enchere-joueur strong {
+  font-size: 56px;
+  color: var(--accent);
+}
+
+/* Le « +1 » et le ▲ de l'arbitre : très gros, sous le pouce. */
+.de-zone-plus,
+.de-fleches {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.de-gros-bouton {
+  min-height: 180px;
+  font-size: 56px;
+}
+
+.de-compteur-joueur {
+  font-size: 72px;
+  font-weight: 600;
+}

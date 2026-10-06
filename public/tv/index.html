@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="/tv/modes/le-compte-est-bon.css">
   <link rel="stylesheet" href="/tv/modes/petit-bac.css">
   <link rel="stylesheet" href="/tv/modes/nuancier.css">
+  <link rel="stylesheet" href="/tv/modes/defi-encheres.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -129,6 +130,50 @@
         <ol class="nuancier-resultats" id="nuancier-resultats"></ol>
         <ol class="classement classement-colonne" id="nuancier-classement"></ol>
       </div>
+    </main>
+
+    <main data-ecran="defi-encheres-encheres" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="de-numero-encheres"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="de-barre-encheres"></div></div>
+        <p class="chrono" id="de-chrono-encheres"></p>
+      </div>
+      <h1 class="question rebond" id="de-texte-encheres"></h1>
+      <div class="de-enchere">
+        <p class="de-montant" id="de-montant"></p>
+        <p class="de-joueur" id="de-auteur"></p>
+      </div>
+      <p class="attente">Qui dit mieux ? « +1 » sur votre téléphone. Avec modération.</p>
+    </main>
+
+    <main data-ecran="defi-encheres-annonce" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="de-numero-annonce"></p>
+      </div>
+      <p class="de-adjuge rebond">Adjugé !</p>
+      <h1 class="question" id="de-texte-annonce"></h1>
+      <p class="de-joueur" id="de-arbitre-annonce"></p>
+    </main>
+
+    <main data-ecran="defi-encheres-defi" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="de-numero-defi"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="de-barre-defi"></div></div>
+        <p class="chrono" id="de-chrono-defi"></p>
+      </div>
+      <h1 class="question" id="de-texte-defi"></h1>
+      <p class="de-compteur"><span id="de-compteur"></span><span class="de-objectif" id="de-objectif"></span></p>
+      <div class="de-progression"><div class="de-progression-remplie" id="de-progression"></div></div>
+      <p class="de-joueur" id="de-arbitre-defi"></p>
+    </main>
+
+    <main data-ecran="defi-encheres-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="de-numero-revelation"></p>
+        <h1 class="de-verdict rebond" id="de-verdict"></h1>
+      </div>
+      <p class="de-detail" id="de-detail"></p>
+      <ol class="classement" id="de-classement"></ol>
     </main>
 
     <main data-ecran="qui-de-nous-vote" hidden>
@@ -572,5 +617,6 @@
   <script src="/tv/modes/le-compte-est-bon.js"></script>
   <script src="/tv/modes/petit-bac.js"></script>
   <script src="/tv/modes/nuancier.js"></script>
+  <script src="/tv/modes/defi-encheres.js"></script>
 </body>
 </html>

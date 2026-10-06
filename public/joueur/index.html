@@ -151,6 +151,46 @@
     <button id="bouton-suivant-nuancier" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="defi-encheres-encheres" hidden>
+    <p class="discret" id="de-manche"></p>
+    <p class="gros-texte" id="de-texte-defi-joueur"></p>
+    <p class="de-enchere-joueur">Enchère : <strong id="de-enchere-joueur"></strong></p>
+    <p class="discret" id="de-auteur-joueur"></p>
+    <div class="de-zone-plus en-bas">
+      <button id="bouton-encherir" class="bouton de-gros-bouton"></button>
+    </div>
+  </main>
+
+  <main data-ecran="defi-encheres-releve" hidden>
+    <p id="de-consigne-releve" class="carte-resultat juste rebond"></p>
+    <p class="de-compteur-joueur" id="de-compteur-releve"></p>
+    <p class="discret" id="de-arbitre-releve"></p>
+  </main>
+
+  <main data-ecran="defi-encheres-arbitre" hidden>
+    <p class="gros-texte" id="de-consigne-arbitre"></p>
+    <p class="de-compteur-joueur" id="de-compteur-arbitre"></p>
+    <p class="discret" id="de-attente-arbitre"></p>
+    <div class="de-fleches en-bas">
+      <button id="bouton-compter-plus" class="bouton de-gros-bouton" aria-label="Une bonne réponse de plus">▲</button>
+      <button id="bouton-compter-moins" class="bouton secondaire" aria-label="Une bonne réponse de moins">▼</button>
+    </div>
+  </main>
+
+  <main data-ecran="defi-encheres-ecouter_defi" hidden>
+    <p class="gros-texte" id="de-consigne-ecouter"></p>
+    <p class="de-compteur-joueur" id="de-compteur-ecouter"></p>
+    <p class="discret" id="de-arbitre-ecouter"></p>
+  </main>
+
+  <main data-ecran="defi-encheres-resultat" hidden>
+    <p id="de-resultat" class="carte-resultat rebond"></p>
+    <p id="de-detail-resultat" class="discret"></p>
+    <p>Score : <strong id="score-de"></strong> · Rang : <strong id="rang-de"></strong></p>
+    <p class="discret">Regarde la TV</p>
+    <button id="bouton-suivant-de" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="geoquiz-devinette" class="ecran-carte" hidden>
     <p class="bandeau-carte"><span id="geoquiz-manche"></span> · Où est-ce ? Regarde la TV</p>
     <div class="emplacement-carte">
@@ -585,7 +625,7 @@
       <div id="options-communes" hidden>
         <p class="titre-option">Longueur de la partie</p>
         <div id="choix-longueur" class="choix-reglages"></div>
-        <p class="titre-option">Temps pour répondre</p>
+        <p class="titre-option" id="titre-choix-temps">Temps pour répondre</p>
         <div id="choix-temps" class="choix-reglages"></div>
       </div>
       <button id="fermer-reglages" class="bouton">OK</button>
@@ -626,5 +666,6 @@
   <script src="/joueur/modes/petit-bac.js"></script>
   <script src="/commun/nuancier.js"></script>
   <script src="/joueur/modes/nuancier.js"></script>
+  <script src="/joueur/modes/defi-encheres.js"></script>
 </body>
 </html>

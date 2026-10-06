@@ -364,7 +364,8 @@ function envoyerReglages(changement) {
   socket.emit('hote:reglerMode', { ...reglagesRecus.valeurs, ...changement });
 }
 
-// Longueur de la partie et temps pour répondre, pour les modes qui les proposent.
+// Longueur de la partie et temps pour répondre, pour les modes qui les proposent
+// (le Défi des enchères n'a que la longueur).
 function remplirOptionsCommunes(options) {
   const section = document.getElementById('options-communes');
   section.hidden = !options.longueurs;
@@ -373,6 +374,10 @@ function remplirOptionsCommunes(options) {
   document.getElementById('choix-longueur').replaceChildren(...options.longueurs.map(
     (choix) => boutonReglage(choix.libelle, choix.id === longueur, () => envoyerReglages({ longueur: choix.id })),
   ));
+  const sansTemps = !options.temps;
+  document.getElementById('titre-choix-temps').hidden = sansTemps;
+  document.getElementById('choix-temps').hidden = sansTemps;
+  if (sansTemps) return;
   document.getElementById('choix-temps').replaceChildren(...options.temps.map(
     (choix) => boutonReglage(choix.libelle, choix.id === temps, () => envoyerReglages({ temps: choix.id })),
   ));

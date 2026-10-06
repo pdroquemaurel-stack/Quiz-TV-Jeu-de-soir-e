@@ -176,7 +176,7 @@
         <li>Une virgule oubliée entre deux blocs, ou une virgule en trop après le dernier bloc : le fichier devient illisible. Le script de vérification le signale.</li>
         <li>Des guillemets « typographiques » ou ” à la place de <code>"</code> autour des valeurs. À l'intérieur d'un texte, « … » et l'apostrophe ’ sont permis.</li>
         <li>Pas besoin de variantes pour les majuscules, les accents, les articles ou les pluriels en s/x : le jeu les ignore déjà en comparant.</li>
-        <li>Préfixes d'id réservés : <code>q</code> quiz, <code>e</code> estimation, <code>n</code> qui de nous, <code>u</code> undercover, <code>m</code> même réponse, <code>b</code> bluff, <code>g</code> légende, <code>d</code> blind test, <code>l</code> géoquiz, <code>n-…</code> nuancier.</li>
+        <li>Préfixes d'id réservés : <code>q</code> quiz, <code>e</code> estimation, <code>n</code> qui de nous, <code>u</code> undercover, <code>m</code> même réponse, <code>b</code> bluff, <code>g</code> légende, <code>d</code> blind test, <code>l</code> géoquiz, <code>n-…</code> nuancier, <code>de-…</code> défi des enchères.</li>
       </ul>
     </section>
 
@@ -501,6 +501,23 @@ const JEUX = [
     commandes: [['node scripts/verifier-nuancier.js', 'Vérifie le catalogue et les fichiers SVG.']],
     planche: '/tv?nuancier',
     taches: ['Ajouter des logos au Nuancier', 'Corriger le nom ou la question d\'un logo', 'Un logo du Nuancier s\'affiche mal'],
+  },
+  {
+    id: 'defi-encheres', nom: 'Le défi des enchères', icone: '🔨', resume: 'Surenchérir, puis citer autant de réponses qu\'annoncé',
+    fichiers: [['data/defi-encheres.json', 'les défis']],
+    ajouter: [
+      '<code>sujet</code> : ce qui complète « En 1 minute, combien de … peux-tu citer ? », au pluriel, sans article (« fromages français », pas « les fromages »).',
+      '<code>miseDepart</code> : l\'enchère d\'ouverture, un entier de 1 à 20, assez basse pour être facile à relever.',
+    ],
+    corriger: ['Baisser la mise de départ d\'un défi trop dur, ou retirer un défi qui fait débat.'],
+    regles: [
+      'Un sujet où l\'arbitre juge facilement ce qui compte (« capitales européennes » plutôt que « mots en -tion »).',
+      'Pas deux fois le même sujet.',
+      'Au moins 12 défis (une partie de 12 manches).',
+    ],
+    exemple: `{"id":"de-fromages","sujet":"fromages français","miseDepart":10}`,
+    commandes: [['node scripts/verifier-defi-encheres.js', 'Vérifie le format des défis.']],
+    taches: ['Ajouter des défis au Défi des enchères', 'Un défi des enchères est trop dur'],
   },
   {
     id: 'petit-bac', nom: 'Petit bac', icone: '📝', resume: 'Une lettre, 6 catégories',

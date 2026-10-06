@@ -38,6 +38,7 @@ server/
   modes/le-compte-est-bon.js # mode Le compte est bon (docs/modes/le-compte-est-bon.md)
   modes/petit-bac.js # mode Petit bac (docs/modes/petit-bac.md)
   modes/nuancier.js # mode Nuancier (docs/modes/nuancier.md)
+  modes/defi-encheres.js # mode Le défi des enchères (docs/modes/defi-encheres.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -59,6 +60,7 @@ data/geoquiz.json      # lieux du GéoQuiz : coordonnées, photo Wikimedia, aute
 data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
 data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lexique 3.83, CC BY-SA 4.0)
 data/nuancier.json     # logos du Nuancier : fichier, question, couleur cible, id des formes de la zone
+data/defi-encheres.json # défis du Défi des enchères : sujet et mise de départ
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -76,6 +78,7 @@ scripts/verifier-mots.js
 scripts/prep-nuancier.html  # outil de préparation des logos du Nuancier (un fichier ou un lot d'adresses Commons), ouvert en double-cliquant, hors du jeu
 scripts/prep-nuancier-outils.js # ses fonctions pures, script classique chargé par la page
 scripts/verifier-nuancier.js
+scripts/verifier-defi-encheres.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -102,6 +105,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-mots.js` : vérifie `mots.txt`
 - `scripts/prep-nuancier.html` (double-clic, Chrome ou Edge) : prépare les logos du Nuancier, depuis un fichier ou une liste d'adresses Commons, et les écrit dans `public/logos/nuancier/` et `data/nuancier.json`
 - `node scripts/verifier-nuancier.js` : vérifie `nuancier.json` et les logos de `public/logos/nuancier/`
+- `node scripts/verifier-defi-encheres.js` : vérifie le format de `defi-encheres.json`
 
 ## Ajouter un mode
 
