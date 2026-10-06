@@ -24,8 +24,8 @@ import time
 
 import requests
 
-NB_PAGES = 5          # environ 40 templates par page
-MAX_GIFS = 100        # nombre total d'entrées voulues dans le catalogue (None = pas de limite)
+NB_PAGES = 6          # environ 40 templates par page
+MAX_GIFS = 200        # nombre total d'entrées voulues dans le catalogue (None = pas de limite)
 PAUSE = 1.0           # secondes entre deux requêtes, pour rester poli avec le site
 TAILLE_MAX_OCTETS = 1000000   # même limite que scripts/verifier-legende.js
 
