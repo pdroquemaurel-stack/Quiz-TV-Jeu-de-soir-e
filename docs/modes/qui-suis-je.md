@@ -103,7 +103,7 @@ Aucun nouvel événement : tout passe par `joueur:repondre`.
 | Phase | Contenu |
 |---|---|
 | `preparation` | `phase`, `numero`, `total` (tour 2/6), `actif` (id), `personnageSuivant: { image }` (préchargement, absent s'il n'y a pas d'image) |
-| `jeu` | `phase`, `numero`, `total`, `actif`, `personnage: { nom, categorie, image, auteur, licence }`, `nbTrouves`, `enValidation`, `tempsEcoule`, `tempsRestantMs`, `personnageSuivant: { image }` |
+| `jeu` | `phase`, `numero`, `total`, `actif`, `personnage: { nom, categorie, image, auteur, licence }`, `nbTrouves`, `enValidation`, `tempsEcoule`, `valideur` (id), `tempsRestantMs`, `personnageSuivant: { image }` |
 | `bilan` | `phase`, `numero`, `total`, `actif`, `trouves: [{ nom, image }]`, `passes: [{ nom }]`, `points`, `classement` |
 | podium | `classement` |
 
@@ -114,8 +114,8 @@ Aucun nouvel événement : tout passe par `joueur:repondre`.
 |---|---|---|
 | `preparation_actif` | Le joueur actif | `numero`, `total`. « C'est ton tour ! Tourne le dos à la TV » et « C'est parti ! » |
 | `preparation` | Les autres | `numero`, `total`, `actif` (pseudo). « Léa va tourner le dos à la TV » |
-| `actif` | Le joueur actif en `jeu` | `nbTrouves`, `enValidation`, `tempsRestantMs`. Jamais le personnage |
-| `repondre` | Les autres en `jeu` | `actif` (pseudo), `personnage: { nom, categorie }`, `nbTrouves`, `enValidation`, `estValideur`, `tempsRestantMs` |
+| `actif` | Le joueur actif en `jeu` | `nbTrouves`, `enValidation`, `tempsEcoule`, `valideur` (pseudo), `tempsRestantMs`. Jamais le personnage |
+| `repondre` | Les autres en `jeu` | `actif` (pseudo), `personnage: { nom, categorie }`, `nbTrouves`, `enValidation`, `tempsEcoule`, `valideur` (pseudo), `estValideur`, `tempsRestantMs` |
 | `bilan` | Tous | `actif`, `trouves` et `passes` (noms), `points`, `score`, `rang` ; « Suivant » pour l'hôte |
 | `attente_question` | Joueur arrivé en cours de partie | Comme au quiz |
 
@@ -126,7 +126,7 @@ Aucun nouvel événement : tout passe par `joueur:repondre`.
 
 - **Préparation** : « Tour 2/6 », « Au tour de Léa ! » avec sa pastille, « Tourne le dos à la TV ». Petit QR code.
 - **Jeu** : la photo du personnage à gauche (`object-fit: contain`, fond sombre), à droite le nom en très grand et sa catégorie (« Footballeur »). En haut : « Léa devine », le chrono et sa barre, « 3 trouvés ». En bas : le crédit de la photo (« Photo : <auteur>, <licence>, Wikimedia », 40 px). Si la photo ne se charge pas : le nom seul, centré, en très grand.
-  - Validation en attente : bandeau « Léa pense avoir trouvé… », sans cacher le personnage.
+  - Validation en attente : bandeau « Léa pense avoir trouvé… Sam vérifie. » (le nom du valideur), sans cacher le personnage.
   - Trouvé : le nom passe en vert un instant (opacité et déplacement, pas de flou), puis le suivant.
   - Passé : « Passé ! −15 s » un instant.
 - **Bilan** : « Léa : 4 personnages trouvés, +1 200 », les vignettes des trouvés, les noms des passés en plus petit, puis le classement.

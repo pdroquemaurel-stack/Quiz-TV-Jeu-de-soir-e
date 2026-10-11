@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="/tv/modes/petit-bac.css">
   <link rel="stylesheet" href="/tv/modes/nuancier.css">
   <link rel="stylesheet" href="/tv/modes/defi-encheres.css">
+  <link rel="stylesheet" href="/tv/modes/qui-suis-je.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -174,6 +175,51 @@
       </div>
       <p class="de-detail" id="de-detail"></p>
       <ol class="classement" id="de-classement"></ol>
+    </main>
+
+    <main data-ecran="qui-suis-je-preparation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="qsj-numero-preparation"></p>
+      </div>
+      <p class="qsj-annonce rebond" id="qsj-actif-preparation"></p>
+      <h1 class="question" id="qsj-consigne-preparation"></h1>
+      <p class="attente">Les autres : oui ou non, rien de plus. Sans tricher.</p>
+    </main>
+
+    <main data-ecran="qui-suis-je-jeu" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="qsj-numero-jeu"></p>
+        <p class="qsj-devine" id="qsj-actif-jeu"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="qsj-barre"></div></div>
+        <p class="chrono" id="qsj-chrono"></p>
+      </div>
+      <div class="qsj-personnage">
+        <div class="qsj-cadre-photo">
+          <img id="qsj-photo" class="qsj-photo" alt="">
+        </div>
+        <div class="qsj-identite">
+          <p class="qsj-nom" id="qsj-nom"></p>
+          <p class="qsj-categorie" id="qsj-categorie"></p>
+          <p class="qsj-trouves" id="qsj-trouves"></p>
+        </div>
+        <p class="qsj-flash" id="qsj-flash" hidden></p>
+      </div>
+      <p class="qsj-bandeau" id="qsj-bandeau" hidden></p>
+      <p class="qsj-credit" id="qsj-credit"></p>
+    </main>
+
+    <main data-ecran="qui-suis-je-bilan" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="qsj-numero-bilan"></p>
+        <h1 class="qsj-verdict rebond" id="qsj-verdict"></h1>
+      </div>
+      <div class="qsj-colonnes">
+        <div class="qsj-colonne-bilan">
+          <ul class="qsj-vignettes" id="qsj-vignettes"></ul>
+          <p class="qsj-passes" id="qsj-passes"></p>
+        </div>
+        <ol class="classement classement-colonne" id="qsj-classement"></ol>
+      </div>
     </main>
 
     <main data-ecran="qui-de-nous-vote" hidden>
@@ -618,5 +664,6 @@
   <script src="/tv/modes/petit-bac.js"></script>
   <script src="/tv/modes/nuancier.js"></script>
   <script src="/tv/modes/defi-encheres.js"></script>
+  <script src="/tv/modes/qui-suis-je.js"></script>
 </body>
 </html>

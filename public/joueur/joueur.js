@@ -375,7 +375,9 @@ function remplirOptionsCommunes(options) {
     (choix) => boutonReglage(choix.libelle, choix.id === longueur, () => envoyerReglages({ longueur: choix.id })),
   ));
   const sansTemps = !options.temps;
-  document.getElementById('titre-choix-temps').hidden = sansTemps;
+  const titreTemps = document.getElementById('titre-choix-temps');
+  titreTemps.hidden = sansTemps;
+  titreTemps.textContent = options.titreTemps ?? 'Temps pour répondre';
   document.getElementById('choix-temps').hidden = sansTemps;
   if (sansTemps) return;
   document.getElementById('choix-temps').replaceChildren(...options.temps.map(

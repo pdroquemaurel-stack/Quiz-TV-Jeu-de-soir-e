@@ -191,6 +191,52 @@
     <button id="bouton-suivant-de" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="qui-suis-je-preparation_actif" hidden>
+    <p class="discret" id="qsj-tour-actif"></p>
+    <p class="carte-resultat juste rebond">C'est ton tour !</p>
+    <p class="gros-texte">Tourne le dos à la TV. Ne triche pas, on te voit.</p>
+    <div class="qsj-zone-boutons en-bas">
+      <button id="bouton-partir-qsj" class="bouton qsj-gros-bouton">C'est parti !</button>
+    </div>
+  </main>
+
+  <main data-ecran="qui-suis-je-preparation" hidden>
+    <p class="discret" id="qsj-tour-preparation"></p>
+    <p class="gros-texte" id="qsj-consigne-preparation"></p>
+    <p class="discret">Toi, tu réponds par oui ou non. Le personnage s'affichera ici et sur la TV.</p>
+  </main>
+
+  <main data-ecran="qui-suis-je-actif" hidden>
+    <p class="qsj-chrono-joueur" id="qsj-chrono-actif"></p>
+    <p class="gros-texte" id="qsj-trouves-actif"></p>
+    <p class="discret" id="qsj-attente-actif"></p>
+    <div class="qsj-zone-boutons en-bas">
+      <button id="bouton-trouve-qsj" class="bouton qsj-gros-bouton">Trouvé !</button>
+      <button id="bouton-passer-qsj" class="bouton secondaire">Passer (−15 s)</button>
+    </div>
+  </main>
+
+  <main data-ecran="qui-suis-je-repondre" hidden>
+    <p class="discret" id="qsj-qui-devine"></p>
+    <p class="qsj-nom-joueur" id="qsj-nom-repondre"></p>
+    <p class="discret" id="qsj-categorie-repondre"></p>
+    <p class="qsj-chrono-joueur" id="qsj-chrono-repondre"></p>
+    <p class="gros-texte" id="qsj-consigne-repondre"></p>
+    <div class="qsj-zone-boutons en-bas" id="qsj-validation" hidden>
+      <button id="bouton-valider-qsj" class="bouton qsj-gros-bouton">Valider</button>
+      <button id="bouton-refuser-qsj" class="bouton secondaire">Refuser</button>
+    </div>
+  </main>
+
+  <main data-ecran="qui-suis-je-bilan" hidden>
+    <p id="qsj-resultat" class="carte-resultat rebond"></p>
+    <p id="qsj-liste-trouves" class="discret"></p>
+    <p id="qsj-liste-passes" class="discret"></p>
+    <p>Score : <strong id="score-qsj"></strong> · Rang : <strong id="rang-qsj"></strong></p>
+    <p class="discret">Regarde la TV</p>
+    <button id="bouton-suivant-qsj" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="geoquiz-devinette" class="ecran-carte" hidden>
     <p class="bandeau-carte"><span id="geoquiz-manche"></span> · Où est-ce ? Regarde la TV</p>
     <div class="emplacement-carte">
@@ -617,6 +663,10 @@
       <div data-reglages="geoquiz" hidden>
         <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles. Comme dans la vie.</p>
       </div>
+      <div data-reglages="qui-suis-je" hidden>
+        <p class="titre-option">Niveaux</p>
+        <div id="qsj-choix-niveaux" class="choix-reglages"></div>
+      </div>
       <div data-reglages="petit-bac" hidden>
         <p class="titre-option">Lettres rares (K, Q, W, X, Y, Z)</p>
         <div id="pb-choix-rares" class="choix-reglages"></div>
@@ -667,5 +717,6 @@
   <script src="/commun/nuancier.js"></script>
   <script src="/joueur/modes/nuancier.js"></script>
   <script src="/joueur/modes/defi-encheres.js"></script>
+  <script src="/joueur/modes/qui-suis-je.js"></script>
 </body>
 </html>

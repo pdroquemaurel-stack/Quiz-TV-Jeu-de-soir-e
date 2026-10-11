@@ -1,0 +1,205 @@
+/* Écrans « Qui suis-je ? » de la TV. Chargé après tv.css (voir tv/index.html). */
+
+/* ---------- Préparation ---------- */
+
+.qsj-annonce {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-size: 120px;
+  color: var(--accent);
+}
+
+main[data-ecran="qui-suis-je-preparation"] .question {
+  margin-bottom: auto;
+  text-align: center;
+  font-size: 64px;
+}
+
+main[data-ecran="qui-suis-je-preparation"] .attente {
+  text-align: center;
+}
+
+/* ---------- Jeu : la photo à gauche, le nom à droite ---------- */
+
+.qsj-devine {
+  font-size: 56px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.qsj-personnage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+
+.qsj-cadre-photo {
+  width: 45%;
+  height: 100%;
+  border: 6px solid var(--contour);
+  border-radius: 24px;
+  background: var(--contour);
+  overflow: hidden;
+}
+
+.qsj-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.qsj-cadre-photo.chargement .qsj-photo {
+  visibility: hidden;
+}
+
+/* Sans photo : le nom prend toute la place. */
+.qsj-cadre-photo.absente {
+  display: none;
+}
+
+.qsj-identite {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.qsj-nom {
+  margin: 0;
+  font-size: 120px;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.qsj-categorie {
+  margin: 0;
+  font-size: 64px;
+  color: var(--texte-doux);
+}
+
+.qsj-trouves {
+  margin: 0;
+  font-size: 56px;
+  color: var(--juste);
+  font-weight: 600;
+}
+
+/* « Trouvé ! » ou « Passé ! » par-dessus le personnage : déplacement et échelle seulement. */
+.qsj-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  padding: 24px 64px;
+  transform: translate(-50%, -50%) rotate(-3deg);
+  font-size: 120px;
+  color: #fff;
+  background: var(--rate);
+  border: 8px solid var(--contour);
+  border-radius: 32px;
+  white-space: nowrap;
+}
+
+.qsj-flash.juste {
+  background: var(--juste);
+}
+
+.qsj-bandeau {
+  padding: 16px 32px;
+  text-align: center;
+  font-size: 56px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 24px;
+}
+
+.qsj-credit {
+  font-size: 40px;
+  color: var(--texte-doux);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Bilan ---------- */
+
+main[data-ecran="qui-suis-je-bilan"] .tv-haut {
+  min-height: 0;
+}
+
+.qsj-verdict {
+  font-size: 72px;
+}
+
+.qsj-colonnes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 64px;
+}
+
+.qsj-colonne-bilan {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Les trouvés en vignettes : 4 par ligne, 2 lignes au plus. */
+.qsj-vignettes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 300px;
+  gap: 16px;
+  overflow: hidden;
+  max-height: 616px;
+}
+
+.qsj-vignettes li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.qsj-vignettes img {
+  width: 100%;
+  height: 236px;
+  object-fit: cover;
+  object-position: top;
+  border: 4px solid var(--contour);
+  border-radius: 16px;
+  background: var(--contour);
+}
+
+.qsj-nom-vignette {
+  max-width: 100%;
+  font-size: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qsj-passes {
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+/* Calé en haut : à 2 joueurs, les lignes ne s'étirent pas sur toute la hauteur. */
+main[data-ecran="qui-suis-je-bilan"] .classement-colonne {
+  width: 760px;
+  align-self: flex-start;
+}

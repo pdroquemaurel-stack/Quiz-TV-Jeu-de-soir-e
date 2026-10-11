@@ -142,6 +142,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 | Petit bac | 3 / **5** / 7 manches, et lettres rares (K, Q, W, X, Y, Z) : **sans** / avec | 60 / **90** / 120 s (sans STOP) |
 | Nuancier | 5 / **7** / 10 manches | 15 / **20** / 30 s |
 | Le défi des enchères | 5 / **8** / 12 manches | Aucun choix : le défi dure toujours 1 min |
+| Qui suis-je ? | **1** / 2 / 3 tours par joueur, et niveaux (Facile, Difficile, **les deux**) | 1 min 30 / **2 min** / 3 min par tour |
 | Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois | Mix : 90 / **120** / 180 s d'écoute |
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.
@@ -176,6 +177,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 | 12 | **Menteur** (Perudo, tranche 31) | 2 à 10 | 5 dés cachés par joueur, visibles sur son seul téléphone. Enchères « au moins N dés montrent V » sur tous les dés en jeu, les 1 (pacos) sont jokers. « Menteur ! » révèle les dés sur la TV : le perdant du défi perd un dé. Le premier joueur sans dé perd. |
 | 13 | **Nuancier** (disponible, voir `docs/modes/nuancier.md`) | 2 à 10 | La TV montre le logo d'une marque connue dont une zone de couleur a été retirée. Chacun recrée la couleur sur son téléphone avec deux curseurs (teinte et luminosité, saturation de la cible). Ressemblance = `max(0, arrondi(100 − ΔE × 1,5))` %, ΔE CIE76 dans l'espace Lab, points = ressemblance × 10. 5, 7 ou 10 manches. |
 | 14 | **Le défi des enchères** (disponible, voir `docs/modes/defi-encheres.md`) | 3 à 10 | « En 1 minute, combien de départements français peux-tu citer ? » Enchères au bouton « +1 », adjugées après 7 s sans surenchère. Le relevant cite ses réponses à voix haute pendant 1 min, un arbitre tiré au sort les compte (▲▼) en direct sur la TV. Relevé : le relevant marque son enchère ; raté : +1 pour chaque autre joueur sauf l'arbitre. 5, 8 ou 12 manches. |
+| 15 | **Qui suis-je ?** (disponible, voir `docs/modes/qui-suis-je.md`) | 2 à 10 | Chacun son tour, un joueur dos à la TV devine le plus de personnages possible en 2 min (photo et nom sur la TV et chez les autres) par des questions oui/non. « Trouvé ! » validé par l'hôte : 300 points ; « Passer » coûte 15 s. 1, 2 ou 3 tours par joueur, 211 personnages réels et de fiction, deux niveaux. |
 
 ## Cas limites
 

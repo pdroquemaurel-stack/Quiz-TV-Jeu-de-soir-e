@@ -39,6 +39,7 @@ server/
   modes/petit-bac.js # mode Petit bac (docs/modes/petit-bac.md)
   modes/nuancier.js # mode Nuancier (docs/modes/nuancier.md)
   modes/defi-encheres.js # mode Le défi des enchères (docs/modes/defi-encheres.md)
+  modes/qui-suis-je.js # mode Qui suis-je ? (docs/modes/qui-suis-je.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem

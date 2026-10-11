@@ -117,6 +117,11 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Adjudication (annonce du relevant et de l'arbitre) | `lancement` |
 | | Une bonne réponse comptée (`compteur` augmente pendant le défi) | `reponse` |
 | | Révélation | `victoire` si le défi est relevé, sinon `rate` |
+| Qui suis-je ? | Préparation (au tour d'un joueur) | `etape` |
+| | Début du jeu (« C'est parti ! ») | `lancement` |
+| | Personnage trouvé (`nbTrouves` augmente) | `victoire` |
+| | Personnage passé, ou « Trouvé ! » refusé | `rate` |
+| | Bilan du tour | `etape` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 
