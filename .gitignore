@@ -1,3 +1,4 @@
 node_modules/
 .claude/settings.local.json
 scripts/apercu-geoquiz.html
+scripts/apercu-qui-suis-je.html

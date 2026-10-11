@@ -61,6 +61,7 @@ data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
 data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lexique 3.83, CC BY-SA 4.0)
 data/nuancier.json     # logos du Nuancier : fichier, question, couleur cible, id des formes de la zone
 data/defi-encheres.json # défis du Défi des enchères : sujet et mise de départ
+data/qui-suis-je.json  # personnages de Qui suis-je ? : nom, catégorie, niveau, titre Wikipédia, photo et crédit
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -79,6 +80,8 @@ scripts/prep-nuancier.html  # outil de préparation des logos du Nuancier (un fi
 scripts/prep-nuancier-outils.js # ses fonctions pures, script classique chargé par la page
 scripts/verifier-nuancier.js
 scripts/verifier-defi-encheres.js
+scripts/construire-qui-suis-je.py # ajoute à data/qui-suis-je.json l'image principale de chaque article Wikipédia (Python + requests)
+scripts/verifier-qui-suis-je.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -106,6 +109,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `scripts/prep-nuancier.html` (double-clic, Chrome ou Edge) : prépare les logos du Nuancier, depuis un fichier ou une liste d'adresses Commons, et les écrit dans `public/logos/nuancier/` et `data/nuancier.json`
 - `node scripts/verifier-nuancier.js` : vérifie `nuancier.json` et les logos de `public/logos/nuancier/`
 - `node scripts/verifier-defi-encheres.js` : vérifie le format de `defi-encheres.json`
+- `py scripts/construire-qui-suis-je.py` (après `pip install requests`) : ajoute les photos manquantes à `qui-suis-je.json` (image principale de l'article Wikipédia français, sinon anglais, même non libre) et écrit la page d'aperçu `scripts/apercu-qui-suis-je.html` (non commitée)
+- `node scripts/verifier-qui-suis-je.js` : vérifie le format de `qui-suis-je.json`
 
 ## Ajouter un mode
 
