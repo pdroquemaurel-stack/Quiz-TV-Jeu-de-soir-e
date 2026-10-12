@@ -421,8 +421,8 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères).
-- **En cours** : **34** (Qui suis-je ?).
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères), **34** (Qui suis-je ?).
+- **En cours** : aucune, la prochaine est la **35** (Wiki course).
 - **À venir, en priorité** (demandé le 06/10/2026) : la suite des 8 nouveaux jeux, un par un et dans l'ordre, **35 à 40**, puis le mode photo **41** (voir « Nouveaux jeux prioritaires »).
 - **À venir ensuite**, après l'audit (`AUDIT.md`) : **31** (Menteur), **10**, puis **23** temps 2 (La réplique). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
@@ -635,7 +635,7 @@ Demandés par Paul le 06/10/2026, à faire avant toutes les autres tranches à v
   - Un seul temps : serveur, écrans TV et téléphone, 32 défis (`data/defi-encheres.json`), `scripts/verifier-defi-encheres.js`, sons, doc.
 
   *Test : défini dans `docs/modes/defi-encheres.md`, une partie sur Render avec de vrais téléphones.*
-- **34. Mode « Qui suis-je ? ».** Le joueur actif, dos à la TV, devine un personnage (nom et image si possible) par des questions oui/non à voix haute ; chrono de 2 min, boutons « Trouvé ! » (validé par les autres) et « Passer » ; points selon le temps restant ; une centaine de personnages connus en France. Règles tranchées dans la mini-spec : `docs/modes/qui-suis-je.md` (le plus de personnages possible par tour, 300 points par personnage, « Passer » coûte 15 s, l'hôte valide).
+- **34. Mode « Qui suis-je ? ».** ✅ Terminée. Le joueur actif, dos à la TV, devine un personnage (nom et image si possible) par des questions oui/non à voix haute ; chrono de 2 min, boutons « Trouvé ! » (validé par les autres) et « Passer » ; points selon le temps restant ; une centaine de personnages connus en France. Règles tranchées dans la mini-spec : `docs/modes/qui-suis-je.md` (le plus de personnages possible par tour, 300 points par personnage, « Passer » coûte 15 s, l'hôte valide).
   - Temps 1 : contenu. `data/qui-suis-je.json` (environ 200 personnages, deux niveaux, tous avec photo), `scripts/construire-qui-suis-je.py` (image principale des articles Wikipédia, page d'aperçu), `scripts/verifier-qui-suis-je.js`.
   - Temps 2 : le mode (serveur, écrans TV et téléphone, sons, doc).
 
