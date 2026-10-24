@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { aRelire, ajouterChansons } from './importer-deezer.js';
+import { aRelire, ajouterChansons, lireArgument } from './importer-deezer.js';
 
 // Une piste telle que la renvoie https://api.deezer.com/track/<id>.
 function piste(id, modifications = {}) {
@@ -59,5 +59,14 @@ test('import : titres à relire repérés', () => {
   }
   for (const titre of ['Harder, Better, Faster, Stronger', 'Rock-a-Bye', "L'Aventurier"]) {
     assert.ok(!aRelire({ titre }), titre);
+  }
+});
+
+test('import : chaque playlist avec sa catégorie, « id=catégorie », ou l\'id seul (tranche 42)', () => {
+  assert.deepEqual(lireArgument('1234567890=Années 80'), { idPlaylist: '1234567890', categorie: 'Années 80' });
+  assert.deepEqual(lireArgument(' 12 = Rap = FR '), { idPlaylist: '12', categorie: 'Rap = FR' });
+  assert.deepEqual(lireArgument('1234567890'), { idPlaylist: '1234567890', categorie: null });
+  for (const invalide of ['1234567890=', '1234567890= ', '=Disco', 'abc=Disco']) {
+    assert.equal(lireArgument(invalide), null, invalide);
   }
 });

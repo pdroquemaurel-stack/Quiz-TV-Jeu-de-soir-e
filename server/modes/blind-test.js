@@ -26,6 +26,11 @@ export const DUREE_ECOUTE_MIX_MS = 120000;
 export const DUREE_DESIGNATION_MIX_MS = 20000;
 // Ce qu'a trouvé le gagnant d'une chanson du mix.
 export const POINTS_MIX = { titre: 500, artiste: 500, 'les-deux': 1000 };
+// Mix (tranche 42) : pendant le relais, la TV charge les 5 extraits, puis les démarre ensemble.
+// Le maître lance quand tout est chargé, ou au bout de 10 s (TV absente ou trop lente).
+export const DELAI_CHARGEMENT_MIX_MS = 10000;
+// Un extrait qui ne se charge pas est remplacé par une autre chanson, 2 fois au plus par place.
+export const REMPLACEMENTS_MAX = 2;
 
 // Position de départ dans l'extrait de 30 s, tirée pour chaque chanson.
 const DEPART_MAX_S = 10;
@@ -34,23 +39,61 @@ const FORMATS = { classique: 'Classique', mix: 'Mix' };
 
 // ---------- Réglages de l'hôte ----------
 // Classique : le nombre de chansons (curseur). Mix : combien de fois chacun est maître,
-// et la durée d'écoute de chaque mix (en s).
+// et la durée d'écoute de chaque mix (en s). Les deux : les catégories (tranche 42).
 
 export const CHANSONS_MIN = 1;
 export const CHANSONS_MAX = 20;
 export const TOURS_MIX = [1, 2];
 export const ECOUTES_MIX = [90, DUREE_ECOUTE_MIX_MS / 1000, 180];
 
+// Toutes les catégories sont choisies par défaut.
 export function reglagesParDefaut() {
-  return { format: 'classique', chansons: 10, tours: 1, ecoute: DUREE_ECOUTE_MIX_MS / 1000 };
+  return {
+    format: 'classique', chansons: 10, tours: 1, ecoute: DUREE_ECOUTE_MIX_MS / 1000, categories: categoriesDe(banqueBlindTest()),
+  };
 }
 
 export function validerReglages(donnees) {
-  const { format, chansons, tours, ecoute } = donnees ?? {};
+  const {
+    format, chansons, tours, ecoute, categories,
+  } = donnees ?? {};
   if (typeof format !== 'string' || !Object.hasOwn(FORMATS, format)) return null;
   if (!Number.isInteger(chansons) || chansons < CHANSONS_MIN || chansons > CHANSONS_MAX) return null;
   if (!TOURS_MIX.includes(tours) || !ECOUTES_MIX.includes(ecoute)) return null;
-  return { format, chansons, tours, ecoute };
+  if (!categoriesValides(categories, categoriesDe(banqueBlindTest()))) return null;
+  return {
+    format, chansons, tours, ecoute, categories,
+  };
+}
+
+// ---------- Catégories (tranche 42) ----------
+
+// Les catégories des chansons, dans l'ordre où elles apparaissent au catalogue.
+export function categoriesDe(banque) {
+  return [...new Set(banque.flatMap((chanson) => chanson.categories))];
+}
+
+// Au moins une, toutes connues, sans doublon. Un catalogue sans catégorie n'en propose aucune.
+export function categoriesValides(categories, connues) {
+  if (!Array.isArray(categories) || new Set(categories).size !== categories.length) return false;
+  if (connues.length && !categories.length) return false;
+  return categories.every((categorie) => connues.includes(categorie));
+}
+
+// Les chansons du choix de l'hôte. Toutes les catégories : tout le catalogue, chansons
+// pas encore rangées comprises.
+export function chansonsDuChoix(banque, categories) {
+  if (categoriesDe(banque).every((categorie) => categories.includes(categorie))) return banque;
+  return banque.filter((chanson) => chanson.categories.some((categorie) => categories.includes(categorie)));
+}
+
+// Comme au quiz : les chansons jamais entendues du choix, puis ses déjà entendues (les plus
+// anciennes d'abord), puis, s'il n'y en a pas assez, les autres catégories, dans le même ordre.
+export function tirerChansons(banque, categories, questionsVues, nombre) {
+  const choisies = chansonsDuChoix(banque, categories);
+  const autres = banque.filter((chanson) => !choisies.includes(chanson));
+  const tirees = tirerQuestions(choisies, questionsVues, nombre);
+  return [...tirees, ...tirerQuestions(autres, questionsVues, nombre - tirees.length)];
 }
 
 function reglagesDe(salle) {
@@ -59,24 +102,40 @@ function reglagesDe(salle) {
 
 const pluriel = (nombre, mot) => `${nombre} ${mot}${nombre > 1 ? 's' : ''}`;
 
-// « Classique · 10 chansons », « Mix · 1 tour · 120 s ».
-function resumerReglages({ format, chansons, tours, ecoute }) {
-  if (format === 'classique') return `Classique · ${pluriel(chansons, 'chanson')}`;
-  return `Mix · ${pluriel(tours, 'tour')} · ${ecoute} s`;
+// « Classique · 10 chansons », « Mix · 1 tour · 120 s · Années 80, Rap français ».
+function resumerReglages({
+  format, chansons, tours, ecoute, categories,
+}, connues) {
+  const choix = format === 'classique'
+    ? `Classique · ${pluriel(chansons, 'chanson')}`
+    : `Mix · ${pluriel(tours, 'tour')} · ${ecoute} s`;
+  return categories.length < connues.length ? `${choix} · ${resumerCategories(categories)}` : choix;
+}
+
+// « Années 80, Rap français », ou « Années 80 et 3 autres » au-delà de 2.
+function resumerCategories(categories) {
+  if (categories.length <= 2) return categories.join(', ');
+  return `${categories[0]} et ${categories.length - 1} autres`;
 }
 
 export function vueReglages(salle) {
   const reglages = reglagesDe(salle);
+  const banque = banqueBlindTest();
+  const connues = categoriesDe(banque);
+  const choisies = chansonsDuChoix(banque, reglages.categories);
   return {
     ...reglages,
     valeurs: reglages,
     titre: 'Format',
-    resume: resumerReglages(reglages),
+    resume: resumerReglages(reglages, connues),
+    nombreChansons: choisies.length,
+    inedites: choisies.filter((chanson) => !salle.questionsVues.includes(chanson.id)).length,
     options: {
       formats: Object.entries(FORMATS).map(([idFormat, libelle]) => ({ id: idFormat, libelle })),
       chansons: { min: CHANSONS_MIN, max: CHANSONS_MAX },
       tours: TOURS_MIX,
       ecoutes: ECOUTES_MIX,
+      categories: connues.map((categorie) => ({ id: categorie, libelle: categorie })),
     },
   };
 }
@@ -151,16 +210,18 @@ export function designationValide(salle, contenu) {
 // au lancement est maître une ou deux fois.
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const { format, chansons: nombreChansons, tours, ecoute } = reglagesDe(salle);
+  const {
+    format, chansons: nombreChansons, tours, ecoute, categories,
+  } = reglagesDe(salle);
   const joueurs = parClassementGlobal(salle, listerAttendus(salle));
   const maitres = repartirMaitres(joueurs, format === 'mix' ? tours * joueurs.length : nombreChansons);
   const parManche = format === 'mix' ? CHANSONS_PAR_MIX : 1;
-  const chansons = tirerQuestions(banqueBlindTest(), salle.questionsVues, maitres.length * parManche);
+  const chansons = tirerChansons(banqueBlindTest(), categories, salle.questionsVues, maitres.length * parManche);
   noterQuestionsVues(salle, chansons);
   const questions = format === 'mix'
     ? maitres.map((_, manche) => chansons.slice(manche * parManche, (manche + 1) * parManche))
     : chansons;
-  salle.etatMode = { format, questions, maitres, dureeEcouteMixMs: ecoute * 1000 };
+  salle.etatMode = { format, questions, maitres, dureeEcouteMixMs: ecoute * 1000, enEchec: [] };
   preparerRelais(salle, 0);
 }
 
@@ -187,6 +248,69 @@ function preparerRelais(salle, index) {
     debutPhaseA: Date.now(),
     attendus: listerAttendus(salle),
   });
+  // Les départs sont tirés dès le relais : la TV place chaque piste avant de la lancer.
+  if (salle.etatMode.format === 'mix') {
+    Object.assign(salle.etatMode, {
+      departs: Array.from({ length: CHANSONS_PAR_MIX }, tirerDepart),
+      chargement: {
+        prets: [], remplacements: Array(CHANSONS_PAR_MIX).fill(0), indisponibles: [], delaiEcoule: false,
+      },
+    });
+  }
+}
+
+// ---------- Chargement des extraits du mix (relais) ----------
+
+// Chaque place du mix est chargée sur la TV, ou indisponible.
+function chargementFini(salle) {
+  const { prets, indisponibles } = salle.etatMode.chargement;
+  return questionCourante(salle).every((chanson, index) => prets.includes(chanson.id) || indisponibles.includes(index));
+}
+
+// En classique, rien à attendre : la TV lit une seule piste.
+function peutLancer(salle) {
+  if (salle.etatMode.format !== 'mix') return true;
+  return chargementFini(salle) || salle.etatMode.chargement.delaiEcoule;
+}
+
+// La TV dit, pendant le relais du mix, quels extraits sont chargés et lesquels ont échoué :
+// { numero, prets: [id], echecs: [id] }. Un extrait en échec est remplacé par une autre
+// chanson, sinon sa place devient indisponible. Renvoie true si quelque chose a changé.
+export function recevoirExtraits(salle, donnees) {
+  const { numero, prets, echecs } = donnees ?? {};
+  if (phaseEnCours(salle) !== 'relais' || salle.etatMode.format !== 'mix') return false;
+  if (numero !== salle.etatMode.indexQuestion + 1 || !Array.isArray(prets) || !Array.isArray(echecs)) return false;
+  const { chargement } = salle.etatMode;
+  const mix = questionCourante(salle);
+  const avant = JSON.stringify([mix.map((chanson) => chanson.id), chargement]);
+  mix.forEach((chanson, index) => {
+    if (echecs.includes(chanson.id) && !chargement.indisponibles.includes(index)) remplacerExtrait(salle, index);
+  });
+  chargement.prets = mix.map((chanson) => chanson.id).filter((idChanson) => prets.includes(idChanson));
+  return JSON.stringify([mix.map((chanson) => chanson.id), chargement]) !== avant;
+}
+
+function remplacerExtrait(salle, index) {
+  const { chargement, enEchec } = salle.etatMode;
+  const mix = questionCourante(salle);
+  enEchec.push(mix[index].id);
+  const remplacante = chargement.remplacements[index] < REMPLACEMENTS_MAX ? chansonDeRemplacement(salle) : null;
+  if (!remplacante) {
+    chargement.indisponibles.push(index);
+    return;
+  }
+  chargement.remplacements[index]++;
+  mix[index] = remplacante;
+  noterQuestionsVues(salle, [remplacante]);
+}
+
+// Une chanson absente de la partie et jamais en échec : du choix de l'hôte et jamais
+// entendue d'abord, comme au tirage.
+function chansonDeRemplacement(salle) {
+  const { questions, enEchec } = salle.etatMode;
+  const ecartees = new Set([...questions.flat().map((chanson) => chanson.id), ...enEchec]);
+  const possibles = banqueBlindTest().filter((chanson) => !ecartees.has(chanson.id));
+  return tirerChansons(possibles, reglagesDe(salle).categories, salle.questionsVues, 1)[0] ?? null;
 }
 
 // « Lancer la chanson » du maître : la musique démarre.
@@ -198,7 +322,6 @@ function lancerManche(salle) {
   });
   if (salle.etatMode.format === 'mix') {
     Object.assign(salle.etatMode, {
-      departs: Array.from({ length: CHANSONS_PAR_MIX }, tirerDepart),
       ecouteRestanteMs: salle.etatMode.dureeEcouteMixMs,
       trouvees: {},
       chansonEnDesignation: null,
@@ -208,14 +331,14 @@ function lancerManche(salle) {
   }
 }
 
-// Seul le maître répond. Relais : { lancer: true }. Révélation : { passer: true }, qui passe
+// Seul le maître répond. Relais : { lancer: true }, en mix une fois les extraits chargés. Révélation : { passer: true }, qui passe
 // la modération au maître suivant (l'hôte le peut aussi, avec « Suivant »). Écoute et
 // désignation : ses désignations. Renvoie true si c'est accepté.
 export function enregistrerReponse(salle, joueurId, contenu) {
   const phase = phaseEnCours(salle);
   if (!phase || joueurId !== maitreCourant(salle)) return false;
   if (phase === 'relais') {
-    if (contenu?.lancer !== true) return false;
+    if (contenu?.lancer !== true || !peutLancer(salle)) return false;
     lancerManche(salle);
     return true;
   }
@@ -230,7 +353,7 @@ export function enregistrerReponse(salle, joueurId, contenu) {
 }
 
 // Relais : le maître attendu s'est déconnecté, le relais passe au suivant.
-// Classique : la validation termine la manche. Mix : les 5 chansons trouvées aussi.
+// Classique : la validation termine la manche. Mix : les 5 chansons trouvées (ou indisponibles) aussi.
 export function verifierFinAnticipee(salle) {
   const phase = phaseEnCours(salle);
   if (phase === 'relais' && !estConnecte(salle, maitreCourant(salle))) {
@@ -241,7 +364,8 @@ export function verifierFinAnticipee(salle) {
   if (format === 'classique' && (phase === 'ecoute' || phase === 'designation') && designation) {
     montrerRevelation(salle);
   }
-  if (format === 'mix' && phase === 'ecoute' && Object.keys(trouvees).length === CHANSONS_PAR_MIX) {
+  if (format === 'mix' && phase === 'ecoute'
+    && Object.keys(trouvees).length + indisponibles(salle).length === CHANSONS_PAR_MIX) {
     montrerRevelation(salle);
   }
 }
@@ -277,10 +401,14 @@ export function suivant(salle) {
 const DUREES_CLASSIQUE = { ecoute: DUREE_ECOUTE_MS, designation: DUREE_DESIGNATION_MS };
 const DUREES_MIX = { designation: DUREE_DESIGNATION_MIX_MS };
 
-// En mix, l'écoute dure ce qui reste du décompte, mis en pause pendant les désignations.
+// En mix, l'écoute dure ce qui reste du décompte, mis en pause pendant les désignations,
+// et le relais attend le chargement des extraits 10 s au plus.
 export function echeance(salle) {
   if (salle.etatMode.format === 'mix' && phaseEnCours(salle) === 'ecoute') {
     return salle.etatMode.debutPhaseA + salle.etatMode.ecouteRestanteMs;
+  }
+  if (phaseEnCours(salle) === 'relais' && !peutLancer(salle)) {
+    return salle.etatMode.debutPhaseA + DELAI_CHARGEMENT_MIX_MS;
   }
   return echeanceDePhase(salle, salle.etatMode.format === 'mix' ? DUREES_MIX : DUREES_CLASSIQUE);
 }
@@ -288,7 +416,8 @@ export function echeance(salle) {
 // Appelée quand l'échéance est atteinte.
 export function avancer(salle) {
   const phase = phaseEnCours(salle);
-  if (salle.etatMode.format === 'mix') avancerMix(salle, phase);
+  if (phase === 'relais') salle.etatMode.chargement.delaiEcoule = true;
+  else if (salle.etatMode.format === 'mix') avancerMix(salle, phase);
   else avancerClassique(salle, phase);
 }
 
@@ -330,6 +459,7 @@ function enregistrerReponseMix(salle, phase, contenu) {
 function arreterMix(salle, index) {
   const { etatMode } = salle;
   if (!Number.isInteger(index) || index < 0 || index >= CHANSONS_PAR_MIX || etatMode.trouvees[index]) return false;
+  if (indisponibles(salle).includes(index)) return false;
   etatMode.ecouteRestanteMs = ecouteRestante(salle);
   etatMode.phase = 'designation';
   etatMode.debutPhaseA = Date.now();
@@ -361,6 +491,11 @@ function avancerMix(salle, phase) {
     salle.etatMode.ecouteRestanteMs = 0;
     montrerRevelation(salle);
   }
+}
+
+// Les places du mix dont aucun extrait n'a pu se charger : elles ne jouent pas.
+function indisponibles(salle) {
+  return salle.etatMode.chargement?.indisponibles ?? [];
 }
 
 // Ce qui reste du décompte d'écoute, figé hors de l'écoute.
@@ -419,9 +554,25 @@ export function vueTv(salle) {
 }
 
 // Le prochain maître, et les extraits de sa manche, que la TV charge sans les jouer.
+// Mix : chaque extrait avec son départ, null pour une place indisponible, et l'avancement.
 function vueTvRelais(salle) {
-  const chansons = [questionCourante(salle)].flat();
-  return { ...vueCommune(salle), extraitsSuivants: chansons.map((chanson) => ({ id: chanson.id })) };
+  if (salle.etatMode.format !== 'mix') {
+    return { ...vueCommune(salle), extraitsSuivants: [{ id: questionCourante(salle).id }] };
+  }
+  const { departs, chargement } = salle.etatMode;
+  return {
+    ...vueCommune(salle),
+    extraits: questionCourante(salle).map((chanson, index) => (chargement.indisponibles.includes(index)
+      ? null
+      : { id: chanson.id, depart: departs[index], gain: chanson.gain })),
+    chargement: vueChargement(salle),
+  };
+}
+
+// « 3/5 » : les places chargées ou indisponibles, et si le maître peut lancer.
+function vueChargement(salle) {
+  const { prets, indisponibles: horsJeu } = salle.etatMode.chargement;
+  return { faits: prets.length + horsJeu.length, total: CHANSONS_PAR_MIX, peutLancer: peutLancer(salle) };
 }
 
 export function vueJoueur(salle, joueur) {
@@ -429,7 +580,9 @@ export function vueJoueur(salle, joueur) {
   const estMaitre = joueur.id === maitreCourant(salle);
   const { format, phase, indexQuestion, maitres } = salle.etatMode;
   const base = { format, numero: indexQuestion + 1, total: maitres.length };
-  if (phase === 'relais' && estMaitre) return { ...base, ecran: 'relais' };
+  if (phase === 'relais' && estMaitre) {
+    return { ...base, ecran: 'relais', chargement: format === 'mix' ? vueChargement(salle) : null };
+  }
   if (phase !== 'revelation' && !estMaitre) {
     return { ...base, ecran: 'ecouter', phase, maitre: pseudoDe(salle, maitreCourant(salle)) };
   }
@@ -493,9 +646,11 @@ function vueJoueurClassique(salle, joueur, estMaitre) {
 // ---------- Vues du mix ----------
 
 // Une chanson pas encore trouvée ne donne que son extrait, jusqu'à la révélation.
+// Une place indisponible ne joue rien et ne dit rien de sa chanson.
 function vueCarte(salle, chanson, index) {
   const { phase, trouvees, departs } = salle.etatMode;
   const trouvee = trouvees[index];
+  if (indisponibles(salle).includes(index)) return { indisponible: true };
   if (trouvee) {
     return {
       ...vueChanson(chanson), joueur: trouvee.joueur, trouve: trouvee.trouve, points: POINTS_MIX[trouvee.trouve],
@@ -506,7 +661,7 @@ function vueCarte(salle, chanson, index) {
 }
 
 function vueTvMix(salle) {
-  const { phase, questions, indexQuestion, chansonEnDesignation } = salle.etatMode;
+  const { phase, chansonEnDesignation } = salle.etatMode;
   const vue = {
     ...vueCommune(salle),
     cartes: questionCourante(salle).map((chanson, index) => vueCarte(salle, chanson, index)),
@@ -515,11 +670,8 @@ function vueTvMix(salle) {
     tempsEcouteMs: salle.etatMode.dureeEcouteMixMs - ecouteRestante(salle),
   };
   if (phase === 'designation') vue.chansonEnDesignation = chansonEnDesignation;
-  if (phase === 'revelation') {
-    vue.classement = classement(salle);
-    const suivante = questions[indexQuestion + 1];
-    if (suivante) vue.extraitsSuivants = suivante.map((chanson) => ({ id: chanson.id }));
-  }
+  // Les extraits du mix suivant se chargent au relais, pas avant : jamais plus de 5 pistes à la fois.
+  if (phase === 'revelation') vue.classement = classement(salle);
   return vue;
 }
 
@@ -553,6 +705,7 @@ function vueJoueurMix(salle, joueur, estMaitre) {
       titre: chanson.titre,
       artiste: chanson.artiste,
       trouvee: Boolean(trouvees[index]),
+      indisponible: indisponibles(salle).includes(index),
       joueur: pseudoDe(salle, trouvees[index]?.joueur ?? null),
     })),
   };

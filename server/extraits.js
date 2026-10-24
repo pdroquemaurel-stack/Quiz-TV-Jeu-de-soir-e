@@ -12,10 +12,23 @@ const TAILLE_ESSAI = 5;
 
 let banque;
 
+const lireDonnees = (fichier) => JSON.parse(readFileSync(new URL(`../data/${fichier}`, import.meta.url), 'utf8'));
+
+// Les chansons gardées, chacune avec ses catégories (tranche 42) : celles de ses playlists.
 export function banqueBlindTest() {
-  banque ??= JSON.parse(readFileSync(new URL('../data/blind-test.json', import.meta.url), 'utf8'))
-    .filter((chanson) => chanson.garder);
+  if (banque) return banque;
+  const playlists = lireDonnees('playlists-blind-test.json');
+  banque = lireDonnees('blind-test.json')
+    .filter((chanson) => chanson.garder)
+    .map((chanson) => ({ ...chanson, categories: categoriesDeChanson(chanson, playlists) }));
   return banque;
+}
+
+// Les catégories se décident par playlist (data/playlists-blind-test.json) ; une chanson a
+// celles des playlists d'où elle vient, sans doublon.
+export function categoriesDeChanson(chanson, playlists) {
+  const categories = (chanson.playlists ?? []).map((id) => playlists[id]?.categorie).filter(Boolean);
+  return [...new Set(categories)];
 }
 
 // id de chanson → { lien, expireA }

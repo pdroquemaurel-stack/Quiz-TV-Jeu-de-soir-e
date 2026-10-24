@@ -8,9 +8,10 @@ import { vueJoueur, vueTv } from '../vues.js';
 import { banqueBlindTest } from '../extraits.js';
 import { modes } from './index.js';
 import {
-  CHANSONS_PAR_MIX, DUREE_DESIGNATION_MIX_MS, DUREE_DESIGNATION_MS, DUREE_ECOUTE_MIX_MS, DUREE_ECOUTE_MS,
-  avancer, designationValide, enregistrerReponse, pointsClassique, pointsDuMix, reglagesParDefaut, repartirMaitres,
-  suivant, verifierFinAnticipee,
+  CHANSONS_PAR_MIX, DELAI_CHARGEMENT_MIX_MS, DUREE_DESIGNATION_MIX_MS, DUREE_DESIGNATION_MS, DUREE_ECOUTE_MIX_MS,
+  DUREE_ECOUTE_MS, avancer, categoriesDe, categoriesValides, chansonsDuChoix, designationValide, echeance,
+  enregistrerReponse, pointsClassique, pointsDuMix, recevoirExtraits, reglagesParDefaut, repartirMaitres, suivant,
+  tirerChansons, verifierFinAnticipee,
 } from './blind-test.js';
 
 const PSEUDOS = ['Paul', 'Léa', 'Sam', 'Tom', 'Zoé'];
@@ -21,9 +22,18 @@ const CHANSON = {
 };
 
 // Le maître de la manche appuie sur « Lancer la chanson », comme joueur:repondre dans index.js.
+// En mix, la TV a d'abord chargé les 5 extraits (tranche 42).
 function lancer(salle) {
-  const { maitres, indexQuestion } = salle.etatMode;
+  const { maitres, indexQuestion, format } = salle.etatMode;
+  if (format === 'mix') toutCharger(salle);
   return enregistrerReponse(salle, maitres[indexQuestion], { lancer: true });
+}
+
+// La TV signale tous les extraits du mix en cours chargés, comme tv:extraits dans index.js.
+function toutCharger(salle) {
+  const { questions, indexQuestion } = salle.etatMode;
+  const ids = questions[indexQuestion].map((chanson) => chanson.id);
+  return recevoirExtraits(salle, { numero: indexQuestion + 1, prets: ids, echecs: [] });
 }
 
 // n joueurs, mode Blind test, partie lancée et première chanson en écoute.
@@ -400,13 +410,18 @@ test('réglages : classique de 10 chansons par défaut, 1 à 20 chansons, mix de
   const salle = creerSalle('tv');
   for (const pseudo of ['A', 'B', 'C']) ajouterJoueur(salle, pseudo, pseudo);
   choisirMode(salle, 'blind-test');
-  assert.deepEqual(reglagesParDefaut(), { format: 'classique', chansons: 10, tours: 1, ecoute: 120 });
+  const toutes = categoriesDe(banqueBlindTest());
+  assert.deepEqual(reglagesParDefaut(), {
+    format: 'classique', chansons: 10, tours: 1, ecoute: 120, categories: toutes,
+  });
   assert.equal(vueTv(salle).reglages.resume, 'Classique · 10 chansons');
   assert.equal(vueTv(salle).reglages.titre, 'Format');
   for (const invalide of [
     { format: 'rock' }, { format: 'mix' }, {}, null, 'mix', { ...MIX_PAR_DEFAUT, format: 'toString' },
     { ...MIX_PAR_DEFAUT, chansons: 0 }, { ...MIX_PAR_DEFAUT, chansons: 21 }, { ...MIX_PAR_DEFAUT, chansons: 2.5 },
     { ...MIX_PAR_DEFAUT, tours: 3 }, { ...MIX_PAR_DEFAUT, ecoute: 100 },
+    { ...MIX_PAR_DEFAUT, categories: undefined }, { ...MIX_PAR_DEFAUT, categories: 'Années 80' },
+    { ...MIX_PAR_DEFAUT, categories: ['Catégorie inconnue'] },
   ]) {
     assert.equal(reglerMode(salle, invalide), false, JSON.stringify(invalide));
   }
@@ -415,7 +430,9 @@ test('réglages : classique de 10 chansons par défaut, 1 à 20 chansons, mix de
   assert.equal(reglerMode(salle, { ...MIX_PAR_DEFAUT, tours: 2, ecoute: 90 }), true);
   assert.equal(vueTv(salle).reglages.resume, 'Mix · 2 tours · 90 s');
   assert.deepEqual(vueTv(salle).reglages.options.formats.map((f) => f.id), ['classique', 'mix']);
-  assert.deepEqual(vueTv(salle).reglages.valeurs, { format: 'mix', chansons: 10, tours: 2, ecoute: 90 });
+  assert.deepEqual(vueTv(salle).reglages.valeurs, {
+    format: 'mix', chansons: 10, tours: 2, ecoute: 90, categories: toutes,
+  });
 });
 
 test('réglages : mix de 2 tours, chacun maître 2 fois ; écoute de 90 s', () => {
@@ -599,7 +616,7 @@ test('mix secret : une carte non trouvée n\'a que son extrait, les autres joueu
   const maitre = vueJoueur(salle, paul);
   assert.equal(maitre.ecran, 'maitre_mix');
   assert.deepEqual(maitre.chansons.map((chanson) => chanson.titre), ['Titre 0', 'Titre 1', 'Titre 2', 'Titre 3', 'Titre 4']);
-  assert.deepEqual(maitre.chansons[1], { titre: 'Titre 1', artiste: 'Artiste 1', trouvee: true, joueur: 'Léa' });
+  assert.deepEqual(maitre.chansons[1], { titre: 'Titre 1', artiste: 'Artiste 1', trouvee: true, indisponible: false, joueur: 'Léa' });
   assert.ok(!JSON.stringify(maitre).includes('"d10'), 'le maître ne reçoit pas les ids Deezer');
 
   repondre(salle, paul, { arreter: 3 });
@@ -611,7 +628,7 @@ test('mix secret : une carte non trouvée n\'a que son extrait, les autres joueu
   assert.equal(vueTv(salle).etatMode.chansonEnDesignation, 3);
 });
 
-test('mix révélation : toutes les cartes retournées, résultat de chacun, extraits du mix suivant', () => {
+test('mix révélation : toutes les cartes retournées, résultat de chacun', () => {
   const { salle, joueurs: [paul, lea, sam] } = mixPret(3);
   trouver(salle, paul, 0, lea, 'les-deux');
   avancer(salle);
@@ -619,7 +636,7 @@ test('mix révélation : toutes les cartes retournées, résultat de chacun, ext
   const tv = vueTv(salle).etatMode;
   assert.deepEqual(tv.cartes.map((carte) => carte.titre), ['Titre 0', 'Titre 1', 'Titre 2', 'Titre 3', 'Titre 4']);
   assert.equal(tv.cartes[2].joueur, null);
-  assert.equal(tv.extraitsSuivants.length, CHANSONS_PAR_MIX);
+  assert.equal(tv.extraitsSuivants, undefined, 'les extraits du mix suivant se chargent au relais');
   const resultat = vueJoueur(salle, lea);
   assert.equal(resultat.ecran, 'resultat');
   assert.equal(resultat.points, 1000);
@@ -627,4 +644,138 @@ test('mix révélation : toutes les cartes retournées, résultat de chacun, ext
   assert.equal(resultat.chansons[0].trouve, 'les-deux');
   assert.equal(vueJoueur(salle, sam).points, 0);
   assert.equal(vueJoueur(salle, paul).estMaitre, true);
+});
+
+// --- Mix : chargement des extraits avant le lancement (tranche 42) ---
+
+// Mix au relais de la première manche, avant « Lancer le mix ».
+function mixAuRelais(n = 3) {
+  const salle = creerSalle('tv');
+  const joueurs = PSEUDOS.slice(0, n).map((pseudo, i) => ajouterJoueur(salle, pseudo, `s${i}`).joueur);
+  choisirMode(salle, 'blind-test');
+  reglerMode(salle, MIX_PAR_DEFAUT);
+  demarrerPartie(salle);
+  salle.etatMode.maitres = joueurs.map((joueur) => joueur.id);
+  salle.etatMode.questions[0] = [...MIX];
+  return { salle, joueurs };
+}
+
+const idsDuMix = (salle) => salle.etatMode.questions[salle.etatMode.indexQuestion].map((chanson) => chanson.id);
+
+test('mix relais : la TV reçoit les 5 extraits avec leur départ, le maître attend leur chargement', () => {
+  const { salle, joueurs: [paul] } = mixAuRelais();
+  const tv = vueTv(salle).etatMode;
+  assert.deepEqual(tv.extraits.map((extrait) => extrait.id), ['d100', 'd101', 'd102', 'd103', 'd104']);
+  assert.deepEqual(tv.extraits.map((extrait) => extrait.depart), salle.etatMode.departs);
+  assert.equal(tv.extraits[0].gain, -10);
+  assert.deepEqual(tv.chargement, { faits: 0, total: 5, peutLancer: false });
+  assert.equal(enregistrerReponse(salle, paul.id, { lancer: true }), false, 'rien de chargé');
+
+  assert.equal(recevoirExtraits(salle, { numero: 1, prets: ['d100', 'd101', 'd102'], echecs: [] }), true);
+  assert.deepEqual(vueJoueur(salle, paul).chargement, { faits: 3, total: 5, peutLancer: false });
+  assert.equal(recevoirExtraits(salle, { numero: 1, prets: ['d100', 'd101', 'd102'], echecs: [] }), false, 'rien de neuf');
+  assert.equal(enregistrerReponse(salle, paul.id, { lancer: true }), false, '3/5');
+
+  assert.equal(recevoirExtraits(salle, { numero: 1, prets: idsDuMix(salle), echecs: [] }), true);
+  assert.equal(vueJoueur(salle, paul).chargement.peutLancer, true);
+  assert.equal(echeance(salle), null, 'plus de délai à attendre');
+  assert.equal(enregistrerReponse(salle, paul.id, { lancer: true }), true);
+  assert.equal(etape(salle), 'ecoute');
+});
+
+test('mix relais : un extrait en échec est remplacé par une chanson hors de la partie, 2 fois au plus', () => {
+  const { salle, joueurs: [paul] } = mixAuRelais();
+  const dansLaPartie = new Set(salle.etatMode.questions.flat().map((chanson) => chanson.id));
+  recevoirExtraits(salle, { numero: 1, prets: ['d100', 'd101', 'd103', 'd104'], echecs: ['d102'] });
+  const premiere = salle.etatMode.questions[0][2];
+  assert.notEqual(premiere.id, 'd102');
+  assert.ok(!dansLaPartie.has(premiere.id), 'remplaçante hors de la partie');
+  assert.ok(salle.questionsVues.includes(premiere.id));
+  assert.equal(vueTv(salle).etatMode.extraits[2].id, premiere.id);
+
+  recevoirExtraits(salle, { numero: 1, prets: ['d100', 'd101', 'd103', 'd104'], echecs: [premiere.id] });
+  const seconde = salle.etatMode.questions[0][2];
+  assert.ok(![premiere.id, 'd102'].includes(seconde.id));
+
+  recevoirExtraits(salle, { numero: 1, prets: ['d100', 'd101', 'd103', 'd104'], echecs: [seconde.id] });
+  assert.deepEqual(salle.etatMode.chargement.indisponibles, [2]);
+  assert.equal(vueTv(salle).etatMode.extraits[2], null);
+  assert.deepEqual(vueTv(salle).etatMode.chargement, { faits: 5, total: 5, peutLancer: true });
+  assert.equal(enregistrerReponse(salle, paul.id, { lancer: true }), true);
+});
+
+test('mix indisponible : rien ne joue à sa place, impossible à arrêter, la manche finit sans elle', () => {
+  const { salle, joueurs: [paul, lea] } = mixAuRelais();
+  salle.etatMode.chargement.remplacements[4] = 2;
+  recevoirExtraits(salle, { numero: 1, prets: ['d100', 'd101', 'd102', 'd103'], echecs: ['d104'] });
+  enregistrerReponse(salle, paul.id, { lancer: true });
+  assert.deepEqual(vueTv(salle).etatMode.cartes[4], { indisponible: true });
+  assert.equal(vueJoueur(salle, paul).chansons[4].indisponible, true);
+  assert.equal(repondre(salle, paul, { arreter: 4 }), false);
+  for (let index = 0; index < 4; index++) trouver(salle, paul, index, lea, 'titre');
+  assert.equal(etape(salle), 'revelation');
+  assert.ok(!JSON.stringify(vueTv(salle).etatMode.cartes[4]).includes('Titre 4'));
+});
+
+test('mix relais : sans réponse de la TV, le maître peut lancer au bout de 10 s', (t) => {
+  simulerTemps(t);
+  const { salle, joueurs: [paul] } = mixAuRelais();
+  quandAvance(salle);
+  assert.equal(echeance(salle), DELAI_CHARGEMENT_MIX_MS);
+  t.mock.timers.tick(DELAI_CHARGEMENT_MIX_MS - 1);
+  assert.equal(enregistrerReponse(salle, paul.id, { lancer: true }), false);
+  t.mock.timers.tick(1);
+  assert.equal(etape(salle), 'relais', 'le relais attend toujours le maître');
+  assert.equal(vueJoueur(salle, paul).chargement.peutLancer, true);
+  assert.equal(enregistrerReponse(salle, paul.id, { lancer: true }), true);
+});
+
+test('mix relais : signal de la TV ignoré pour une autre manche, hors relais, en classique ou malformé', () => {
+  const { salle } = mixAuRelais();
+  const ids = idsDuMix(salle);
+  for (const donnees of [null, 42, {}, { numero: 2, prets: ids, echecs: [] }, { numero: 1, prets: 'd100', echecs: [] }]) {
+    assert.equal(recevoirExtraits(salle, donnees), false, JSON.stringify(donnees));
+  }
+  toutCharger(salle);
+  lancer(salle);
+  assert.equal(recevoirExtraits(salle, { numero: 1, prets: [], echecs: ids }), false, 'pendant l\'écoute');
+  assert.deepEqual(salle.etatMode.questions[0].map((chanson) => chanson.id), ids);
+
+  const { salle: classique } = sallePrete();
+  assert.equal(recevoirExtraits(classique, { numero: 1, prets: [], echecs: ['d42'] }), false);
+});
+
+// --- Catégories (tranche 42) ---
+
+// Un petit catalogue rangé, catégories déduites des playlists comme dans banqueBlindTest :
+// 3 chansons « 80 », 2 « Rap » (dont une aussi « 80 »), 1 sans catégorie.
+const RANGEES = [
+  { id: 'd1', categories: ['80'] }, { id: 'd2', categories: ['80'] }, { id: 'd3', categories: ['80', 'Rap'] },
+  { id: 'd4', categories: ['Rap'] }, { id: 'd5', categories: [] },
+];
+const ids = (chansons) => chansons.map((chanson) => chanson.id);
+
+test('catégories : celles du catalogue dans l\'ordre, au moins une choisie, toutes connues, sans doublon', () => {
+  assert.deepEqual(categoriesDe(RANGEES), ['80', 'Rap']);
+  assert.equal(categoriesValides(['Rap'], ['80', 'Rap']), true);
+  assert.equal(categoriesValides(['80', 'Rap'], ['80', 'Rap']), true);
+  for (const invalide of [[], ['Jazz'], ['80', '80'], '80', null, [80]]) {
+    assert.equal(categoriesValides(invalide, ['80', 'Rap']), false, JSON.stringify(invalide));
+  }
+  assert.equal(categoriesValides([], []), true, 'catalogue pas encore rangé');
+});
+
+test('catégories : le choix de l\'hôte, une chanson de plusieurs catégories comprise ; toutes = tout le catalogue', () => {
+  assert.deepEqual(ids(chansonsDuChoix(RANGEES, ['Rap'])), ['d3', 'd4']);
+  assert.deepEqual(ids(chansonsDuChoix(RANGEES, ['80'])), ['d1', 'd2', 'd3']);
+  assert.deepEqual(ids(chansonsDuChoix(RANGEES, ['80', 'Rap'])), ['d1', 'd2', 'd3', 'd4', 'd5'], 'les non rangées avec « toutes »');
+  assert.deepEqual(ids(chansonsDuChoix([{ id: 'd9', categories: [] }], [])), ['d9'], 'catalogue pas encore rangé');
+});
+
+test('catégories : tirage dans le choix d\'abord, jamais entendues puis déjà entendues, puis les autres', () => {
+  const tirees = tirerChansons(RANGEES, ['Rap'], ['d3'], 4);
+  assert.deepEqual(ids(tirees.slice(0, 2)), ['d4', 'd3'], 'Rap : la jamais entendue, puis la déjà entendue');
+  assert.equal(tirees.length, 4, 'complété avec les autres');
+  assert.ok(tirees.slice(2).every((chanson) => ['d1', 'd2', 'd5'].includes(chanson.id)));
+  assert.equal(tirerChansons(RANGEES, ['Rap'], [], 10).length, 5, 'jamais plus que le catalogue');
 });

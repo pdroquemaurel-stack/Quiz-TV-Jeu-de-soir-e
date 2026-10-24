@@ -56,7 +56,8 @@ data/undercover.json
 data/meme-reponse.json
 data/bluff.json
 data/legende.json
-data/blind-test.json   # catalogue du blind test : ids Deezer et métadonnées, aucun son
+data/blind-test.json   # catalogue du blind test : ids Deezer, métadonnées et playlists d'origine, aucun son
+data/playlists-blind-test.json # playlists Deezer importées : id → nom et catégorie du blind test
 data/geoquiz.json      # lieux du GéoQuiz : coordonnées, photo Wikimedia, auteur, licence
 data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
 data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lexique 3.83, CC BY-SA 4.0)
@@ -72,7 +73,8 @@ scripts/verifier-bluff.js
 scripts/verifier-legende.js
 scripts/telecharger-gifs.py  # complète data/legende.json depuis Imgflip (Python + requests)
 scripts/verifier-blind-test.js
-scripts/importer-deezer.js   # complète data/blind-test.json depuis des playlists Deezer
+scripts/importer-deezer.js   # complète data/blind-test.json depuis des playlists Deezer, chacune avec sa catégorie
+scripts/categoriser-blind-test.js # rattache les chansons du blind test aux playlists d'où elles viennent
 scripts/construire-geoquiz.py  # construit data/geoquiz.json depuis Wikidata et Commons (Python + requests)
 scripts/verifier-geoquiz.js
 scripts/construire-mots.js   # construit data/mots.txt depuis Lexique 3.83
@@ -101,7 +103,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-bluff.js` : vérifie le format de `bluff.json`
 - `node scripts/verifier-legende.js` : vérifie `legende.json` et les vidéos de `public/gifs/`
 - `py scripts/telecharger-gifs.py` (après `pip install requests`) : ajoute des GIF Imgflip au catalogue de La légende
-- `node scripts/importer-deezer.js <id de playlist> [<id>…]` : ajoute les chansons de playlists Deezer publiques au catalogue du blind test
+- `node scripts/importer-deezer.js "<id de playlist>[=<catégorie>]" […]` : ajoute les chansons de playlists Deezer publiques au catalogue du blind test et note chaque playlist avec sa catégorie (par défaut son titre)
+- `node scripts/categoriser-blind-test.js` : relit les playlists de `data/playlists-blind-test.json` et rattache à chaque chanson du catalogue les playlists où elle se trouve, sans rien changer d'autre ; liste celles à ranger à la main
 - `node scripts/verifier-blind-test.js` : vérifie `blind-test.json` ; avec `--deezer`, liste en plus les extraits devenus indisponibles
 - `py scripts/construire-geoquiz.py` (après `pip install requests`) : reconstruit le pack de lieux du GéoQuiz et la page d'aperçu `scripts/apercu-geoquiz.html` (non commitée) ; les exclus de `data/geoquiz-exclus.json` sont gardés
 - `node scripts/verifier-geoquiz.js` : vérifie `geoquiz.json` et `geoquiz-exclus.json`

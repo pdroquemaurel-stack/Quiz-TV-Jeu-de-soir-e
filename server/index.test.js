@@ -239,7 +239,7 @@ test('seul l\'hôte peut choisir le mode', async (t) => {
 const EVENEMENTS = [
   'tv:creer', 'joueur:rejoindre', 'joueur:repondre', 'hote:lancer', 'hote:choisirMode',
   'hote:configurer', 'hote:reglerMode', 'hote:suivant', 'hote:terminer', 'hote:rejouer',
-  'hote:changerFormat', 'hote:validerFormat',
+  'hote:changerFormat', 'hote:validerFormat', 'hote:modifierScore', 'tv:extraits',
 ];
 const DONNEES_MALFORMEES = [null, 42, [], {}, 'texte', { code: {}, pseudo: [], id: 1, etape: 7 }];
 // Envoyés par l'hôte, ceux-là changeraient l'état pour de bon : seul un non-hôte les envoie.

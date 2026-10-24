@@ -11,7 +11,7 @@ import {
   ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle, deconnecterJoueur,
   deconnecterTv, demarrerPartie, erreur, mettreEnPause, modifierScore, nouvelleAventure, passerApresPodium, peutLancer,
   peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, reprendrePartie, statistiques, synchroniserMinuteur, terminerPartie,
-  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, validerFormat,
+  trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, trouverSalleParTv, validerFormat,
 } from './salles.js';
 import { etapeCourante, vueJoueur, vueTv } from './vues.js';
 import { modes } from './modes/index.js';
@@ -106,6 +106,14 @@ export function demarrerServeur(port) {
     surEvenement('tv:creer', (donnees) => {
       const { code, jetonTv } = donnees ?? {};
       diffuser(reconnecterTv(code, jetonTv, socket.id) ?? creerSalle(socket.id));
+    });
+
+    // Blind test mix : la TV dit quels extraits du mix à venir sont chargés ou en échec.
+    // Seul le socket de la TV de la salle est écouté ; le mode décide (remplacement…).
+    surEvenement('tv:extraits', (donnees) => {
+      const salle = trouverSalleParTv(socket.id);
+      if (!salle || salle.etat !== 'partie' || !modes[salle.mode].recevoirExtraits?.(salle, donnees)) return;
+      diffuser(salle);
     });
 
     // Un id connu dans la salle, avec sa clé : reconnexion. Sinon : nouveau joueur

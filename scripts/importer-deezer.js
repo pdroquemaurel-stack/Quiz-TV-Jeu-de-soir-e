@@ -1,5 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import {
+  ecrirePlaylists, lirePlaylistDeezer, lirePlaylists, rattacherPlaylists,
+} from './categoriser-blind-test.js';
 import { cleChanson } from './verifier-blind-test.js';
 
 // Deezer accepte 50 requêtes par 5 s : on reste loin en dessous.
@@ -64,18 +67,6 @@ async function lireDeezer(adresse) {
   return reponse;
 }
 
-// Les ids des pistes d'une playlist publique, page après page.
-async function idsDePlaylist(idPlaylist) {
-  const ids = [];
-  let adresse = `https://api.deezer.com/playlist/${idPlaylist}/tracks?limit=100`;
-  while (adresse) {
-    const page = await lireDeezer(adresse);
-    ids.push(...page.data.map((piste) => piste.id));
-    adresse = page.next;
-  }
-  return ids;
-}
-
 // Le détail complet de chaque piste absente du catalogue : seul /track donne le gain.
 async function nouvellesPistes(catalogue, ids) {
   const connus = new Set(catalogue.map((chanson) => chanson.id));
@@ -88,26 +79,43 @@ async function nouvellesPistes(catalogue, ids) {
   return pistes;
 }
 
-// Lancé en ligne de commande : node scripts/importer-deezer.js <id de playlist> [<id>…]
+// « 1234567890=Années 80 » → { idPlaylist, categorie } ; « 1234567890 » seul : categorie null
+// (celle déjà notée pour cette playlist, sinon son titre Deezer). null si l'id n'en est pas un.
+export function lireArgument(argument) {
+  const [idPlaylist, ...reste] = argument.split('=');
+  const categorie = reste.join('=').trim() || null;
+  if (!/^\d+$/.test(idPlaylist.trim()) || (reste.length && !categorie)) return null;
+  return { idPlaylist: idPlaylist.trim(), categorie };
+}
+
+// Lancé en ligne de commande : node scripts/importer-deezer.js "<id de playlist>[=<catégorie>]" […]
+// Les chansons de la playlist y sont rattachées (tranche 42), celles déjà au catalogue aussi,
+// et la playlist est notée avec sa catégorie dans data/playlists-blind-test.json.
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const playlists = process.argv.slice(2);
-  if (!playlists.length) {
-    console.error('Usage : node scripts/importer-deezer.js <id de playlist> [<id>…]');
+  const playlists = process.argv.slice(2).map(lireArgument);
+  if (!playlists.length || playlists.includes(null)) {
+    console.error('Usage : node scripts/importer-deezer.js "<id de playlist>[=<catégorie>]" […]');
+    console.error('Exemple : node scripts/importer-deezer.js "1234567890=Années 80"');
     process.exit(1);
   }
   const chemin = fileURLToPath(new URL('../data/blind-test.json', import.meta.url));
   let catalogue = existsSync(chemin) ? JSON.parse(readFileSync(chemin, 'utf8')) : [];
   const toutesAjoutees = [];
 
-  for (const idPlaylist of playlists) {
-    const resultat = ajouterChansons(catalogue, await nouvellesPistes(catalogue, await idsDePlaylist(idPlaylist)));
-    catalogue = resultat.catalogue;
+  const notees = lirePlaylists();
+  for (const { idPlaylist, categorie } of playlists) {
+    const { nom, pistes } = await lirePlaylistDeezer(idPlaylist);
+    const resultat = ajouterChansons(catalogue, await nouvellesPistes(catalogue, pistes.map((piste) => piste.id)));
+    const rattachement = rattacherPlaylists(resultat.catalogue, [{ id: Number(idPlaylist), pistes }]);
+    catalogue = rattachement.catalogue;
+    notees[idPlaylist] = { nom, categorie: categorie ?? notees[idPlaylist]?.categorie ?? nom };
     toutesAjoutees.push(...resultat.ajoutees);
     const ecartees = Object.entries(resultat.ecartees).map(([raison, n]) => `${n} ${raison}`).join(', ');
-    console.log(`Playlist ${idPlaylist} : ${resultat.ajoutees.length} ajoutée(s)${ecartees ? `, écartées : ${ecartees}` : ''}`);
+    console.log(`Playlist ${idPlaylist} « ${nom} » (catégorie ${notees[idPlaylist].categorie}) : ${resultat.ajoutees.length} ajoutée(s), ${rattachement.rattachees} rattachée(s)${ecartees ? `, écartées : ${ecartees}` : ''}`);
   }
 
   writeFileSync(chemin, JSON.stringify(catalogue, null, 2) + '\n');
+  ecrirePlaylists(notees);
   const relire = toutesAjoutees.filter(aRelire);
   if (relire.length) {
     console.log(`\nTitres à relire (${relire.length}) :`);
