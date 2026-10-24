@@ -1,9 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const CHAMPS = ['id', 'sujet', 'miseDepart'];
-export const MISE_MIN = 1;
-export const MISE_MAX = 20;
+// L'enchère d'ouverture vaut toujours 1 (tranche 42) : plus de champ miseDepart.
+const CHAMPS = ['id', 'sujet'];
 // Une partie de 12 manches, la plus longue.
 export const DEFIS_MIN = 12;
 
@@ -25,14 +24,10 @@ function erreursDefi(defi) {
     erreurs.push('id doit être au format de-… (minuscules, chiffres, tirets)');
   }
 
-  const { sujet, miseDepart } = defi;
+  const { sujet } = defi;
   if (typeof sujet !== 'string' || sujet.trim() === '') erreurs.push('sujet vide ou absent');
   else if (sujet !== sujet.trim()) erreurs.push('sujet avec des espaces au bord');
   else if (ARTICLE_EN_TETE.test(sujet)) erreurs.push('le sujet ne doit pas commencer par un article');
-
-  if (!Number.isInteger(miseDepart) || miseDepart < MISE_MIN || miseDepart > MISE_MAX) {
-    erreurs.push(`miseDepart doit être un entier de ${MISE_MIN} à ${MISE_MAX}`);
-  }
   return erreurs;
 }
 

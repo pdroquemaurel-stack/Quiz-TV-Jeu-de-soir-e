@@ -113,7 +113,7 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | Nuancier | Nouvelle manche (le logo masqué) | `etape` |
 | | Un joueur valide sa couleur (`ontRepondu` s'allonge) | `reponse` |
 | | Révélation (le vrai logo et les couleurs des joueurs) | `victoire` si un joueur atteint 100 %, sinon `revelation` |
-| Le défi des enchères | Nouvelle manche (le défi et la mise de départ) | `etape` |
+| Le défi des enchères | Nouvelle manche (le défi et l'enchère d'ouverture, 1) | `etape` |
 | | Surenchère (`enchere` augmente pendant les enchères) | `reponse` |
 | | Adjudication (annonce du relevant et de l'arbitre) | `lancement` |
 | | Une bonne réponse comptée (`compteur` augmente pendant le défi) | `reponse` |

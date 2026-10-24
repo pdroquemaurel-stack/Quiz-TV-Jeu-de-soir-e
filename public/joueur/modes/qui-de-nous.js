@@ -20,7 +20,12 @@ function afficherVoterQuiDeNous(vue) {
   const grille = JSON.stringify([vue.numero, vue.candidats]);
   if (grille === grilleAffichee) return;
   grilleAffichee = grille;
-  listeCandidats.replaceChildren(...vue.candidats.map(boutonCandidat));
+  listeCandidats.replaceChildren(...vue.candidats.map((candidat) => {
+    const bouton = boutonCandidat(candidat);
+    // On peut voter pour soi : son propre bouton est marqué.
+    if (candidat.id === vue.id) bouton.querySelector('.pseudo-candidat').textContent += ' (toi)';
+    return bouton;
+  }));
 }
 
 function afficherVoteEnvoyeQuiDeNous(vue) {

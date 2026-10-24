@@ -54,18 +54,11 @@ function demarrerQuestion(salle, index) {
   salle.etatMode.attendus = listerAttendus(salle);
 }
 
-// On ne vote pas pour soi, sauf si l'on est le seul candidat.
-function candidatsPour(salle, votantId) {
-  const { attendus } = salle.etatMode;
-  if (attendus.length === 1) return attendus;
-  return attendus.filter((candidat) => candidat !== votantId);
-}
-
-// Renvoie true si le vote est accepté : l'id d'un candidat de la manche.
+// Renvoie true si le vote est accepté : l'id d'un candidat de la manche, soi-même compris.
 export function enregistrerReponse(salle, joueurId, vote) {
   if (phaseEnCours(salle) !== 'vote' || !participe(salle, joueurId)) return false;
   if (salle.etatMode.reponses[joueurId]) return false;
-  if (!candidatsPour(salle, joueurId).includes(vote)) return false;
+  if (!salle.etatMode.attendus.includes(vote)) return false;
   salle.etatMode.reponses[joueurId] = { vote, recuA: Date.now() };
   return true;
 }
@@ -184,7 +177,7 @@ export function vueJoueur(salle, joueur) {
   const numero = indexQuestion + 1;
   if (phase === 'vote') {
     if (reponse) return { ecran: 'vote_envoye', numero, choisi: joueurVisible(salle, reponse.vote) };
-    const candidats = candidatsPour(salle, joueur.id).map((candidat) => joueurVisible(salle, candidat));
+    const candidats = salle.etatMode.attendus.map((candidat) => joueurVisible(salle, candidat));
     return { ecran: 'voter', numero, candidats };
   }
   const points = pointsGagnes(salle, joueur.id);

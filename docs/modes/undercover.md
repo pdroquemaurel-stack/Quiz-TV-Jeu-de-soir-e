@@ -4,6 +4,8 @@ Mini-spec de la tranche 13. Elle complète `docs/spec.md` et s'appuie sur le soc
 
 > **Tranche 27** : le nombre de manches (1, 3 ou 5) et le temps de vote (15, 20 ou 30 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
 
+> **Tranche 42** (retours de la soirée test) : changement de règle, un civil éliminé ne marque aucun point, même si les civils gagnent. Les règles ci-dessous sont à jour.
+
 
 Ce mode diffère des précédents sur deux points :
 
@@ -73,11 +75,11 @@ Les joueurs déconnectés comptent comme en jeu tant qu'ils ne sont pas élimin�
 
   | Vainqueur | Points |
   |---|---|
-  | Civils | **1000** pour chaque civil de la manche, éliminé ou non |
+  | Civils | **1000** pour chaque civil encore en jeu ; **0** pour un civil éliminé (tranche 42) |
   | Infiltrés | **2000** pour chaque undercover et pour Mister White, éliminés ou non |
   | Mister White a deviné | **2000** pour Mister White seul |
 
-  Les infiltrés gagnent plus car ils sont en minorité. Le camp perdant ne marque rien.
+  Les infiltrés gagnent plus car ils sont en minorité. Le camp perdant ne marque rien. Un civil éliminé ne marque rien même si son camp gagne (tranche 42) ; un infiltré éliminé marque toujours si les infiltrés gagnent.
 - Classement général par score total, avec les ex æquo du quiz.
 
 ### Vote
@@ -307,7 +309,7 @@ Avec `node:test` et, pour les chronos, `mock.timers`.
 - ordre de parole : Mister White n'est jamais le premier (sur de nombreux tirages) ;
 - victoire : civils quand le dernier infiltré est éliminé ; infiltrés quand il ne reste qu'un civil ; aucune victoire vérifiée sans élimination ;
 - devinette : mot exact accepté, casse et accents ignorés, variante acceptée, mot de l'undercover refusé, mauvais mot → la manche continue, chrono écoulé → raté ; Mister White trouve → il gagne seul même s'il restait des undercovers ;
-- points : 1000 par civil (éliminés compris), 2000 par infiltré, 2000 pour Mister White seul s'il devine ; ajoutés en fin de manche seulement ; rien si l'hôte termine en cours de manche ;
+- points : 1000 par civil encore en jeu, 0 par civil éliminé (tranche 42), 2000 par infiltré (éliminés compris), 2000 pour Mister White seul s'il devine ; ajoutés en fin de manche seulement ; rien si l'hôte termine en cours de manche ;
 - vote : élimination nette ; égalité → départage entre ex æquo ; égalité au départage → personne éliminé, nouveau tour ; aucun vote → personne éliminé ;
 - validation de `joueur:repondre` : vote pour soi, pour un éliminé, pour un id inconnu, pour un non-ex æquo en départage, pas une chaîne, deuxième vote, votant éliminé ou non attendu, hors phase ; vote pour un joueur en jeu déconnecté accepté ; proposition d'un autre joueur que Mister White refusée, deuxième proposition refusée ;
 - `hote:suivant` : passe de `description` à `vote`, ignoré pendant un vote et pendant la devinette ;
@@ -330,6 +332,6 @@ Sur Render, TV dans un onglet du PC en 1920×1080, joueurs sur de vrais téléph
 3. **Vote et élimination.** L'hôte appuie sur « Passer au vote ». On ne peut voter ni pour soi, ni pour un éliminé, et le vote se termine au bout de 20 s. La TV montre qui a voté, jamais pour qui. À l'élimination, la TV révèle le rôle de l'éliminé, jamais son mot. Son téléphone affiche « Tu es éliminé », et il ne vote plus au tour suivant.
 4. **Égalité.** Créer une égalité 2-2 : vote de départage entre les deux ex æquo seulement.
 5. **Mister White.** Éliminer Mister White et lui faire taper le mot des civils en minuscules, sans accent ou au pluriel : « Mister White gagne ! », lui seul marque 2000. Sur une autre manche, lui faire taper un mauvais mot (ou le mot de l'undercover) : raté, la manche continue.
-6. **Fin de manche.** Éliminer tous les infiltrés : « Les civils gagnent ! », les deux mots s'affichent, chaque civil (éliminé compris) marque 1000. À la manche suivante, les mots et les rôles changent.
+6. **Fin de manche.** Éliminer tous les infiltrés : « Les civils gagnent ! », les deux mots s'affichent, chaque civil encore en jeu marque 1000, un civil éliminé ne marque rien. À la manche suivante, les mots et les rôles changent.
 7. **Déconnexion.** Couper l'undercover pendant une description (bouton `?dev` « Couper 15 s ») : il est grisé et reste votable. À son retour, il retrouve le même mot.
 8. **Arrêt et podium.** L'hôte termine pendant la 2e manche : podium avec « Manches gagnées », la manche en cours n'est pas comptée. Avec 3 joueurs connectés, « Rejouer » est désactivé en Undercover. L'hôte choisit Quiz : « Rejouer » lance un quiz qui marche comme avant.

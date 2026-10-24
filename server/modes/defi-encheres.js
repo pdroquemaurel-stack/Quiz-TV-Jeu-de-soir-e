@@ -19,6 +19,8 @@ export const DUREE_ANNONCE_MS = 5000;
 export const DUREE_DEFI_MS = 60000;
 export const DUREE_REVELATION_MS = 10000;
 export const ENCHERE_MAX = 99;
+// L'enchère d'ouverture, la même pour tous les défis (tranche 42).
+export const ENCHERE_OUVERTURE = 1;
 
 export const banqueDefis = JSON.parse(
   readFileSync(new URL('../../data/defi-encheres.json', import.meta.url), 'utf8'),
@@ -91,7 +93,7 @@ export function demarrerPartie(salle) {
   demarrerManche(salle, 0);
 }
 
-// La manche s'ouvre sur la mise de départ du défi, au nom d'un joueur tiré au sort.
+// La manche s'ouvre à 1, au nom d'un joueur tiré au sort.
 function demarrerManche(salle, index) {
   const attendus = listerAttendus(salle);
   Object.assign(salle.etatMode, {
@@ -99,7 +101,7 @@ function demarrerManche(salle, index) {
     indexQuestion: index,
     debutPhaseA: Date.now(),
     attendus,
-    enchere: salle.etatMode.questions[index].miseDepart,
+    enchere: ENCHERE_OUVERTURE,
     auteur: melanger(attendus)[0] ?? null,
     arbitre: null,
     compteur: 0,

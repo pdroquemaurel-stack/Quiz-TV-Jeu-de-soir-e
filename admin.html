@@ -519,15 +519,14 @@ const JEUX = [
     fichiers: [['data/defi-encheres.json', 'les défis']],
     ajouter: [
       '<code>sujet</code> : ce qui complète « En 1 minute, combien de … peux-tu citer ? », au pluriel, sans article (« fromages français », pas « les fromages »).',
-      '<code>miseDepart</code> : l\'enchère d\'ouverture, un entier de 1 à 20, assez basse pour être facile à relever.',
     ],
-    corriger: ['Baisser la mise de départ d\'un défi trop dur, ou retirer un défi qui fait débat.'],
+    corriger: ['Retirer un défi trop dur ou qui fait débat. L\'enchère d\'ouverture vaut toujours 1 : rien à régler défi par défi.'],
     regles: [
       'Un sujet où l\'arbitre juge facilement ce qui compte (« capitales européennes » plutôt que « mots en -tion »).',
       'Pas deux fois le même sujet.',
       'Au moins 12 défis (une partie de 12 manches).',
     ],
-    exemple: `{"id":"de-fromages","sujet":"fromages français","miseDepart":10}`,
+    exemple: `{"id":"de-fromages","sujet":"fromages français"}`,
     commandes: [['node scripts/verifier-defi-encheres.js', 'Vérifie le format des défis.']],
     taches: ['Ajouter des défis au Défi des enchères', 'Un défi des enchères est trop dur'],
   },
