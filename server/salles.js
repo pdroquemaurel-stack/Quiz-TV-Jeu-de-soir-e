@@ -9,6 +9,7 @@ export const DELAI_FERMETURE_MS = 30 * 60 * 1000;
 export const DUREE_PODIUM_MS = 20000;
 export const OBJECTIF_MIN = 3;
 export const OBJECTIF_MAX = 15;
+export const SCORE_MAX = 999999;
 const PSEUDO_MAX = 12;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -181,6 +182,20 @@ export function mettreEnPause(salle) {
   if (salle.etat !== 'partie' || salle.pause) return false;
   salle.pause = { depuisA: Date.now() };
   journaliser(salle.code, 'pause');
+  return true;
+}
+
+// Correction d'un score par l'hôte, depuis le menu pause : { joueurId, score }, un entier
+// de 0 à SCORE_MAX. Les points globaux suivent au podium, par les médailles.
+// Renvoie true si c'est accepté.
+export function modifierScore(salle, donnees) {
+  const { joueurId, score } = donnees ?? {};
+  if (salle.etat !== 'partie' || !salle.pause) return false;
+  if (!Number.isInteger(score) || score < 0 || score > SCORE_MAX) return false;
+  const joueur = salle.joueurs.find((j) => j.id === joueurId);
+  if (!joueur) return false;
+  journaliser(salle.code, `score ${joueur.pseudo} corrigé : ${joueur.score} → ${score}`);
+  joueur.score = score;
   return true;
 }
 

@@ -63,7 +63,10 @@ export function vueJoueur(salle, joueur) {
     pause: Boolean(salle.pause),
     etape: etapeCourante(salle),
   };
-  if (salle.etat === 'partie') return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };
+  if (salle.etat === 'partie') {
+    const scores = estHote && salle.pause ? { scoresPause: scoresACorriger(salle) } : {};
+    return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur), ...scores };
+  }
 
   // Hors partie : le mode choisi, et le sélecteur pour l'hôte.
   const horsPartie = {
@@ -81,6 +84,11 @@ export function vueJoueur(salle, joueur) {
     return { ...horsPartie, ...vueTableau(salle, joueur) };
   }
   return horsPartie;
+}
+
+// Pour le menu pause de l'hôte : tous les joueurs de la partie, dans l'ordre d'arrivée.
+function scoresACorriger(salle) {
+  return salle.joueurs.map(({ id, pseudo, couleur, score }) => ({ id, pseudo, couleur, score }));
 }
 
 function vueFin(salle, joueur) {

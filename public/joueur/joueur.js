@@ -208,6 +208,23 @@ document.getElementById('bouton-terminer').addEventListener('click', () => {
 
 document.getElementById('bouton-pause').addEventListener('click', () => socket.emit('hote:pause'));
 document.getElementById('reprendre').addEventListener('click', () => socket.emit('hote:reprendre'));
+document.getElementById('ouvrir-scores').addEventListener('click', () => {
+  const liste = document.getElementById('scores-pause');
+  liste.hidden = !liste.hidden;
+});
+
+// Envoyé quand l'hôte quitte le champ (ou valide) ; une valeur impossible est remise comme avant.
+const SCORE_MAX = 999999;
+document.getElementById('scores-pause').addEventListener('change', (evenement) => {
+  const champ = evenement.target;
+  const score = Number(champ.value);
+  if (champ.value === '' || !Number.isInteger(score) || score < 0 || score > SCORE_MAX) {
+    champ.value = champ.dataset.score;
+    return;
+  }
+  socket.emit('hote:modifierScore', { joueurId: champ.dataset.joueur, score });
+});
+
 document.getElementById('terminer-pause').addEventListener('click', () => {
   confirmation.hidden = false;
 });
@@ -298,6 +315,32 @@ function afficherPause(vue) {
   document.getElementById('texte-pause').textContent = vue.estHote
     ? 'Le chrono attend. Toi aussi, apparemment.'
     : 'L\'hôte a tout arrêté. Profites-en pour respirer.';
+  if (!vue.pause) document.getElementById('scores-pause').hidden = true;
+  if (vue.scoresPause) afficherScoresPause(vue.scoresPause);
+}
+
+// Une ligne par joueur, avec son score dans un champ. Pendant une saisie, la liste
+// n'est pas reconstruite, pour ne pas effacer ce que l'hôte tape.
+function afficherScoresPause(scores) {
+  const liste = document.getElementById('scores-pause');
+  if (liste.contains(document.activeElement)) return;
+  liste.replaceChildren(...scores.map((joueur) => {
+    const ligne = document.createElement('li');
+    const pastilleJoueur = document.createElement('span');
+    pastilleJoueur.className = 'pastille';
+    pastilleJoueur.style.setProperty('--couleur', `var(--joueur-${joueur.couleur})`);
+    const pseudo = document.createElement('span');
+    pseudo.className = 'pseudo-candidat';
+    pseudo.textContent = joueur.pseudo;
+    const champ = document.createElement('input');
+    Object.assign(champ, { type: 'number', inputMode: 'numeric', min: 0, max: SCORE_MAX, step: 1 });
+    champ.value = joueur.score;
+    champ.dataset.joueur = joueur.id;
+    champ.dataset.score = joueur.score;
+    champ.setAttribute('aria-label', `Score de ${joueur.pseudo}`);
+    ligne.append(pastilleJoueur, pseudo, champ);
+    return ligne;
+  }));
 }
 
 // Wake Lock : l'écran reste allumé pendant la partie. Il ne marche qu'en HTTPS

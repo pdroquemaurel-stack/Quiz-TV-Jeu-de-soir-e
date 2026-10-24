@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ajouterJoueur, creerSalle, demarrerPartie, fermerSalle, mettreEnPause, reprendrePartie,
-  synchroniserMinuteur, terminerPartie,
+  SCORE_MAX, ajouterJoueur, creerSalle, demarrerPartie, fermerSalle, mettreEnPause, modifierScore,
+  passerApresPodium, reprendrePartie, synchroniserMinuteur, terminerPartie,
 } from './salles.js';
+import { vueJoueur } from './vues.js';
 import { decalerHeures, questionCourante } from './modes/commun.js';
 import { modes } from './modes/index.js';
 import * as petitBac from './modes/petit-bac.js';
@@ -133,4 +134,54 @@ test('pause : au Petit bac, les 10 s après le STOP reprennent aussi où elles e
   petitBac.decalerHeures(salle, 7000);
   assert.equal(salle.etatMode.stop.a, 27000);
   assert.equal(petitBac.echeance(salle), avant + 7000);
+});
+
+// --- Correction des scores (temps 2) ---
+
+test('scores : corrigés seulement pendant une pause, avec un entier de 0 à SCORE_MAX', (t) => {
+  simulerTemps(t);
+  const salle = partieA4(t, 'quiz');
+  const [a, b] = salle.joueurs;
+  assert.equal(modifierScore(salle, { joueurId: a.id, score: 1200 }), false, 'hors pause');
+
+  mettreEnPause(salle);
+  for (const score of [-1, SCORE_MAX + 1, 12.5, '1200', null, NaN]) {
+    assert.equal(modifierScore(salle, { joueurId: a.id, score }), false, `score ${score}`);
+  }
+  assert.equal(modifierScore(salle, { joueurId: 'j_inconnu', score: 10 }), false);
+  assert.equal(modifierScore(salle, null), false);
+  assert.equal(a.score, 0);
+
+  assert.equal(modifierScore(salle, { joueurId: a.id, score: 1200 }), true);
+  assert.equal(modifierScore(salle, { joueurId: b.id, score: SCORE_MAX }), true);
+  assert.equal(modifierScore(salle, { joueurId: b.id, score: 0 }), true);
+  assert.deepEqual([a.score, b.score], [1200, 0]);
+});
+
+test('scores : seul l\'hôte reçoit la liste à corriger, et seulement en pause', (t) => {
+  simulerTemps(t);
+  const salle = partieA4(t, 'quiz');
+  const [hote, autre] = salle.joueurs;
+  assert.equal(vueJoueur(salle, hote).scoresPause, undefined);
+  mettreEnPause(salle);
+  modifierScore(salle, { joueurId: autre.id, score: 500 });
+  assert.deepEqual(vueJoueur(salle, hote).scoresPause[1], {
+    id: autre.id, pseudo: 'B', couleur: autre.couleur, score: 500,
+  });
+  assert.equal(vueJoueur(salle, hote).scoresPause.length, 4);
+  assert.equal(vueJoueur(salle, autre).scoresPause, undefined);
+});
+
+test('scores : un score corrigé compte pour les médailles et les points globaux', (t) => {
+  simulerTemps(t);
+  const salle = partieA4(t, 'quiz');
+  const [a, b, c] = salle.joueurs;
+  mettreEnPause(salle);
+  modifierScore(salle, { joueurId: c.id, score: 3000 });
+  modifierScore(salle, { joueurId: a.id, score: 2000 });
+  modifierScore(salle, { joueurId: b.id, score: 1000 });
+  terminerPartie(salle);
+  assert.deepEqual(salle.medaillesPartie, { [c.id]: 'or', [a.id]: 'argent', [b.id]: 'bronze' });
+  passerApresPodium(salle);
+  assert.deepEqual([c.pointsGlobaux, a.pointsGlobaux, b.pointsGlobaux], [3, 2, 1]);
 });

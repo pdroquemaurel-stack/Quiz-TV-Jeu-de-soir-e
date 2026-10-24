@@ -492,7 +492,7 @@ test('double « Suivant » à l\'élimination en Undercover : le tour de descrip
   assert.equal(salle.etatMode.phase, 'description');
 });
 
-test('pause : seul l\'hôte la met et la lève ; pendant la pause, ni réponse ni départ ne font avancer', { timeout: 10000 }, async (t) => {
+test('pause : seul l\'hôte la met, la lève et corrige les scores ; pendant la pause, ni réponse ni départ ne font avancer', { timeout: 10000 }, async (t) => {
   const { salle, clients: [hote, autre, troisieme] } = await ouvrirSalle(t, ['Hôte', 'Autre', 'Trois']);
   hote.emettre('hote:validerFormat');
   hote.emettre('hote:lancer');
@@ -525,8 +525,12 @@ test('pause : seul l\'hôte la met et la lève ; pendant la pause, ni réponse n
   assert.equal(salle.etatMode.phase, 'question');
 
   autre.emettre('hote:reprendre');
+  autre.emettre('hote:modifierScore', { joueurId: salle.joueurs[1].id, score: 5000 });
   await synchroniser(autre, salle);
   assert.notEqual(salle.pause, null);
+  assert.notEqual(salle.joueurs[1].score, 5000);
+  hote.emettre('hote:modifierScore', { joueurId: salle.joueurs[1].id, score: 5000 });
+  await attendreQue(() => salle.joueurs[1].score === 5000);
   hote.emettre('hote:reprendre');
   await attendreQue(() => salle.etatMode.phase === 'revelation');
   assert.equal(salle.pause, null);
