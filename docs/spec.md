@@ -440,33 +440,32 @@ Chaque tranche se termine par un test concret. Les numéros des tranches ne chan
 
 Dans l'ordre, une tranche à la fois. Pour chaque mode, les points listés sont à trancher dans sa mini-spec `docs/modes/<mode>.md`, validée avant le code (règles de l'étape « Modes de jeu »). Les règles détaillées de la demande sont sous chaque tranche, plus bas.
 
-1. **42. Retours de la soirée test.** Pause, correction des scores, règles de Qui de nous ?, du Défi des enchères et d'Undercover, Blind test mix, catégories du Blind test. Détail plus bas.
-2. **35. Wiki course.** Atteindre une page Wikipédia cible depuis un départ commun, en ne cliquant que sur les liens internes, pages affichées dans l'app.
+1. **35. Wiki course.** Atteindre une page Wikipédia cible depuis un départ commun, en ne cliquant que sur les liens internes, pages affichées dans l'app.
    - À trancher : choix des paires départ / cible (liste préparée ou tirage, garantie qu'un chemin existe) ; points (ordre d'arrivée, nombre de clics, temps) ; fin d'une course libre (premier arrivé ou chrono maximal) ; manche chronométrée sans clic à temps ; retour en arrière permis ou non ; pages à écarter (homonymies, dates) ; nettoyage du HTML « mobile-html » (liens externes, images, poids sur le téléphone) ; ce que montre la TV pendant la course ; nombre de joueurs minimum.
-3. **36. Time's Up.** Deux équipes font deviner les mêmes mots en trois manches : description libre, un seul mot, mime.
+2. **36. Time's Up.** Deux équipes font deviner les mêmes mots en trois manches : description libre, un seul mot, mime.
    - À trancher : formation des équipes (tirage ou choix de l'hôte, nombre impair) ; liste de mots à piocher (fichier de contenu et script de vérification) ; ordre de passage ; mot passé remis dans le paquet ou non ; fin d'une manche ; scores d'équipe et médailles individuelles ; ce que voient le joueur actif, son équipe et l'autre équipe ; nombre de joueurs minimum.
-4. **37. Chasse express.** La TV annonce un objet à rapporter, le premier revenu appuie sur « J'ai trouvé ! », les autres valident ou contestent par vote.
+3. **37. Chasse express.** La TV annonce un objet à rapporter, le premier revenu appuie sur « J'ai trouvé ! », les autres valident ou contestent par vote.
    - À trancher : règle du vote (majorité, égalité, l'hôte tranche ?) ; points du premier, et des suivants ou non ; défi refusé (le suivant peut-il tenter ?) ; durée du chrono ; défis faisables sans danger dans tout appartement (fichier de contenu et script de vérification) ; nombre de manches et de joueurs minimum.
-5. **38. Cherche & trouve.** Brancher sur Quiz TV le jeu autonome existant : chacun explore une illustration géante sur son téléphone et tape les détails demandés.
+4. **38. Cherche & trouve.** Brancher sur Quiz TV le jeu autonome existant : chacun explore une illustration géante sur son téléphone et tape les détails demandés.
    - **Avant tout : demander à Paul où se trouve la version autonome existante** (dossier ou dépôt, licence des illustrations).
    - À trancher : OpenSeadragon, nouvelle dépendance à valider (chargée depuis un CDN ou dans le dépôt) ; hébergement et poids des tuiles ; vérification des taps par le serveur, sans envoyer au téléphone la position des détails ; les 6 détails en même temps ou un par un ; ce que montre la TV ; fin de partie.
-6. **39. Dessine et devine.** Un joueur dessine un mot sur son téléphone, le dessin s'affiche en direct sur la TV, les autres proposent.
+5. **39. Dessine et devine.** Un joueur dessine un mot sur son téléphone, le dessin s'affiche en direct sur la TV, les autres proposent.
    - À trancher : envoi des traits (format, fréquence, débit sur le stick) ; comparaison des propositions (accents, pluriels, comme Même réponse) ; points du premier, des suivants et du dessinateur ; choix du mot (imposé ou parmi plusieurs) ; indices éventuels ; liste de mots par niveau (fichier de contenu et script de vérification) ; ordre et nombre de dessinateurs ; propositions fausses visibles sur la TV ou non.
-7. **40. Le duel des avocats.** Deux avocats tirés au hasard plaident une affaire absurde, chacun dans un camp secret, puis le jury vote.
+6. **40. Le duel des avocats.** Deux avocats tirés au hasard plaident une affaire absurde, chacun dans un camp secret, puis le jury vote.
    - À trancher : tirage des avocats (chacun son tour ?) ; ce qui est secret, et pour qui ; les avocats votent-ils ; points de l'avocat gagnant et des jurés ; égalité des votes ; nombre de manches et de joueurs minimum ; catalogue d'affaires (fichier de contenu et script de vérification) ; son du coup de marteau (`docs/sons.md`).
-8. **41. Mode photo (nom à trouver).** La TV dévoile peu à peu la photo d'un personnage du catalogue de Qui suis-je ?, les joueurs crient le nom, l'hôte désigne qui a trouvé.
+7. **41. Mode photo (nom à trouver).** La TV dévoile peu à peu la photo d'un personnage du catalogue de Qui suis-je ?, les joueurs crient le nom, l'hôte désigne qui a trouvé.
    - À trancher : nom du mode ; l'hôte voit-il le nom sur son téléphone (ce serait une nouvelle exception à la règle « jamais la bonne réponse avant la révélation », réservée aujourd'hui au maître du Blind test) ou joue-t-il comme les autres ; détail de départ et étapes du dézoom ; points selon l'étape ; plusieurs gagnants par photo ou non ; niveaux en option ; personnages déjà vus en Qui suis-je ? dans la soirée.
-9. **31. Menteur (Perudo).** 5 dés cachés par joueur, enchères sur tous les dés en jeu, « Menteur ! » révèle les dés, le perdant du défi perd un dé.
+8. **31. Menteur (Perudo).** 5 dés cachés par joueur, enchères sur tous les dés en jeu, « Menteur ! » révèle les dés, le perdant du défi perd un dé.
    - À trancher : ceux listés sous la tranche 31 (ordre de parole, ouverture sur les pacos, classement pour les médailles, chrono pour annoncer, joueur déconnecté à son tour, lancer en secouant le téléphone).
-10. **23, temps 2. La réplique.** Chacun écrit une réplique à une amorce drôle, puis tout le monde vote pour la meilleure, jamais la sienne.
+9. **23, temps 2. La réplique.** Chacun écrit une réplique à une amorce drôle, puis tout le monde vote pour la meilleure, jamais la sienne.
     - À trancher : mode à part ou seconde source d'amorces de La légende (voir la tranche 24) ; amorces à écrire (fichier de contenu et script de vérification) ; longueur des répliques ; barème des votes et bonus à l'unanimité.
 
 En réserve : la tranche **9** (APK). La soirée test (tranche 10) n'a pas demandé de la reprendre.
 
 ### État des tranches
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères), **34** (Qui suis-je ?), **10** (soirée test).
-- **En cours** : la **42** (retours de la soirée test), puis la **35** (Wiki course).
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères), **34** (Qui suis-je ?), **10** (soirée test), **42** (retours de la soirée test).
+- **En cours** : aucune, la prochaine est la **35** (Wiki course).
 - **À venir** : voir « Prochaines étapes » ci-dessus. Les 8 nouveaux jeux (**35 à 40**, demandés le 06/10/2026) et le mode photo (**41**) passent avant **31** et **23** temps 2, prévues après l'audit (`AUDIT.md`). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
@@ -632,7 +631,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
 ### Tranche « Retours de la soirée test » (42)
 
-- **42. Retours de la soirée test (tranche 10).** Corrections demandées par Paul après la soirée, à faire avant la tranche 35. Un commit par temps, après le test de Paul sur Render avec de vrais téléphones.
+- **42. Retours de la soirée test (tranche 10).** ✅ Terminée, validée par Paul sur Render le 24/10/2026. Corrections demandées par Paul après la soirée, à faire avant la tranche 35. Un commit par temps, après le test de Paul sur Render avec de vrais téléphones.
   - Temps 1 : pause de l'hôte, dans tous les modes (voir « Pause »). Événements `hote:pause` et `hote:reprendre`, champ `salle.pause`, fonction `decalerHeures` du contrat du registre.
   - Temps 2 : depuis le menu pause, l'hôte corrige le score de chaque joueur dans la partie en cours. Les points globaux ne se corrigent pas : ils viennent des médailles, que le score corrigé fixe au podium.
   - Temps 3 : règles. Qui de nous ? : on peut voter pour soi. Le défi des enchères : l'enchère d'ouverture vaut toujours 1 (champ `miseDepart` retiré du contenu). Undercover : un civil éliminé ne marque rien, même si les civils gagnent.
