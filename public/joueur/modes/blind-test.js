@@ -105,9 +105,14 @@ boutonLancerBlindTest.addEventListener('click', () => {
   socket.emit('joueur:repondre', { lancer: true });
 });
 
+// Mix : le bouton attend que la TV ait chargé les 5 extraits (10 s au plus, mesurées par le serveur).
 function afficherRelaisBlindTest(vue) {
   document.getElementById('bt-numero-relais').textContent = libelleMancheBlindTest(vue);
-  boutonLancerBlindTest.textContent = vue.format === 'mix' ? 'Lancer le mix' : 'Lancer la chanson';
+  const { chargement } = vue;
+  const enAttente = chargement !== null && !chargement.peutLancer;
+  boutonLancerBlindTest.disabled = enAttente;
+  if (enAttente) boutonLancerBlindTest.textContent = `Chargement des extraits… ${chargement.faits}/${chargement.total}`;
+  else boutonLancerBlindTest.textContent = vue.format === 'mix' ? 'Lancer le mix' : 'Lancer la chanson';
 }
 
 function libelleMancheBlindTest(vue) {
@@ -143,12 +148,12 @@ function afficherMaitreMix(vue) {
     const bouton = document.createElement('button');
     bouton.className = 'bouton-proposition';
     bouton.dataset.index = index;
-    bouton.disabled = chanson.trouvee;
+    bouton.disabled = chanson.trouvee || chanson.indisponible;
     const libelle = document.createElement('span');
     libelle.className = 'libelle-proposition';
-    libelle.textContent = chanson.trouvee
-      ? `✓ ${chanson.titre} — ${chanson.joueur}`
-      : `${chanson.titre} — ${chanson.artiste}`;
+    if (chanson.indisponible) libelle.textContent = 'Extrait indisponible';
+    else if (chanson.trouvee) libelle.textContent = `✓ ${chanson.titre} — ${chanson.joueur}`;
+    else libelle.textContent = `${chanson.titre} — ${chanson.artiste}`;
     bouton.append(libelle);
     return bouton;
   }));

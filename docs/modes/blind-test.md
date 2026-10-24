@@ -4,6 +4,8 @@ Mini-spec de la tranche 25. Elle a été validée le 27/09/2026 (voir « Choix v
 
 La TV joue des extraits de chansons, les joueurs crient leurs réponses **à voix haute**. À chaque manche, un joueur est **maître du jeu** : son téléphone affiche la réponse, et c'est lui qui désigne qui a trouvé. Le rôle tourne d'une manche à l'autre.
 
+> **Tranche 42** (retours de la soirée test) : au mix, les 5 extraits sont chargés pendant le relais, puis démarrent ensemble ; un extrait qui ne se charge pas est remplacé, sinon sa place est « Indisponible ». Voir « Chargement des extraits du mix ».
+
 Un seul mode, **Blind test**, avec deux formats choisis par l'hôte en salle d'attente :
 
 - **Classique** : une chanson par manche, 30 s d'écoute. Le titre et l'artiste rapportent des points séparément, éventuellement à deux joueurs différents.
@@ -97,7 +99,20 @@ Les barèmes des deux formats sont alignés : le titre et l'artiste valent chacu
 La TV seule joue l'audio : le serveur ne sait pas si l'extrait se lit. En cas d'erreur de chargement :
 
 - **classique** : la TV affiche « Extrait indisponible » à la place de l'animation d'écoute. Le maître voit la chanson et peut valider « Personne » pour passer à la suite. Rien n'attend l'audio, les chronos sont ceux du serveur ;
-- **mix** : la carte de cette chanson est marquée « Indisponible » sur la TV, et le mix continue avec les autres. Elle peut encore être désignée (le maître voit tout), sinon elle se retourne à la révélation.
+- **mix** : depuis la tranche 42, la TV charge les extraits pendant le relais et le signale au serveur, qui remplace un extrait en échec (voir « Chargement des extraits du mix »). Si un extrait lâche plus tard, en pleine écoute, sa carte est marquée « Indisponible » sur la TV et le mix continue avec les autres ; elle peut encore être désignée (le maître voit tout), sinon elle se retourne à la révélation.
+
+### Chargement des extraits du mix (tranche 42)
+
+**Ce qui s'est passé à la soirée test.** Les 5 extraits du mix ne démarraient pas ensemble, et parfois le mix n'a pas marché du tout. Cause dans le code de la TV : pendant le relais, elle préchargeait les 5 extraits dans des lecteurs cachés, mais au lancement elle créait **5 nouveaux lecteurs** au lieu de reprendre ceux-là. Chacun redemandait son extrait (`/extrait/:id`, puis Deezer, puis son CDN), se plaçait à sa position de départ (un second chargement) et démarrait dès que lui seul était prêt : rien n'attendait les autres. Mesuré sur la planche, sur un PC rapide en local : 330 ms d'écart entre le premier et le dernier ; sur le stick, en Wi-Fi via Render, bien plus. Pendant l'écoute, les 5 lecteurs préchargés restaient en mémoire : **10 lecteurs audio** à la fois sur le stick (la planche, validée sur le stick, n'en ouvre que 5). Un appareil d'entrée de gamme peut manquer de décodeurs : c'est l'explication la plus probable de l'échec complet, faute des logs Render de la soirée.
+
+**Désormais** :
+
+- Au relais, le serveur tire les départs du mix et envoie à la TV les 5 extraits avec leur départ et leur gain. La TV crée une piste par extrait, la charge et la place à son départ, sans la jouer.
+- La TV dit au serveur où elle en est (`tv:extraits`) : extraits prêts, extraits en échec. Le serveur décide : un extrait en échec est **remplacé** par une autre chanson (absente de la partie, jamais entendue d'abord, jamais une chanson déjà en échec), 2 fois au plus par place ; après cela, la place est **indisponible**.
+- « Lancer le mix » reste grisé sur le téléphone du maître (« Chargement des extraits… 3/5 ») jusqu'à ce que chaque place soit prête ou indisponible, ou au plus **10 s** après le début du relais (TV absente ou trop lente : les pistes non chargées partiront dès qu'elles le pourront). La TV affiche « Extraits chargés : 3/5 ».
+- Au lancement, la TV reprend les pistes préparées et les démarre dans la même boucle : **elles partent ensemble**. Il n'y a jamais plus de 5 pistes à la fois : la révélation ne précharge plus le mix suivant.
+- Une place indisponible ne joue rien : sa carte est « Indisponible » sur la TV et sur le téléphone du maître, elle ne peut pas être arrêtée, et la manche se termine quand toutes les autres sont trouvées. Son titre n'est jamais montré.
+- Le classique ne change pas : une seule piste, préchargée comme avant.
 
 Ce cas doit rester rare : l'import écarte les titres sans extrait, et `verifier-blind-test.js --deezer` repère ceux qui ont disparu depuis.
 
@@ -138,7 +153,7 @@ Une manche dure de 45 s à 1 min, plus le relais. Une partie de 10 chansons dure
 
 | Phase | Durée | Fin |
 |---|---|---|
-| `relais` | aucune (tranche 27) | « Lancer le mix » du maître de la manche. S'il se déconnecte : relais du maître suivant, ou podium |
+| `relais` | aucune (tranche 27) ; 10 s au plus pour charger les extraits (tranche 42) | « Lancer le mix » du maître de la manche, une fois les extraits chargés ou au bout de 10 s. S'il se déconnecte : relais du maître suivant, ou podium |
 | `ecoute` | 120 s au total (90 ou 180 au choix de l'hôte), décompte mis en pause pendant `designation` | Les 5 chansons trouvées, ou fin du décompte |
 | `designation` | 20 s | « Valider » ou « Annuler » du maître : retour à `ecoute` (ou `revelation` si c'était la 5e). Fin du chrono : annulée, retour à `ecoute` |
 | `revelation` | aucune (tranche 27, 15 s avant) | « Passer la modération » du maître sortant ou « Suivant » de l'hôte : relais de la manche suivante. Après la dernière manche : podium |
@@ -178,7 +193,7 @@ Pourquoi une redirection plutôt que demander le lien dans la logique du mode : 
 - **En boucle** (`loop`) : en mix, 120 s d'écoute font tourner chaque extrait 4 fois.
 - **Volume** : en mix, chaque piste est réglée d'après son `gain` pour qu'aucune chanson n'écrase les autres (`volume = min(1, 10^((GAIN_CIBLE − gain) / 20))`). La valeur de `GAIN_CIBLE` est choisie à l'oreille au temps 1.
 - **Pause** : en `designation`, la TV met les pistes en pause ; au retour en `ecoute`, elle les relance. Une chanson trouvée est arrêtée et vidée.
-- **Préchargement** : pendant la révélation, la TV reçoit les ids de la manche suivante et les charge dans des `<audio preload="auto">` cachés, jamais lus.
+- **Préchargement** : en classique, pendant la révélation et le relais, la TV reçoit l'id de la chanson suivante et la charge dans un `<audio preload="auto">` caché, jamais lu. En mix (tranche 42), les pistes sont préparées au relais et reprises telles quelles au lancement (voir « Chargement des extraits du mix »).
 - **Au podium**, tous les `<audio>` sont arrêtés et vidés (crochet `completerPodium`).
 - La **musique de fond** de la salle d'attente est déjà coupée pendant une partie. Les sons du jeu (`tictac`, `revelation`…) passent par-dessus les extraits.
 - Déblocage du son : le même que pour `sons.js` (touche OK de la télécommande). **À vérifier au temps 1** : que ce geste débloque aussi la lecture des `<audio>` dans le navigateur du stick.
@@ -239,12 +254,13 @@ Le tirage réutilise `tirerQuestions` et `noterQuestionsVues` de `commun.js`, su
 
 ## Événements
 
-Aucun nouvel événement. Le maître envoie ses choix par `joueur:repondre` ; le serveur refuse tout `joueur:repondre` d'un joueur qui n'est pas le maître de la manche.
+Le maître envoie ses choix par `joueur:repondre` ; le serveur refuse tout `joueur:repondre` d'un joueur qui n'est pas le maître de la manche. Un seul événement propre au mode, depuis la tranche 42 : `tv:extraits`, de la TV.
 
 | Événement | Contenu en Blind test |
 |---|---|
 | `hote:reglerMode` | `{ format, chansons, tours, ecoute }` (voir « Choix du format »), en salle d'attente seulement |
-| `joueur:repondre` (relais) | En `relais` : `{ lancer: true }` du maître de la manche → `ecoute`. En `revelation` : `{ passer: true }` du maître sortant → relais de la manche suivante (ou podium). Refusé de tout autre joueur |
+| `tv:extraits` (mix, tranche 42) | TV → serveur, en `relais` : `{ numero, prets: [id], echecs: [id] }`, l'état du chargement des extraits de la manche `numero`. Écouté seulement du socket de la TV de la salle. Un extrait en échec est remplacé (2 fois au plus par place), puis sa place devient indisponible. Ignoré hors du relais du mix, pour une autre manche ou s'il est malformé. |
+| `joueur:repondre` (relais) | En `relais` : `{ lancer: true }` du maître de la manche → `ecoute` (en mix, refusé tant que les extraits ne sont pas chargés, 10 s au plus). En `revelation` : `{ passer: true }` du maître sortant → relais de la manche suivante (ou podium). Refusé de tout autre joueur |
 | `joueur:repondre` (classique) | En `ecoute` ou `designation` : `{ titre, artiste }`, chacun l'`id` d'un joueur désignable ou `null`. Refusé si l'émetteur n'est pas le maître, si un id n'est pas un joueur de la salle ou est celui du maître, si la désignation est déjà validée. Ignoré en `revelation`. |
 | `joueur:repondre` (mix) | En `ecoute` : `{ arreter: index }`, index d'une chanson du mix pas encore trouvée → `designation`. En `designation` : `{ joueur, trouve }` (`trouve` vaut `titre`, `artiste` ou `les-deux`) pour la chanson en cours, ou `{ annuler: true }`. Refusé si l'émetteur n'est pas le maître, index invalide ou déjà trouvé, joueur non désignable, mauvaise phase. |
 | `hote:suivant` | Pendant la révélation : relais de la manche suivante (ou podium), comme le « Passer la modération » du maître sortant |
@@ -266,13 +282,14 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 
 | Format, phase | Contenu |
 |---|---|
-| `relais` (les deux formats) | `format`, `phase`, `numero`, `total`, `maitre` (id), `extraitsSuivants: [{ id }]` (les extraits de la manche, chargés sans être joués) |
+| `relais` (classique) | `format`, `phase`, `numero`, `total`, `maitre` (id), `extraitsSuivants: [{ id }]` (l'extrait de la manche, chargé sans être joué) |
+| `relais` (mix, tranche 42) | Idem sans `extraitsSuivants`, plus `extraits` : 5 × `{ id, depart, gain }` (`null` pour une place indisponible), et `chargement: { faits, total, peutLancer }` |
 | Classique, `ecoute` | `phase`, `numero`, `total`, `maitre` (id), `extrait: { id, depart, gain }` (le volume est réglé d'après le gain aussi en classique), `tempsRestantMs`, `tempsEcouleMs` |
 | Classique, `designation` | Idem, sans `extrait` (la musique est coupée) |
 | Classique, `revelation` | Idem, plus `chanson: { titre, artiste, pochette }`, `titre` et `artiste` (id du joueur désigné ou `null`), `extraitSuivant: { id }` (préchargement, absent à la dernière manche), `classement` (avec les points de la manche) |
-| Mix, `ecoute` | `format`, `phase`, `numero`, `total`, `maitre`, `tempsRestantMs` (décompte d'écoute), `dureeEcouteMs` (120 s), `ecouteRestanteMs`, `tempsEcouteMs` (temps d'écoute déjà passé, pour reprendre les pistes après un rechargement), `cartes` : 5 entrées, soit `{ extrait: { id, depart, gain } }` (pas encore trouvée), soit `{ titre, artiste, pochette, joueur, trouve, points }` (trouvée) |
+| Mix, `ecoute` | `format`, `phase`, `numero`, `total`, `maitre`, `tempsRestantMs` (décompte d'écoute), `dureeEcouteMs` (120 s), `ecouteRestanteMs`, `tempsEcouteMs` (temps d'écoute déjà passé, pour reprendre les pistes après un rechargement), `cartes` : 5 entrées, soit `{ extrait: { id, depart, gain } }` (pas encore trouvée), soit `{ titre, artiste, pochette, joueur, trouve, points }` (trouvée), soit `{ indisponible: true }` (aucun extrait n'a pu se charger, tranche 42) |
 | Mix, `designation` | Idem, plus `chansonEnDesignation` et le `tempsRestantMs` de la désignation. Le décompte d'écoute est figé (`ecouteRestanteMs`) |
-| Mix, `revelation` | Toutes les cartes retournées (les non trouvées avec `joueur: null`), `extraitsSuivants: [{ id }]`, `classement` (avec les points de tout le mix) |
+| Mix, `revelation` | Toutes les cartes retournées (les non trouvées avec `joueur: null`, les indisponibles toujours `{ indisponible: true }`), `classement` (avec les points de tout le mix). Plus de préchargement du mix suivant (tranche 42) |
 | podium | `classement` |
 
 
@@ -280,10 +297,10 @@ Les vues sont construites champ par champ, jamais en recopiant une chanson du ca
 
 | Écran | Pour qui | Données |
 |---|---|---|
-| `relais` | Maître de la manche à venir | `numero`, `total`, `format`. « C'est toi le maître du jeu ! » et « Lancer la chanson » (ou « Lancer le mix ») |
+| `relais` | Maître de la manche à venir | `numero`, `total`, `format`, `chargement` (`{ faits, total, peutLancer }` en mix, `null` en classique). « C'est toi le maître du jeu ! » et « Lancer la chanson » (ou « Lancer le mix », grisé « Chargement des extraits… 3/5 » tant que `peutLancer` est faux) |
 | `ecouter` | Joueurs qui répondent | `numero`, `total`, `phase`, nom du `maitre`. « La musique va démarrer… » en `relais`, « Écoute la TV et crie ta réponse ! » en `ecoute` |
 | `maitre_classique` | Maître (classique) | `numero`, `total`, `chanson: { titre, artiste, pochette }`, `designables: [{ id, pseudo }]`, `tempsRestantMs` |
-| `maitre_mix` | Maître (mix, `ecoute`) | `chansons` : 5 × `{ titre, artiste, trouvee, joueur }` (`joueur` : pseudo du gagnant, ou `null`) |
+| `maitre_mix` | Maître (mix, `ecoute`) | `chansons` : 5 × `{ titre, artiste, trouvee, indisponible, joueur }` (`joueur` : pseudo du gagnant, ou `null` ; une chanson indisponible est grisée) |
 | `maitre_designation` | Maître (mix, `designation`) | La chanson arrêtée, `designables`, `tempsRestantMs` |
 | `attente_designation` | Joueurs qui répondent (mix, `designation`) | « Le maître désigne… » |
 | `resultat` | Tous | Classique : `chanson`, `trouveTitre` et `trouveArtiste` (pseudos ou `null`), `aTrouveTitre`, `aTrouveArtiste`, `estMaitre`, `points` gagnés dans la manche, score et `rang`. Mix : `chansons` (5 × `{ titre, artiste, pochette, trouvePar, trouve }`), `estMaitre`, `points` du mix, score et `rang`. Les deux : `prochainMaitre` (pseudo, ou `null` après la dernière manche). Pour le maître sortant et l'hôte : « Passer la modération à Léa » (ou « Voir le podium ») |
@@ -378,7 +395,7 @@ Avec l'option **`--deezer`**, il interroge en plus Deezer pour chaque chanson ga
 
 ### Planche `/tv?extraits`
 
-Comme `/tv?sons` : une page de test sur la TV, pour le temps 1. Boutons « 1 extrait », « Mix de 5 », « Pause », « Reprendre », « Retirer une chanson », « Tout arrêter ». Elle sert à vérifier sur le stick la lecture, les 5 pistes en même temps, les reprises et le volume, avant tout écran de jeu.
+Comme `/tv?sons` : une page de test sur la TV, pour le temps 1. Boutons « 1 extrait », « Mix de 5 (chacune part seule) », « Mix préparé (comme en partie) » (tranche 42), « Pause », « Reprendre », « Retirer une chanson », « Tout arrêter ». Elle sert à vérifier sur le stick la lecture, les 5 pistes en même temps, les reprises et le volume, avant tout écran de jeu. Chaque ligne affiche le délai jusqu'au son (« son à +850 ms ») : « Mix de 5 » montre l'ancien comportement (chaque piste part dès qu'elle est chargée), « Mix préparé » le nouveau (tout se charge, puis tout part ensemble).
 
 
 ## Cas limites

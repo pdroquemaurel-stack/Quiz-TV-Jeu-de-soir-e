@@ -16,8 +16,13 @@ let numeroMixAffiche = null;
 let trouveesMixAffichees = 0;
 // Cartes affichées : on ne les reconstruit que si elles changent.
 let cartesMixAffichees = '';
-// Les extraits de la manche suivante, chargés pendant la révélation et jamais joués.
+// Les extraits de la manche suivante, chargés pendant la révélation et jamais joués (classique).
 let pistesSuivantes = [];
+// Mix (tranche 42) : les pistes préparées pendant le relais, par index de chanson,
+// { id, piste, etat: 'charge' | 'prete' | 'echec' }, reprises telles quelles au lancement.
+let mixPrepare = { numero: null, pistes: new Map() };
+// Dernier état du chargement envoyé au serveur, pour ne l'envoyer qu'à chaque changement.
+let chargementEnvoye = '';
 
 // Si le navigateur refuse la lecture (son pas encore débloqué), on réessaie au prochain appui.
 function lirePiste(piste) {
@@ -46,6 +51,7 @@ function prechargerExtraits(ids) {
 function arreterToutBlindTest() {
   arreterExtraitClassique();
   arreterMix();
+  oublierMixPrepare();
   for (const piste of pistesSuivantes) arreterPiste(piste);
   pistesSuivantes = [];
 }
@@ -86,7 +92,73 @@ function afficherRelaisBlindTest(salle) {
   numeroMixAffiche = null;
   document.getElementById('bt-numero-relais').textContent = libelleManche(salle.etatMode);
   afficherMaitreBlindTest(salle, 'bt-maitre-relais');
-  prechargerExtraits(salle.etatMode.extraitsSuivants.map((extrait) => extrait.id));
+  const { format, chargement } = salle.etatMode;
+  const avancement = document.getElementById('bt-chargement-relais');
+  avancement.hidden = format !== 'mix';
+  if (format !== 'mix') {
+    prechargerExtraits(salle.etatMode.extraitsSuivants.map((extrait) => extrait.id));
+    return;
+  }
+  avancement.textContent = `Extraits chargés : ${chargement.faits}/${chargement.total}`;
+  preparerMix(salle);
+}
+
+// Une piste par extrait du mix, chargée et placée à son départ. Un extrait remplacé par le
+// serveur (l'autre n'avait pas pu se charger) est préparé à son tour.
+function preparerMix(salle) {
+  const { numero, extraits } = salle.etatMode;
+  if (mixPrepare.numero !== numero) {
+    oublierMixPrepare();
+    mixPrepare.numero = numero;
+  }
+  extraits.forEach((extrait, index) => {
+    const deja = mixPrepare.pistes.get(index);
+    if (deja && extrait && deja.id === extrait.id) return;
+    if (deja) arreterPiste(deja.piste);
+    mixPrepare.pistes.delete(index);
+    if (extrait) mixPrepare.pistes.set(index, preparerExtraitMix(numero, index, extrait));
+  });
+  signalerChargement(numero);
+}
+
+function preparerExtraitMix(numero, index, extrait) {
+  const preparee = { id: extrait.id, etat: 'charge' };
+  const changer = (etat) => {
+    if (mixPrepare.pistes.get(index) !== preparee || preparee.etat !== 'charge') return;
+    preparee.etat = etat;
+    signalerChargement(numero);
+  };
+  preparee.piste = preparerPiste(extrait.id, extrait, () => changer('prete'), () => changer('echec'));
+  return preparee;
+}
+
+// Le serveur décide : lancer, remplacer un extrait en échec ou le déclarer indisponible.
+function signalerChargement(numero) {
+  const preparees = [...mixPrepare.pistes.values()];
+  const etat = {
+    numero,
+    prets: preparees.filter((preparee) => preparee.etat === 'prete').map((preparee) => preparee.id),
+    echecs: preparees.filter((preparee) => preparee.etat === 'echec').map((preparee) => preparee.id),
+  };
+  const signature = JSON.stringify(etat);
+  if (signature === chargementEnvoye) return;
+  chargementEnvoye = signature;
+  socket.emit('tv:extraits', etat);
+}
+
+function oublierMixPrepare() {
+  for (const { piste } of mixPrepare.pistes.values()) arreterPiste(piste);
+  mixPrepare = { numero: null, pistes: new Map() };
+}
+
+// Au lancement, les pistes préparées deviennent celles du mix : jouerMix les démarre ensemble.
+function reprendreMixPrepare(numero) {
+  if (mixPrepare.numero !== numero) return oublierMixPrepare();
+  for (const [index, { piste, etat }] of mixPrepare.pistes) {
+    if (etat === 'echec') arreterPiste(piste);
+    else pistesMix.set(index, piste);
+  }
+  mixPrepare = { numero: null, pistes: new Map() };
 }
 
 // ---------- Écoute ----------
@@ -139,6 +211,7 @@ function afficherEcouteMix(salle, nouvelleEtape) {
   const { numero, cartes } = salle.etatMode;
   if (numero !== numeroMixAffiche) {
     arreterMix();
+    reprendreMixPrepare(numero);
     numeroMixAffiche = numero;
     trouveesMixAffichees = 0;
     sonner('etape');
@@ -163,6 +236,7 @@ function decompterEcoute({ dureeEcouteMs, ecouteRestanteMs }) {
 }
 
 // Chaque chanson pas encore trouvée joue (ou reprend après une pause) ; une trouvée s'arrête.
+// Les pistes préparées au relais démarrent toutes dans cette même boucle, donc ensemble.
 function jouerMix(salle) {
   const { cartes, tempsEcouteMs } = salle.etatMode;
   cartes.forEach((carte, index) => {
@@ -208,12 +282,13 @@ function afficherCartesMix(salle, idListe) {
     const element = document.createElement('li');
     element.className = 'bt-carte';
     element.classList.toggle('arretee', index === chansonEnDesignation);
-    if (carte.extrait) {
-      element.classList.toggle('indisponible', indisponiblesMix.has(index));
+    if (carte.extrait || carte.indisponible) {
+      const horsJeu = carte.indisponible || indisponiblesMix.has(index);
+      element.classList.toggle('indisponible', horsJeu);
       const disque = document.createElement('div');
-      disque.className = `bt-mini-disque${chansonEnDesignation === undefined ? ' tourne' : ''}`;
+      disque.className = `bt-mini-disque${chansonEnDesignation === undefined && !horsJeu ? ' tourne' : ''}`;
       disque.append(texte('bt-etiquette-disque', '?'));
-      element.append(disque, texte('bt-titre-carte', indisponiblesMix.has(index) ? 'Indisponible' : ''));
+      element.append(disque, texte('bt-titre-carte', horsJeu ? 'Indisponible' : ''));
       return element;
     }
     element.classList.add('trouvee');
@@ -319,6 +394,11 @@ function revelerMix(salle) {
   let retournees = 0;
   document.getElementById('bt-liste-mix').replaceChildren(...cartes.map((carte) => {
     const element = document.createElement('li');
+    if (carte.indisponible) {
+      element.classList.add('non-trouvee');
+      element.append(texte('bt-titre-ligne', 'Extrait indisponible'));
+      return element;
+    }
     const pochette = document.createElement('img');
     pochette.className = 'bt-pochette-ligne';
     pochette.src = carte.pochette;

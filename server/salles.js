@@ -366,8 +366,13 @@ export function reconnecterTv(code, jetonTv, socketId) {
   return salle;
 }
 
+// La salle dont ce socket est la TV, ou null.
+export function trouverSalleParTv(socketId) {
+  return Object.values(salles).find((salle) => salle.tvSocketId === socketId) ?? null;
+}
+
 export function deconnecterTv(socketId) {
-  const salle = Object.values(salles).find((s) => s.tvSocketId === socketId);
+  const salle = trouverSalleParTv(socketId);
   if (!salle) return;
   salle.tvSocketId = null;
   journaliser(salle.code, 'TV déconnectée');
