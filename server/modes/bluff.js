@@ -10,6 +10,8 @@ export const id = 'bluff';
 export const nom = 'Le bluff';
 export const regleCourte = 'Inventez une fausse réponse, puis trouvez la vraie. Mentez bien.';
 export const joueursMin = 4;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_QUESTIONS = 8;
 export const DUREE_SAISIE_MS = 45000;

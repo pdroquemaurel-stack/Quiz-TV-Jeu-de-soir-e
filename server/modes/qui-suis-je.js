@@ -10,6 +10,8 @@ export const id = 'qui-suis-je';
 export const nom = 'Qui suis-je ?';
 export const regleCourte = 'Dos à la TV, devine un max de personnages par des questions oui/non. Les autres savent.';
 export const joueursMin = 2;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const POINTS_PAR_PERSONNAGE = 300;
 export const PENALITE_PASSER_MS = 15000;

@@ -149,6 +149,13 @@ Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'
 
 Les options se règlent en salle d'attente et au tableau, après une partie (onglet « Options » sous les modes). Dans le panneau, une rangée d'options trop large pour l'écran défile vers la droite, sans décaler le reste. Les règles courtes des modes ne citent plus de nombre de questions : il est dans le résumé des options.
 
+### Pause (tous les modes, tranche 42)
+
+- L'hôte peut mettre le jeu en pause à tout moment d'une partie (bouton « Pause » de son téléphone, à côté de « Terminer »). Pas au podium ni au tableau, qui attendent déjà l'hôte.
+- Les chronos du serveur s'arrêtent et reprennent là où ils en étaient : à la reprise, le mode décale toutes ses heures de la durée de la pause (`decalerHeures` du contrat du registre), réponses déjà reçues comprises, pour que les points de rapidité restent justes. Le code commun ne lit jamais `etatMode`.
+- Pendant la pause, aucune réponse ni « Suivant » n'est pris, et un joueur qui se déconnecte ne fait pas avancer la manche : c'est vérifié à la reprise. « Terminer la partie » reste possible.
+- La TV affiche « Pause » par-dessus l'écran du jeu, figé : chrono et barres de temps arrêtés, extraits du Blind test et vidéo de La légende en pause, aucun son. Les téléphones affichent « Pause » par-dessus leur écran ; celui de l'hôte a le menu : « Reprendre », « Terminer la partie ».
+
 ### Format et médailles (tous les modes)
 
 - **Format**, choisi par l'hôte en salle d'attente : « Petite partie » (par défaut) ou « Aventure », avec un objectif de 3 à 15 points globaux (5 par défaut).
@@ -258,6 +265,7 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
   "grandGagnantId": null,
   "debutPodiumA": 1758641100000,
   "medaillesPartie": { "j_8f3k2a": "or" },
+  "pause": null,
   "reglagesMode": { "quiz": { "categories": ["cinema-tv"], "niveaux": [1, 2], "longueur": 10, "temps": 20 } },
   "etatMode": {
     "phase": "question",
@@ -276,6 +284,8 @@ Toutes les salles vivent en mémoire sur le serveur, dans un objet `salles` inde
 `format.type` vaut `petite` ou `aventure`, et `format.objectif` va de 3 à 15. `formatValide` dit à quelle étape de la salle d'attente en est l'hôte : `false` pour le choix du format (à la création et après « Changer de format »), `true` pour le choix du mode (après « Démarrer »), et il le reste pendant la partie et au tableau. `numeroPartie` compte les parties lancées depuis la création de la salle ou la dernière nouvelle aventure. `medaillesPartie` donne la médaille (`or`, `argent`, `bronze`) de chaque joueur médaillé de la dernière partie. `grandGagnantId` n'est rempli qu'à l'état `grandGagnant`. Ces champs sont communs à tous les modes : le code commun (`server/salles.js`, `server/medailles.js`) les gère sans jamais lire `etatMode`.
 
 `reglagesMode` range les réglages choisis par l'hôte pour chaque mode, par id de mode : thèmes et niveaux du quiz, format du Blind test (`{ "blind-test": { "format": "mix" } }`). Le mode les valide et les lit, le code commun les range sans les lire. Ils sont gardés d'une partie à l'autre, comme le format.
+
+`pause` vaut `null`, ou `{ "depuisA": 1758641195000 }` pendant une pause de l'hôte (voir « Pause »). Les chronos des vues sont alors calculés à cette heure-là (`maintenant(salle)` de `commun.js`) : ils restent figés.
 
 `jetonTv` est un secret aléatoire généré à la création de la salle et envoyé uniquement à la TV. Il empêche un joueur de se faire passer pour la TV avec le seul code de salle, puis de lire les bonnes réponses et les `id` des joueurs.
 
@@ -296,9 +306,11 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format, chansons, tours, ecoute }` pour le Blind test (voir `docs/modes/blind-test.md`). `{ longueur, temps }` pour les autres modes, et en plus pour le quiz (voir « Options de l'hôte ») ; avec `lettresRares` au Petit bac et `niveaux` à Qui suis-je ?, et `{ longueur }` seul au Défi des enchères. Toujours le réglage complet : le téléphone renvoie les valeurs reçues avec le seul changement. Accepté en salle d'attente et au tableau (après une partie, comme le choix du mode). |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau, au grand gagnant et en salle d'attente au choix du mode : retour en salle d'attente, au choix du format. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
-| `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
+| `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. Accepté aussi en pause. |
+| `hote:pause` | téléphone de l'hôte → serveur | rien. Accepté pendant une partie qui n'est pas déjà en pause (voir « Pause »). |
+| `hote:reprendre` | téléphone de l'hôte → serveur | rien. Accepté pendant une pause : les chronos repartent avec le temps qui leur restait. |
 | `salle:etat` | serveur → TV | état complet de la salle, avec le texte des questions et le `jetonTv`. `bonneReponse` n'y figure qu'à partir de la révélation. Hors partie, aussi `tableau` (joueurs triés par points globaux, avec rang, médailles et `ecartAuLeader`), `departage`, `pointsMedaille` et `reglages` (voir `joueur:etat`). Jamais la `cle` d'un joueur. |
-| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie), `etape` (la même chaîne que l'étape repérée par la TV, `etat:phase:numero`, à renvoyer avec `hote:suivant`). Toujours sa propre `cle`. Hors partie, aussi `format`, `formatValide`, `pointsGlobaux` et `reglages` (pour le quiz : thèmes et niveaux choisis, leur résumé « Cinéma et TV · Facile », le nombre de questions jamais vues pour ce choix et les options proposées ; `null` pour un mode sans réglages) ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
+| `joueur:etat` | serveur → un téléphone | vue personnalisée : mode, écran à afficher, a déjà répondu, résultat, rang, est hôte, `peutTerminer` (hôte pendant une partie), `pause` (vrai pendant une pause de l'hôte), `etape` (la même chaîne que l'étape repérée par la TV, `etat:phase:numero`, à renvoyer avec `hote:suivant`). Toujours sa propre `cle`. Hors partie, aussi `format`, `formatValide`, `pointsGlobaux` et `reglages` (pour le quiz : thèmes et niveaux choisis, leur résumé « Cinéma et TV · Facile », le nombre de questions jamais vues pour ce choix et les options proposées ; `null` pour un mode sans réglages) ; au podium `medaille` et `gain` ; au tableau et au grand gagnant `rangGlobal`, `numeroPartie`, `grandGagnant` et `estGrandGagnant`. |
 | `erreur` | serveur → client | code + message (pseudo pris, salle pleine, salle introuvable) |
 
 Ni le téléphone ni la TV ne reçoivent la bonne réponse avant la révélation, pour éviter la triche via les outils du navigateur.
@@ -425,35 +437,34 @@ Chaque tranche se termine par un test concret. Les numéros des tranches ne chan
 
 Dans l'ordre, une tranche à la fois. Pour chaque mode, les points listés sont à trancher dans sa mini-spec `docs/modes/<mode>.md`, validée avant le code (règles de l'étape « Modes de jeu »). Les règles détaillées de la demande sont sous chaque tranche, plus bas.
 
-1. **35. Wiki course.** Atteindre une page Wikipédia cible depuis un départ commun, en ne cliquant que sur les liens internes, pages affichées dans l'app.
+1. **42. Retours de la soirée test.** Pause, correction des scores, règles de Qui de nous ?, du Défi des enchères et d'Undercover, Blind test mix, catégories du Blind test. Détail plus bas.
+2. **35. Wiki course.** Atteindre une page Wikipédia cible depuis un départ commun, en ne cliquant que sur les liens internes, pages affichées dans l'app.
    - À trancher : choix des paires départ / cible (liste préparée ou tirage, garantie qu'un chemin existe) ; points (ordre d'arrivée, nombre de clics, temps) ; fin d'une course libre (premier arrivé ou chrono maximal) ; manche chronométrée sans clic à temps ; retour en arrière permis ou non ; pages à écarter (homonymies, dates) ; nettoyage du HTML « mobile-html » (liens externes, images, poids sur le téléphone) ; ce que montre la TV pendant la course ; nombre de joueurs minimum.
-2. **36. Time's Up.** Deux équipes font deviner les mêmes mots en trois manches : description libre, un seul mot, mime.
+3. **36. Time's Up.** Deux équipes font deviner les mêmes mots en trois manches : description libre, un seul mot, mime.
    - À trancher : formation des équipes (tirage ou choix de l'hôte, nombre impair) ; liste de mots à piocher (fichier de contenu et script de vérification) ; ordre de passage ; mot passé remis dans le paquet ou non ; fin d'une manche ; scores d'équipe et médailles individuelles ; ce que voient le joueur actif, son équipe et l'autre équipe ; nombre de joueurs minimum.
-3. **37. Chasse express.** La TV annonce un objet à rapporter, le premier revenu appuie sur « J'ai trouvé ! », les autres valident ou contestent par vote.
+4. **37. Chasse express.** La TV annonce un objet à rapporter, le premier revenu appuie sur « J'ai trouvé ! », les autres valident ou contestent par vote.
    - À trancher : règle du vote (majorité, égalité, l'hôte tranche ?) ; points du premier, et des suivants ou non ; défi refusé (le suivant peut-il tenter ?) ; durée du chrono ; défis faisables sans danger dans tout appartement (fichier de contenu et script de vérification) ; nombre de manches et de joueurs minimum.
-4. **38. Cherche & trouve.** Brancher sur Quiz TV le jeu autonome existant : chacun explore une illustration géante sur son téléphone et tape les détails demandés.
+5. **38. Cherche & trouve.** Brancher sur Quiz TV le jeu autonome existant : chacun explore une illustration géante sur son téléphone et tape les détails demandés.
    - **Avant tout : demander à Paul où se trouve la version autonome existante** (dossier ou dépôt, licence des illustrations).
    - À trancher : OpenSeadragon, nouvelle dépendance à valider (chargée depuis un CDN ou dans le dépôt) ; hébergement et poids des tuiles ; vérification des taps par le serveur, sans envoyer au téléphone la position des détails ; les 6 détails en même temps ou un par un ; ce que montre la TV ; fin de partie.
-5. **39. Dessine et devine.** Un joueur dessine un mot sur son téléphone, le dessin s'affiche en direct sur la TV, les autres proposent.
+6. **39. Dessine et devine.** Un joueur dessine un mot sur son téléphone, le dessin s'affiche en direct sur la TV, les autres proposent.
    - À trancher : envoi des traits (format, fréquence, débit sur le stick) ; comparaison des propositions (accents, pluriels, comme Même réponse) ; points du premier, des suivants et du dessinateur ; choix du mot (imposé ou parmi plusieurs) ; indices éventuels ; liste de mots par niveau (fichier de contenu et script de vérification) ; ordre et nombre de dessinateurs ; propositions fausses visibles sur la TV ou non.
-6. **40. Le duel des avocats.** Deux avocats tirés au hasard plaident une affaire absurde, chacun dans un camp secret, puis le jury vote.
+7. **40. Le duel des avocats.** Deux avocats tirés au hasard plaident une affaire absurde, chacun dans un camp secret, puis le jury vote.
    - À trancher : tirage des avocats (chacun son tour ?) ; ce qui est secret, et pour qui ; les avocats votent-ils ; points de l'avocat gagnant et des jurés ; égalité des votes ; nombre de manches et de joueurs minimum ; catalogue d'affaires (fichier de contenu et script de vérification) ; son du coup de marteau (`docs/sons.md`).
-7. **41. Mode photo (nom à trouver).** La TV dévoile peu à peu la photo d'un personnage du catalogue de Qui suis-je ?, les joueurs crient le nom, l'hôte désigne qui a trouvé.
+8. **41. Mode photo (nom à trouver).** La TV dévoile peu à peu la photo d'un personnage du catalogue de Qui suis-je ?, les joueurs crient le nom, l'hôte désigne qui a trouvé.
    - À trancher : nom du mode ; l'hôte voit-il le nom sur son téléphone (ce serait une nouvelle exception à la règle « jamais la bonne réponse avant la révélation », réservée aujourd'hui au maître du Blind test) ou joue-t-il comme les autres ; détail de départ et étapes du dézoom ; points selon l'étape ; plusieurs gagnants par photo ou non ; niveaux en option ; personnages déjà vus en Qui suis-je ? dans la soirée.
-8. **31. Menteur (Perudo).** 5 dés cachés par joueur, enchères sur tous les dés en jeu, « Menteur ! » révèle les dés, le perdant du défi perd un dé.
+9. **31. Menteur (Perudo).** 5 dés cachés par joueur, enchères sur tous les dés en jeu, « Menteur ! » révèle les dés, le perdant du défi perd un dé.
    - À trancher : ceux listés sous la tranche 31 (ordre de parole, ouverture sur les pacos, classement pour les médailles, chrono pour annoncer, joueur déconnecté à son tour, lancer en secouant le téléphone).
-9. **10. Soirée test.** Une vraie soirée avec des amis, dans le navigateur du stick, en notant les bugs et les frictions.
-   - Pas de mini-spec. À fixer : la date (jamais de push sur `main` ce soir-là), les modes joués, qui note les retours. Ses retours décideront de la suite (offre payante, APK).
 10. **23, temps 2. La réplique.** Chacun écrit une réplique à une amorce drôle, puis tout le monde vote pour la meilleure, jamais la sienne.
     - À trancher : mode à part ou seconde source d'amorces de La légende (voir la tranche 24) ; amorces à écrire (fichier de contenu et script de vérification) ; longueur des répliques ; barème des votes et bonus à l'unanimité.
 
-En réserve : la tranche **9** (APK), reprise seulement si la soirée test révèle un problème.
+En réserve : la tranche **9** (APK). La soirée test (tranche 10) n'a pas demandé de la reprendre.
 
 ### État des tranches
 
-- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères), **34** (Qui suis-je ?).
-- **En cours** : aucune, la prochaine est la **35** (Wiki course).
-- **À venir** : voir « Prochaines étapes » ci-dessus. Les 8 nouveaux jeux (**35 à 40**, demandés le 06/10/2026) et le mode photo (**41**) passent avant **31**, **10** et **23** temps 2, prévues après l'audit (`AUDIT.md`). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères), **34** (Qui suis-je ?), **10** (soirée test).
+- **En cours** : la **42** (retours de la soirée test), puis la **35** (Wiki course).
+- **À venir** : voir « Prochaines étapes » ci-dessus. Les 8 nouveaux jeux (**35 à 40**, demandés le 06/10/2026) et le mode photo (**41**) passent avant **31** et **23** temps 2, prévues après l'audit (`AUDIT.md`). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -545,7 +556,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
 
   *Test : TV à 3 m, 10 onglets `?dev` : une partie de bluff et une de Même réponse ; chaque texte est lisible depuis le canapé, y compris les piégés, les joueurs déconnectés et les textes d'Undercover. Dans Chrome DevTools, « Emulate vision deficiencies : deuteranopia » : les 10 joueurs restent distinguables grâce aux initiales. Vérification automatique : aucune règle `font-size` sous 40 px dans `tv.css`, hors planche de sons.*
 
-- **10. Soirée test.** Une vraie soirée avec des amis, en notant les bugs et les frictions. Ces retours décideront si on migre vers une offre payante, si l'on sort l'APK de la réserve, et quels modes améliorer en priorité. La soirée se joue **dans le navigateur du stick, sans APK**.
+- **10. Soirée test.** ✅ Terminée : soirée jouée avec des amis, ses retours forment la tranche 42. Une vraie soirée avec des amis, en notant les bugs et les frictions. Ces retours décideront si on migre vers une offre payante, si l'on sort l'APK de la réserve, et quels modes améliorer en priorité. La soirée se joue **dans le navigateur du stick, sans APK**.
 
   *Test : la soirée se déroule sans intervention technique, et on note en plus : la netteté du texte à 3 m (P4) ; l'affichage des émojis de médaille 🥇🥈🥉🏆 (P6) ; l'absence de saccades après 30 min de lobby avec musique (P2) ; si l'écran de la TV s'éteint ou non ; si la touche Retour de la télécommande quitte la page par erreur ; si la touche OK débloque bien le son (bandeau « Cliquez pour activer le son »).*
 
@@ -615,6 +626,17 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
   - Temps 4 : options de chaque mode, en plus des réglages existants (tableau et règles dans « Options de l'hôte »). Le choix du milieu reste la valeur d'avant ; au Blind test classique, 10 chansons par défaut. Les options communes passent par `creerOptions` de `server/modes/commun.js` ; le GéoQuiz y range son nombre de manches (`longueur` au lieu de `manches`). Les temps 3 et 4 font un seul commit, à la demande de Paul.
 
   *Test : défini à la fin de chaque temps (instructions données à Paul), sur Render avec la vraie TV et au moins un vrai téléphone.*
+
+### Tranche « Retours de la soirée test » (42)
+
+- **42. Retours de la soirée test (tranche 10).** Corrections demandées par Paul après la soirée, à faire avant la tranche 35. Un commit par temps, après le test de Paul sur Render avec de vrais téléphones.
+  - Temps 1 : pause de l'hôte, dans tous les modes (voir « Pause »). Événements `hote:pause` et `hote:reprendre`, champ `salle.pause`, fonction `decalerHeures` du contrat du registre.
+  - Temps 2 : depuis le menu pause, l'hôte corrige le score de chaque joueur dans la partie en cours. Les points globaux ne se corrigent pas : ils viennent des médailles, que le score corrigé fixe au podium.
+  - Temps 3 : règles. Qui de nous ? : on peut voter pour soi. Le défi des enchères : l'enchère d'ouverture vaut toujours 1 (champ `miseDepart` retiré du contenu). Undercover : un civil éliminé ne marque rien, même si les civils gagnent.
+  - Temps 4 : Blind test mix. Les 5 extraits sont chargés avant le lancement, puis démarrent ensemble ; un extrait qui ne se charge pas est remplacé, ou la manche le signale. Cause expliquée à Paul avant la correction.
+  - Temps 5 : catégories du Blind test, tirées des playlists Deezer importées, et choix d'une ou plusieurs catégories par l'hôte dans les options.
+
+  *Test : défini à la fin de chaque temps (instructions données à Paul), sur Render avec de vrais téléphones.*
 
 ### Modes « jeux de lettres, de chiffres et de dés » (tranches 28 à 31)
 

@@ -82,6 +82,8 @@ export function creerSalle(tvSocketId) {
     grandGagnantId: null,
     debutPodiumA: null,
     medaillesPartie: {},
+    // Pause de l'hôte pendant une partie : { depuisA }, ou null.
+    pause: null,
     // Réglages de chaque mode (thèmes du quiz…), rangés par id de mode et jamais lus ici.
     reglagesMode: {},
     etatMode: {},
@@ -159,6 +161,7 @@ export function demarrerPartie(salle) {
   salle.etat = 'partie';
   salle.numeroPartie++;
   salle.medaillesPartie = {};
+  salle.pause = null;
   modeDe(salle).demarrerPartie(salle);
 }
 
@@ -167,7 +170,29 @@ export function demarrerPartie(salle) {
 // Renvoie true si la partie a été terminée.
 export function terminerPartie(salle) {
   if (salle.etat !== 'partie') return false;
+  salle.pause = null;
   passerAuPodium(salle);
+  return true;
+}
+
+// Pause de l'hôte, à tout moment de la partie : plus aucun chrono ne tourne
+// (voir synchroniserMinuteur). Renvoie true si c'est accepté.
+export function mettreEnPause(salle) {
+  if (salle.etat !== 'partie' || salle.pause) return false;
+  salle.pause = { depuisA: Date.now() };
+  journaliser(salle.code, 'pause');
+  return true;
+}
+
+// Reprise : le mode décale ses heures de la durée de la pause, et chaque chrono repart avec
+// le temps qui lui restait. Une déconnexion pendant la pause est vérifiée maintenant.
+export function reprendrePartie(salle) {
+  if (salle.etat !== 'partie' || !salle.pause) return false;
+  const dureeMs = Date.now() - salle.pause.depuisA;
+  salle.pause = null;
+  modeDe(salle).decalerHeures(salle, dureeMs);
+  modeDe(salle).verifierFinAnticipee(salle);
+  journaliser(salle.code, `reprise après ${Math.round(dureeMs / 1000)} s de pause`);
   return true;
 }
 
@@ -376,10 +401,11 @@ export function trouverHoteParSocket(socketId) {
 
 // Programme le passage à l'étape suivante : celle du mode pendant la partie,
 // le tableau à la fin du podium. L'échéance est une heure fixe : resynchroniser
-// ne décale jamais le chrono.
+// ne décale jamais le chrono. Pendant une pause, rien n'est programmé.
 export function synchroniserMinuteur(salle, quandAvance) {
   const cle = `${salle.code}:etape`;
   annuler(cle);
+  if (salle.pause) return;
 
   const auPodium = salle.etat === 'podium';
   const fin = auPodium ? salle.debutPodiumA + DUREE_PODIUM_MS : modeDe(salle).echeance(salle);

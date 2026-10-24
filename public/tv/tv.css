@@ -674,6 +674,36 @@ main[data-ecran="podium"] .classement {
 /* ---------- Sons : bandeau de déblocage et planches /tv?sons et /tv?extraits ---------- */
 
 /* Lus depuis le PC, pas à 3 mètres : ils peuvent rester petits. */
+/* ---------- Pause de l'hôte ---------- */
+
+/* !important : les barres de temps ont leur animation dans l'attribut style. */
+.en-pause main,
+.en-pause main * {
+  animation-play-state: paused !important;
+}
+
+.pause {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: rgba(255, 241, 204, 0.92);
+  text-align: center;
+}
+
+.pause-titre {
+  margin: 0;
+  padding: 24px 96px;
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 32px;
+  background: var(--panneau);
+  font-size: 160px;
+}
+
 /* ---------- Connexion au serveur ---------- */
 
 main[data-ecran="connexion"] {

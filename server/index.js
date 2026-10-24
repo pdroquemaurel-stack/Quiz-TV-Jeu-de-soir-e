@@ -9,8 +9,8 @@ import { journaliser, journaliserErreur } from './journal.js';
 import { banqueNuancier } from './modes/nuancier.js';
 import {
   ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle, deconnecterJoueur,
-  deconnecterTv, demarrerPartie, erreur, nouvelleAventure, passerApresPodium, peutLancer, peutRejouer,
-  reconnecterJoueur, reglerMode, reconnecterTv, statistiques, synchroniserMinuteur, terminerPartie,
+  deconnecterTv, demarrerPartie, erreur, mettreEnPause, nouvelleAventure, passerApresPodium, peutLancer,
+  peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, reprendrePartie, statistiques, synchroniserMinuteur, terminerPartie,
   trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, validerFormat,
 } from './salles.js';
 import { etapeCourante, vueJoueur, vueTv } from './vues.js';
@@ -142,7 +142,8 @@ export function demarrerServeur(port) {
       const trouve = trouverJoueurParSocket(socket.id);
       if (!trouve) return;
       const { salle, joueur } = trouve;
-      if (salle.etat !== 'partie') return;
+      // Pendant une pause, le jeu est figé : aucune réponse n'est prise.
+      if (salle.etat !== 'partie' || salle.pause) return;
       const mode = modes[salle.mode];
       if (!mode.enregistrerReponse(salle, joueur.id, choix)) return;
       mode.verifierFinAnticipee(salle);
@@ -176,10 +177,22 @@ export function demarrerServeur(port) {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve) return;
       const { salle } = trouve;
-      if (donnees?.etape !== etapeCourante(salle)) return;
+      if (donnees?.etape !== etapeCourante(salle) || salle.pause) return;
       if (salle.etat === 'podium') passerApresPodium(salle);
       else if (salle.etat !== 'partie' || !modes[salle.mode].suivant(salle)) return;
       diffuser(salle);
+    });
+
+    surEvenement('hote:pause', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !mettreEnPause(trouve.salle)) return;
+      diffuser(trouve.salle);
+    });
+
+    surEvenement('hote:reprendre', () => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !reprendrePartie(trouve.salle)) return;
+      diffuser(trouve.salle);
     });
 
     surEvenement('hote:terminer', () => {
@@ -211,8 +224,8 @@ export function demarrerServeur(port) {
       if (!trouve) return;
       const { salle, joueur } = trouve;
       deconnecterJoueur(salle, joueur, diffuser);
-      // Le joueur parti ne doit pas bloquer la manche.
-      if (salle.etat === 'partie') modes[salle.mode].verifierFinAnticipee(salle);
+      // Le joueur parti ne doit pas bloquer la manche. Pendant une pause, c'est vérifié à la reprise.
+      if (salle.etat === 'partie' && !salle.pause) modes[salle.mode].verifierFinAnticipee(salle);
       diffuser(salle);
     });
   });

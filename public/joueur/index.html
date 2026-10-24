@@ -19,6 +19,7 @@
   <header id="entete" class="entete" hidden>
     <span id="ma-pastille" class="pastille"></span>
     <span id="mon-pseudo-entete" class="pseudo-entete"></span>
+    <button id="bouton-pause" class="bouton-terminer" hidden>Pause</button>
     <button id="bouton-terminer" class="bouton-terminer" hidden>Terminer</button>
   </header>
 
@@ -679,6 +680,18 @@
         <div id="choix-temps" class="choix-reglages"></div>
       </div>
       <button id="fermer-reglages" class="bouton">OK</button>
+    </div>
+  </div>
+
+  <!-- Pause de l'hôte : le jeu reste figé dessous. Le menu n'est que pour l'hôte. -->
+  <div id="voile-pause" class="voile" hidden>
+    <div class="carte boite">
+      <p class="gros-texte">Pause</p>
+      <p class="discret" id="texte-pause"></p>
+      <div id="menu-pause" class="boite" hidden>
+        <button id="reprendre" class="bouton">Reprendre</button>
+        <button id="terminer-pause" class="bouton secondaire">Terminer la partie</button>
+      </div>
     </div>
   </div>
 

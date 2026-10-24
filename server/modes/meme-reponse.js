@@ -10,6 +10,8 @@ export const id = 'meme-reponse';
 export const nom = 'Même réponse';
 export const regleCourte = 'Marque des points en donnant la même réponse que les autres. L\'originalité ne paie pas.';
 export const joueursMin = 3;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_QUESTIONS = 10;
 export const DUREE_SAISIE_MS = 30000;

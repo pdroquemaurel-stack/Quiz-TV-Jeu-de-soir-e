@@ -13,7 +13,7 @@ import { modes, modesAVenir } from './index.js';
 
 const CONTRAT = [
   'demarrerPartie', 'enregistrerReponse', 'verifierFinAnticipee', 'suivant',
-  'echeance', 'avancer', 'vueTv', 'vueJoueur',
+  'echeance', 'avancer', 'vueTv', 'vueJoueur', 'decalerHeures',
 ];
 
 test('chaque mode du registre respecte le contrat', () => {

@@ -55,6 +55,7 @@ Pas de son de « bonne » ou « mauvaise réponse » par joueur : la TV est comm
 | Les 5 dernières secondes d'un chrono affiché | La seconde affichée par `lancerChrono` change et vaut 5, 4, 3, 2 ou 1. Jamais deux fois la même seconde, même si `lancerChrono` est relancé par un nouvel état (une réponse arrive) | `tictac` |
 | Le podium s'affiche | `salle.etat` passe à `podium` (fin normale ou « Terminer la partie »). Joué 1,5 s plus tard : l'accord final tombe avec l'arrivée du 1er (tranche 21) | `podium` |
 | Le grand gagnant d'une aventure s'affiche (tranche 17) | `salle.etat` passe à `grandGagnant`. Le tableau des points globaux, lui, est silencieux | `podium` |
+| Pause de l'hôte (tranche 42) | `salle.pause` est rempli. Le chrono affiché s'arrête, donc le tic-tac aussi ; les extraits du Blind test et la vidéo de La légende se mettent en pause et reprennent là où ils en étaient | Aucun |
 
 ### Sons propres à chaque mode (`public/tv/modes/<mode>.js`)
 

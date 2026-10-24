@@ -74,9 +74,28 @@ export function echeanceDePhase(salle, durees) {
   return phase in durees ? salle.etatMode.debutPhaseA + durees[phase] : null;
 }
 
+// L'heure du jeu : figée au début d'une pause de l'hôte, pour que les chronos affichés s'arrêtent.
+export function maintenant(salle) {
+  return salle.pause?.depuisA ?? Date.now();
+}
+
 // Pour les vues : echeance est la fonction du mode.
 export function tempsRestantMs(salle, echeance) {
-  return Math.max(0, echeance(salle) - Date.now());
+  return Math.max(0, echeance(salle) - maintenant(salle));
+}
+
+// Reprise après une pause de dureeMs : les heures de etatMode avancent d'autant, et chaque
+// chrono repart avec le temps qui lui restait. Une heure est un nombre dont le nom finit
+// par « A » après une minuscule (debutPhaseA, debutQuestionA, recuA…), à toute profondeur.
+export function decalerHeures(salle, dureeMs) {
+  decalerHeuresDe(salle.etatMode, dureeMs);
+}
+
+function decalerHeuresDe(objet, dureeMs) {
+  for (const [cle, valeur] of Object.entries(objet)) {
+    if (typeof valeur === 'number' && /[a-z]A$/.test(cle)) objet[cle] = valeur + dureeMs;
+    else if (valeur !== null && typeof valeur === 'object') decalerHeuresDe(valeur, dureeMs);
+  }
 }
 
 // Forme comparable d'un texte saisi : minuscules, sans accents, espaces réduits.

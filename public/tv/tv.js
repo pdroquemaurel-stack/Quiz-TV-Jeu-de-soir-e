@@ -66,6 +66,8 @@ let etapeAffichee = '';
 // le « ding » de la première question).
 let premierEtatRecu = true;
 let sonDejaJoue = false;
+// Pause de l'hôte : l'écran du jeu reste figé sous « Pause », rien ne joue.
+let pauseEnCours = false;
 
 function sonner(nom, options) {
   if (premierEtatRecu || sonDejaJoue) return;
@@ -85,9 +87,14 @@ socket.on('salle:etat', (salle) => {
   cancelAnimationFrame(compteurScores);
   afficherQrCoin(salle);
   jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape);
+  afficherPause(salle);
   if (salle.etat === 'partie') {
-    afficherEcran(`${salle.mode}-${phase}`);
-    modesTv[salle.mode][phase](salle, nouvelleEtape);
+    // En pause, l'écran n'est redessiné qu'après un rechargement de la TV.
+    if (!pauseEnCours || nouvelleEtape) {
+      afficherEcran(`${salle.mode}-${phase}`);
+      modesTv[salle.mode][phase](salle, nouvelleEtape);
+    }
+    if (pauseEnCours) figerPartie(salle);
   } else if (salle.etat === 'podium') {
     afficherEcran('podium');
     afficherPodium(salle);
@@ -105,6 +112,20 @@ socket.on('salle:etat', (salle) => {
   premierEtatRecu = false;
   garderEcranAllume();
 });
+
+// Les animations (barres de temps…) s'arrêtent sous l'écran « Pause » et reprennent ensuite
+// là où elles en étaient : le serveur a décalé ses chronos d'autant.
+function afficherPause(salle) {
+  pauseEnCours = salle.etat === 'partie' && Boolean(salle.pause);
+  document.getElementById('pause').hidden = !pauseEnCours;
+  document.getElementById('scene').classList.toggle('en-pause', pauseEnCours);
+}
+
+// Le chrono affiché s'arrête (et son tic-tac), le mode coupe ses extraits ou ses vidéos.
+function figerPartie(salle) {
+  clearInterval(intervalleChrono);
+  modesTv[salle.mode].mettreEnPause?.();
+}
 
 function jouerSonsCommuns(salle, etatPrecedent, nouvelleEtape) {
   sonDejaJoue = false;

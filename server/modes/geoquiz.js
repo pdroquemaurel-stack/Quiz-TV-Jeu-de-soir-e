@@ -11,6 +11,8 @@ export const id = 'geoquiz';
 export const nom = 'GéoQuiz';
 export const regleCourte = 'Où a été prise la photo ? Pose ton pin sur la carte : plus tu es près, plus tu marques.';
 export const joueursMin = 2;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const DUREE_DEVINETTE_MS = 60000;
 export const DUREE_REVELATION_MS = 20000;
