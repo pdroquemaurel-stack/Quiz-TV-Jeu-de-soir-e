@@ -11,6 +11,8 @@ export const id = 'nuancier';
 export const nom = 'Nuancier';
 export const regleCourte = 'Recrée la couleur du logo avec tes curseurs : plus elle ressemble, plus tu marques.';
 export const joueursMin = 2;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_MANCHES = 7;
 export const DUREE_CHOIX_MS = 20000;

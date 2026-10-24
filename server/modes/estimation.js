@@ -9,6 +9,8 @@ export const id = 'estimation';
 export const nom = 'Estimation';
 export const regleCourte = 'Saisis un nombre : les 3 plus proches marquent. Les autres méditent.';
 export const joueursMin = 3;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_QUESTIONS = 8;
 export const DUREE_QUESTION_MS = 30000;

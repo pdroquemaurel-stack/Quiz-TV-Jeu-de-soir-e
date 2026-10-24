@@ -9,6 +9,8 @@ export const id = 'qui-de-nous';
 export const nom = 'Qui de nous ?';
 export const regleCourte = 'Vote pour un joueur, marque si tu votes comme le groupe. Les amitiés tiendront.';
 export const joueursMin = 4;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_QUESTIONS = 10;
 export const DUREE_VOTE_MS = 20000;

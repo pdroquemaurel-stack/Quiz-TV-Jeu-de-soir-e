@@ -11,6 +11,8 @@ export const id = 'defi-encheres';
 export const nom = 'Le défi des enchères';
 export const regleCourte = 'Surenchéris au « +1 »… puis cite autant de réponses que tu l\'as promis, en 1 minute.';
 export const joueursMin = 3;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const DUREE_ENCHERES_MS = 7000;
 export const DUREE_ANNONCE_MS = 5000;

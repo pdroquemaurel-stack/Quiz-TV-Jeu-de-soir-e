@@ -60,6 +60,7 @@ export function vueJoueur(salle, joueur) {
     score: joueur.score,
     estHote,
     peutTerminer: estHote && salle.etat === 'partie',
+    pause: Boolean(salle.pause),
     etape: etapeCourante(salle),
   };
   if (salle.etat === 'partie') return { ...vue, ...modeDe(salle).vueJoueur(salle, joueur) };

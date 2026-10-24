@@ -206,6 +206,12 @@ document.getElementById('bouton-terminer').addEventListener('click', () => {
   confirmation.hidden = false;
 });
 
+document.getElementById('bouton-pause').addEventListener('click', () => socket.emit('hote:pause'));
+document.getElementById('reprendre').addEventListener('click', () => socket.emit('hote:reprendre'));
+document.getElementById('terminer-pause').addEventListener('click', () => {
+  confirmation.hidden = false;
+});
+
 document.getElementById('annuler-terminer').addEventListener('click', () => {
   confirmation.hidden = true;
 });
@@ -219,6 +225,7 @@ socket.on('erreur', (erreur) => {
   boutonEntrer.disabled = false;
   if (erreur.code === 'salle_introuvable') oublierSalle();
   document.getElementById('entete').hidden = true;
+  document.getElementById('voile-pause').hidden = true;
   confirmation.hidden = true;
   panneauReglages.hidden = true;
   afficherEcran('rejoindre');
@@ -277,8 +284,20 @@ function afficherEntete(vue) {
   document.getElementById('entete').hidden = false;
   document.getElementById('ma-pastille').style.setProperty('--couleur', `var(--joueur-${vue.couleur})`);
   document.getElementById('mon-pseudo-entete').textContent = vue.pseudo;
-  document.getElementById('bouton-terminer').hidden = !vue.peutTerminer;
+  // En pause, « Terminer » passe dans le menu de pause.
+  document.getElementById('bouton-pause').hidden = !vue.peutTerminer || vue.pause;
+  document.getElementById('bouton-terminer').hidden = !vue.peutTerminer || vue.pause;
   if (!vue.peutTerminer) confirmation.hidden = true;
+  afficherPause(vue);
+}
+
+// Par-dessus l'écran du jeu, qui reste tel quel pour la reprise.
+function afficherPause(vue) {
+  document.getElementById('voile-pause').hidden = !vue.pause;
+  document.getElementById('menu-pause').hidden = !vue.estHote;
+  document.getElementById('texte-pause').textContent = vue.estHote
+    ? 'Le chrono attend. Toi aussi, apparemment.'
+    : 'L\'hôte a tout arrêté. Profites-en pour respirer.';
 }
 
 // Wake Lock : l'écran reste allumé pendant la partie. Il ne marche qu'en HTTPS

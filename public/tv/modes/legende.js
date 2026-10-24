@@ -175,4 +175,6 @@ modesTv.legende = {
   vote: afficherVoteLegende,
   revelation: afficherRevelationLegende,
   completerPodium: arreterGifsLegende,
+  // À la reprise, placerGifLegende relance la vidéo.
+  mettreEnPause: () => videoLegende.pause(),
 };

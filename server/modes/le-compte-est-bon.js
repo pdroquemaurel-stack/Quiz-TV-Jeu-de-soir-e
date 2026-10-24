@@ -10,6 +10,8 @@ export const id = 'le-compte-est-bon';
 export const nom = 'Le compte est bon';
 export const regleCourte = 'Atteins la cible avec les 6 plaques et les 4 opérations. Compte exact : 10 points, sinon le plus proche : 5.';
 export const joueursMin = 2;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const DUREE_RECHERCHE_MS = 60000;
 export const DUREE_REVELATION_MS = 20000;

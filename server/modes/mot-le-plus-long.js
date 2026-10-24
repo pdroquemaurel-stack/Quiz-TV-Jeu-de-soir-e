@@ -10,6 +10,8 @@ export const id = 'mot-le-plus-long';
 export const nom = 'Mot le plus long';
 export const regleCourte = 'Forme le mot le plus long avec les 9 lettres de la TV. Seul le plus long marque : un point par lettre.';
 export const joueursMin = 2;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const DUREE_RECHERCHE_MS = 45000;
 export const DUREE_REVELATION_MS = 15000;

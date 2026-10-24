@@ -491,3 +491,43 @@ test('double « Suivant » à l\'élimination en Undercover : le tour de descrip
   await synchroniser(hote, salle);
   assert.equal(salle.etatMode.phase, 'description');
 });
+
+test('pause : seul l\'hôte la met et la lève ; pendant la pause, ni réponse ni départ ne font avancer', { timeout: 10000 }, async (t) => {
+  const { salle, clients: [hote, autre, troisieme] } = await ouvrirSalle(t, ['Hôte', 'Autre', 'Trois']);
+  hote.emettre('hote:validerFormat');
+  hote.emettre('hote:lancer');
+  await attendreQue(() => salle.etat === 'partie' && salle.etatMode.phase === 'question');
+
+  autre.emettre('hote:pause');
+  await synchroniser(autre, salle);
+  assert.equal(salle.pause, null);
+
+  hote.emettre('hote:pause');
+  await attendreQue(() => salle.pause !== null);
+  await synchroniser(autre, salle);
+  assert.equal(derniereVue(autre).pause, true);
+
+  hote.emettre('joueur:repondre', 0);
+  autre.emettre('joueur:repondre', 0);
+  await synchroniser(autre, salle);
+  assert.deepEqual(salle.etatMode.reponses, {});
+
+  hote.emettre('hote:reprendre');
+  await attendreQue(() => salle.pause === null);
+  hote.emettre('joueur:repondre', 0);
+  autre.emettre('joueur:repondre', 0);
+  await synchroniser(autre, salle);
+  // Le seul joueur qui n'a pas répondu part pendant une pause : la manche attend la reprise.
+  hote.emettre('hote:pause');
+  await attendreQue(() => salle.pause !== null);
+  troisieme.fermer();
+  await attendreQue(() => !salle.joueurs[2].connecte);
+  assert.equal(salle.etatMode.phase, 'question');
+
+  autre.emettre('hote:reprendre');
+  await synchroniser(autre, salle);
+  assert.notEqual(salle.pause, null);
+  hote.emettre('hote:reprendre');
+  await attendreQue(() => salle.etatMode.phase === 'revelation');
+  assert.equal(salle.pause, null);
+});

@@ -10,6 +10,8 @@ export const id = 'undercover';
 export const nom = 'Undercover';
 export const regleCourte = "Un intrus a un mot proche, Mister White n'en a pas : démasquez-les. Faites-vous confiance, mais pas trop.";
 export const joueursMin = 4;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_MANCHES = 3;
 export const DUREE_VOTE_MS = 20000;

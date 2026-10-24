@@ -4,7 +4,7 @@
 // - mix : 5 chansons jouées ensemble (une « question » est une liste de 5 chansons).
 import { banqueBlindTest } from '../extraits.js';
 import {
-  classement as classementCommun, echeanceDePhase, listerAttendus, melanger, noterQuestionsVues,
+  classement as classementCommun, echeanceDePhase, listerAttendus, maintenant, melanger, noterQuestionsVues,
   participe, passerAuPodium, phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe,
   tempsRestantMs, tirerQuestions,
 } from './commun.js';
@@ -13,6 +13,8 @@ export const id = 'blind-test';
 export const nom = 'Blind test';
 export const regleCourte = 'Chacun son tour maître du jeu : trouvez le titre et l\'artiste !';
 export const joueursMin = 3;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const DUREE_ECOUTE_MS = 30000;
 export const DUREE_DESIGNATION_MS = 15000;
@@ -365,7 +367,7 @@ function avancerMix(salle, phase) {
 function ecouteRestante(salle) {
   const { phase, ecouteRestanteMs, debutPhaseA } = salle.etatMode;
   if (phase !== 'ecoute') return ecouteRestanteMs;
-  return Math.max(0, ecouteRestanteMs - (Date.now() - debutPhaseA));
+  return Math.max(0, ecouteRestanteMs - (maintenant(salle) - debutPhaseA));
 }
 
 // ---------- Vues ----------
@@ -446,7 +448,7 @@ function vueTvClassique(salle) {
   if (phase === 'ecoute') {
     const { id: idChanson, gain } = questionCourante(salle);
     return {
-      ...vue, extrait: { id: idChanson, depart, gain }, tempsEcouleMs: Date.now() - debutPhaseA,
+      ...vue, extrait: { id: idChanson, depart, gain }, tempsEcouleMs: maintenant(salle) - debutPhaseA,
     };
   }
   if (phase === 'designation') return vue;

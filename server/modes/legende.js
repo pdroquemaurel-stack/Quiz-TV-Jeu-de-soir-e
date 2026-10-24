@@ -10,6 +10,8 @@ export const id = 'legende';
 export const nom = 'La légende';
 export const regleCourte = 'Donnez un titre à chaque GIF, puis votez pour le meilleur. Soyez drôles, ou essayez.';
 export const joueursMin = 3;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 export const NOMBRE_GIF = 8;
 export const DUREE_SAISIE_MS = 45000;

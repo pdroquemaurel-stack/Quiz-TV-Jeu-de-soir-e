@@ -23,7 +23,7 @@ let pistesSuivantes = [];
 function lirePiste(piste) {
   piste.play().catch(() => {
     const reessayer = () => {
-      if (piste.getAttribute('src')) piste.play().catch(() => {});
+      if (piste.getAttribute('src') && !pauseEnCours) piste.play().catch(() => {});
     };
     document.addEventListener('keydown', reessayer, { once: true });
     document.addEventListener('click', reessayer, { once: true });
@@ -110,9 +110,13 @@ function afficherEcouteClassique(salle, nouvelleEtape) {
   jouerExtraitClassique(extrait, tempsEcouleMs);
 }
 
-// Après un rechargement de la TV, l'extrait reprend là où il en serait.
+// Après un rechargement de la TV, l'extrait reprend là où il en serait ;
+// après une pause, là où il s'était arrêté.
 function jouerExtraitClassique({ id, depart, gain }, tempsEcouleMs) {
-  if (idPisteBlindTest === id) return;
+  if (idPisteBlindTest === id) {
+    if (pisteBlindTest.paused) lirePiste(pisteBlindTest);
+    return;
+  }
   arreterExtraitClassique();
   const indisponible = document.getElementById('bt-indisponible');
   indisponible.hidden = true;
@@ -340,4 +344,9 @@ modesTv['blind-test'] = {
   designation: afficherDesignationBlindTest,
   revelation: afficherRevelationBlindTest,
   completerPodium: arreterToutBlindTest,
+  // À la reprise, l'écoute relance les pistes en pause, là où elles s'étaient arrêtées.
+  mettreEnPause: () => {
+    if (pisteBlindTest) pisteBlindTest.pause();
+    mettreMixEnPause();
+  },
 };

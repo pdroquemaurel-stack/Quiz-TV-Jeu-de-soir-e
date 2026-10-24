@@ -9,6 +9,8 @@ export const id = 'quiz';
 export const nom = 'Quiz';
 export const regleCourte = '4 choix : plus tu réponds vite, plus tu marques. Réfléchir est permis.';
 export const joueursMin = 2;
+// Reprise après une pause de l'hôte : toutes les heures de etatMode avancent d'autant.
+export { decalerHeures } from './commun.js';
 
 const NOMBRE_CHOIX = 4;
 export const NOMBRE_QUESTIONS = 10;

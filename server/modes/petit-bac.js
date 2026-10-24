@@ -1,7 +1,7 @@
 // Mode Petit bac (docs/modes/petit-bac.md) : une lettre, 6 catégories, un mot par catégorie.
 // Le premier qui a tout rempli appuie sur STOP, puis l'hôte valide les réponses après débat.
 import {
-  classement as classementCommun, creerOptions, listerAttendus, melanger, normaliser, participe,
+  classement as classementCommun, creerOptions, decalerHeures as decalerHeuresCommun, listerAttendus, melanger, normaliser, participe,
   phaseEnCours, questionCourante, questionSuivanteOuPodium, rangDe, tempsRestantMs, tousOntRepondu, vueOptions,
 } from './commun.js';
 
@@ -219,6 +219,12 @@ export function echeance(salle) {
   }
   if (phase === 'bilan') return debutPhaseA + DUREE_BILAN_MS;
   return null;
+}
+
+// Reprise après une pause de l'hôte : les heures avancent d'autant, l'appui sur STOP compris.
+export function decalerHeures(salle, dureeMs) {
+  decalerHeuresCommun(salle, dureeMs);
+  if (salle.etatMode.stop) salle.etatMode.stop.a += dureeMs;
 }
 
 // Appelée quand l'échéance est atteinte.
