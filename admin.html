@@ -117,7 +117,7 @@
 
     <section id="je-veux">
       <h2>🔎 Je veux…</h2>
-      <input id="recherche" type="search" placeholder="Tape un mot : question, GIF, chanson, logo, lieu, tester, en ligne…" autocomplete="off">
+      <input id="recherche" type="search" placeholder="Tape un mot : question, GIF, chanson, logo, lieu, défi, personnage, tester, en ligne…" autocomplete="off">
       <ul id="taches"></ul>
     </section>
 
@@ -149,7 +149,7 @@
           <div data-commande="git clone https://github.com/pdroquemaurel-stack/Quiz-TV-Jeu-de-soir-e.git"></div></li>
         <li>Installer les bibliothèques du serveur (à refaire si <code>package.json</code> change) :
           <div data-commande="npm install"></div></li>
-        <li>Seulement pour La légende et le GéoQuiz : <strong>Python</strong> (<a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a>) et sa bibliothèque <code>requests</code> :
+        <li>Seulement pour La légende, le GéoQuiz et Qui suis-je ? : <strong>Python</strong> (<a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a>) et sa bibliothèque <code>requests</code> :
           <div data-commande="py -m pip install requests"></div></li>
         <li>Un <strong>éditeur de texte</strong> pour les fichiers JSON. VS Code est conseillé : il colore le fichier et souligne les virgules oubliées.</li>
       </ol>
@@ -176,7 +176,7 @@
         <li>Une virgule oubliée entre deux blocs, ou une virgule en trop après le dernier bloc : le fichier devient illisible. Le script de vérification le signale.</li>
         <li>Des guillemets « typographiques » ou ” à la place de <code>"</code> autour des valeurs. À l'intérieur d'un texte, « … » et l'apostrophe ’ sont permis.</li>
         <li>Pas besoin de variantes pour les majuscules, les accents, les articles ou les pluriels en s/x : le jeu les ignore déjà en comparant.</li>
-        <li>Préfixes d'id réservés : <code>q</code> quiz, <code>e</code> estimation, <code>n</code> qui de nous, <code>u</code> undercover, <code>m</code> même réponse, <code>b</code> bluff, <code>g</code> légende, <code>d</code> blind test, <code>l</code> géoquiz, <code>n-…</code> nuancier, <code>de-…</code> défi des enchères.</li>
+        <li>Préfixes d'id réservés : <code>q</code> quiz, <code>e</code> estimation, <code>n</code> qui de nous, <code>u</code> undercover, <code>m</code> même réponse, <code>b</code> bluff, <code>g</code> légende, <code>d</code> blind test, <code>l</code> géoquiz, <code>n-…</code> nuancier, <code>de-…</code> défi des enchères, <code>qs-…</code> qui suis-je.</li>
       </ul>
     </section>
 
@@ -291,6 +291,7 @@
 const JEUX = [
   {
     id: 'quiz', nom: 'Quiz', icone: '❓', resume: 'QCM à 4 choix, 11 thèmes, 3 niveaux',
+    joueurs: '2 à 10', options: '5, <strong>10</strong> ou 15 questions ; 10, <strong>20</strong> ou 30 s pour répondre ; thèmes et niveaux à cocher',
     fichiers: [['data/questions.json', 'les questions']],
     ajouter: [
       'Ajoute un bloc comme dans l\'exemple (voir <a href="#modifier-json">Modifier un fichier de contenu</a>).',
@@ -317,7 +318,8 @@ const JEUX = [
     taches: ['Ajouter des questions au quiz', 'Corriger une question fausse du quiz', 'Renforcer un thème du quiz qui manque de questions'],
   },
   {
-    id: 'estimation', nom: 'Estimation', icone: '🔢', resume: 'Deviner un nombre, le plus proche gagne',
+    id: 'estimation', nom: 'Estimation', icone: '🔢', resume: 'Deviner un nombre, les 3 plus proches marquent',
+    joueurs: '3 à 10', options: '5, <strong>8</strong> ou 12 questions ; 20, <strong>30</strong> ou 45 s pour répondre',
     fichiers: [['data/estimation.json', 'les questions']],
     ajouter: [
       '<code>reponse</code> : un nombre entier, sans guillemets, stable et vérifiable.',
@@ -336,6 +338,7 @@ const JEUX = [
   },
   {
     id: 'qui-de-nous', nom: 'Qui de nous ?', icone: '👉', resume: 'Voter pour le joueur le plus susceptible de…',
+    joueurs: '4 à 10', options: '5, <strong>10</strong> ou 15 questions ; 10, <strong>20</strong> ou 30 s pour voter',
     fichiers: [['data/qui-de-nous.json', 'les questions']],
     ajouter: ['Seulement <code>id</code> et <code>texte</code>.'],
     corriger: ['Retirer une question qui a mis quelqu\'un mal à l\'aise.'],
@@ -353,6 +356,7 @@ const JEUX = [
   },
   {
     id: 'undercover', nom: 'Undercover', icone: '🕵️', resume: 'Deux mots proches, trouver l\'infiltré',
+    joueurs: '4 à 10', options: '1, <strong>3</strong> ou 5 manches ; 15, <strong>20</strong> ou 30 s pour voter',
     fichiers: [['data/undercover.json', 'les paires de mots']],
     ajouter: [
       'Une paire = exactement 2 mots, chacun avec ses <code>variantes</code> (pluriel, autre orthographe, avec ou sans tiret). Liste vide <code>[]</code> permise.',
@@ -370,6 +374,7 @@ const JEUX = [
   },
   {
     id: 'meme-reponse', nom: 'Même réponse', icone: '🤝', resume: 'Répondre comme les autres',
+    joueurs: '3 à 10', options: '5, <strong>10</strong> ou 15 questions ; 20, <strong>30</strong> ou 45 s pour répondre',
     fichiers: [['data/meme-reponse.json', 'les questions et leurs réponses connues']],
     ajouter: [
       '<code>reponses</code> : de 4 à 15 réponses connues. Le mot de <code>reponse</code> est celui affiché sur la TV.',
@@ -387,6 +392,7 @@ const JEUX = [
   },
   {
     id: 'bluff', nom: 'Le bluff', icone: '🎭', resume: 'Inventer une fausse réponse crédible',
+    joueurs: '4 à 10', options: '5, <strong>8</strong> ou 12 questions ; 30, <strong>45</strong> ou 60 s pour écrire',
     fichiers: [['data/bluff.json', 'les phrases à trou']],
     ajouter: [
       '<code>texte</code> : une phrase avec exactement un <code>___</code> (3 tirets bas).',
@@ -406,6 +412,7 @@ const JEUX = [
   },
   {
     id: 'legende', nom: 'La légende', icone: '🎬', resume: 'Légender des GIF',
+    joueurs: '3 à 10', options: '5, <strong>8</strong> ou 12 GIF ; 30, <strong>45</strong> ou 60 s pour écrire',
     fichiers: [['data/legende.json', 'le catalogue des GIF'], ['public/gifs/', 'les vidéos MP4 (clique pour les regarder)']],
     ajouter: [
       'Ouvre <code>scripts/telecharger-gifs.py</code> dans ton éditeur et augmente <code>MAX_GIFS</code> en haut du fichier (par exemple de 100 à 150). Augmente aussi <code>NB_PAGES</code> s\'il n\'en trouve pas assez.',
@@ -426,6 +433,7 @@ const JEUX = [
   },
   {
     id: 'blind-test', nom: 'Blind test', icone: '🎵', resume: 'Reconnaître des extraits Deezer',
+    joueurs: '3 à 10', options: 'format Classique (1 à 20 chansons, <strong>10</strong>) ou Mix (chacun maître <strong>1</strong> ou 2 fois ; 90, <strong>120</strong> ou 180 s d\'écoute)',
     fichiers: [['data/blind-test.json', 'le catalogue des chansons (aucun son : les extraits viennent de Deezer)']],
     ajouter: [
       'Trouve une playlist publique sur <a href="https://www.deezer.com/" target="_blank" rel="noopener">deezer.com</a>. Son id est le nombre à la fin de l\'adresse (<code>deezer.com/fr/playlist/<strong>1234567</strong></code>).',
@@ -448,6 +456,7 @@ const JEUX = [
   },
   {
     id: 'geoquiz', nom: 'GéoQuiz', icone: '🌍', resume: 'Placer une photo sur la carte',
+    joueurs: '2 à 10', options: '3, <strong>5</strong> ou 10 manches ; 30, <strong>60</strong> ou 90 s pour poser son pin',
     fichiers: [['data/geoquiz.json', 'les 500 lieux (construit par le script)'], ['data/geoquiz-exclus.json', 'les lieux exclus à la main']],
     ajouter: [
       'Le pack se <strong>reconstruit en entier</strong> depuis Wikidata avec le script Python (commande ci-dessous). Les quotas (250 faciles, 150 moyens, 100 difficiles, 12 lieux par pays au plus) se règlent dans <code>DIFFICULTES</code>, en haut de <code>scripts/construire-geoquiz.py</code>.',
@@ -467,6 +476,7 @@ const JEUX = [
   },
   {
     id: 'mot-le-plus-long', nom: 'Mot le plus long', icone: '🔤', resume: '9 lettres, le plus long mot',
+    joueurs: '2 à 10', options: '5, <strong>6</strong> ou 7 manches ; 30, <strong>45</strong> ou 60 s pour chercher',
     fichiers: [['data/mots.txt', 'le dictionnaire, un mot par ligne (tiré de Lexique 3.83)']],
     ajouter: [
       'Le dictionnaire se <strong>reconstruit</strong> depuis Lexique 3.83 (commande ci-dessous). Le script le télécharge ; si le pare-feu bloque, télécharge <code>Lexique383.tsv</code> sur <a href="http://www.lexique.org/databases/Lexique383/" target="_blank" rel="noopener">lexique.org</a> et donne son chemin au script.',
@@ -483,6 +493,7 @@ const JEUX = [
   },
   {
     id: 'nuancier', nom: 'Nuancier', icone: '🎨', resume: 'Retrouver la couleur d\'un logo',
+    joueurs: '2 à 10', options: '5, <strong>7</strong> ou 10 manches ; 15, <strong>20</strong> ou 30 s pour choisir la couleur',
     fichiers: [['data/nuancier.json', 'le catalogue des logos'], ['public/logos/nuancier/', 'les logos SVG'], ['scripts/prep-nuancier.html', 'l\'outil de préparation (clique pour l\'ouvrir)']],
     ajouter: [
       'Cherche des logos sur <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> (au format SVG) et copie l\'adresse de leur page (<code>https://commons.wikimedia.org/wiki/File:…</code>).',
@@ -504,6 +515,7 @@ const JEUX = [
   },
   {
     id: 'defi-encheres', nom: 'Le défi des enchères', icone: '🔨', resume: 'Surenchérir, puis citer autant de réponses qu\'annoncé',
+    joueurs: '3 à 10', options: '5, <strong>8</strong> ou 12 manches (le défi dure toujours 1 min)',
     fichiers: [['data/defi-encheres.json', 'les défis']],
     ajouter: [
       '<code>sujet</code> : ce qui complète « En 1 minute, combien de … peux-tu citer ? », au pluriel, sans article (« fromages français », pas « les fromages »).',
@@ -520,11 +532,13 @@ const JEUX = [
     taches: ['Ajouter des défis au Défi des enchères', 'Un défi des enchères est trop dur'],
   },
   {
-    id: 'qui-suis-je', nom: 'Qui suis-je ?', icone: '🕵️', resume: 'Dos à la TV, deviner des personnages par oui ou non',
+    id: 'qui-suis-je', nom: 'Qui suis-je ?', icone: '🤔', resume: 'Dos à la TV, deviner des personnages par oui ou non',
+    joueurs: '2 à 10', options: '<strong>1</strong>, 2 ou 3 tours par joueur ; 1 min 30, <strong>2 min</strong> ou 3 min par tour ; niveaux Facile, Difficile ou <strong>les deux</strong>',
     fichiers: [['data/qui-suis-je.json', 'les personnages']],
     ajouter: [
-      'Ajoute <code>id</code>, <code>nom</code>, <code>categorie</code>, <code>niveau</code> (1 facile, 2 difficile) et <code>wikipedia</code> (le titre exact de l\'article de Wikipédia en français), sans photo.',
-      'Lance ensuite le script de photos : il ajoute <code>image</code>, <code>auteur</code> et <code>licence</code>, puis ouvre <code>scripts/apercu-qui-suis-je.html</code> pour vérifier.',
+      'Ajoute <code>id</code> (<code>qs-</code> + le nom en minuscules, sans accents, avec des tirets), <code>nom</code>, <code>categorie</code> (affichée sur la TV sous le nom, « Footballeur »), <code>niveau</code> (1 facile, 2 difficile) et <code>wikipedia</code> (le titre exact de l\'article de Wikipédia en français), sans photo.',
+      'Lance ensuite le script de photos : il ajoute <code>image</code>, <code>auteur</code> et <code>licence</code> (photo de l\'article français, sinon de l\'article anglais). Ne les remplis jamais à la main.',
+      'Le script crée aussi une page d\'aperçu pour relire les photos : <a href="scripts/apercu-qui-suis-je.html">scripts/apercu-qui-suis-je.html</a> (existe seulement après l\'avoir lancé).',
     ],
     corriger: ['Mauvaise photo : retire <code>image</code>, <code>auteur</code> et <code>licence</code>, corrige le titre <code>wikipedia</code>, puis relance le script.'],
     regles: [
@@ -534,13 +548,14 @@ const JEUX = [
     ],
     exemple: `{"id":"qs-zinedine-zidane","nom":"Zinédine Zidane","categorie":"Footballeur","niveau":1,"wikipedia":"Zinédine Zidane"}`,
     commandes: [
-      ['py scripts/construire-qui-suis-je.py', 'Ajoute les photos manquantes et écrit la page d\'aperçu.'],
+      ['py scripts/construire-qui-suis-je.py', 'Ajoute les photos manquantes et écrit la page d\'aperçu. Ne touche pas aux personnages qui ont déjà une photo. Demande une connexion Internet.'],
       ['node scripts/verifier-qui-suis-je.js', 'Vérifie le format des personnages.'],
     ],
     taches: ['Ajouter des personnages à Qui suis-je ?', 'Une photo de Qui suis-je ? est mauvaise'],
   },
   {
     id: 'petit-bac', nom: 'Petit bac', icone: '📝', resume: 'Une lettre, 6 catégories',
+    joueurs: '2 à 10', options: '3, <strong>5</strong> ou 7 manches ; 60, <strong>90</strong> ou 120 s sans STOP ; lettres rares (K, Q, W, X, Y, Z) <strong>sans</strong> ou avec',
     fichiers: [['server/modes/petit-bac.js', 'la liste CATEGORIES, au début du fichier (c\'est du code)']],
     ajouter: [
       'Ajoute ou retire une catégorie dans la liste <code>CATEGORIES</code>, entre apostrophes droites et séparées par des virgules.',
@@ -558,6 +573,7 @@ const JEUX = [
   },
   {
     id: 'le-compte-est-bon', nom: 'Le compte est bon', icone: '🧮', resume: 'Atteindre un nombre avec 6 plaques',
+    joueurs: '2 à 10', options: '3, <strong>5</strong> ou 7 manches ; 45, <strong>60</strong> ou 90 s pour calculer',
     fichiers: [],
     ajouter: ['Rien à ajouter : le serveur tire les plaques et le nombre à chaque partie.'],
     corriger: [], regles: [], commandes: [], taches: [],
@@ -599,7 +615,8 @@ function lienFichier(chemin) {
 }
 
 function ficheJeu(jeu) {
-  let html = `<section id="jeu-${jeu.id}"><h2>${jeu.icone} ${jeu.nom}</h2><p class="intro">${jeu.resume}.</p>`;
+  let html = `<section id="jeu-${jeu.id}"><h2>${jeu.icone} ${jeu.nom}</h2><p class="intro">${jeu.resume}.</p>`
+    + `<p class="aide">👥 ${jeu.joueurs} joueurs · ⚙️ Options de l'hôte : ${jeu.options} (en gras, le choix par défaut).</p>`;
   if (jeu.fichiers.length) {
     html += '<h3>Fichiers</h3><ul class="fichiers">'
       + jeu.fichiers.map(([chemin, role]) => `<li><code>${chemin}</code> <span class="aide">${role}</span> ${lienFichier(chemin)}</li>`).join('')
