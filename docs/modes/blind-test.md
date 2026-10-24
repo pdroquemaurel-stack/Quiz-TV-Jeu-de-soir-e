@@ -4,7 +4,7 @@ Mini-spec de la tranche 25. Elle a été validée le 27/09/2026 (voir « Choix v
 
 La TV joue des extraits de chansons, les joueurs crient leurs réponses **à voix haute**. À chaque manche, un joueur est **maître du jeu** : son téléphone affiche la réponse, et c'est lui qui désigne qui a trouvé. Le rôle tourne d'une manche à l'autre.
 
-> **Tranche 42** (retours de la soirée test) : au mix, les 5 extraits sont chargés pendant le relais, puis démarrent ensemble ; un extrait qui ne se charge pas est remplacé, sinon sa place est « Indisponible ». Voir « Chargement des extraits du mix ».
+> **Tranche 42** (retours de la soirée test) : au mix, les 5 extraits sont chargés pendant le relais, puis démarrent ensemble ; un extrait qui ne se charge pas est remplacé, sinon sa place est « Indisponible ». Voir « Chargement des extraits du mix ». Les chansons sont aussi rangées par catégorie, d'après les playlists Deezer importées, et l'hôte choisit une ou plusieurs catégories (voir « Catégories »).
 
 Un seul mode, **Blind test**, avec deux formats choisis par l'hôte en salle d'attente :
 
@@ -35,9 +35,20 @@ La tranche se code en trois temps, chacun testé avant de passer au suivant :
 
 ### Choix du format
 
-Le format est un réglage du mode, comme les thèmes du quiz, avec ses options (tranche 27) : `reglagesMode["blind-test"] = { format: "classique" | "mix", chansons: 1 à 20, tours: 1 | 2, ecoute: 90 | 120 | 180 }`, envoyé en entier par `hote:reglerMode`, accepté seulement en salle d'attente. Par défaut : `{ format: "classique", chansons: 10, tours: 1, ecoute: 120 }`. `chansons` ne sert qu'en classique, `tours` et `ecoute` (en secondes) qu'en mix. Les réglages sont gardés d'une partie à l'autre.
+Le format est un réglage du mode, comme les thèmes du quiz, avec ses options (tranche 27) : `reglagesMode["blind-test"] = { format: "classique" | "mix", chansons: 1 à 20, tours: 1 | 2, ecoute: 90 | 120 | 180, categories: [...] }`, envoyé en entier par `hote:reglerMode`, accepté en salle d'attente et au tableau. Par défaut : `{ format: "classique", chansons: 10, tours: 1, ecoute: 120, categories: toutes }`. `chansons` ne sert qu'en classique, `tours` et `ecoute` (en secondes) qu'en mix. Les réglages sont gardés d'une partie à l'autre.
 
 Le téléphone de l'hôte affiche le choix dans l'onglet « Options » : deux boutons « Classique » et « Mix », puis en classique un curseur du nombre de chansons, en mix « Une fois » / « 2 fois » et la durée d'écoute. La TV l'affiche en salle d'attente (« Format : Classique · 10 chansons », « Format : Mix · 1 tour · 120 s »).
+
+### Catégories (tranche 42)
+
+- **Les catégories se décident par playlist**, pas chanson par chanson (choix de Paul) : chaque chanson garde les ids des playlists Deezer d'où elle vient (`playlists`), et `data/playlists-blind-test.json` donne la catégorie de chaque playlist. Plusieurs playlists peuvent partager une catégorie ; une chanson présente dans plusieurs playlists a toutes leurs catégories. Renommer ou regrouper une catégorie se fait donc à un seul endroit.
+- Le serveur calcule les catégories de chaque chanson au chargement du catalogue (`categoriesDeChanson` de `server/extraits.js`).
+- Au départ (tranche 42), les 6 playlists déjà importées, chacune sa propre catégorie, à son titre Deezer : En mode 70, En mode 80, En mode 90, En mode 2000, En mode 2010, Essentiels chanson française.
+- Dans l'onglet « Options », sous le format, l'hôte coche les catégories qu'il veut, comme les thèmes du quiz : toutes cochées par défaut, la dernière ne se décoche pas. Le téléphone affiche le nombre de chansons du choix, dont celles jamais entendues dans la salle. La TV ajoute les catégories au résumé quand elles ne sont pas toutes cochées (« Mix · 1 tour · 120 s · Années 80, Disco », « … · Années 80 et 3 autres »).
+- **Toutes les catégories** : tout le catalogue, y compris les chansons sans playlist.
+- **Tirage**, comme au quiz : d'abord les chansons jamais entendues du choix, puis ses déjà entendues (les plus anciennes d'abord), puis, s'il en manque, les autres catégories, dans le même ordre. Une partie est donc toujours complète, même en mix (5 chansons par manche, 50 à 10 joueurs) : un choix trop petit se complète avec le reste du catalogue. Sous 20 chansons, le téléphone de l'hôte le signale (« S'il en manque, les autres catégories complètent »).
+- Le remplacement d'un extrait du mix qui ne se charge pas suit la même règle : une chanson du choix d'abord.
+- `categories` est refusé s'il est vide (quand le catalogue en a), contient une catégorie inconnue ou un doublon. Tant que le catalogue n'est pas rangé, il n'y a aucune catégorie à choisir (`categories: []`) et la section n'apparaît pas.
 
 ### Exception au secret
 
@@ -355,7 +366,8 @@ Rien ne change dans `sons.js`. À ajouter à la table « Quand jouer quoi » de 
   "artiste": "Daft Punk",
   "pochette": "https://cdn-images.dzcdn.net/images/cover/5718f7c81c27e0b2417e2a4c45224f8a/250x250-000000-80-0-0.jpg",
   "gain": -12.4,
-  "garder": true
+  "garder": true,
+  "playlists": [751764391]
 }
 ```
 
@@ -364,17 +376,41 @@ Rien ne change dans `sons.js`. À ajouter à la table « Quand jouer quoi » de 
 - `artiste` : l'artiste principal, suivi des invités d'un « feat. » retirés du titre (« Mark Ronson, Bruno Mars » pour « Uptown Funk ») : le maître accepte l'un ou l'autre.
 - `garder` : `false` exclut la chanson du tirage (relecture, extrait disparu).
 - **Pas deux fois la même chanson** : deux chansons gardées de même artiste et même titre (sans accents ni majuscules) sont un doublon, même sous deux ids Deezer différents (album et compilation).
-- Pas de `categorie` ni de `difficulte` pour l'instant.
+- `playlists` (tranche 42, facultatif) : les ids des playlists Deezer d'où vient la chanson, sans doublon, tous présents dans `data/playlists-blind-test.json`. Mis par `scripts/categoriser-blind-test.js` et `scripts/importer-deezer.js`, ou à la main pour une chanson qui n'est plus dans sa playlist. Une chanson gardée sans playlist n'est jouée qu'avec toutes les catégories.
+- Pas de `difficulte` pour l'instant.
+
+### Fichier `data/playlists-blind-test.json` (tranche 42)
+
+Les playlists importées, chacune avec son titre Deezer (`nom`, pour s'y retrouver) et sa catégorie (`categorie`, ce que voit l'hôte) :
+
+```json
+{
+  "1075854071": { "nom": "En mode 70", "categorie": "En mode 70" },
+  "1163842311": { "nom": "En mode 80", "categorie": "Années 80" }
+}
+```
+
+Une playlist a une seule catégorie, une catégorie peut regrouper plusieurs playlists. `importer-deezer.js` la complète à chaque import. `verifier-blind-test.js` vérifie que chaque id est un id Deezer, avec un `nom` et une `categorie` non vides.
+
+### Script `scripts/categoriser-blind-test.js` (tranche 42)
+
+`node scripts/categoriser-blind-test.js` relit sur Deezer chaque playlist de `data/playlists-blind-test.json` et ajoute à chaque chanson du catalogue l'id des playlists où elle se trouve (`playlists`), sans rien changer d'autre :
+
+- une chanson est retrouvée par son id Deezer, ou par son titre et son artiste (la même chanson sous un autre id, écartée comme doublon à l'import) ;
+- un id déjà présent n'est pas répété, ceux mis à la main restent ; une chanson retrouvée nulle part n'est pas touchée ;
+- relançable sans risque ;
+- il liste à la fin les chansons gardées retrouvées dans aucune playlist, à ranger à la main.
 
 Taille visée : **au moins 100 chansons gardées**. Une partie de mix à 10 joueurs en consomme 50.
 
 ### Script `scripts/importer-deezer.js`
 
-Node seul (avec `fetch`), aucune dépendance. `node scripts/importer-deezer.js <id de playlist> [<id>…]` :
+Node seul (avec `fetch`), aucune dépendance. `node scripts/importer-deezer.js "<id de playlist>[=<catégorie>]" […]` (tranche 42 : sans catégorie, celle déjà notée pour la playlist, sinon son titre Deezer) :
 
 - lit les titres de la playlist publique Deezer, puis le détail de chaque nouvelle piste (`/track/<id>`, pour le `gain`), et ajoute les nouvelles à la fin de `data/blind-test.json`, en `garder: true` ;
 - ne modifie jamais une entrée existante, ne rajoute pas un id déjà présent ni un doublon ;
 - écarte les titres `readable: false`, sans `preview` ou sans `gain` ;
+- rattache à la playlist ses chansons, les nouvelles comme celles déjà au catalogue (même règle que `categoriser-blind-test.js`), et note la playlist avec son titre et sa catégorie dans `data/playlists-blind-test.json` ;
 - relançable avec d'autres playlists.
 
 On relit ensuite les titres et artistes, puis on lance `node scripts/verifier-blind-test.js`.
@@ -383,13 +419,14 @@ On relit ensuite les titres et artistes, puis on lance `node scripts/verifier-bl
 
 Sur le modèle de `verifier-legende.js`, **hors ligne** :
 
-- seuls les champs `id`, `deezer`, `titre`, `artiste`, `pochette`, `gain`, `garder` ;
+- seuls les champs `id`, `deezer`, `titre`, `artiste`, `pochette`, `gain`, `garder`, `playlists` ;
+- `playlists`, s'il est là : liste non vide d'ids Deezer, sans doublon, tous dans `data/playlists-blind-test.json` (vérifié lui aussi) ;
 - `id` = `d` + `deezer`, unique ; `deezer` entier positif ;
 - `titre`, `artiste` : chaînes non vides, sans espace au bord ;
 - `pochette` : URL `https://` ; `gain` : nombre ; `garder` : booléen ;
 - pas de doublon parmi les chansons gardées ;
 - au moins 50 chansons gardées (une partie de mix à 10 joueurs) ;
-- affichage : nombre de chansons gardées, d'exclues.
+- affichage : nombre de chansons gardées, d'exclues, et de chansons par catégorie ; alertes (sans échec) pour les chansons gardées sans playlist et les catégories de moins de 20 chansons.
 
 Avec l'option **`--deezer`**, il interroge en plus Deezer pour chaque chanson gardée et liste celles dont l'extrait n'est plus disponible (sans modifier le fichier). Les tests n'appellent jamais Deezer.
 

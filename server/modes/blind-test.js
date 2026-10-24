@@ -39,23 +39,61 @@ const FORMATS = { classique: 'Classique', mix: 'Mix' };
 
 // ---------- Réglages de l'hôte ----------
 // Classique : le nombre de chansons (curseur). Mix : combien de fois chacun est maître,
-// et la durée d'écoute de chaque mix (en s).
+// et la durée d'écoute de chaque mix (en s). Les deux : les catégories (tranche 42).
 
 export const CHANSONS_MIN = 1;
 export const CHANSONS_MAX = 20;
 export const TOURS_MIX = [1, 2];
 export const ECOUTES_MIX = [90, DUREE_ECOUTE_MIX_MS / 1000, 180];
 
+// Toutes les catégories sont choisies par défaut.
 export function reglagesParDefaut() {
-  return { format: 'classique', chansons: 10, tours: 1, ecoute: DUREE_ECOUTE_MIX_MS / 1000 };
+  return {
+    format: 'classique', chansons: 10, tours: 1, ecoute: DUREE_ECOUTE_MIX_MS / 1000, categories: categoriesDe(banqueBlindTest()),
+  };
 }
 
 export function validerReglages(donnees) {
-  const { format, chansons, tours, ecoute } = donnees ?? {};
+  const {
+    format, chansons, tours, ecoute, categories,
+  } = donnees ?? {};
   if (typeof format !== 'string' || !Object.hasOwn(FORMATS, format)) return null;
   if (!Number.isInteger(chansons) || chansons < CHANSONS_MIN || chansons > CHANSONS_MAX) return null;
   if (!TOURS_MIX.includes(tours) || !ECOUTES_MIX.includes(ecoute)) return null;
-  return { format, chansons, tours, ecoute };
+  if (!categoriesValides(categories, categoriesDe(banqueBlindTest()))) return null;
+  return {
+    format, chansons, tours, ecoute, categories,
+  };
+}
+
+// ---------- Catégories (tranche 42) ----------
+
+// Les catégories des chansons, dans l'ordre où elles apparaissent au catalogue.
+export function categoriesDe(banque) {
+  return [...new Set(banque.flatMap((chanson) => chanson.categories))];
+}
+
+// Au moins une, toutes connues, sans doublon. Un catalogue sans catégorie n'en propose aucune.
+export function categoriesValides(categories, connues) {
+  if (!Array.isArray(categories) || new Set(categories).size !== categories.length) return false;
+  if (connues.length && !categories.length) return false;
+  return categories.every((categorie) => connues.includes(categorie));
+}
+
+// Les chansons du choix de l'hôte. Toutes les catégories : tout le catalogue, chansons
+// pas encore rangées comprises.
+export function chansonsDuChoix(banque, categories) {
+  if (categoriesDe(banque).every((categorie) => categories.includes(categorie))) return banque;
+  return banque.filter((chanson) => chanson.categories.some((categorie) => categories.includes(categorie)));
+}
+
+// Comme au quiz : les chansons jamais entendues du choix, puis ses déjà entendues (les plus
+// anciennes d'abord), puis, s'il n'y en a pas assez, les autres catégories, dans le même ordre.
+export function tirerChansons(banque, categories, questionsVues, nombre) {
+  const choisies = chansonsDuChoix(banque, categories);
+  const autres = banque.filter((chanson) => !choisies.includes(chanson));
+  const tirees = tirerQuestions(choisies, questionsVues, nombre);
+  return [...tirees, ...tirerQuestions(autres, questionsVues, nombre - tirees.length)];
 }
 
 function reglagesDe(salle) {
@@ -64,24 +102,40 @@ function reglagesDe(salle) {
 
 const pluriel = (nombre, mot) => `${nombre} ${mot}${nombre > 1 ? 's' : ''}`;
 
-// « Classique · 10 chansons », « Mix · 1 tour · 120 s ».
-function resumerReglages({ format, chansons, tours, ecoute }) {
-  if (format === 'classique') return `Classique · ${pluriel(chansons, 'chanson')}`;
-  return `Mix · ${pluriel(tours, 'tour')} · ${ecoute} s`;
+// « Classique · 10 chansons », « Mix · 1 tour · 120 s · Années 80, Rap français ».
+function resumerReglages({
+  format, chansons, tours, ecoute, categories,
+}, connues) {
+  const choix = format === 'classique'
+    ? `Classique · ${pluriel(chansons, 'chanson')}`
+    : `Mix · ${pluriel(tours, 'tour')} · ${ecoute} s`;
+  return categories.length < connues.length ? `${choix} · ${resumerCategories(categories)}` : choix;
+}
+
+// « Années 80, Rap français », ou « Années 80 et 3 autres » au-delà de 2.
+function resumerCategories(categories) {
+  if (categories.length <= 2) return categories.join(', ');
+  return `${categories[0]} et ${categories.length - 1} autres`;
 }
 
 export function vueReglages(salle) {
   const reglages = reglagesDe(salle);
+  const banque = banqueBlindTest();
+  const connues = categoriesDe(banque);
+  const choisies = chansonsDuChoix(banque, reglages.categories);
   return {
     ...reglages,
     valeurs: reglages,
     titre: 'Format',
-    resume: resumerReglages(reglages),
+    resume: resumerReglages(reglages, connues),
+    nombreChansons: choisies.length,
+    inedites: choisies.filter((chanson) => !salle.questionsVues.includes(chanson.id)).length,
     options: {
       formats: Object.entries(FORMATS).map(([idFormat, libelle]) => ({ id: idFormat, libelle })),
       chansons: { min: CHANSONS_MIN, max: CHANSONS_MAX },
       tours: TOURS_MIX,
       ecoutes: ECOUTES_MIX,
+      categories: connues.map((categorie) => ({ id: categorie, libelle: categorie })),
     },
   };
 }
@@ -156,11 +210,13 @@ export function designationValide(salle, contenu) {
 // au lancement est maître une ou deux fois.
 export function demarrerPartie(salle) {
   for (const joueur of salle.joueurs) joueur.score = 0;
-  const { format, chansons: nombreChansons, tours, ecoute } = reglagesDe(salle);
+  const {
+    format, chansons: nombreChansons, tours, ecoute, categories,
+  } = reglagesDe(salle);
   const joueurs = parClassementGlobal(salle, listerAttendus(salle));
   const maitres = repartirMaitres(joueurs, format === 'mix' ? tours * joueurs.length : nombreChansons);
   const parManche = format === 'mix' ? CHANSONS_PAR_MIX : 1;
-  const chansons = tirerQuestions(banqueBlindTest(), salle.questionsVues, maitres.length * parManche);
+  const chansons = tirerChansons(banqueBlindTest(), categories, salle.questionsVues, maitres.length * parManche);
   noterQuestionsVues(salle, chansons);
   const questions = format === 'mix'
     ? maitres.map((_, manche) => chansons.slice(manche * parManche, (manche + 1) * parManche))
@@ -248,12 +304,13 @@ function remplacerExtrait(salle, index) {
   noterQuestionsVues(salle, [remplacante]);
 }
 
-// Une chanson absente de la partie et jamais en échec : les jamais entendues d'abord.
+// Une chanson absente de la partie et jamais en échec : du choix de l'hôte et jamais
+// entendue d'abord, comme au tirage.
 function chansonDeRemplacement(salle) {
   const { questions, enEchec } = salle.etatMode;
   const ecartees = new Set([...questions.flat().map((chanson) => chanson.id), ...enEchec]);
   const possibles = banqueBlindTest().filter((chanson) => !ecartees.has(chanson.id));
-  return tirerQuestions(possibles, salle.questionsVues, 1)[0] ?? null;
+  return tirerChansons(possibles, reglagesDe(salle).categories, salle.questionsVues, 1)[0] ?? null;
 }
 
 // « Lancer la chanson » du maître : la musique démarre.

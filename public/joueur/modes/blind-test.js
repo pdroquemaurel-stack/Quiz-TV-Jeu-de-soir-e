@@ -291,7 +291,9 @@ curseurChansons.addEventListener('change', () => {
   envoyerReglages({ chansons: Number(curseurChansons.value) });
 });
 
-function remplirReglagesBlindTest({ format, chansons, tours, ecoute, options }) {
+function remplirReglagesBlindTest({
+  format, chansons, tours, ecoute, categories, nombreChansons, inedites, options,
+}) {
   document.getElementById('choix-formats').replaceChildren(...options.formats.map(({ id, libelle }) => {
     const envoyer = id === format ? null : () => envoyerReglages({ format: id });
     return boutonReglage(libelle, id === format, envoyer);
@@ -314,6 +316,19 @@ function remplirReglagesBlindTest({ format, chansons, tours, ecoute, options }) 
   document.getElementById('bt-choix-ecoute').replaceChildren(...options.ecoutes.map((secondes) => boutonReglage(
     `${secondes} s`, secondes === ecoute, () => envoyerReglages({ ecoute: secondes }),
   )));
+
+  // Comme les thèmes du quiz : tout est coché au départ, la dernière ne se décoche pas.
+  document.getElementById('bt-reglage-categories').hidden = !options.categories.length;
+  document.getElementById('bt-choix-categories').replaceChildren(
+    ...boutonsACocher(options.categories, categories, 'categories'),
+  );
+  document.getElementById('bt-chansons-du-choix').textContent = texteChansonsDuChoix(nombreChansons, inedites);
+}
+
+// Sous 20 chansons, une partie risque d'en manquer : elle se complète avec les autres catégories.
+function texteChansonsDuChoix(nombre, inedites) {
+  const texte = `${nombre} chanson${nombre > 1 ? 's' : ''}, dont ${inedites} jamais entendue${inedites > 1 ? 's' : ''}`;
+  return nombre < 20 ? `${texte}. S'il en manque, les autres catégories complètent.` : texte;
 }
 
 modesJoueur['blind-test'] = {

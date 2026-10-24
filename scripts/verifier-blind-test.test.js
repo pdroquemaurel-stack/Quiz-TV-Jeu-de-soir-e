@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { MIN_CHANSONS, verifierBlindTest } from './verifier-blind-test.js';
+import {
+  MIN_CHANSONS, MIN_PAR_CATEGORIE, bilanCategories, verifierBlindTest, verifierPlaylists,
+} from './verifier-blind-test.js';
 
 function chanson(numero, modifications = {}) {
   return {
@@ -74,7 +76,46 @@ test('blind test : la même chanson gardée deux fois, sous deux ids', () => {
   assert.deepEqual(verifierBlindTest([...catalogue(), chanson(99, { titre: 'Titre 1', artiste: 'Artiste 1', garder: false })]), []);
 });
 
-test('blind test : le vrai catalogue data/blind-test.json est valide', () => {
-  const liste = JSON.parse(readFileSync(new URL('../data/blind-test.json', import.meta.url), 'utf8'));
-  assert.deepEqual(verifierBlindTest(liste), []);
+// Deux playlists rangées dans des catégories, comme data/playlists-blind-test.json.
+const PLAYLISTS = { 70: { nom: 'En mode 70', categorie: 'Disco' }, 80: { nom: 'En mode 80', categorie: 'Rap' } };
+
+test('blind test : playlists facultatives, des ids connus du fichier des playlists, sans doublon (tranche 42)', () => {
+  assert.deepEqual(verifierBlindTest(catalogue({ playlists: [70, 80] }), PLAYLISTS), []);
+  const erreurAvecPlaylists = (modifications, extrait) => {
+    const erreurs = verifierBlindTest(catalogue(modifications), PLAYLISTS);
+    assert.equal(erreurs.length, 1, erreurs.join(' | '));
+    assert.ok(erreurs[0].includes(extrait), erreurs[0]);
+  };
+  erreurAvecPlaylists({ playlists: [] }, 'liste non vide');
+  erreurAvecPlaylists({ playlists: 70 }, 'liste non vide');
+  erreurAvecPlaylists({ playlists: ['70'] }, 'entiers positifs');
+  erreurAvecPlaylists({ playlists: [99] }, 'playlist 99 absente');
+  erreurAvecPlaylists({ playlists: [70, 70] }, 'playlist en double');
+});
+
+test('blind test : fichier des playlists, un nom et une catégorie par id Deezer', () => {
+  assert.deepEqual(verifierPlaylists(PLAYLISTS), []);
+  assert.deepEqual(verifierPlaylists({}), []);
+  assert.equal(verifierPlaylists([]).length, 1);
+  assert.deepEqual(verifierPlaylists({ abc: { nom: 'X', categorie: 'Y' } }), ['Playlist abc : l\'id doit être un id Deezer']);
+  assert.deepEqual(verifierPlaylists({ 70: { nom: 'X' } }), ['Playlist 70 : categorie vide ou absent']);
+  assert.deepEqual(verifierPlaylists({ 70: { nom: 'X', categorie: 'Disco ' } }), ['Playlist 70 : categorie avec des espaces au début ou à la fin']);
+});
+
+test('blind test : bilan des catégories, chansons gardées sans playlist et petites catégories', () => {
+  const liste = catalogue();
+  liste[0] = { ...liste[0], playlists: [70] };
+  liste[1] = { ...liste[1], playlists: [70, 80], garder: false };
+  for (let i = 2; i < 2 + MIN_PAR_CATEGORIE; i++) liste[i] = { ...liste[i], playlists: [80] };
+  const { parCategorie, sansCategorie, petites } = bilanCategories(liste, PLAYLISTS);
+  assert.deepEqual(parCategorie, { Disco: 1, Rap: MIN_PAR_CATEGORIE });
+  assert.deepEqual(petites, ['Disco']);
+  assert.equal(sansCategorie.length, MIN_CHANSONS - 2 - MIN_PAR_CATEGORIE);
+});
+
+test('blind test : le vrai catalogue data/blind-test.json est valide, avec ses playlists', () => {
+  const lire = (fichier) => JSON.parse(readFileSync(new URL(`../data/${fichier}`, import.meta.url), 'utf8'));
+  const playlists = lire('playlists-blind-test.json');
+  assert.deepEqual(verifierPlaylists(playlists), []);
+  assert.deepEqual(verifierBlindTest(lire('blind-test.json'), playlists), []);
 });

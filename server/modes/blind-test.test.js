@@ -9,8 +9,9 @@ import { banqueBlindTest } from '../extraits.js';
 import { modes } from './index.js';
 import {
   CHANSONS_PAR_MIX, DELAI_CHARGEMENT_MIX_MS, DUREE_DESIGNATION_MIX_MS, DUREE_DESIGNATION_MS, DUREE_ECOUTE_MIX_MS,
-  DUREE_ECOUTE_MS, avancer, designationValide, echeance, enregistrerReponse, pointsClassique, pointsDuMix,
-  recevoirExtraits, reglagesParDefaut, repartirMaitres, suivant, verifierFinAnticipee,
+  DUREE_ECOUTE_MS, avancer, categoriesDe, categoriesValides, chansonsDuChoix, designationValide, echeance,
+  enregistrerReponse, pointsClassique, pointsDuMix, recevoirExtraits, reglagesParDefaut, repartirMaitres, suivant,
+  tirerChansons, verifierFinAnticipee,
 } from './blind-test.js';
 
 const PSEUDOS = ['Paul', 'Léa', 'Sam', 'Tom', 'Zoé'];
@@ -409,13 +410,18 @@ test('réglages : classique de 10 chansons par défaut, 1 à 20 chansons, mix de
   const salle = creerSalle('tv');
   for (const pseudo of ['A', 'B', 'C']) ajouterJoueur(salle, pseudo, pseudo);
   choisirMode(salle, 'blind-test');
-  assert.deepEqual(reglagesParDefaut(), { format: 'classique', chansons: 10, tours: 1, ecoute: 120 });
+  const toutes = categoriesDe(banqueBlindTest());
+  assert.deepEqual(reglagesParDefaut(), {
+    format: 'classique', chansons: 10, tours: 1, ecoute: 120, categories: toutes,
+  });
   assert.equal(vueTv(salle).reglages.resume, 'Classique · 10 chansons');
   assert.equal(vueTv(salle).reglages.titre, 'Format');
   for (const invalide of [
     { format: 'rock' }, { format: 'mix' }, {}, null, 'mix', { ...MIX_PAR_DEFAUT, format: 'toString' },
     { ...MIX_PAR_DEFAUT, chansons: 0 }, { ...MIX_PAR_DEFAUT, chansons: 21 }, { ...MIX_PAR_DEFAUT, chansons: 2.5 },
     { ...MIX_PAR_DEFAUT, tours: 3 }, { ...MIX_PAR_DEFAUT, ecoute: 100 },
+    { ...MIX_PAR_DEFAUT, categories: undefined }, { ...MIX_PAR_DEFAUT, categories: 'Années 80' },
+    { ...MIX_PAR_DEFAUT, categories: ['Catégorie inconnue'] },
   ]) {
     assert.equal(reglerMode(salle, invalide), false, JSON.stringify(invalide));
   }
@@ -424,7 +430,9 @@ test('réglages : classique de 10 chansons par défaut, 1 à 20 chansons, mix de
   assert.equal(reglerMode(salle, { ...MIX_PAR_DEFAUT, tours: 2, ecoute: 90 }), true);
   assert.equal(vueTv(salle).reglages.resume, 'Mix · 2 tours · 90 s');
   assert.deepEqual(vueTv(salle).reglages.options.formats.map((f) => f.id), ['classique', 'mix']);
-  assert.deepEqual(vueTv(salle).reglages.valeurs, { format: 'mix', chansons: 10, tours: 2, ecoute: 90 });
+  assert.deepEqual(vueTv(salle).reglages.valeurs, {
+    format: 'mix', chansons: 10, tours: 2, ecoute: 90, categories: toutes,
+  });
 });
 
 test('réglages : mix de 2 tours, chacun maître 2 fois ; écoute de 90 s', () => {
@@ -735,4 +743,39 @@ test('mix relais : signal de la TV ignoré pour une autre manche, hors relais, e
 
   const { salle: classique } = sallePrete();
   assert.equal(recevoirExtraits(classique, { numero: 1, prets: [], echecs: ['d42'] }), false);
+});
+
+// --- Catégories (tranche 42) ---
+
+// Un petit catalogue rangé, catégories déduites des playlists comme dans banqueBlindTest :
+// 3 chansons « 80 », 2 « Rap » (dont une aussi « 80 »), 1 sans catégorie.
+const RANGEES = [
+  { id: 'd1', categories: ['80'] }, { id: 'd2', categories: ['80'] }, { id: 'd3', categories: ['80', 'Rap'] },
+  { id: 'd4', categories: ['Rap'] }, { id: 'd5', categories: [] },
+];
+const ids = (chansons) => chansons.map((chanson) => chanson.id);
+
+test('catégories : celles du catalogue dans l\'ordre, au moins une choisie, toutes connues, sans doublon', () => {
+  assert.deepEqual(categoriesDe(RANGEES), ['80', 'Rap']);
+  assert.equal(categoriesValides(['Rap'], ['80', 'Rap']), true);
+  assert.equal(categoriesValides(['80', 'Rap'], ['80', 'Rap']), true);
+  for (const invalide of [[], ['Jazz'], ['80', '80'], '80', null, [80]]) {
+    assert.equal(categoriesValides(invalide, ['80', 'Rap']), false, JSON.stringify(invalide));
+  }
+  assert.equal(categoriesValides([], []), true, 'catalogue pas encore rangé');
+});
+
+test('catégories : le choix de l\'hôte, une chanson de plusieurs catégories comprise ; toutes = tout le catalogue', () => {
+  assert.deepEqual(ids(chansonsDuChoix(RANGEES, ['Rap'])), ['d3', 'd4']);
+  assert.deepEqual(ids(chansonsDuChoix(RANGEES, ['80'])), ['d1', 'd2', 'd3']);
+  assert.deepEqual(ids(chansonsDuChoix(RANGEES, ['80', 'Rap'])), ['d1', 'd2', 'd3', 'd4', 'd5'], 'les non rangées avec « toutes »');
+  assert.deepEqual(ids(chansonsDuChoix([{ id: 'd9', categories: [] }], [])), ['d9'], 'catalogue pas encore rangé');
+});
+
+test('catégories : tirage dans le choix d\'abord, jamais entendues puis déjà entendues, puis les autres', () => {
+  const tirees = tirerChansons(RANGEES, ['Rap'], ['d3'], 4);
+  assert.deepEqual(ids(tirees.slice(0, 2)), ['d4', 'd3'], 'Rap : la jamais entendue, puis la déjà entendue');
+  assert.equal(tirees.length, 4, 'complété avec les autres');
+  assert.ok(tirees.slice(2).every((chanson) => ['d1', 'd2', 'd5'].includes(chanson.id)));
+  assert.equal(tirerChansons(RANGEES, ['Rap'], [], 10).length, 5, 'jamais plus que le catalogue');
 });
