@@ -6,7 +6,7 @@ Le MVP permet à 2 à 10 amis réunis dans une même pièce de jouer une partie 
 
 Le MVP est réussi si une soirée réelle se déroule sans intervention technique : ouvrir l'app TV, scanner le QR code, jouer 10 questions, voir le podium, puis rejouer. Il doit aussi supporter au moins une déconnexion de téléphone en cours de partie.
 
-Le code et le modèle de données doivent permettre d'ajouter ensuite d'autres modes de jeu sans tout réécrire. Cinq modes sont prévus après le MVP (voir « Modes de jeu supplémentaires »).
+Le code et le modèle de données doivent permettre d'ajouter ensuite d'autres modes de jeu sans tout réécrire. Quatorze modes sont venus s'ajouter au quiz, et d'autres sont prévus (voir « Modes de jeu supplémentaires » et « Prochaines étapes »).
 
 ## Déroulé d'une partie
 
@@ -83,9 +83,9 @@ La fermeture après 30 min sans aucune connexion (ni TV ni joueur) peut arriver 
 
 Ces éléments sont volontairement repoussés. Le modèle de données ne doit pas les empêcher.
 
-- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26, 28 à 30 et 32) : La réplique est prévue à la tranche 23, Menteur à la tranche 31, les autres sont dans « Plus tard »
-- Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz
-- Les questions avec image, son ou vidéo (sauf les GIF de La légende et les extraits du Blind test)
+- Les modes de jeu autres que ceux déjà en place (Quiz, tranches 11 à 15, 24 à 26, 28 à 30 et 32 à 34) : les tranches 35 à 41, 31 et 23 (La réplique) sont prévues (voir « Prochaines étapes »), les autres sont dans « Plus tard »
+- Le choix d'un thème ou d'une difficulté dans les autres modes que le quiz (sauf les niveaux de Qui suis-je ?)
+- Les questions avec image, son ou vidéo (sauf les GIF de La légende, les extraits du Blind test, les photos du GéoQuiz et de Qui suis-je ?, et les logos du Nuancier)
 - Les sons sur les téléphones, et la musique en dehors de la salle d'attente (sauf les extraits joués par la TV au Blind test)
 - Le jeu à distance, hors de la pièce de la TV
 - Les comptes, l'historique des parties et toute base de données
@@ -163,7 +163,7 @@ Résumés seulement. Les règles détaillées de chaque mode sont écrites dans 
 
 | Ordre | Mode | Joueurs | Résumé |
 |---|---|---|---|
-| 1 | **Estimation** (disponible, voir `docs/modes/estimation.md`) | 3 à 10 | Une question à réponse numérique (« Combien de km entre Casablanca et Paris ? »). Chacun saisit un nombre, le plus proche gagne. |
+| 1 | **Estimation** (disponible, voir `docs/modes/estimation.md`) | 3 à 10 | Une question à réponse numérique (« Combien de km entre Casablanca et Paris ? »). Chacun saisit un nombre, les 3 plus proches marquent (1000, 600, 300 points). |
 | 2 | **Qui de nous ?** (disponible, voir `docs/modes/qui-de-nous.md`) | 4 à 10 | « Qui est le plus susceptible de rater son avion ? ». Chacun vote pour un joueur, la TV affiche les résultats. |
 | 3 | **Undercover** (disponible, voir `docs/modes/undercover.md`) | 4 à 10 | Chacun reçoit un mot secret sur son téléphone : les undercovers ont un mot légèrement différent, Mister White (dès 5 joueurs) n'en a aucun. Tours de description à voix haute, puis vote pour éliminer les intrus. Mister White éliminé peut gagner en devinant le mot des civils. |
 | 4 | **Même réponse** (disponible, voir `docs/modes/meme-reponse.md`) | 3 à 10 | « Cite un fruit rouge ». On marque des points si on donne la même réponse que d'autres joueurs. |
@@ -289,11 +289,11 @@ Règle simple : les clients envoient des actions, le serveur répond en diffusan
 | `joueur:rejoindre` | téléphone → serveur | code, pseudo, id et clé mémorisés éventuels. Sans la clé de cet id, pas de reconnexion : c'est une nouvelle arrivée. |
 | `hote:validerFormat` | téléphone de l'hôte → serveur | rien. « Démarrer » : accepté en salle d'attente, au choix du format. Passe au choix du mode (`formatValide`). |
 | `hote:lancer` | téléphone de l'hôte → serveur | rien. Accepté en salle d'attente, une fois le format validé, avec assez de joueurs pour le mode choisi. |
-| `joueur:repondre` | téléphone → serveur | la réponse, interprétée par le mode : index du choix (Quiz, vote du bluff), nombre entier (Estimation), texte (Même réponse, bluff en saisie, devinette de Mister White), `id` d'un joueur (Qui de nous ?, vote d'Undercover), `{ lancer: true }` et `{ passer: true }` du maître du Blind test (relais, tranche 27). Le détail et les refus sont dans la mini-spec de chaque mode. |
+| `joueur:repondre` | téléphone → serveur | la réponse, interprétée par le mode : index du choix (Quiz, vote du bluff), nombre entier (Estimation), texte (Même réponse, bluff en saisie, devinette de Mister White), `id` d'un joueur (Qui de nous ?, vote d'Undercover), `{ lancer: true }` et `{ passer: true }` du maître du Blind test (relais, tranche 27), un objet pour les modes suivants (pin du GéoQuiz, mot, calcul, cases du Petit bac, couleur du Nuancier, enchère, gestes du Qui suis-je ?). Le détail et les refus sont dans la mini-spec de chaque mode. |
 | `hote:suivant` | téléphone de l'hôte → serveur | `{ etape }` : l'étape affichée par le téléphone (reçue dans `joueur:etat`). Si ce n'est plus l'étape en cours (double appui, chrono écoulé entre-temps), l'action est ignorée. Pendant une partie, le « Suivant » du mode. Au podium, passe au tableau (ou au grand gagnant). |
 | `hote:rejouer` | téléphone de l'hôte → serveur | rien. Accepté au tableau et au grand gagnant. Relance le mode choisi ; depuis le grand gagnant, remet d'abord les points globaux à 0 (« Nouvelle aventure »). |
 | `hote:configurer` | téléphone de l'hôte → serveur | `{ type: "petite" \| "aventure", objectif }`. Accepté seulement en salle d'attente, avec un objectif entier de 3 à 15. |
-| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format, chansons, tours, ecoute }` pour le Blind test (voir `docs/modes/blind-test.md`). `{ longueur, temps }` pour les autres modes, et en plus pour le quiz (voir « Options de l'hôte »). Toujours le réglage complet : le téléphone renvoie les valeurs reçues avec le seul changement. Accepté en salle d'attente et au tableau (après une partie, comme le choix du mode). |
+| `hote:reglerMode` | téléphone de l'hôte → serveur | `{ categories, niveaux }` pour le quiz : une liste non vide de catégories connues, et une liste non vide de niveaux (1, 2, 3 : les difficultés des questions). `{ format, chansons, tours, ecoute }` pour le Blind test (voir `docs/modes/blind-test.md`). `{ longueur, temps }` pour les autres modes, et en plus pour le quiz (voir « Options de l'hôte ») ; avec `lettresRares` au Petit bac et `niveaux` à Qui suis-je ?, et `{ longueur }` seul au Défi des enchères. Toujours le réglage complet : le téléphone renvoie les valeurs reçues avec le seul changement. Accepté en salle d'attente et au tableau (après une partie, comme le choix du mode). |
 | `hote:changerFormat` | téléphone de l'hôte → serveur | rien. Accepté au tableau, au grand gagnant et en salle d'attente au choix du mode : retour en salle d'attente, au choix du format. |
 | `hote:choisirMode` | téléphone de l'hôte → serveur | `id` du mode. Accepté seulement en salle d'attente ou au tableau, pour un mode jouable avec assez de joueurs connectés (voir `docs/modes/estimation.md`). |
 | `hote:terminer` | téléphone de l'hôte → serveur | rien. Arrête la partie en cours et passe au podium. |
@@ -369,7 +369,7 @@ Joueurs, attribués dans cet ordre (première couleur libre). Le serveur n'envoi
 
 ### Mi TV Stick 4K
 
-- Android TV 11 et 2 Go de RAM : la page TV reste en HTML/CSS/JS sans framework, avec des animations CSS simples (opacité, déplacement) et aucune image lourde. Exceptions : les vidéos MP4 de La légende (tranche 24), une seule jouée à la fois, 1 Mo au plus chacune ; les extraits Deezer du Blind test (tranche 25), jusqu'à 5 `<audio>` joués en même temps (MP3 de 30 s, environ 480 Ko) ; les photos du GéoQuiz (tranche 26), une à la fois, chargées depuis Wikimedia Commons (1920 px, environ 300 à 600 Ko), la suivante préchargée pendant la révélation, et sa carte Leaflet (bibliothèque chargée depuis cdnjs, tuiles CARTO).
+- Android TV 11 et 2 Go de RAM : la page TV reste en HTML/CSS/JS sans framework, avec des animations CSS simples (opacité, déplacement) et aucune image lourde. Exceptions : les vidéos MP4 de La légende (tranche 24), une seule jouée à la fois, 1 Mo au plus chacune ; les extraits Deezer du Blind test (tranche 25), jusqu'à 5 `<audio>` joués en même temps (MP3 de 30 s, environ 480 Ko) ; les photos du GéoQuiz (tranche 26), une à la fois, chargées depuis Wikimedia Commons (1920 px, environ 300 à 600 Ko), la suivante préchargée pendant la révélation, et sa carte Leaflet (bibliothèque chargée depuis cdnjs, tuiles CARTO) ; les logos SVG du Nuancier (tranche 32) ; les photos de Qui suis-je ? (tranche 34), une à la fois, chargées depuis Wikimedia (1280 px), la suivante préchargée.
 - **Pour l'instant, la TV tourne dans un navigateur installé sur le stick**, qui ouvre la page `/tv` du serveur. Cela suffit pour jouer : l'APK est en réserve (tranche 9) et ne sera repris que si la soirée test révèle un problème.
 - Réglages du stick avant une soirée : économiseur d'écran et mise en veille réglés sur le délai le plus long. La page TV demande en plus un Wake Lock quand le navigateur le permet (tranche 18).
 - Dans le navigateur, le son reste bloqué jusqu'au premier geste : la touche OK de la télécommande le débloque (voir `docs/sons.md`).
@@ -421,10 +421,39 @@ Dépendance validée pour le QR code : `qrcode`.
 
 Chaque tranche se termine par un test concret. Les numéros des tranches ne changent jamais, même quand l'ordre change.
 
+### Prochaines étapes
+
+Dans l'ordre, une tranche à la fois. Pour chaque mode, les points listés sont à trancher dans sa mini-spec `docs/modes/<mode>.md`, validée avant le code (règles de l'étape « Modes de jeu »). Les règles détaillées de la demande sont sous chaque tranche, plus bas.
+
+1. **35. Wiki course.** Atteindre une page Wikipédia cible depuis un départ commun, en ne cliquant que sur les liens internes, pages affichées dans l'app.
+   - À trancher : choix des paires départ / cible (liste préparée ou tirage, garantie qu'un chemin existe) ; points (ordre d'arrivée, nombre de clics, temps) ; fin d'une course libre (premier arrivé ou chrono maximal) ; manche chronométrée sans clic à temps ; retour en arrière permis ou non ; pages à écarter (homonymies, dates) ; nettoyage du HTML « mobile-html » (liens externes, images, poids sur le téléphone) ; ce que montre la TV pendant la course ; nombre de joueurs minimum.
+2. **36. Time's Up.** Deux équipes font deviner les mêmes mots en trois manches : description libre, un seul mot, mime.
+   - À trancher : formation des équipes (tirage ou choix de l'hôte, nombre impair) ; liste de mots à piocher (fichier de contenu et script de vérification) ; ordre de passage ; mot passé remis dans le paquet ou non ; fin d'une manche ; scores d'équipe et médailles individuelles ; ce que voient le joueur actif, son équipe et l'autre équipe ; nombre de joueurs minimum.
+3. **37. Chasse express.** La TV annonce un objet à rapporter, le premier revenu appuie sur « J'ai trouvé ! », les autres valident ou contestent par vote.
+   - À trancher : règle du vote (majorité, égalité, l'hôte tranche ?) ; points du premier, et des suivants ou non ; défi refusé (le suivant peut-il tenter ?) ; durée du chrono ; défis faisables sans danger dans tout appartement (fichier de contenu et script de vérification) ; nombre de manches et de joueurs minimum.
+4. **38. Cherche & trouve.** Brancher sur Quiz TV le jeu autonome existant : chacun explore une illustration géante sur son téléphone et tape les détails demandés.
+   - **Avant tout : demander à Paul où se trouve la version autonome existante** (dossier ou dépôt, licence des illustrations).
+   - À trancher : OpenSeadragon, nouvelle dépendance à valider (chargée depuis un CDN ou dans le dépôt) ; hébergement et poids des tuiles ; vérification des taps par le serveur, sans envoyer au téléphone la position des détails ; les 6 détails en même temps ou un par un ; ce que montre la TV ; fin de partie.
+5. **39. Dessine et devine.** Un joueur dessine un mot sur son téléphone, le dessin s'affiche en direct sur la TV, les autres proposent.
+   - À trancher : envoi des traits (format, fréquence, débit sur le stick) ; comparaison des propositions (accents, pluriels, comme Même réponse) ; points du premier, des suivants et du dessinateur ; choix du mot (imposé ou parmi plusieurs) ; indices éventuels ; liste de mots par niveau (fichier de contenu et script de vérification) ; ordre et nombre de dessinateurs ; propositions fausses visibles sur la TV ou non.
+6. **40. Le duel des avocats.** Deux avocats tirés au hasard plaident une affaire absurde, chacun dans un camp secret, puis le jury vote.
+   - À trancher : tirage des avocats (chacun son tour ?) ; ce qui est secret, et pour qui ; les avocats votent-ils ; points de l'avocat gagnant et des jurés ; égalité des votes ; nombre de manches et de joueurs minimum ; catalogue d'affaires (fichier de contenu et script de vérification) ; son du coup de marteau (`docs/sons.md`).
+7. **41. Mode photo (nom à trouver).** La TV dévoile peu à peu la photo d'un personnage du catalogue de Qui suis-je ?, les joueurs crient le nom, l'hôte désigne qui a trouvé.
+   - À trancher : nom du mode ; l'hôte voit-il le nom sur son téléphone (ce serait une nouvelle exception à la règle « jamais la bonne réponse avant la révélation », réservée aujourd'hui au maître du Blind test) ou joue-t-il comme les autres ; détail de départ et étapes du dézoom ; points selon l'étape ; plusieurs gagnants par photo ou non ; niveaux en option ; personnages déjà vus en Qui suis-je ? dans la soirée.
+8. **31. Menteur (Perudo).** 5 dés cachés par joueur, enchères sur tous les dés en jeu, « Menteur ! » révèle les dés, le perdant du défi perd un dé.
+   - À trancher : ceux listés sous la tranche 31 (ordre de parole, ouverture sur les pacos, classement pour les médailles, chrono pour annoncer, joueur déconnecté à son tour, lancer en secouant le téléphone).
+9. **10. Soirée test.** Une vraie soirée avec des amis, dans le navigateur du stick, en notant les bugs et les frictions.
+   - Pas de mini-spec. À fixer : la date (jamais de push sur `main` ce soir-là), les modes joués, qui note les retours. Ses retours décideront de la suite (offre payante, APK).
+10. **23, temps 2. La réplique.** Chacun écrit une réplique à une amorce drôle, puis tout le monde vote pour la meilleure, jamais la sienne.
+    - À trancher : mode à part ou seconde source d'amorces de La légende (voir la tranche 24) ; amorces à écrire (fichier de contenu et script de vérification) ; longueur des répliques ; barème des votes et bonus à l'unanimité.
+
+En réserve : la tranche **9** (APK), reprise seulement si la soirée test révèle un problème.
+
+### État des tranches
+
 - **Terminées**, dans l'ordre de réalisation : 1, 2, 3, 4, 5, **8**, 6, 7, **11, 12, 13** (modes de jeu), **16** (sons), **14** (mode de jeu), **17** (médailles et aventure), **15** (mode de jeu), **18** (fiabilité), **19** (lisibilité), **20** (jouabilité), **21** (mise en scène), **22** (contenu et choix des questions), **23** temps 1 (nettoyage), **24** (La légende), **25** (Blind test), **26** (GéoQuiz), **27** (retours du test sur la vraie TV), **28** (Mot le plus long), **29** (Le compte est bon), **30** (Petit bac), **32** (Nuancier), **33** (Le défi des enchères), **34** (Qui suis-je ?).
 - **En cours** : aucune, la prochaine est la **35** (Wiki course).
-- **À venir, en priorité** (demandé le 06/10/2026) : la suite des 8 nouveaux jeux, un par un et dans l'ordre, **35 à 40**, puis le mode photo **41** (voir « Nouveaux jeux prioritaires »).
-- **À venir ensuite**, après l'audit (`AUDIT.md`) : **31** (Menteur), **10**, puis **23** temps 2 (La réplique). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
+- **À venir** : voir « Prochaines étapes » ci-dessus. Les 8 nouveaux jeux (**35 à 40**, demandés le 06/10/2026) et le mode photo (**41**) passent avant **31**, **10** et **23** temps 2, prévues après l'audit (`AUDIT.md`). Les identifiants entre parenthèses (R1, TV2…) renvoient à l'audit.
 - **En réserve** : la tranche 9 (APK).
 
 Le PC de développement est sur un réseau d'entreprise : les téléphones ne peuvent pas joindre un serveur local. Le déploiement sur Render (tranche 8) est donc passé avant la tranche 6, et les tests sur vrais téléphones se font toujours sur le serveur en ligne. Pendant le développement, la TV est un onglet de navigateur du PC en 1920×1080 ; en soirée, c'est le navigateur du stick.
@@ -488,7 +517,7 @@ Tranches :
 
 ### Priorités après l'audit (tranches 18 à 23)
 
-Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 préparent la soirée test (10). Ses retours peuvent réordonner la suite.
+Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 préparent la soirée test (10). Ses retours peuvent réordonner la suite. La 10 et le temps 2 de la 23 ont depuis été repoussés (voir « Prochaines étapes »).
 
 - **18. Fiabilité avant soirée.** ✅ Terminée. Qu'aucun incident technique connu ne puisse gâcher la soirée test, et qu'on puisse comprendre après coup ce qui s'est passé.
   - Plantage du serveur sur un message `null` (R1, T1) : aucune donnée reçue ne fait tomber le process, et une erreur imprévue dans une action est journalisée sans arrêter le serveur.
@@ -565,7 +594,7 @@ Ordre : **18 → 19 → 10 → 20 → 21 → 22 → 23**. Les tranches 18 et 19 
   - Temps 2 : format classique.
   - Temps 3 : format mix, et choix du format par l'hôte (panneau de réglages du téléphone commun au quiz et au Blind test).
 
-  *Test : défini dans `docs/modes/legende.md`, dont la lecture des vidéos en boucle sur le vrai stick.*
+  *Test : défini dans `docs/modes/blind-test.md`, dont la lecture des extraits sur le vrai stick.*
 
 ### Tranche « GéoQuiz » (26)
 
@@ -627,7 +656,7 @@ Une tranche par mode, dans l'ordre. Chacune commence par sa mini-spec `docs/mode
 
   *Test : défini dans `docs/modes/nuancier.md`, dont une partie sur Render avec de vrais téléphones et l'affichage des logos sur le vrai stick.*
 
-### Nouveaux jeux prioritaires (tranches 33 à 40)
+### Nouveaux jeux prioritaires (tranches 33 à 40, puis 41)
 
 Demandés par Paul le 06/10/2026, à faire avant toutes les autres tranches à venir, **un par un et dans l'ordre** : chaque jeu a sa mini-spec validée, son code, son test par Paul et son commit avant de passer au suivant. Les règles ci-dessous sont celles de la demande ; chaque mini-spec tranchera ses points ambigus.
 
