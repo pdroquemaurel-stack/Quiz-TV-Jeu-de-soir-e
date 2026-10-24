@@ -9,7 +9,7 @@ import { journaliser, journaliserErreur } from './journal.js';
 import { banqueNuancier } from './modes/nuancier.js';
 import {
   ajouterJoueur, changerFormat, choisirMode, configurerFormat, creerSalle, deconnecterJoueur,
-  deconnecterTv, demarrerPartie, erreur, mettreEnPause, nouvelleAventure, passerApresPodium, peutLancer,
+  deconnecterTv, demarrerPartie, erreur, mettreEnPause, modifierScore, nouvelleAventure, passerApresPodium, peutLancer,
   peutRejouer, reconnecterJoueur, reglerMode, reconnecterTv, reprendrePartie, statistiques, synchroniserMinuteur, terminerPartie,
   trouverHoteParSocket, trouverJoueurParSocket, trouverSalle, validerFormat,
 } from './salles.js';
@@ -192,6 +192,12 @@ export function demarrerServeur(port) {
     surEvenement('hote:reprendre', () => {
       const trouve = trouverHoteParSocket(socket.id);
       if (!trouve || !reprendrePartie(trouve.salle)) return;
+      diffuser(trouve.salle);
+    });
+
+    surEvenement('hote:modifierScore', (donnees) => {
+      const trouve = trouverHoteParSocket(socket.id);
+      if (!trouve || !modifierScore(trouve.salle, donnees)) return;
       diffuser(trouve.salle);
     });
 

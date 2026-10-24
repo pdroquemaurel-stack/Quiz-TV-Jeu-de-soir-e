@@ -364,6 +364,36 @@ main[data-ecran="quiz-repondre"] {
   margin: 0;
 }
 
+/* Menu pause de l'hôte : 10 joueurs au plus, la liste défile si l'écran est petit. */
+.scores-pause {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 40vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  text-align: left;
+}
+
+.scores-pause li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+}
+
+.scores-pause .pseudo-candidat {
+  flex: 1;
+}
+
+.scores-pause input {
+  width: 150px;
+  height: 52px;
+  text-align: right;
+}
+
 /* ---------- Outils ?dev ---------- */
 
 .outils-dev {
