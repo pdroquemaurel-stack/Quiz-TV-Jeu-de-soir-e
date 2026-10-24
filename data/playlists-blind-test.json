@@ -1,7 +1,19 @@
 {
+  "53519535": {
+    "nom": "blind test français",
+    "categorie": "Variété française"
+  },
   "3809722162": {
     "nom": "Blind Test 2 : Musique de film/série/dessin animé",
     "categorie": "Films et séries"
+  },
+  "3944719442": {
+    "nom": "Blind test Disney-Pixar",
+    "categorie": "Disney et dessins animés"
+  },
+  "4090537782": {
+    "nom": "Blind Test français toutes années",
+    "categorie": "Variété française"
   },
   "7089916404": {
     "nom": "Blind Test : Tubes 70 80 90 2000 2010 2020 / Hits",
@@ -25,6 +37,18 @@
   },
   "5565088822": {
     "nom": "blind test Disney et dessins animés anniversaire M",
+    "categorie": "Disney et dessins animés"
+  },
+  "6670701644": {
+    "nom": "BLINDTEST DISNEY",
+    "categorie": "Disney et dessins animés"
+  },
+  "5232222102": {
+    "nom": "Blind test Disney Pixar",
+    "categorie": "Disney et dessins animés"
+  },
+  "4422818002": {
+    "nom": "Blind Test - Dessins Animés",
     "categorie": "Disney et dessins animés"
   }
 }
