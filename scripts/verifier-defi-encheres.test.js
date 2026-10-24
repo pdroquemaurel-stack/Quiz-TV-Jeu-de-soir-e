@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { DEFIS_MIN, verifierDefiEncheres } from './verifier-defi-encheres.js';
 
 function defiValide(modifications = {}, numero = 1) {
-  return { id: `de-sujet-${numero}`, sujet: `sujet numéro ${numero}`, miseDepart: 5, ...modifications };
+  return { id: `de-sujet-${numero}`, sujet: `sujet numéro ${numero}`, ...modifications };
 }
 
 // Assez de défis valides pour que seul le défi modifié (le premier) pose problème.
@@ -42,10 +42,8 @@ test('défi des enchères : sujet vide, avec espaces, avec article ou en double'
   erreurAttendue({ sujet: 'Sujet numero 2' }, 'sujet en double');
 });
 
-test('défi des enchères : mise de départ hors bornes et champ en trop', () => {
-  erreurAttendue({ miseDepart: 0 }, 'miseDepart');
-  erreurAttendue({ miseDepart: 21 }, 'miseDepart');
-  erreurAttendue({ miseDepart: 5.5 }, 'miseDepart');
+test('défi des enchères : champ en trop, dont l\'ancienne mise de départ', () => {
+  erreurAttendue({ miseDepart: 5 }, 'en trop');
   erreurAttendue({ difficulte: 2 }, 'en trop');
 });
 

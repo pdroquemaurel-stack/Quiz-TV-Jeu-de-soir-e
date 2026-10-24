@@ -107,7 +107,7 @@ test('un vote valide est accepté une seule fois', () => {
 test('un vote invalide est refusé', () => {
   const { salle, joueurs: [a] } = sallePrete();
   const { joueur: tardif } = ajouterJoueur(salle, 'Tardif', 's9');
-  for (const vote of [a.id, 'j_inconnu', tardif.id, 3, null, undefined, [a.id]]) {
+  for (const vote of ['j_inconnu', tardif.id, 3, null, undefined, [a.id]]) {
     assert.equal(enregistrerReponse(salle, a.id, vote), false, String(vote));
   }
 });
@@ -124,6 +124,13 @@ test('un candidat déconnecté reste votable', () => {
   const { salle, joueurs: [a, b] } = sallePrete();
   b.connecte = false;
   assert.equal(enregistrerReponse(salle, a.id, b.id), true);
+});
+
+test('on peut voter pour soi (tranche 42), et le téléphone se voit parmi les candidats', () => {
+  const { salle, joueurs: [a, b, c, d] } = sallePrete();
+  assert.deepEqual(vueJoueur(salle, a).candidats.map((cand) => cand.id), [a.id, b.id, c.id, d.id]);
+  assert.equal(enregistrerReponse(salle, a.id, a.id), true);
+  assert.deepEqual(vueJoueur(salle, a).choisi.id, a.id);
 });
 
 test('seul candidat : on peut voter pour soi', () => {
@@ -274,7 +281,7 @@ test('un téléphone ne reçoit jamais le vote d\'un autre joueur', () => {
   enregistrerReponse(salle, a.id, d.id);
   const vueB = vueJoueur(salle, b);
   assert.equal(vueB.ecran, 'voter');
-  assert.deepEqual(vueB.candidats.map((cand) => cand.id), [a.id, c.id, d.id]);
+  assert.deepEqual(vueB.candidats.map((cand) => cand.id), [a.id, b.id, c.id, d.id]);
   assert.deepEqual(
     Object.keys(vueB).filter((cle) => !['mode', 'id', 'cle', 'pseudo', 'couleur', 'score', 'estHote', 'peutTerminer', 'pause', 'etape'].includes(cle)),
     ['ecran', 'numero', 'candidats'],

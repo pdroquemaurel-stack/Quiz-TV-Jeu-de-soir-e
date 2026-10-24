@@ -4,6 +4,8 @@ Mini-spec de la tranche 33, premier des 8 nouveaux jeux (tranches 33 à 40, prio
 
 La TV affiche un défi (« En 1 minute, combien de départements français peux-tu citer ? »). Les joueurs surenchérissent avec un gros bouton « +1 ». Quand plus personne ne surenchérit, le dernier enchérisseur doit citer à voix haute autant de réponses qu'il l'a annoncé, pendant qu'un arbitre les compte sur son téléphone.
 
+> **Tranche 42** (retours de la soirée test) : l'enchère d'ouverture vaut toujours 1, à chaque manche, au lieu d'une mise de départ propre au défi. Le champ `miseDepart` est retiré du catalogue. Les règles ci-dessous sont à jour.
+
 La tranche se code en **un seul temps** : serveur, écrans TV et téléphone, contenu, sons, doc et tests.
 
 
@@ -12,7 +14,7 @@ La tranche se code en **un seul temps** : serveur, écrans TV et téléphone, co
 - **3 à 10 joueurs** : le relevant, l'arbitre, et au moins un autre joueur.
 - Une partie compte **8 manches** (5, 8 ou 12, option de l'hôte), un défi par manche, tiré au hasard sans répétition (`tirerQuestions` de `commun.js` : d'abord les défis jamais vus). S'il y a moins de défis que de manches, la partie est plus courte.
 - **Enchères** :
-  - La manche s'ouvre sur la **mise de départ** du défi (par exemple 5), attribuée à un joueur **tiré au sort** parmi les joueurs attendus et connectés. Il y a donc toujours un enchérisseur, même si personne n'appuie.
+  - La manche s'ouvre à **1** (tranche 42), enchère attribuée à un joueur **tiré au sort** parmi les joueurs attendus et connectés. Il y a donc toujours un enchérisseur, même si personne n'appuie.
   - Chaque joueur attendu, sauf l'auteur de l'enchère en cours, peut appuyer sur **« +1 »** : l'enchère monte de 1 et il en devient l'auteur.
   - On ne peut pas surenchérir sur sa propre enchère : le bouton est grisé pour l'auteur.
   - **7 s sans surenchère** : l'enchère est adjugée, son auteur devient le **relevant**.
@@ -157,7 +159,7 @@ Rien ne change dans `sons.js`. À ajouter à la table « Quand jouer quoi » de 
 
 | Situation | Comportement |
 |---|---|
-| Personne n'appuie sur « +1 » | Au bout de 7 s, le joueur tiré au sort relève le défi à la mise de départ. |
+| Personne n'appuie sur « +1 » | Au bout de 7 s, le joueur tiré au sort relève le défi à 1. |
 | L'auteur de l'enchère se déconnecte pendant les enchères | Rien ne change : il reste l'auteur et peut être adjugé (le défi se joue à voix haute, pas sur le téléphone). |
 | Le relevant se déconnecte pendant l'annonce ou le défi | Le défi continue : son téléphone ne sert à rien pendant qu'il parle. |
 | L'arbitre se déconnecte pendant l'annonce ou le défi | Le serveur tire un nouvel arbitre (même règle) parmi les attendus connectés, sauf le relevant ; le compteur est gardé. S'il n'y a plus personne : le compteur est figé, et le serveur réessaie à chaque déconnexion ou action suivante. |
@@ -173,19 +175,17 @@ Rien ne change dans `sons.js`. À ajouter à la table « Quand jouer quoi » de 
 ### Catalogue `data/defi-encheres.json`
 
 ```json
-{ "id": "de-departements", "sujet": "départements français", "miseDepart": 5 }
+{ "id": "de-departements", "sujet": "départements français" }
 ```
 
 - `id` : `de-` suivi de minuscules, chiffres et tirets, unique (préfixe propre au mode dans `questionsVues`, commune à tous les modes).
 - `sujet` : ce qui complète « En 1 minute, combien de … peux-tu citer ? ». Au pluriel, sans majuscule initiale (sauf nom propre), sans article : « départements français », « rappeurs français », « films de Disney ».
-- `miseDepart` : entier de 1 à 20, l'enchère d'ouverture, choisie selon la difficulté du sujet (assez basse pour qu'elle soit facile à relever).
 - Une **trentaine de défis variés**, rédigés par Claude et relus par Paul : géographie, musique, cinéma et séries, sport, marques, cuisine, vie quotidienne… Des sujets où l'arbitre peut juger facilement (« capitales européennes » plutôt que « mots en -tion »).
 
 ### Script `scripts/verifier-defi-encheres.js`
 
-- `id` au format `de-…`, unique ; seuls les champs `id`, `sujet`, `miseDepart` ;
+- `id` au format `de-…`, unique ; seuls les champs `id` et `sujet` (l'ancien `miseDepart` est refusé comme champ en trop) ;
 - `sujet` : chaîne non vide, sans espace au bord, ne commençant pas par un article (« les », « des »…) ;
-- `miseDepart` : entier de 1 à 20 ;
 - pas deux sujets identiques (sans accents ni majuscules) ;
 - au moins 12 défis (une partie de 12 manches) ;
 - affichage : le nombre de défis.
@@ -195,7 +195,7 @@ Rien ne change dans `sons.js`. À ajouter à la table « Quand jouer quoi » de 
 
 - Le registre contient `defi-encheres` avec tout le contrat ; refusé à 2 joueurs, accepté à 3.
 - `hote:reglerMode` : 5, 8 et 12 acceptés, autre valeur refusée.
-- Ouverture : enchère = mise de départ, auteur parmi les attendus connectés.
+- Ouverture : enchère = 1, auteur parmi les attendus connectés.
 - Enchères : `+1` accepté (enchère et auteur mis à jour, chrono relancé) ; refusé de l'auteur, d'un joueur non attendu, avec une valeur qui n'est pas enchère + 1, au-delà de 99, hors `encheres`.
 - Adjudication après 7 s sans surenchère ; arbitre différent du relevant, le moins souvent arbitre d'abord.
 - Défi : `compter` refusé d'un autre joueur que l'arbitre et hors `defi` ; compteur jamais négatif ; relevé dès que le compteur atteint l'enchère ; raté à la fin des 60 s.
@@ -219,7 +219,7 @@ Rien ne change dans `sons.js`. À ajouter à la table « Quand jouer quoi » de 
 Sur Render (les téléphones ne joignent pas le serveur local depuis le PC d'entreprise), TV dans un onglet du PC en 1920×1080 avec le son, joueurs sur de vrais téléphones et des onglets `?dev`.
 
 1. **Choix.** À 2 joueurs, « Le défi des enchères » est grisé ; à 3, il s'active. Options : 5, 8 ou 12 manches, et pas de « Temps pour répondre ».
-2. **Enchères.** Lancer. La TV affiche le défi, la mise de départ en grand et son auteur (tiré au sort), la jauge de 7 s. L'auteur voit son bouton grisé « Tu as la main » ; les autres « +1 → 6 ». Un « +1 » fait grossir l'enchère sur la TV (son `reponse`) et relance la jauge.
+2. **Enchères.** Lancer. La TV affiche le défi, l'enchère d'ouverture (1) en grand et son auteur (tiré au sort), la jauge de 7 s. L'auteur voit son bouton grisé « Tu as la main » ; les autres « +1 → 2 ». Un « +1 » fait grossir l'enchère sur la TV (son `reponse`) et relance la jauge.
 3. **Appui simultané.** Deux téléphones appuient en même temps : l'enchère ne monte que de 1.
 4. **Adjudication.** Plus personne n'appuie : au bout de 7 s, « Adjugé ! », le relevant et l'arbitre (pas le relevant). Le relevant voit « Prépare-toi », l'arbitre ses flèches inactives.
 5. **Défi relevé.** L'arbitre appuie sur ▲ jusqu'à l'enchère : le compteur monte en direct sur la TV, et « Défi relevé ! » arrive aussitôt, le relevant marque son enchère.
@@ -234,7 +234,7 @@ Sur Render (les téléphones ne joignent pas le serveur local depuis le PC d'ent
 Proposés par Claude, validés par Paul le 06/10/2026 :
 
 1. **Points** : relevé → le relevant marque son enchère ; raté → +1 pour chaque autre joueur de la manche.
-2. **Ouverture** : un joueur tiré au sort ouvre à la mise de départ du défi, pour qu'il y ait toujours un enchérisseur.
+2. **Ouverture** : un joueur tiré au sort ouvre, pour qu'il y ait toujours un enchérisseur. Depuis la tranche 42, il ouvre toujours à 1 (avant : à la mise de départ du défi).
 3. **Arbitre** : tiré au sort parmi les autres, différent à chaque manche autant que possible ; il ne marque rien pendant sa manche. D'où **3 joueurs minimum**.
 4. **Relevé immédiat** dès que le compteur atteint l'enchère.
 5. **Pas de surenchère sur sa propre enchère.**
@@ -245,5 +245,5 @@ Précisés par la mini-spec (à valider avec elle) :
 7. **Annonce de 5 s** entre l'adjudication et le défi, pour que le relevant se prépare et que l'arbitre prenne son téléphone.
 8. **Révélation de 10 s**, l'hôte peut passer plus tôt.
 9. **Enchère envoyée avec sa valeur** (`encherir: 13`) : deux appuis simultanés ne font monter que de 1.
-10. **Enchère maximale de 99**, mise de départ de 1 à 20 selon le défi.
+10. **Enchère maximale de 99**, ouverture à 1 (tranche 42).
 11. **Arbitre remplacé** s'il se déconnecte pendant le défi.

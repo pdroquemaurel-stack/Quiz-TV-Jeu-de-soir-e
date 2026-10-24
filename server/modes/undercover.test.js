@@ -8,7 +8,7 @@ import { vueJoueur, vueTv } from '../vues.js';
 import { modes, modesAVenir } from './index.js';
 import {
   NOMBRE_MANCHES, avancer, composition, distribuerRoles, echeance, enregistrerReponse, motTrouve,
-  suivant, tirerOrdreParole, vainqueur, verifierFinAnticipee,
+  pointsDuRole, suivant, tirerOrdreParole, vainqueur, verifierFinAnticipee,
 } from './undercover.js';
 import { NOMBRE_QUESTIONS as NOMBRE_QUESTIONS_QUIZ } from './quiz.js';
 
@@ -173,7 +173,18 @@ test('manche à 1 joueur (MODE_DEV) : elle se joue, pour parcourir les écrans s
   assert.equal(etape(salle), 'description');
 });
 
-test('civils gagnants : 1000 pour chaque civil, éliminés compris, en fin de manche seulement', () => {
+test('points du rôle : un civil éliminé ne marque rien, un infiltré éliminé marque quand son camp gagne', () => {
+  assert.equal(pointsDuRole('civil', 'civils', false), 1000);
+  assert.equal(pointsDuRole('civil', 'civils', true), 0);
+  assert.equal(pointsDuRole('undercover', 'civils', false), 0);
+  assert.equal(pointsDuRole('undercover', 'infiltres', true), 2000);
+  assert.equal(pointsDuRole('mister_white', 'infiltres', true), 2000);
+  assert.equal(pointsDuRole('civil', 'infiltres', false), 0);
+  assert.equal(pointsDuRole('mister_white', 'mister_white', true), 2000);
+  assert.equal(pointsDuRole('undercover', 'mister_white', false), 0);
+});
+
+test('civils gagnants : 1000 pour chaque civil encore en jeu, rien aux civils éliminés, en fin de manche seulement', () => {
   const { salle, joueurs: [a, b, c, d] } = sallePrete(4);
   imposerRoles(salle, [a, b, c, d], 'u...');
   eliminer(salle, b);
@@ -185,7 +196,7 @@ test('civils gagnants : 1000 pour chaque civil, éliminés compris, en fin de ma
   suivant(salle);
   assert.equal(etape(salle), 'fin_manche');
   assert.equal(salle.etatMode.gagnant, 'civils');
-  assert.deepEqual([a.score, b.score, c.score, d.score], [0, 1000, 1000, 1000]);
+  assert.deepEqual([a.score, b.score, c.score, d.score], [0, 0, 1000, 1000]);
   assert.equal(salle.etatMode.victoires.civils, 1);
 });
 

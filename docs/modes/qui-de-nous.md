@@ -4,6 +4,8 @@ Mini-spec de la tranche 12. Elle complète `docs/spec.md` et s'appuie sur le soc
 
 > **Tranche 27** : le nombre de questions (5, 10 ou 15) et le temps de vote (10, 20 ou 30 s) sont des options de l'hôte, choisies dans l'onglet « Options » de la salle d'attente (voir « Options de l'hôte » dans `docs/spec.md`). Les valeurs données ici sont celles par défaut.
 
+> **Tranche 42** (retours de la soirée test) : on peut voter pour soi. Les règles ci-dessous sont à jour.
+
 
 La tranche se code en deux temps, chacun testé avant de passer au suivant :
 
@@ -15,7 +17,7 @@ La tranche se code en deux temps, chacun testé avant de passer au suivant :
 - Une partie compte **10 questions**, toutes du type « Qui de nous est le plus susceptible de rater son avion ? ».
 - Chaque joueur a **20 s** pour voter pour un joueur, en un seul vote définitif (un appui, comme au quiz). La rapidité ne rapporte rien.
 - **Candidats** : les joueurs attendus de la manche, c'est-à-dire connectés au début de la question (même règle que `attendus`). La liste est figée pour toute la manche.
-- **Voter pour soi est interdit**, sauf si l'on est le seul candidat (cas `MODE_DEV` à 1 joueur). Le téléphone n'affiche pas son propre pseudo, et le serveur refuse ce vote.
+- **On peut voter pour soi** (tranche 42, retour de la soirée test). Le téléphone affiche son propre pseudo parmi les candidats, marqué « (toi) ». Avant la tranche 42, ce vote était interdit.
 - **Élu(s)** : le ou les candidats qui ont reçu le plus de votes, avec au moins 1 vote. En cas d'égalité en tête, tous les ex æquo sont élus ensemble (« Paul et Léa ! »), sans départage.
 - **Points** : on marque **1000 points** si l'on a voté pour un élu, c'est-à-dire « comme le groupe ». Être désigné ne rapporte rien et ne coûte rien. Pas de vote ou vote pour un non-élu : 0 point.
 
@@ -69,7 +71,7 @@ Aucun nouvel événement : on réutilise ceux du quiz.
 
 | Événement | Contenu en Qui de nous ? |
 |---|---|
-| `joueur:repondre` | L'`id` du joueur choisi (chaîne). Refusé si ce n'est pas un candidat de la manche, si c'est soi-même (sauf seul candidat), si ce n'est pas la phase `vote`, si le votant n'est pas attendu ou a déjà voté. |
+| `joueur:repondre` | L'`id` du joueur choisi (chaîne), soi-même compris. Refusé si ce n'est pas un candidat de la manche, si ce n'est pas la phase `vote`, si le votant n'est pas attendu ou a déjà voté. |
 | `hote:suivant` | Pendant les résultats : passe à la question suivante (ou au podium) |
 | `hote:terminer`, `hote:rejouer` | Comme au quiz |
 
@@ -87,7 +89,7 @@ Aucun nouvel événement : on réutilise ceux du quiz.
 
 | Écran | Données |
 |---|---|
-| `voter` | `numero`, `candidats: [{ id, pseudo, couleur, connecte }]` sans soi-même (sauf seul candidat). Le texte de la question est sur la TV. |
+| `voter` | `numero`, `candidats: [{ id, pseudo, couleur, connecte }]`, soi-même compris (le téléphone ajoute « (toi) »). Le texte de la question est sur la TV. |
 | `vote_envoye` | Le pseudo et la couleur du joueur choisi |
 | `resultat` | Son vote (ou rien), `elus` (pseudos), `commeLeGroupe` (booléen), ses points, `votesRecus` (le nombre de votes qu'il a reçus à cette question), son rang général. Pour l'hôte : « Suivant » |
 | `attente_question`, `fin` | Comme au quiz |
@@ -149,9 +151,9 @@ Le tirage réutilise `tirerQuestions` et `noterQuestionsVues` de `commun.js` : `
 | Joueur qui revient pendant la même question | S'il avait voté : « Vote envoyé » avec son choix. Sinon, s'il était attendu : il peut encore voter. S'il n'était pas attendu : attente de la question suivante. |
 | Arrivée en cours de partie | 0 point, ni votant ni candidat pour la question en cours. Joue à partir de la question suivante (comme au quiz). |
 | Moins de 4 joueurs connectés en cours de partie | La partie continue. Seul « Rejouer » est désactivé tant que le compte n'y est pas (ou l'hôte choisit un autre mode). |
-| Un seul candidat (tous les autres étaient déconnectés au début de la manche, ou `MODE_DEV` à 1 joueur) | Il peut voter pour lui-même, pour que la manche reste jouable. |
+| Un seul candidat (tous les autres étaient déconnectés au début de la manche, ou `MODE_DEV` à 1 joueur) | Il vote pour lui-même : la manche reste jouable. |
 | Aucun vote à une question | Résultats normaux : « Personne n'a voté », aucun élu, personne ne marque. |
-| Vote invalide (id inconnu, soi-même, joueur arrivé en cours de manche, pas une chaîne) | Le serveur l'ignore et le joueur reste sur « Voter ». |
+| Vote invalide (id inconnu, joueur arrivé en cours de manche, pas une chaîne) | Le serveur l'ignore et le joueur reste sur « Voter ». |
 | L'hôte termine pendant un vote ou des résultats | Podium avec les scores actuels. La question en cours n'est pas comptée (points et `votesRecus` ne sont ajoutés qu'aux résultats). |
 | Plus assez de questions inédites | On réautorise les plus anciennes, comme au quiz. |
 
@@ -177,7 +179,7 @@ Avec `node:test` et, pour les chronos, `mock.timers`.
 - le registre contient `qui-de-nous` avec tout le contrat, et il n'est plus dans `modesAVenir` ;
 - `hote:choisirMode` refuse Qui de nous ? à 3 joueurs, l'accepte à 4 ;
 - élus et points : un élu net, deux ex æquo en tête (leurs votants marquent tous), aucun vote (aucun élu, 0 point), un joueur sans vote (0 point) ;
-- validation de `joueur:repondre` : vote pour soi (refusé, sauf seul candidat), id inconnu, joueur arrivé en cours de manche, pas une chaîne, deuxième vote, votant non attendu, hors phase `vote` ; vote pour un candidat déconnecté accepté ;
+- validation de `joueur:repondre` : vote pour soi accepté (tranche 42), id inconnu, joueur arrivé en cours de manche, pas une chaîne, deuxième vote, votant non attendu, hors phase `vote` ; vote pour un candidat déconnecté accepté ;
 - fin anticipée quand tous ont voté, et après la déconnexion du dernier attendu ;
 - chronos : résultats à 20 s, question suivante 12 s après, podium après la 10e ;
 - secret : `vueTv` en phase `vote` ne contient aucun décompte ; `vueTv` ne contient jamais de lien votant → vote, dans aucune phase ; `vueJoueur` ne contient jamais le vote d'un autre joueur ;
@@ -189,7 +191,7 @@ Avec `node:test` et, pour les chronos, `mock.timers`.
 Sur Render, TV dans un onglet du PC en 1920×1080, joueurs sur de vrais téléphones et des onglets `?dev` (il en faut 4).
 
 1. **Choix du mode.** Rejoindre à 3 : Qui de nous ? est grisé (« 4 joueurs min. »), sans « Bientôt ». Un 4e joueur arrive : il devient actif. L'hôte le choisit : la TV affiche « Qui de nous ? » et sa règle.
-2. **Vote.** Lancer. Sur chaque téléphone, son propre pseudo n'apparaît pas dans les candidats. Pendant le vote, la TV montre qui a voté, jamais pour qui ni combien.
+2. **Vote.** Lancer. Sur chaque téléphone, son propre pseudo apparaît parmi les candidats, marqué « (toi) », et on peut voter pour soi. Pendant le vote, la TV montre qui a voté, jamais pour qui ni combien.
 3. **Résultats.** Faire voter 2 joueurs pour le même : il est élu, ses 2 votants marquent 1000, les autres rien. Sur une autre question, créer une égalité 2-2 : deux élus, les 4 votants marquent. Nulle part on ne voit qui a voté pour qui.
 4. **Déconnexion.** Couper un joueur pendant un vote (bouton `?dev` « Couper 15 s ») : les autres peuvent encore voter pour lui, et la manche se termine dès qu'ils ont tous voté.
 5. **Arrêt et podium.** L'hôte termine à la 4e question : podium (avec « Le plus désigné » si retenu). Avec 3 joueurs connectés, « Rejouer » est désactivé en Qui de nous ?. L'hôte choisit Quiz : « Rejouer » lance un quiz qui marche comme avant.

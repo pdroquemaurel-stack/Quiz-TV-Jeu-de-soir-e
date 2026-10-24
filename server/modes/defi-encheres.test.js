@@ -35,6 +35,13 @@ function unAutre(salle, joueurs, sauf = []) {
   return joueurs.find((j) => j.id !== salle.etatMode.auteur && !sauf.includes(j.id));
 }
 
+// L'ouverture est à 1 : les enchères montent à `valeur`, chacune d'un joueur qui n'a pas la main.
+function encherirJusqua(salle, joueurs, valeur) {
+  while (salle.etatMode.enchere < valeur) {
+    repondre(salle, unAutre(salle, joueurs).id, { encherir: salle.etatMode.enchere + 1 });
+  }
+}
+
 // Laisse passer les enchères puis l'annonce : la manche est en phase `defi`.
 function allerAuDefi(t, salle) {
   t.mock.timers.tick(DUREE_ENCHERES_MS);
@@ -85,14 +92,14 @@ test('réglages : 5, 8 ou 12 manches, 8 par défaut, pas de réglage de temps', 
 
 // --- Partie ---
 
-test('partie : défis distincts, ouverture à la mise de départ par un joueur attendu', () => {
+test('partie : défis distincts, ouverture à 1 par un joueur attendu', () => {
   const { salle, joueurs } = sallePrete({ longueur: 12 });
   const ids = salle.etatMode.questions.map((defi) => defi.id);
   assert.equal(ids.length, 12);
   assert.equal(new Set(ids).size, 12);
   const { phase, enchere, auteur, arbitre, compteur } = salle.etatMode;
   assert.equal(phase, 'encheres');
-  assert.equal(enchere, salle.etatMode.questions[0].miseDepart);
+  assert.equal(enchere, 1);
   assert.ok(joueurs.some((j) => j.id === auteur));
   assert.equal(arbitre, null);
   assert.equal(compteur, 0);
@@ -186,6 +193,7 @@ test('arbitre : chacun son tour, avant que quiconque le soit deux fois', (t) => 
 test('défi : compter refusé d\'un autre joueur que l\'arbitre et hors défi, compteur jamais négatif', (t) => {
   simulerTemps(t);
   const { salle, joueurs } = sallePrete();
+  encherirJusqua(salle, joueurs, 5);
   t.mock.timers.tick(DUREE_ENCHERES_MS);
   avancer(salle);
   const { arbitre, auteur } = salle.etatMode;
@@ -225,6 +233,7 @@ test('défi relevé dès que le compteur atteint l\'enchère : le relevant marqu
 test('défi raté à la fin des 60 s : +1 aux autres, rien au relevant ni à l\'arbitre', (t) => {
   simulerTemps(t);
   const { salle, joueurs } = sallePrete();
+  encherirJusqua(salle, joueurs, 5);
   allerAuDefi(t, salle);
   const { arbitre, auteur } = salle.etatMode;
   repondre(salle, arbitre, { compter: 1 });
@@ -266,6 +275,7 @@ test('révélation : 10 s ou « Suivant » de l\'hôte, podium après la derniè
 test('arbitre déconnecté pendant le défi : remplacé, compteur gardé ; personne pour le remplacer : compteur figé', (t) => {
   simulerTemps(t);
   const { salle, joueurs } = sallePrete();
+  encherirJusqua(salle, joueurs, 5);
   allerAuDefi(t, salle);
   const { arbitre, auteur } = salle.etatMode;
   repondre(salle, arbitre, { compter: 1 });

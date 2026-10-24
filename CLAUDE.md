@@ -61,7 +61,7 @@ data/geoquiz.json      # lieux du GéoQuiz : coordonnées, photo Wikimedia, aute
 data/geoquiz-exclus.json # ids de lieux exclus à la main (photos inutilisables)
 data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lexique 3.83, CC BY-SA 4.0)
 data/nuancier.json     # logos du Nuancier : fichier, question, couleur cible, id des formes de la zone
-data/defi-encheres.json # défis du Défi des enchères : sujet et mise de départ
+data/defi-encheres.json # défis du Défi des enchères : id et sujet
 data/qui-suis-je.json  # personnages de Qui suis-je ? : nom, catégorie, niveau, titre Wikipédia, photo et crédit
 scripts/verifier-questions.js
 scripts/verifier-estimation.js

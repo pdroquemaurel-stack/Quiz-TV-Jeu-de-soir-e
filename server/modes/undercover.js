@@ -79,8 +79,10 @@ export function motTrouve(proposition, entree) {
   return [entree.mot, ...entree.variantes].map(normaliser).includes(normaliser(proposition));
 }
 
-export function pointsDuRole(role, gagnant) {
-  if (gagnant === 'civils') return role === 'civil' ? POINTS_CIVIL : 0;
+// Un civil éliminé ne marque rien, même si les civils gagnent (tranche 42).
+// Les infiltrés éliminés marquent toujours quand leur camp gagne.
+export function pointsDuRole(role, gagnant, elimine) {
+  if (gagnant === 'civils') return role === 'civil' && !elimine ? POINTS_CIVIL : 0;
   if (gagnant === 'infiltres') return role === 'civil' ? 0 : POINTS_INFILTRE;
   if (gagnant === 'mister_white') return role === 'mister_white' ? POINTS_INFILTRE : 0;
   return 0;
@@ -296,9 +298,9 @@ export function avancer(salle) {
 
 // Les points n'existent qu'en fin de manche.
 function pointsGagnes(salle, joueurId) {
-  const { phase, roles, gagnant } = salle.etatMode;
+  const { phase, roles, gagnant, elimines } = salle.etatMode;
   if (phase !== 'fin_manche' || !roles[joueurId]) return 0;
-  return pointsDuRole(roles[joueurId], gagnant);
+  return pointsDuRole(roles[joueurId], gagnant, elimines.includes(joueurId));
 }
 
 export function classement(salle) {
