@@ -143,7 +143,7 @@ Dans l'onglet « Options » de la salle d'attente, l'hôte règle pour le mode c
 | Nuancier | 5 / **7** / 10 manches | 15 / **20** / 30 s |
 | Le défi des enchères | 5 / **8** / 12 manches | Aucun choix : le défi dure toujours 1 min |
 | Qui suis-je ? | **1** / 2 / 3 tours par joueur, et niveaux (Facile, Difficile, **les deux**) | 1 min 30 / **2 min** / 3 min par tour |
-| Wiki course | Format (**course libre** / manches), 1 / **3** / 5 courses, départ (**commun** / au hasard), niveaux (Facile, Difficile, **les deux**) | Course libre : 3 / **5** / 8 min ; manches : 10 / **15** / 20 s pour choisir un lien |
+| Wiki course | Format (**course libre** / manches), 1 / **3** / 5 courses, départ (**commun** / au hasard), niveaux (Facile, Difficile, **les deux**) | Course libre : 3 / **5** / 8 min / sans limite ; manches : 10 / **15** / 20 s pour choisir un lien |
 | Blind test | Classique : 1 à 20 chansons (curseur, **10**) ; Mix : chacun maître **1** ou 2 fois ; catégories (**toutes** cochées, tranche 42) | Mix : 90 / **120** / 180 s d'écoute |
 
 Au quiz, la répartition des niveaux et le plafond par catégorie sont mis à l'échelle du nombre de questions (arrondis en dessous, le reste aux niveaux les plus faciles : 15 questions de tous niveaux = 6 faciles, 6 moyennes, 3 difficiles), et le barème des points suit le temps choisi. Au Blind test classique, quand le nombre de chansons ne se partage pas également, les joueurs les plus hauts au classement global sont maîtres une fois de plus.

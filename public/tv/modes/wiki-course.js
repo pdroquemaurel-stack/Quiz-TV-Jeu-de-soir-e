@@ -64,9 +64,13 @@ function afficherCourseWc(salle, nouvelleEtape) {
   const {
     format, cible, manche, mancheMax, tempsRestantMs, joueurs,
   } = salle.etatMode;
+  // Course libre sans limite de temps : ni chrono ni barre.
+  const sansLimite = tempsRestantMs === null;
+  const barre = document.getElementById('wc-barre');
+  barre.parentElement.style.visibility = sansLimite ? 'hidden' : '';
   if (nouvelleEtape) {
     sonner('lancement');
-    viderBarreTemps(document.getElementById('wc-barre'), tempsRestantMs);
+    if (!sansLimite) viderBarreTemps(barre, tempsRestantMs);
   }
   const nouveauxArrives = joueurs.filter((ligne) => ligne.arrive && !arrivesAffichesWc.has(ligne.id));
   if (nouveauxArrives.length && !nouvelleEtape) sonner('victoire');
@@ -77,8 +81,9 @@ function afficherCourseWc(salle, nouvelleEtape) {
   document.getElementById('wc-cible-course').textContent = `🎯 ${cible.titre}`;
   afficherImageCible(document.getElementById('wc-image-course'), cible);
   const chrono = document.getElementById('wc-chrono');
+  chrono.hidden = sansLimite;
   chrono.classList.toggle('chrono-minutes', format === 'libre');
-  lancerChrono(chrono, tempsRestantMs);
+  if (!sansLimite) lancerChrono(chrono, tempsRestantMs);
   document.getElementById('wc-lignes').replaceChildren(...joueurs.map((ligne) => ligneJoueurWc(salle, ligne)));
 }
 

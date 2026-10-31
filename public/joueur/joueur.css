@@ -1488,6 +1488,12 @@ main[data-ecran="wiki-course-course"]::after {
 .wc-cible-bandeau {
   flex: 1;
   min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
   font-size: 26px;
   color: var(--accent);
   white-space: nowrap;
@@ -1594,4 +1600,75 @@ main[data-ecran="wiki-course-course"]::after {
 .bouton.wc-terminer-course {
   align-self: center;
   margin-top: 24px;
+}
+
+/* La première phrase de la cible, ouverte d'un toucher sur « 🎯 ». */
+/* 4 lignes visibles au plus : le bandeau reste en haut, l'article doit rester lisible. */
+.wc-extrait-cible {
+  margin: 0;
+  max-height: 6em;
+  overflow-y: auto;
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  background: var(--panneau);
+  border: 3px solid var(--contour);
+  border-radius: 12px;
+}
+
+/* ---------- Wiki course : le plan de l'article ---------- */
+
+.wc-section {
+  margin: 6px 0;
+  border: 3px solid var(--contour);
+  border-radius: 14px;
+  background: var(--panneau);
+}
+
+.wc-section summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 12px;
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.wc-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.wc-section summary::before {
+  content: '▸';
+  color: var(--accent);
+}
+
+.wc-section[open] > summary::before {
+  content: '▾';
+}
+
+.wc-nombre-liens {
+  margin-left: auto;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.wc-contenu {
+  padding: 0 12px 8px;
+}
+
+/* Les sous-sections, plus discrètes, dans leur section. */
+.wc-section .wc-section {
+  border-width: 2px;
+  background: var(--fond);
+}
+
+.wc-section .wc-section summary {
+  font-size: 20px;
 }

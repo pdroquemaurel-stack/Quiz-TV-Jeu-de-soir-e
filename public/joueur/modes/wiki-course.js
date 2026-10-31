@@ -14,10 +14,20 @@ const ESPACES_NON_ARTICLES = /^(aide|fichier|image|média|media|catégorie|modè
 // Blocs jamais affichés : images, tableaux, notes, boîtes de navigation.
 const BLOCS_IGNORES = 'header, figure, table, sup, style, script, link, meta, img, audio, video, .mw-ref, .noprint, .reference, .references, .mw-references-wrap, .pcs-collapse-table-container, .thumb, .infobox, .navbox, .hatnote, .bandeau-container, .metadata, .mw-empty-elt';
 const BLOCS_GARDES = ['P', 'H2', 'H3', 'H4', 'UL', 'OL', 'DL'];
+const NIVEAUX_TITRES = { H2: 2, H3: 3, H4: 4 };
+// Sections retirées du plan : presque jamais de liens vers d'autres articles.
+const SECTIONS_RETIREES = /^(notes?( et références)?|références|bibliographie|liens externes|liens|sources)$/i;
 
 document.getElementById('bouton-retour-wc').addEventListener('click', (evenement) => {
   marquerAppui(evenement.currentTarget);
   socket.emit('joueur:repondre', { retour: true });
+});
+// Un toucher sur la cible du bandeau montre (ou cache) sa première phrase.
+const boutonCibleWc = document.getElementById('wc-cible-bandeau');
+const extraitCibleWc = document.getElementById('wc-extrait-cible');
+boutonCibleWc.addEventListener('click', () => {
+  extraitCibleWc.hidden = !extraitCibleWc.hidden || !extraitCibleWc.textContent;
+  boutonCibleWc.setAttribute('aria-expanded', String(!extraitCibleWc.hidden));
 });
 document.getElementById('bouton-recharger-wc').addEventListener('click', () => {
   articleAfficheWc = null;
@@ -38,7 +48,11 @@ articleWc.addEventListener('click', (evenement) => {
   socket.emit('joueur:repondre', { aller: lien.dataset.titre });
 });
 
+// tempsRestantMs null : course libre sans limite de temps, pas de chrono.
 function lancerChronoWc(element, tempsRestantMs) {
+  clearInterval(intervalleChronoWc);
+  element.hidden = tempsRestantMs === null;
+  if (element.hidden) return;
   const fin = Date.now() + tempsRestantMs;
   const afficher = () => {
     const secondes = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
@@ -106,21 +120,66 @@ function copierBloc(source) {
     }
     return liste.children.length ? liste : null;
   }
-  const bloc = document.createElement(source.tagName === 'P' ? 'p' : 'h3');
+  const bloc = document.createElement('p');
   copierEnLigne(source, bloc);
   return bloc.textContent.trim() ? bloc : null;
 }
 
-// Les blocs gardés de l'article, dans l'ordre, sans descendre dans ceux qu'on ignore.
+// Les blocs gardés de l'article, dans l'ordre, sans descendre dans ceux qu'on ignore :
+// { niveau: 2 à 4, titre } pour un titre de section, { bloc } pour le contenu.
 function blocsDe(racine, resultat = []) {
   for (const element of racine.children) {
     if (element.matches(BLOCS_IGNORES)) continue;
-    if (BLOCS_GARDES.includes(element.tagName)) {
+    if (NIVEAUX_TITRES[element.tagName]) {
+      const titre = element.textContent.trim();
+      if (titre) resultat.push({ niveau: NIVEAUX_TITRES[element.tagName], titre });
+    } else if (BLOCS_GARDES.includes(element.tagName)) {
       const bloc = copierBloc(element);
-      if (bloc) resultat.push(bloc);
+      if (bloc) resultat.push({ bloc });
     } else blocsDe(element, resultat);
   }
   return resultat;
+}
+
+function texteNombreLiens(nombre) {
+  return nombre > 1 ? `${nombre} liens` : `${nombre} lien`;
+}
+
+// Une section repliée : son titre et son nombre de liens, le contenu s'ouvre au toucher.
+function nouvelleSection(niveau, titre) {
+  const section = document.createElement('details');
+  section.className = `wc-section niveau-${niveau}`;
+  const entete = document.createElement('summary');
+  entete.append(titre, ' ');
+  const contenu = document.createElement('div');
+  contenu.className = 'wc-contenu';
+  section.append(entete, contenu);
+  return { niveau, section, contenu };
+}
+
+// L'introduction en clair, puis le plan de l'article : chaque section repliée, ses
+// sous-sections dedans. Les sections sans lien (notes, bibliographie…) disparaissent.
+function construirePlan(blocs) {
+  const intro = document.createElement('div');
+  const pile = [{ niveau: 1, contenu: intro }];
+  const sections = [];
+  for (const { niveau, titre, bloc } of blocs) {
+    if (bloc) {
+      pile.at(-1).contenu.append(bloc);
+      continue;
+    }
+    while (pile.at(-1).niveau >= niveau) pile.pop();
+    const nouvelle = nouvelleSection(niveau, titre);
+    pile.at(-1).contenu.append(nouvelle.section);
+    pile.push(nouvelle);
+    sections.push({ ...nouvelle, titre });
+  }
+  for (const { section, contenu, titre } of sections) {
+    const nombre = contenu.querySelectorAll('[data-titre]').length;
+    if (nombre === 0 || SECTIONS_RETIREES.test(titre)) section.remove();
+    else section.querySelector('summary').append(texteWc('wc-nombre-liens', texteNombreLiens(nombre), 'span'));
+  }
+  return [...intro.childNodes];
 }
 
 async function chargerArticle(titre) {
@@ -136,7 +195,7 @@ async function chargerArticle(titre) {
     if (!reponse.ok) throw new Error(`réponse ${reponse.status}`);
     const page = new DOMParser().parseFromString(await reponse.text(), 'text/html');
     if (articleAfficheWc !== titre) return;
-    articleWc.replaceChildren(...blocsDe(page.body));
+    articleWc.replaceChildren(...construirePlan(blocsDe(page.body)));
     if (vueCourseWc) marquerChoixWc(vueCourseWc);
   } catch {
     if (articleAfficheWc !== titre) return;
@@ -145,8 +204,8 @@ async function chargerArticle(titre) {
   }
 }
 
-function texteWc(classe, contenu) {
-  const element = document.createElement('p');
+function texteWc(classe, contenu, balise = 'p') {
+  const element = document.createElement(balise);
   element.className = classe;
   element.textContent = contenu;
   return element;
@@ -157,7 +216,12 @@ function marquerChoixWc(vue) {
   for (const lien of articleWc.querySelectorAll('.choisi, .touche')) lien.classList.remove('choisi', 'touche');
   if (!vue.choix?.titre) return;
   for (const lien of articleWc.querySelectorAll('[data-titre]')) {
-    if (lien.dataset.titre === vue.choix.titre) lien.classList.add('choisi');
+    if (lien.dataset.titre !== vue.choix.titre) continue;
+    lien.classList.add('choisi');
+    // La section du lien choisi reste ouverte, avec celles qui la contiennent.
+    for (let section = lien.closest('details'); section; section = section.parentElement.closest('details')) {
+      section.open = true;
+    }
   }
 }
 
@@ -180,7 +244,9 @@ function texteEtatWc(vue) {
 
 function afficherCourseWc(vue) {
   vueCourseWc = vue;
-  document.getElementById('wc-cible-bandeau').textContent = `🎯 ${vue.cible.titre}`;
+  boutonCibleWc.textContent = `🎯 ${vue.cible.titre}${vue.cible.extrait ? ' ⓘ' : ''}`;
+  extraitCibleWc.textContent = vue.cible.extrait;
+  if (!vue.cible.extrait) extraitCibleWc.hidden = true;
   document.getElementById('wc-clics').textContent = `${vue.clics} clic${vue.clics > 1 ? 's' : ''}`;
   document.getElementById('wc-manche').textContent = vue.format === 'manches' ? `Manche ${vue.manche}/${vue.mancheMax}` : '';
   lancerChronoWc(document.getElementById('wc-chrono'), vue.tempsRestantMs);
@@ -200,6 +266,7 @@ function afficherCourseWc(vue) {
 
 function afficherAnnonceWc(vue) {
   clearInterval(intervalleChronoWc);
+  extraitCibleWc.hidden = true;
   articleAfficheWc = null;
   vueCourseWc = null;
   document.getElementById('wc-numero-annonce').textContent = `Course ${vue.numero}/${vue.total}`;

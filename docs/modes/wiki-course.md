@@ -19,7 +19,7 @@ Deux formats, au choix de l'hôte :
   - Un clic sur un lien compte **1 clic**. Le bouton **« Retour »** revient à la page précédente du parcours et compte aussi 1 clic.
   - Le serveur vérifie que le lien figure bien sur l'article courant (voir « Wikipédia »), puis enregistre le déplacement.
   - **Arrivée** : quand la page atteinte est la cible (redirections suivies : « Pizzas » mène à « Pizza »). Le joueur arrivé voit « Arrivé ! » et suit la course des autres.
-- **Course libre** (**5 min**, ou 3 ou 8 min, option de l'hôte) : chacun avance quand il veut. La course s'arrête quand tous les joueurs connectés sont arrivés, à la fin du chrono, ou sur « Terminer la course » de l'hôte.
+- **Course libre** (**5 min**, ou 3 ou 8 min, ou **sans limite de temps**, option de l'hôte) : chacun avance quand il veut. La course s'arrête quand tous les joueurs connectés sont arrivés, à la fin du chrono (s'il y en a un), ou sur « Terminer la course » de l'hôte. Sans limite, ni la TV ni les téléphones n'affichent de chrono.
 - **Manches** (**15 s** par manche, ou 10 ou 20 s, option de l'hôte) : chacun touche un lien ; tant que la manche dure, il peut changer d'avis. À la fin de la manche, tous les déplacements s'appliquent d'un coup, la TV les montre 3 s, puis la manche suivante commence. Un joueur qui n'a rien choisi reste sur place. La course s'arrête quand tous les joueurs connectés sont arrivés, après la manche 15, ou sur « Terminer la course ».
 - **Bilan** (20 s, l'hôte peut passer plus tôt avec « Suivant ») : le parcours complet de chaque joueur (Puddlage → Fer → Italie → Pizza), ses clics, ses points, puis le classement. Ensuite l'annonce de la course suivante, ou le podium.
 
@@ -43,7 +43,7 @@ Deux formats, au choix de l'hôte :
 | Phase | Durée | Fin |
 |---|---|---|
 | `annonce` | 8 s | Fin du chrono ou « Suivant » de l'hôte → `course` |
-| `course` (libre) | 5 min (180, 300 ou 480 s) | Tous les joueurs connectés arrivés, fin du chrono ou « Terminer la course » → `bilan` |
+| `course` (libre) | 5 min (180, 300 ou 480 s, ou aucune : `temps` vaut 0 et l'échéance `null`) | Tous les joueurs connectés arrivés, fin du chrono ou « Terminer la course » → `bilan` |
 | `course` (manches) | 15 s (10, 15 ou 20 s) par manche | Fin de la manche, ou tous les joueurs connectés non arrivés ont choisi → `revelation` |
 | `revelation` (manches) | 3 s | Manche suivante (`course`), ou `bilan` si tous sont arrivés, après la manche 15 ou sur « Terminer la course » |
 | `bilan` | 20 s | Fin du chrono ou « Suivant » : `annonce` de la course suivante, ou podium |
@@ -57,6 +57,7 @@ Une course libre dure au plus 5 min 30 ; une course en manches à 15 s, au plus 
 - **La cible** : le serveur lit son résumé (`/api/rest_v1/page/summary/<titre>` : titre, première phrase, miniature) à l'annonce, pour la TV et les téléphones.
 - **L'article affiché sur le téléphone** : le **téléphone** le charge lui-même (`/api/rest_v1/page/mobile-html/<titre>`, que Wikipédia autorise depuis une autre page) et le nettoie avant de l'afficher :
   - il ne garde que les titres de section, les paragraphes, les listes et les liens. Pas d'images, pas de tableaux (infobox comprise), pas de notes ;
+  - il range l'article **en plan** (retours de Paul du 31/10/2026) : l'introduction en clair, puis chaque section repliée, avec son titre et son nombre de liens (« ▸ Histoire 34 liens »). Un toucher ouvre la section, où ses sous-sections sont repliées à leur tour. Les sections sans lien, et « Notes et références », « Bibliographie », « Liens externes », disparaissent du plan. À chaque nouvelle page, tout est replié ;
   - tout est reconstruit élément par élément (`DOMParser`, `textContent`, `createElement`), jamais avec `innerHTML` : aucun script ni style de Wikipédia n'entre dans la page ;
   - un lien n'est cliquable que s'il pointe vers un article (`./Titre`, sans `:` dans le titre ni `#` seul) et n'est pas un lien rouge.
   Ainsi, ni Render ni le serveur ne relaient les pages (600 à 800 Ko chacune, environ 150 Ko compressées).
@@ -130,7 +131,7 @@ Rien à cacher : la cible est connue de tous. Seule précaution : en manches, **
 | Écran | Données |
 |---|---|
 | `annonce` | `numero`, `total`, `format`, `depart`, `cible: { titre, extrait }` |
-| `course` | `cible: { titre }`, `page` (sa page courante), `clics`, `peutRetour`, `format`, `manche`, `choix` (manches, son propre choix), `tempsRestantMs`, `nbArrives` |
+| `course` | `cible: { titre, extrait }`, `page` (sa page courante), `clics`, `peutRetour`, `format`, `manche`, `choix` (manches, son propre choix), `tempsRestantMs`, `nbArrives` |
 | `arrive` | `clics`, `rangArrivee` ou `arriveeManche`, `nbArrives`, `tempsRestantMs` |
 | `bilan` | `pages` (son parcours), `clics`, `points`, `score`, `rang` ; « Suivant » pour l'hôte |
 | `attente_question` | Joueur arrivé en cours de partie : comme au quiz |
@@ -149,7 +150,7 @@ Rien à cacher : la cible est connue de tous. Seule précaution : en manches, **
 ### Téléphone (portrait)
 
 - **Annonce** : « Départ : Puddlage », « Cible : Pizza » en grand, la première phrase de la cible.
-- **Course** : un bandeau fixe en haut : « 🎯 Pizza », le chrono, « 3 clics », le bouton « Retour ». Pour l'hôte, « Terminer la course » en bas de l'article (et sur l'écran « Arrivé ! »). En dessous, l'article courant (son titre, puis le texte nettoyé), que l'on fait défiler. Les liens cliquables sont soulignés et assez espacés pour le doigt.
+- **Course** : un bandeau fixe en haut : « 🎯 Pizza ⓘ », le chrono, « 3 clics », le bouton « Retour ». Un toucher sur la cible montre ou cache sa première phrase (« La pizza est une recette de cuisine italienne… »), pour savoir vers où aller. Pour l'hôte, « Terminer la course » en bas de l'article (et sur l'écran « Arrivé ! »). En dessous, l'article courant (son titre, puis le texte nettoyé), que l'on fait défiler. Les liens cliquables sont soulignés et assez espacés pour le doigt.
   - Course libre : un toucher sur un lien affiche « Chargement… » sur le bandeau et grise l'article jusqu'à ce que le serveur ait enregistré la page.
   - Manches : un toucher surligne le lien choisi ; le bandeau affiche « Ton choix : Italie » ; toucher un autre lien change le choix. À la révélation, la nouvelle page s'affiche.
   - Article qui ne se charge pas : « Page indisponible, réessayer » ; le joueur peut toujours faire « Retour ».
@@ -272,3 +273,9 @@ Proposés par la mini-spec et validés par Paul le 31/10/2026 :
 10. **Couples départ → cible rédigés à la main**, environ 40, deux niveaux ; départ au hasard décoché par défaut.
 11. **2 joueurs minimum**.
 12. **Le joueur arrivé en cours de partie** attend la course suivante.
+
+Retours de Paul du 31/10/2026, le jeu étant trop dur :
+
+13. **L'article replié en plan**, sections ouvertes à la demande.
+14. **Revoir la cible** d'un toucher dans le bandeau : sa première phrase (`cible.extrait` dans la vue du téléphone).
+15. **Course libre sans limite de temps**, en plus de 3, 5 et 8 min.

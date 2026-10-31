@@ -28,7 +28,8 @@ export const banqueCouples = JSON.parse(
 
 const FORMATS = { libre: 'Course libre', manches: 'Manches' };
 const LONGUEURS = [1, 3, 5];
-const TEMPS = { libre: [180, 300, 480], manches: [10, 15, 20] };
+// 0 : course libre sans limite de temps, finie quand tous sont arrivés ou par l'hôte.
+const TEMPS = { libre: [180, 300, 480, 0], manches: [10, 15, 20] };
 const NIVEAUX = { 1: 'Facile', 2: 'Difficile' };
 const CHOIX_LONGUEUR = { unite: ['course', 'courses'] };
 
@@ -61,8 +62,9 @@ function reglagesDe(salle) {
   return salle.reglagesMode?.[id] ?? reglagesParDefaut();
 }
 
-// 300 → « 5 min », 15 → « 15 s ».
+// 300 → « 5 min », 15 → « 15 s », 0 → « Sans limite ».
 function texteTemps(secondes) {
+  if (secondes === 0) return 'Sans limite';
   return secondes >= 60 ? `${secondes / 60} min` : `${secondes} s`;
 }
 
@@ -74,7 +76,8 @@ function texteNiveaux(niveaux) {
 export function vueReglages(salle) {
   const reglages = reglagesDe(salle);
   const { format, longueur, temps } = reglages;
-  const tempsTexte = format === 'libre' ? texteTemps(temps) : `manches de ${temps} s`;
+  let tempsTexte = `manches de ${temps} s`;
+  if (format === 'libre') tempsTexte = temps === 0 ? 'sans limite de temps' : texteTemps(temps);
   return {
     titre: 'Options',
     valeurs: reglages,
@@ -365,7 +368,7 @@ export function echeance(salle) {
   const phase = phaseEnCours(salle);
   const { debutPhaseA, duree } = salle.etatMode ?? {};
   if (phase === 'annonce') return debutPhaseA + DUREE_ANNONCE_MS;
-  if (phase === 'course') return debutPhaseA + duree;
+  if (phase === 'course') return duree === 0 ? null : debutPhaseA + duree;
   if (phase === 'revelation') return debutPhaseA + DUREE_REVELATION_MS;
   if (phase === 'bilan') return debutPhaseA + DUREE_BILAN_MS;
   return null;
@@ -384,6 +387,11 @@ export function avancer(salle) {
 
 export function classement(salle) {
   return classementCommun(salle, pointsGagnes);
+}
+
+// Temps restant de la phase, ou null pour une course libre sans limite.
+function chronoDe(salle) {
+  return echeance(salle) === null ? null : tempsRestantMs(salle, echeance);
 }
 
 // ---------- Vues ----------
@@ -434,7 +442,7 @@ export function vueTv(salle) {
       ...vueCourse(salle),
       manche: etatMode.manche,
       mancheMax: MANCHES_MAX,
-      tempsRestantMs: tempsRestantMs(salle, echeance),
+      tempsRestantMs: chronoDe(salle),
       joueurs: lignesJoueurs(salle),
       deplacements: phase === 'revelation' ? etatMode.deplacements : [],
     };
@@ -455,11 +463,11 @@ function vueCourseJoueur(salle, parcours) {
     numero: etatMode.indexCourse + 1,
     total: etatMode.courses.length,
     format: etatMode.format,
-    cible: { titre: etatMode.cible.titre },
+    cible: { titre: etatMode.cible.titre, extrait: etatMode.cible.extrait },
     clics: parcours.clics,
     manche: etatMode.manche,
     mancheMax: MANCHES_MAX,
-    tempsRestantMs: tempsRestantMs(salle, echeance),
+    tempsRestantMs: chronoDe(salle),
     nbArrives: Object.values(etatMode.parcours).filter(estArrive).length,
     nbCoureurs: Object.keys(etatMode.parcours).length,
   };

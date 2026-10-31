@@ -327,6 +327,35 @@ test('wiki course libre : fin du chrono → bilan, sans points pour qui n\'est p
   assert.equal(a.score, 0);
 });
 
+test('wiki course libre sans limite de temps : pas de chrono, fin quand tous sont arrivés', async (t) => {
+  simulerTemps(t);
+  avecWikipedia(t);
+  const base = reglagesParDefaut();
+  assert.equal(validerReglages({ ...base, temps: 0 }).temps, 0);
+  // En passant aux manches, « sans limite » devient le temps par défaut des manches.
+  assert.equal(validerReglages({ ...base, format: 'manches', temps: 0 }).temps, 15);
+  const { salle, joueurs: [a] } = sallePrete({ joueurs: ['A'], reglages: { temps: 0 } });
+  assert.match(vueReglages(salle).resume, /sans limite de temps/);
+  assert.deepEqual(vueReglages(salle).options.temps.at(-1), { id: 0, libelle: 'Sans limite' });
+  commencer(salle);
+  assert.equal(echeance(salle), null);
+  assert.equal(vueTv(salle).tempsRestantMs, null);
+  assert.equal(vueJoueur(salle, a).tempsRestantMs, null);
+  t.mock.timers.tick(3_600_000);
+  await cliquer(salle, a.id, { aller: 'Italie' });
+  await cliquer(salle, a.id, { aller: 'Pizzas' });
+  assert.equal(salle.etatMode.phase, 'bilan');
+  assert.equal(a.score, 1000);
+});
+
+test('wiki course : le téléphone reçoit la première phrase de la cible pendant la course', async (t) => {
+  avecWikipedia(t);
+  const { salle, joueurs: [a] } = sallePrete();
+  await synchroniser(salle, () => {});
+  commencer(salle);
+  assert.deepEqual(vueJoueur(salle, a).cible, { titre: 'Pizza', extrait: 'Résumé de Pizza' });
+});
+
 test('wiki course libre : « Terminer la course » de l\'hôte, puis course suivante et podium', (t) => {
   avecWikipedia(t);
   const { salle } = sallePrete({ courses: 1 });
