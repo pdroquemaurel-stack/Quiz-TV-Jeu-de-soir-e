@@ -1,0 +1,277 @@
+/* Écrans de la Wiki course sur la TV. Chargé après tv.css (voir tv/index.html). */
+
+/* ---------- Annonce : départ ➜ cible ---------- */
+
+.wc-format {
+  font-size: 48px;
+  color: var(--texte-doux);
+}
+
+.wc-trajet {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.wc-depart,
+.wc-titre-cible {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 88px;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.wc-depart {
+  width: 520px;
+  flex-shrink: 0;
+}
+
+.wc-depart small,
+.wc-titre-cible small {
+  font-size: 40px;
+  color: var(--texte-doux);
+}
+
+.wc-fleche {
+  margin: 0;
+  font-size: 120px;
+  color: var(--accent);
+}
+
+.wc-carte-cible {
+  flex: 1;
+  min-width: 0;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 32px;
+  background: var(--panneau);
+  border: 6px solid var(--contour);
+  border-bottom-width: 14px;
+  border-radius: 32px;
+}
+
+.wc-image-cible {
+  width: 320px;
+  height: 320px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 4px solid var(--contour);
+  border-radius: 20px;
+}
+
+.wc-titre-cible span {
+  color: var(--accent);
+}
+
+/* La première phrase de l'article cible, coupée à 4 lignes. */
+.wc-extrait {
+  margin: 16px 0 0;
+  font-size: 40px;
+  color: var(--texte-doux);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+main[data-ecran="wiki-course-annonce"] .attente {
+  text-align: center;
+}
+
+/* ---------- Course : une ligne par joueur ---------- */
+
+.wc-cible-haut {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 900px;
+  font-size: 56px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wc-image-mini {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border: 4px solid var(--contour);
+  border-radius: 16px;
+}
+
+.chrono.chrono-minutes {
+  width: 230px;
+  border-radius: 65px;
+  font-size: 64px;
+}
+
+.wc-lignes {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  /* Place laissée au petit QR code du coin. */
+  padding-right: 220px;
+}
+
+.wc-ligne {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 28px;
+  font-size: 48px;
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-bottom-width: 8px;
+  border-radius: 20px;
+  transition: background-color 400ms ease;
+}
+
+.wc-ligne .pseudo {
+  width: 320px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wc-page {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wc-clics {
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.wc-etat {
+  min-width: 80px;
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.wc-ligne.arrive {
+  background: var(--juste);
+  color: #fff;
+}
+
+.wc-ligne.arrive .wc-clics {
+  color: #fff;
+}
+
+.wc-ligne.deconnecte {
+  opacity: 0.5;
+}
+
+/* Révélation : les lignes qui bougent glissent un peu. */
+.wc-ligne.bouge .wc-page {
+  animation: glisser-wc 500ms ease-out;
+}
+
+@keyframes glisser-wc {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Bilan : les parcours, puis le classement ---------- */
+
+main[data-ecran="wiki-course-bilan"] .tv-haut {
+  min-height: 0;
+}
+
+.wc-verdict {
+  font-size: 64px;
+}
+
+.wc-colonnes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 48px;
+}
+
+.wc-parcours {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.wc-parcours li {
+  padding: 8px 24px;
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-radius: 20px;
+}
+
+.wc-parcours li.arrive {
+  border-color: var(--juste);
+}
+
+.wc-entete-parcours {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 40px;
+}
+
+.wc-entete-parcours .pseudo {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wc-points {
+  font-weight: 700;
+  color: var(--juste);
+}
+
+.wc-parcours li:not(.arrive) .wc-points {
+  color: var(--texte-doux);
+}
+
+.wc-chemin {
+  display: block;
+  font-size: 40px;
+  color: var(--texte-doux);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+main[data-ecran="wiki-course-bilan"] .classement-colonne {
+  width: 700px;
+  align-self: flex-start;
+}
+
+main[data-ecran^="wiki-course"] .numero {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

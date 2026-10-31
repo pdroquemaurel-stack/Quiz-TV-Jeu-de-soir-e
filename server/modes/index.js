@@ -14,11 +14,12 @@ import * as quiDeNous from './qui-de-nous.js';
 import * as quiSuisJe from './qui-suis-je.js';
 import * as quiz from './quiz.js';
 import * as undercover from './undercover.js';
+import * as wikiCourse from './wiki-course.js';
 
 export const modes = {
   quiz, estimation, 'qui-de-nous': quiDeNous, undercover, 'meme-reponse': memeReponse, bluff, legende, 'blind-test': blindTest, geoquiz,
   'mot-le-plus-long': motLePlusLong, 'le-compte-est-bon': leCompteEstBon, 'petit-bac': petitBac, nuancier, 'defi-encheres': defiEncheres,
-  'qui-suis-je': quiSuisJe,
+  'qui-suis-je': quiSuisJe, 'wiki-course': wikiCourse,
 };
 
 // Modes prévus mais pas encore codés : affichés grisés (« Bientôt »), jamais choisis.

@@ -563,6 +563,27 @@ const JEUX = [
     taches: ['Ajouter des personnages à Qui suis-je ?', 'Une photo de Qui suis-je ? est mauvaise'],
   },
   {
+    id: 'wiki-course', nom: 'Wiki course', icone: '🧭', resume: 'De lien en lien sur Wikipédia, jusqu\'à la page cible',
+    joueurs: '2 à 10', options: '<strong>course libre</strong> (3, <strong>5</strong> ou 8 min) ou manches (10, <strong>15</strong> ou 20 s par lien) ; 1, <strong>3</strong> ou 5 courses ; départ <strong>commun</strong> ou au hasard ; niveaux Facile, Difficile ou <strong>les deux</strong>',
+    fichiers: [['data/wiki-course.json', 'les couples départ → cible']],
+    ajouter: [
+      'Ajoute <code>id</code> (<code>wc-</code> + départ et cible en minuscules, sans accents, avec des tirets), <code>depart</code> et <code>cible</code> (les titres exacts de deux articles de Wikipédia en français, recopiés depuis le haut de la page) et <code>niveau</code> (1 : cible très connue, 2 : cible plus précise).',
+      'Lance ensuite la vérification en ligne : elle signale un titre mal écrit, une redirection ou une page d\'homonymie.',
+    ],
+    corriger: ['Titre refusé : ouvre l\'article sur Wikipédia et recopie son titre exact (majuscules et accents compris).'],
+    regles: [
+      'Un départ surprenant mais pas absurde, avec beaucoup de liens (pas une page d\'homonymie).',
+      'Pas deux fois le même couple.',
+      'Au moins 10 couples par niveau.',
+    ],
+    exemple: `{"id":"wc-puddlage-pizza","depart":"Puddlage","cible":"Pizza","niveau":1}`,
+    commandes: [
+      ['node scripts/verifier-wiki-course.js', 'Vérifie le format des couples.'],
+      ['node scripts/verifier-wiki-course.js --wikipedia', 'Vérifie en plus les titres sur Wikipédia. Demande une connexion Internet.'],
+    ],
+    taches: ['Ajouter des couples à la Wiki course', 'Un titre de la Wiki course est refusé'],
+  },
+  {
     id: 'petit-bac', nom: 'Petit bac', icone: '📝', resume: 'Une lettre, 6 catégories',
     joueurs: '2 à 10', options: '3, <strong>5</strong> ou 7 manches ; 60, <strong>90</strong> ou 120 s sans STOP ; lettres rares (K, Q, W, X, Y, Z) <strong>sans</strong> ou avec',
     fichiers: [['server/modes/petit-bac.js', 'la liste CATEGORIES, au début du fichier (c\'est du code)']],

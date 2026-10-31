@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { demarrerServeur } from './index.js';
 import { creerSalle, fermerSalle, salles } from './salles.js';
 import { modes } from './modes/index.js';
+import { remplacerChercher } from './wikipedia.js';
+
+// La Wiki course interroge Wikipédia : ici, un faux qui ne connaît aucune page.
+remplacerChercher(async () => ({ ok: true, json: async () => ({ query: { pages: [] } }) }));
 
 test('/sante répond 200 avec les salles, les joueurs connectés et l\'heure de démarrage', async () => {
   const serveur = await demarrerServeur(0);

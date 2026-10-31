@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="/tv/modes/nuancier.css">
   <link rel="stylesheet" href="/tv/modes/defi-encheres.css">
   <link rel="stylesheet" href="/tv/modes/qui-suis-je.css">
+  <link rel="stylesheet" href="/tv/modes/wiki-course.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -219,6 +220,54 @@
           <p class="qsj-passes" id="qsj-passes"></p>
         </div>
         <ol class="classement classement-colonne" id="qsj-classement"></ol>
+      </div>
+    </main>
+
+    <main data-ecran="wiki-course-annonce" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="wc-numero-annonce"></p>
+        <p class="wc-format" id="wc-format-annonce"></p>
+      </div>
+      <div class="wc-trajet">
+        <p class="wc-depart"><small>Départ</small><span id="wc-depart-annonce"></span></p>
+        <p class="wc-fleche" aria-hidden="true">➜</p>
+        <div class="wc-carte-cible rebond">
+          <img id="wc-image-annonce" class="wc-image-cible" alt="">
+          <div>
+            <p class="wc-titre-cible"><small>Cible</small><span id="wc-cible-annonce"></span></p>
+            <p class="wc-extrait" id="wc-extrait-annonce"></p>
+          </div>
+        </div>
+      </div>
+      <p class="attente">Rien que les liens des articles. Pas de recherche, pas d'onglet à côté !</p>
+    </main>
+
+    <main data-ecran="wiki-course-course" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="wc-numero-course"></p>
+        <p class="wc-cible-haut"><img id="wc-image-course" class="wc-image-mini" alt=""><span id="wc-cible-course"></span></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="wc-barre"></div></div>
+        <p class="chrono" id="wc-chrono"></p>
+      </div>
+      <ul class="wc-lignes" id="wc-lignes"></ul>
+    </main>
+
+    <main data-ecran="wiki-course-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="wc-numero-revelation"></p>
+        <p class="wc-cible-haut"><span id="wc-cible-revelation"></span></p>
+      </div>
+      <ul class="wc-lignes" id="wc-lignes-revelation"></ul>
+    </main>
+
+    <main data-ecran="wiki-course-bilan" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="wc-numero-bilan"></p>
+        <h1 class="wc-verdict rebond" id="wc-verdict"></h1>
+      </div>
+      <div class="wc-colonnes">
+        <ul class="wc-parcours" id="wc-parcours"></ul>
+        <ol class="classement classement-colonne" id="wc-classement"></ol>
       </div>
     </main>
 
@@ -671,5 +720,6 @@
   <script src="/tv/modes/nuancier.js"></script>
   <script src="/tv/modes/defi-encheres.js"></script>
   <script src="/tv/modes/qui-suis-je.js"></script>
+  <script src="/tv/modes/wiki-course.js"></script>
 </body>
 </html>

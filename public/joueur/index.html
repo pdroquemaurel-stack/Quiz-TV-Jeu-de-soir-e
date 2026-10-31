@@ -599,6 +599,52 @@
     <button id="bt-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="wiki-course-annonce" hidden>
+    <p class="discret" id="wc-numero-annonce"></p>
+    <p class="discret">Départ</p>
+    <p class="gros-texte" id="wc-depart-annonce"></p>
+    <p class="discret">Cible</p>
+    <p class="wc-cible-annonce rebond" id="wc-cible-annonce"></p>
+    <p class="discret wc-extrait-annonce" id="wc-extrait-annonce"></p>
+    <p id="wc-format-annonce"></p>
+  </main>
+
+  <main data-ecran="wiki-course-course" hidden>
+    <div class="wc-bandeau" id="wc-bandeau">
+      <div class="wc-ligne-bandeau">
+        <strong class="wc-cible-bandeau" id="wc-cible-bandeau"></strong>
+        <span class="wc-chrono" id="wc-chrono"></span>
+      </div>
+      <div class="wc-ligne-bandeau">
+        <button id="bouton-retour-wc" class="bouton secondaire wc-retour">← Retour</button>
+        <span id="wc-manche"></span>
+        <span id="wc-clics"></span>
+      </div>
+      <p class="wc-etat" id="wc-etat"></p>
+    </div>
+    <h2 class="wc-titre-article" id="wc-titre-article"></h2>
+    <div class="wc-erreur-article" id="wc-erreur-article" hidden>
+      <p>Page indisponible.</p>
+      <button id="bouton-recharger-wc" class="bouton">Réessayer</button>
+    </div>
+    <div class="wc-article" id="wc-article"></div>
+    <button id="bouton-terminer-course-wc" class="bouton secondaire wc-terminer-course" hidden>Terminer la course</button>
+  </main>
+
+  <main data-ecran="wiki-course-arrive" hidden>
+    <p id="wc-resultat-arrive" class="carte-resultat juste rebond"></p>
+    <p class="qsj-chrono-joueur" id="wc-chrono-arrive"></p>
+    <p class="discret" id="wc-attente-arrive"></p>
+    <button id="bouton-terminer-arrive-wc" class="bouton secondaire en-bas" hidden>Terminer la course</button>
+  </main>
+
+  <main data-ecran="wiki-course-bilan" hidden>
+    <p id="wc-resultat" class="carte-resultat rebond"></p>
+    <p id="wc-parcours" class="discret"></p>
+    <p>Score : <strong id="score-wc"></strong> · Rang : <strong id="rang-wc"></strong></p>
+    <button id="bouton-suivant-wc" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -673,6 +719,13 @@
         <p class="titre-option">Niveaux</p>
         <div id="qsj-choix-niveaux" class="choix-reglages"></div>
       </div>
+      <div data-reglages="wiki-course" hidden>
+        <div id="wc-choix-format" class="choix-reglages"></div>
+        <p class="titre-option">Départ</p>
+        <div id="wc-choix-depart" class="choix-reglages"></div>
+        <p class="titre-option">Niveaux</p>
+        <div id="wc-choix-niveaux" class="choix-reglages"></div>
+      </div>
       <div data-reglages="petit-bac" hidden>
         <p class="titre-option">Lettres rares (K, Q, W, X, Y, Z)</p>
         <div id="pb-choix-rares" class="choix-reglages"></div>
@@ -738,5 +791,6 @@
   <script src="/joueur/modes/nuancier.js"></script>
   <script src="/joueur/modes/defi-encheres.js"></script>
   <script src="/joueur/modes/qui-suis-je.js"></script>
+  <script src="/joueur/modes/wiki-course.js"></script>
 </body>
 </html>

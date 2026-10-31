@@ -123,6 +123,11 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Personnage trouvé (`nbTrouves` augmente) | `victoire` |
 | | Personnage passé, ou « Trouvé ! » refusé | `rate` |
 | | Bilan du tour | `etape` |
+| Wiki course | Annonce (départ et cible) | `etape` |
+| | Début de la course, ou d'une manche | `lancement` |
+| | Un joueur arrive à la cible (`arrive` passe à vrai) | `victoire` |
+| | Révélation d'une manche | `etape` |
+| | Bilan de la course | `etape` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

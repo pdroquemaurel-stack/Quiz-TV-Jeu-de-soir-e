@@ -49,12 +49,25 @@ export function demarrerServeur(port) {
   function diffuser(salle) {
     journaliserEtat(salle);
     synchroniserMinuteur(salle, diffuser);
+    // Un mode qui attend une réponse extérieure (Wikipédia pour la Wiki course) la lance ici.
+    if (salle.etat === 'partie') {
+      modes[salle.mode].synchroniser?.(salle, relancer)
+        .catch((erreurImprevue) => journaliserErreur(`synchroniser ${salle.mode}`, erreurImprevue));
+    }
     if (salle.tvSocketId) {
       io.to(salle.tvSocketId).emit('salle:etat', { ...vueTv(salle), urlJoueur: lienJoueur(salle.code) });
     }
     for (const joueur of salle.joueurs) {
       if (joueur.connecte) io.to(joueur.socketId).emit('joueur:etat', vueJoueur(salle, joueur));
     }
+  }
+
+  // La réponse extérieure attendue par le mode est arrivée et a changé l'état. Pendant une
+  // pause, la fin anticipée est vérifiée à la reprise.
+  function relancer(salle) {
+    if (trouverSalle(salle.code) !== salle || salle.etat !== 'partie') return;
+    if (!salle.pause) modes[salle.mode].verifierFinAnticipee(salle);
+    diffuser(salle);
   }
 
   // Le journal des tirages permet de vérifier à l'œil qu'aucun contenu ne se répète.

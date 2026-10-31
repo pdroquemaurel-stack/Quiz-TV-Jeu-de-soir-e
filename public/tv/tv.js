@@ -283,7 +283,10 @@ function lancerChrono(element, tempsRestantMs) {
       jouerSon('tictac', { dernier: secondes === 1 });
     }
     secondeAffichee = secondes;
-    element.textContent = secondes;
+    // Chrono de plusieurs minutes (Wiki course) : « 4:59 ».
+    element.textContent = element.classList.contains('chrono-minutes')
+      ? `${Math.floor(secondes / 60)}:${String(secondes % 60).padStart(2, '0')}`
+      : secondes;
     element.classList.toggle('urgent', secondes <= 5);
   };
   afficher();

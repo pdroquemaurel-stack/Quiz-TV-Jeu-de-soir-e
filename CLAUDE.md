@@ -23,6 +23,7 @@ server/
   medailles.js      # médailles de fin de partie, points globaux, grand gagnant
   journal.js        # journal des événements et des erreurs (logs Render)
   extraits.js       # extraits Deezer du blind test : route /extrait/:id et son cache
+  wikipedia.js      # Wiki course : résumé de la cible, vérification des clics, article au hasard (API de Wikipédia FR)
   modes/index.js    # registre des modes : salles.js et index.js ne passent que par lui
   modes/commun.js   # tirage, classement, joueurs attendus, enchaînement des questions, options de l'hôte : partagés entre modes
   modes/quiz.js     # tout ce qui est propre au mode quiz (etatMode)
@@ -40,6 +41,7 @@ server/
   modes/nuancier.js # mode Nuancier (docs/modes/nuancier.md)
   modes/defi-encheres.js # mode Le défi des enchères (docs/modes/defi-encheres.md)
   modes/qui-suis-je.js # mode Qui suis-je ? (docs/modes/qui-suis-je.md)
+  modes/wiki-course.js # mode Wiki course (docs/modes/wiki-course.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
@@ -64,6 +66,7 @@ data/mots.txt          # dictionnaire du Mot le plus long, un mot par ligne (Lex
 data/nuancier.json     # logos du Nuancier : fichier, question, couleur cible, id des formes de la zone
 data/defi-encheres.json # défis du Défi des enchères : id et sujet
 data/qui-suis-je.json  # personnages de Qui suis-je ? : nom, catégorie, niveau, titre Wikipédia, photo et crédit
+data/wiki-course.json  # couples départ → cible de la Wiki course (titres d'articles de Wikipédia FR), avec leur niveau
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -85,6 +88,7 @@ scripts/verifier-nuancier.js
 scripts/verifier-defi-encheres.js
 scripts/construire-qui-suis-je.py # ajoute à data/qui-suis-je.json l'image principale de chaque article Wikipédia (Python + requests)
 scripts/verifier-qui-suis-je.js
+scripts/verifier-wiki-course.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -115,6 +119,7 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-defi-encheres.js` : vérifie le format de `defi-encheres.json`
 - `py scripts/construire-qui-suis-je.py` (après `pip install requests`) : ajoute les photos manquantes à `qui-suis-je.json` (image principale de l'article Wikipédia français, sinon anglais, même non libre) et écrit la page d'aperçu `scripts/apercu-qui-suis-je.html` (non commitée)
 - `node scripts/verifier-qui-suis-je.js` : vérifie le format de `qui-suis-je.json`
+- `node scripts/verifier-wiki-course.js` : vérifie le format de `wiki-course.json` ; avec `--wikipedia`, vérifie en plus en ligne que chaque titre existe, sans redirection ni homonymie, et que chaque départ a au moins 20 liens
 
 ## Ajouter un mode
 

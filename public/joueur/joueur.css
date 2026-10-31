@@ -1435,3 +1435,163 @@ main.ecran-nuancier .en-bas {
   font-size: 72px;
   font-weight: 600;
 }
+
+/* ---------- Wiki course ---------- */
+
+.wc-cible-annonce {
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.wc-extrait-annonce {
+  max-width: 420px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* L'article se lit de haut en bas, aligné à gauche, sous un bandeau qui reste en haut. */
+main[data-ecran="wiki-course-course"] {
+  justify-content: flex-start;
+  align-items: stretch;
+  padding-top: 0;
+  text-align: left;
+}
+
+main[data-ecran="wiki-course-course"]::before,
+main[data-ecran="wiki-course-course"]::after {
+  content: none;
+}
+
+.wc-bandeau {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 -20px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--fond);
+  border-bottom: 4px solid var(--contour);
+}
+
+.wc-ligne-bandeau {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wc-cible-bandeau {
+  flex: 1;
+  min-width: 0;
+  font-size: 26px;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wc-chrono {
+  font-size: 28px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.wc-ligne-bandeau #wc-manche,
+.wc-ligne-bandeau #wc-clics {
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.bouton.wc-retour {
+  width: auto;
+  min-height: 48px;
+  margin-right: auto;
+  padding: 4px 16px;
+  font-size: 22px;
+  border-bottom-width: 6px;
+}
+
+.bouton.wc-retour.choisi {
+  background: var(--accent);
+  color: #fff;
+}
+
+.wc-etat {
+  margin: 0;
+  font-size: 20px;
+  color: var(--texte-doux);
+}
+
+.wc-etat.refus {
+  color: var(--rate);
+  font-weight: 600;
+}
+
+.wc-titre-article {
+  margin: 12px 0 0;
+  font-size: 30px;
+  overflow-wrap: anywhere;
+}
+
+.wc-erreur-article {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.wc-article {
+  font-size: 20px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  transition: opacity 200ms ease;
+}
+
+.wc-article h3 {
+  margin: 20px 0 4px;
+  font-size: 24px;
+}
+
+.wc-article p {
+  margin: 0 0 12px;
+}
+
+.wc-article ul {
+  margin: 0 0 12px;
+  padding-left: 24px;
+}
+
+/* Les liens cliquables : soulignés, assez hauts pour le doigt. */
+.wc-lien {
+  padding: 3px 0;
+  color: #1F4FD1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.wc-lien.touche,
+.wc-lien.choisi {
+  padding: 3px 4px;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* Course libre : en attendant le serveur, l'article est grisé. */
+.wc-article.en-attente {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.bouton.wc-terminer-course {
+  align-self: center;
+  margin-top: 24px;
+}
