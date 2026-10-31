@@ -89,16 +89,54 @@ export function labDe(hex) {
   return { l: 116 * f(y) - 16, a: 500 * (f(x) - f(y)), b: 200 * (f(y) - f(z)) };
 }
 
-// Distance ΔE (CIE76) entre deux couleurs « #RRGGBB ».
+// Distance ΔE 2000 (CIEDE2000) entre deux couleurs « #RRGGBB » : bien plus proche de l'œil
+// que la distance droite dans Lab (CIE76), qui exagère les écarts des couleurs vives.
+// Formule de Sharma, Wu et Dalal (2005).
 export function deltaE(hex1, hex2) {
-  const c1 = labDe(hex1);
-  const c2 = labDe(hex2);
-  return Math.hypot(c1.l - c2.l, c1.a - c2.a, c1.b - c2.b);
+  return ecartLab(labDe(hex1), labDe(hex2));
 }
 
-// En % : 100 pour la couleur exacte, 0 à partir d'un ΔE de 66,7.
+// ΔE 2000 entre deux couleurs Lab ({ l, a, b }).
+export function ecartLab(c1, c2) {
+  const rad = Math.PI / 180;
+  const chroma7 = (c) => c ** 7 / (c ** 7 + 25 ** 7);
+  const g = 0.5 * (1 - Math.sqrt(chroma7((Math.hypot(c1.a, c1.b) + Math.hypot(c2.a, c2.b)) / 2)));
+  const a1 = (1 + g) * c1.a;
+  const a2 = (1 + g) * c2.a;
+  const ch1 = Math.hypot(a1, c1.b);
+  const ch2 = Math.hypot(a2, c2.b);
+  const angle = (b, a) => (b === 0 && a === 0 ? 0 : (Math.atan2(b, a) / rad + 360) % 360);
+  const h1 = angle(c1.b, a1);
+  const h2 = angle(c2.b, a2);
+  const grises = ch1 * ch2 === 0;
+
+  let ecartTeinte = grises ? 0 : h2 - h1;
+  if (ecartTeinte > 180) ecartTeinte -= 360;
+  else if (ecartTeinte < -180) ecartTeinte += 360;
+  const dL = c2.l - c1.l;
+  const dC = ch2 - ch1;
+  const dH = 2 * Math.sqrt(ch1 * ch2) * Math.sin((ecartTeinte / 2) * rad);
+
+  const lMoyen = (c1.l + c2.l) / 2;
+  const chMoyen = (ch1 + ch2) / 2;
+  let hMoyen = h1 + h2;
+  if (!grises) {
+    if (Math.abs(h1 - h2) > 180) hMoyen += hMoyen < 360 ? 360 : -360;
+    hMoyen /= 2;
+  }
+  const t = 1 - 0.17 * Math.cos((hMoyen - 30) * rad) + 0.24 * Math.cos(2 * hMoyen * rad)
+    + 0.32 * Math.cos((3 * hMoyen + 6) * rad) - 0.2 * Math.cos((4 * hMoyen - 63) * rad);
+  const sL = 1 + (0.015 * (lMoyen - 50) ** 2) / Math.sqrt(20 + (lMoyen - 50) ** 2);
+  const sC = 1 + 0.045 * chMoyen;
+  const sH = 1 + 0.015 * chMoyen * t;
+  const rotation = -Math.sin(60 * Math.exp(-(((hMoyen - 275) / 25) ** 2)) * rad) * 2 * Math.sqrt(chroma7(chMoyen));
+  return Math.sqrt((dL / sL) ** 2 + (dC / sC) ** 2 + (dH / sH) ** 2 + rotation * (dC / sC) * (dH / sH));
+}
+
+// En % : 100 pour la couleur exacte, −2 par unité de ΔE 2000, 0 à partir de 50.
+// Un ΔE de 2 se voit à peine (96 %), 10 reste proche (80 %), 30 est une autre nuance (40 %).
 export function ressemblance(hex, cible) {
-  return Math.max(0, Math.round(100 - deltaE(hex, cible) * 1.5));
+  return Math.max(0, Math.round(100 - deltaE(hex, cible) * 2));
 }
 
 // Couleurs validées ({ joueurId: { teinte, luminosite } }) triées de la plus ressemblante

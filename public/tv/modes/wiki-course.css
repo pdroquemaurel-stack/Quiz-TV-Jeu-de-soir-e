@@ -107,12 +107,6 @@ main[data-ecran="wiki-course-annonce"] .attente {
   border-radius: 16px;
 }
 
-.chrono.chrono-minutes {
-  width: 230px;
-  border-radius: 65px;
-  font-size: 64px;
-}
-
 .wc-lignes {
   flex: 1;
   min-height: 0;

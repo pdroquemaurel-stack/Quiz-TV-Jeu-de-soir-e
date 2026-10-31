@@ -64,6 +64,31 @@ main[data-ecran="qui-suis-je-preparation"] .attente {
   display: none;
 }
 
+/* Personnage sur les téléphones : la TV ne montre qu'un rappel. */
+.qsj-sur-telephones {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-size: 88px;
+  line-height: 1.15;
+}
+
+/* Le rappel au centre, le compte des trouvés juste dessous. */
+.qsj-personnage.sur-telephones {
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+}
+
+.qsj-personnage.sur-telephones .qsj-sur-telephones {
+  flex: 0 0 auto;
+}
+
+.qsj-personnage.sur-telephones .qsj-identite {
+  flex: 0 0 auto;
+  align-items: center;
+}
+
 .qsj-identite {
   flex: 1;
   min-width: 0;

@@ -294,6 +294,13 @@ main[data-ecran="quiz-transition"] .numero {
   border-radius: 50%;
 }
 
+/* Chrono de plusieurs minutes (Wiki course, Qui suis-je ? contre la montre) : « 4:59 ». */
+.chrono.chrono-minutes {
+  width: 230px;
+  border-radius: 65px;
+  font-size: 64px;
+}
+
 .chrono.urgent {
   background: var(--accent);
   color: #fff;

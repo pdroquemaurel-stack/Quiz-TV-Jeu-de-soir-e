@@ -195,7 +195,7 @@
   <main data-ecran="qui-suis-je-preparation_actif" hidden>
     <p class="discret" id="qsj-tour-actif"></p>
     <p class="carte-resultat juste rebond">C'est ton tour !</p>
-    <p class="gros-texte">Tourne le dos à la TV. Ne triche pas, on te voit.</p>
+    <p class="gros-texte" id="qsj-consigne-actif"></p>
     <div class="qsj-zone-boutons en-bas">
       <button id="bouton-partir-qsj" class="bouton qsj-gros-bouton">C'est parti !</button>
     </div>
@@ -204,7 +204,7 @@
   <main data-ecran="qui-suis-je-preparation" hidden>
     <p class="discret" id="qsj-tour-preparation"></p>
     <p class="gros-texte" id="qsj-consigne-preparation"></p>
-    <p class="discret">Toi, tu réponds par oui ou non. Le personnage s'affichera ici et sur la TV.</p>
+    <p class="discret" id="qsj-aide-preparation"></p>
   </main>
 
   <main data-ecran="qui-suis-je-actif" hidden>
@@ -219,6 +219,11 @@
 
   <main data-ecran="qui-suis-je-repondre" hidden>
     <p class="discret" id="qsj-qui-devine"></p>
+    <!-- Personnage sur les téléphones : la photo ici, puisque la TV ne la montre pas. -->
+    <figure class="qsj-photo-joueur" id="qsj-cadre-photo-repondre" hidden>
+      <img id="qsj-photo-repondre" alt="">
+      <figcaption id="qsj-credit-repondre"></figcaption>
+    </figure>
     <p class="qsj-nom-joueur" id="qsj-nom-repondre"></p>
     <p class="discret" id="qsj-categorie-repondre"></p>
     <p class="qsj-chrono-joueur" id="qsj-chrono-repondre"></p>
@@ -233,6 +238,7 @@
     <p id="qsj-resultat" class="carte-resultat rebond"></p>
     <p id="qsj-liste-trouves" class="discret"></p>
     <p id="qsj-liste-passes" class="discret"></p>
+    <p id="qsj-non-trouve" class="discret"></p>
     <p>Score : <strong id="score-qsj"></strong> · Rang : <strong id="rang-qsj"></strong></p>
     <p class="discret">Regarde la TV</p>
     <button id="bouton-suivant-qsj" class="bouton en-bas" hidden>Suivant</button>
@@ -717,6 +723,14 @@
         <p class="discret">Des lieux faciles d'abord, puis moyens et difficiles. Comme dans la vie.</p>
       </div>
       <div data-reglages="qui-suis-je" hidden>
+        <div id="qsj-choix-formats" class="choix-reglages"></div>
+        <p id="qsj-explication-format" class="discret"></p>
+        <div id="qsj-reglage-objectif">
+          <p class="titre-option">Personnages à trouver</p>
+          <div id="qsj-choix-objectifs" class="choix-reglages"></div>
+        </div>
+        <p class="titre-option">Le personnage s'affiche</p>
+        <div id="qsj-choix-affichages" class="choix-reglages"></div>
         <p class="titre-option">Niveaux</p>
         <div id="qsj-choix-niveaux" class="choix-reglages"></div>
       </div>

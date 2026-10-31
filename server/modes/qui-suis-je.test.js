@@ -74,18 +74,117 @@ test('qui suis-je : ordre des tours, chacun `longueur` fois, jamais deux fois d\
   assert.deepEqual(ordreDesTours(['a'], 2), ['a', 'a']);
 });
 
-test('qui suis-je : réglages, 1 à 3 tours, 1 min 30 à 3 min, niveaux jamais vides', () => {
-  assert.deepEqual(reglagesParDefaut(), { longueur: 1, temps: 120, niveaux: [1, 2] });
-  assert.deepEqual(validerReglages({ longueur: 3, temps: 90, niveaux: [2, 1] }), { longueur: 3, temps: 90, niveaux: [1, 2] });
-  assert.deepEqual(validerReglages({ longueur: 2, temps: 180, niveaux: [2] }), { longueur: 2, temps: 180, niveaux: [2] });
-  assert.equal(validerReglages({ longueur: 4, temps: 120, niveaux: [1] }), null);
-  assert.equal(validerReglages({ longueur: 1, temps: 60, niveaux: [1] }), null);
-  assert.equal(validerReglages({ longueur: 1, temps: 120, niveaux: [] }), null);
-  assert.equal(validerReglages({ longueur: 1, temps: 120, niveaux: [3] }), null);
+test('qui suis-je : réglages, format, tours, temps selon le format, objectif, affichage, niveaux', () => {
+  const base = reglagesParDefaut();
+  assert.deepEqual(base, {
+    format: 'max', longueur: 1, temps: 120, objectif: 1, affichage: 'tv', niveaux: [1, 2],
+  });
+  assert.deepEqual(validerReglages({ ...base, longueur: 3, temps: 90, niveaux: [2, 1] }), { ...base, longueur: 3, temps: 90 });
+  assert.deepEqual(validerReglages({ ...base, longueur: 2, temps: 180, niveaux: [2] }), { ...base, longueur: 2, temps: 180, niveaux: [2] });
+  assert.deepEqual(
+    validerReglages({ ...base, format: 'chrono', temps: 300, objectif: 3, affichage: 'telephones' }),
+    { ...base, format: 'chrono', temps: 300, objectif: 3, affichage: 'telephones' },
+  );
+  // Changement de format : un temps de l'autre format devient celui par défaut.
+  assert.equal(validerReglages({ ...base, format: 'chrono', temps: 90 }).temps, 180);
+  for (const mauvais of [
+    { longueur: 4 }, { temps: 60 }, { niveaux: [] }, { niveaux: [3] }, { format: 'rapide' }, { objectif: 4 }, { affichage: 'radio' },
+  ]) {
+    assert.equal(validerReglages({ ...base, ...mauvais }), null, JSON.stringify(mauvais));
+  }
   assert.equal(validerReglages(null), null);
   assert.equal(texteDuree(90), '1 min 30');
   assert.equal(texteDuree(120), '2 min');
   assert.equal(vueReglages(creerSalle('tv')).resume, '1 tour · 2 min · Tous niveaux');
+  const salle = creerSalle('tv');
+  salle.reglagesMode = { 'qui-suis-je': { ...base, format: 'chrono', temps: 180, objectif: 2, affichage: 'telephones' } };
+  assert.equal(vueReglages(salle).resume, 'Contre la montre, 2 personnages · 1 tour · 3 min max · personnage sur les téléphones · Tous niveaux');
+  assert.deepEqual(vueReglages(salle).options.temps.map((choix) => choix.id), [120, 180, 300]);
+});
+
+test('qui suis-je : un personnage vu mais pas trouvé à la fin du chrono n\'est pas reproposé au suivant', (t) => {
+  simulerTemps(t);
+  const { salle } = sallePrete({ joueurs: ['A', 'B'] });
+  partir(salle);
+  trouver(salle);
+  const dernier = nomCourant(salle);
+  t.mock.timers.tick(DEUX_MIN);
+  avancer(salle);
+  assert.equal(vueTv(salle).nonTrouve, dernier);
+  suivant(salle);
+  partir(salle);
+  assert.notEqual(nomCourant(salle), dernier);
+});
+
+test('qui suis-je : idem après un « Trouvé ! » refusé à la fin du chrono', (t) => {
+  simulerTemps(t);
+  const { salle } = sallePrete({ joueurs: ['A', 'B'] });
+  partir(salle);
+  const vu = nomCourant(salle);
+  repondre(salle, actif(salle), { trouve: true });
+  t.mock.timers.tick(DEUX_MIN);
+  avancer(salle);
+  repondre(salle, valideurDe(salle), { valider: false });
+  assert.equal(salle.etatMode.phase, 'bilan');
+  suivant(salle);
+  partir(salle);
+  assert.notEqual(nomCourant(salle), vu);
+});
+
+test('qui suis-je contre la montre : le tour s\'arrête à l\'objectif, points selon le temps restant', (t) => {
+  simulerTemps(t);
+  const { salle, joueurs } = sallePrete({ reglages: { format: 'chrono', temps: 180, objectif: 2 } });
+  partir(salle);
+  t.mock.timers.tick(20000);
+  trouver(salle);
+  assert.equal(salle.etatMode.phase, 'jeu');
+  repondre(salle, actif(salle), { passer: true });
+  t.mock.timers.tick(10000);
+  // Le temps compte au « Trouvé ! », pas à la validation.
+  repondre(salle, actif(salle), { trouve: true });
+  t.mock.timers.tick(5000);
+  repondre(salle, valideurDe(salle), { valider: true });
+  assert.equal(salle.etatMode.phase, 'bilan');
+  // 30 s de jeu + 15 s pour le « Passer » : 45 s sur 180, il en reste 135 → 1 350 points.
+  assert.equal(salle.etatMode.tempsMisMs, 45000);
+  const joueurActif = joueurs.find((j) => j.id === actif(salle));
+  assert.equal(joueurActif.score, 1350);
+  assert.equal(vueTv(salle).tempsMisMs, 45000);
+  assert.equal(vueJoueur(salle, joueurActif).points, 1350);
+});
+
+test('qui suis-je contre la montre : objectif pas atteint à temps, 0 point', (t) => {
+  simulerTemps(t);
+  const { salle, joueurs } = sallePrete({ reglages: { format: 'chrono', temps: 120, objectif: 3 } });
+  partir(salle);
+  trouver(salle);
+  t.mock.timers.tick(DEUX_MIN);
+  avancer(salle);
+  assert.equal(salle.etatMode.phase, 'bilan');
+  assert.equal(salle.etatMode.tempsMisMs, null);
+  assert.ok(joueurs.every((j) => j.score === 0));
+  // Le chrono qui monte : pendant le tour suivant, le temps déjà compté.
+  suivant(salle);
+  partir(salle);
+  t.mock.timers.tick(7000);
+  assert.equal(vueTv(salle).tempsEcouleMs, 7000);
+});
+
+test('qui suis-je : personnage sur les téléphones, la TV ne le montre jamais', () => {
+  const { salle, joueurs } = sallePrete({ reglages: { affichage: 'telephones' } });
+  const joueurActif = joueurs.find((j) => j.id === actif(salle));
+  const autre = joueurs.find((j) => j.id !== actif(salle));
+  assert.equal(vueTv(salle).personnageSuivant, null);
+  partir(salle);
+  const tv = vueTv(salle);
+  assert.equal(tv.personnage, null);
+  assert.equal(tv.affichage, 'telephones');
+  assert.equal(JSON.stringify(tv).includes(nomCourant(salle)), false);
+  // Les autres téléphones ont aussi la photo ; le joueur actif, toujours rien.
+  const vueAutre = vueJoueur(salle, autre);
+  assert.equal(vueAutre.personnage.nom, nomCourant(salle));
+  assert.ok(vueAutre.personnage.image.startsWith('https://'));
+  assert.equal(JSON.stringify(vueJoueur(salle, joueurActif)).includes(nomCourant(salle)), false);
 });
 
 // --- Partie ---

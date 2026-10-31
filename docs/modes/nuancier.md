@@ -30,17 +30,17 @@ La tranche se code en trois temps, chacun testé (et commité avec ton accord) a
 Calculés **par le serveur** :
 
 1. La couleur du joueur (teinte, saturation de la cible, luminosité) et la cible sont converties de sRGB en CIE Lab (blanc D65).
-2. `ΔE` = distance euclidienne dans Lab (CIE76).
-3. `ressemblance = max(0, arrondi(100 − ΔE × 1,5))` %.
+2. `ΔE` = **ΔE 2000** (CIEDE2000, formule de Sharma, Wu et Dalal), l'écart de couleur qui suit le mieux l'œil. Retours de Paul du 31/10/2026 : avec l'ancienne distance droite dans Lab (CIE76), deux couleurs vives presque identiques à l'œil pouvaient tomber à 50 % ; 10° de teinte d'écart donnait 77 % en médiane sur les 36 logos, 87 % aujourd'hui.
+3. `ressemblance = max(0, arrondi(100 − ΔE × 2))` %.
 4. `points = ressemblance × 10` (1 000 au plus).
 
-| ΔE | Ressemblance | Points |
+| ΔE 2000 | Ressemblance | Points |
 |---|---|---|
 | 0 | 100 % | 1 000 |
-| 2 (à peine visible) | 97 % | 970 |
-| 10 | 85 % | 850 |
-| 30 | 55 % | 550 |
-| 66,7 et plus | 0 % | 0 |
+| 2 (à peine visible) | 96 % | 960 |
+| 10 (proche) | 80 % | 800 |
+| 30 (une autre nuance) | 40 % | 400 |
+| 50 et plus | 0 % | 0 |
 
 - Pas de réponse : 0 point.
 - Classement avec ex æquo comme partout (1, 1, 3).

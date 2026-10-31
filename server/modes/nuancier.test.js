@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ajouterJoueur, creerSalle } from '../salles.js';
 import {
-  DUREE_REVELATION_MS, avancer, calculerResultats, couleurTsl, deltaE, demarrerPartie, echeance,
+  DUREE_REVELATION_MS, avancer, calculerResultats, couleurTsl, deltaE, ecartLab, demarrerPartie, echeance,
   enregistrerReponse, labDe, reglagesParDefaut, ressemblance, saturationDe, suivant, tslDe, validerReglages,
   verifierFinAnticipee, vueJoueur, vueReglages, vueTv,
 } from './nuancier.js';
@@ -58,7 +58,27 @@ test('couleurs : Lab de valeurs connues (D65)', () => {
   assert.equal(labDe('#000000').l, 0);
 });
 
-test('ressemblance : 100 % pour la cible, 0 au-delà de ΔE 66,7, points = ressemblance × 10', () => {
+test('ΔE 2000 : valeurs de référence de Sharma, Wu et Dalal (2005)', () => {
+  const paires = [
+    [{ l: 50, a: 2.6772, b: -79.7751 }, { l: 50, a: 0, b: -82.7485 }, 2.0425],
+    [{ l: 50, a: 2.5, b: 0 }, { l: 73, a: 25, b: -18 }, 27.1492],
+    [{ l: 60.2574, a: -34.0099, b: 36.2677 }, { l: 60.4626, a: -34.1751, b: 39.4387 }, 1.2644],
+    [{ l: 2.0776, a: 0.0795, b: -1.135 }, { l: 0.9033, a: -0.0636, b: -0.5514 }, 0.9082],
+  ];
+  for (const [c1, c2, attendu] of paires) assert.ok(Math.abs(ecartLab(c1, c2) - attendu) < 1e-4, `${attendu}`);
+  assert.equal(deltaE('#0058A3', '#0058A3'), 0);
+});
+
+test('ressemblance : deux couleurs proches à l’œil gardent une bonne note', () => {
+  // 10° de teinte d'écart sur le bleu d'IKEA : à peine différent à l'œil.
+  const { teinte, luminosite } = tslDe('#0058A3');
+  const voisin = couleurTsl(teinte + 10, saturationDe('#0058A3'), luminosite);
+  assert.ok(ressemblance(voisin, '#0058A3') >= 80, `${voisin} : ${ressemblance(voisin, '#0058A3')} %`);
+  // Une autre couleur reste loin.
+  assert.ok(ressemblance('#FFC72C', '#0058A3') < 20);
+});
+
+test('ressemblance : 100 % pour la cible, 0 au-delà de ΔE 50, points = ressemblance × 10', () => {
   assert.equal(deltaE('#0058A3', '#0058A3'), 0);
   assert.equal(ressemblance('#0058A3', '#0058A3'), 100);
   assert.equal(ressemblance('#FFFFFF', '#000000'), 0);

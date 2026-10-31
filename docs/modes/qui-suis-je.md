@@ -25,11 +25,21 @@ La tranche se code en **deux temps** :
 - **Fin du chrono** : le tour s'arrête. Si une validation est en attente, le serveur attend la décision du valideur (sans chrono), puis le tour s'arrête.
 - **Bilan** (10 s, l'hôte peut passer plus tôt avec « Suivant ») : les personnages trouvés et passés, les points du tour et le classement. Puis la préparation du joueur actif suivant. Après le dernier : podium commun, médailles et points globaux.
 
+### Ajouts du 31/10/2026 (retours de Paul)
+
+- **Personnage vu, jamais reproposé** : quand le tour s'arrête sur un personnage montré mais pas trouvé (fin du chrono, « Trouvé ! » refusé après la fin, plus de valideur), il est écarté : le joueur suivant ne le reçoit pas, il l'a vu en répondant. Le bilan l'affiche (« Pas trouvé : Astérix », `nonTrouve`).
+- **Format « Contre la montre »** (option `format: 'chrono'`, le format d'origine s'appelle « Le plus possible », `format: 'max'`) : le joueur actif doit trouver **1, 2 ou 3 personnages** (option `objectif`, 1 par défaut) le plus vite possible. Le chrono **monte** sur la TV et les téléphones ; le temps choisi (**2 min**, 3 min ou 5 min, `temps: 120 | 180 | 300`, 3 min par défaut) est le temps maximal. Le tour s'arrête dès que l'objectif est validé.
+  - Le temps compté (`tempsMisMs`) va du « C'est parti ! » au **« Trouvé ! »** du dernier personnage (pas à sa validation), plus 15 s par « Passer ».
+  - **Points : 1 par dixième de seconde restant** sur le temps maximal (`arrondi((temps maximal − temps compté) / 100 ms)`) : 45 s sur 3 min donnent 1 350 points. Objectif pas atteint à temps : 0 point. Celui qui met le moins de temps marque le plus.
+- **Où s'affiche le personnage** (option `affichage`) : **sur la TV** (`'tv'`, par défaut, le joueur actif tourne le dos à la TV), ou **sur les téléphones** (`'telephones'`) : la TV ne reçoit jamais le personnage (`personnage: null`, pas d'image préchargée) et affiche « 📱 Le personnage est sur vos téléphones », le chrono et les trouvés ; les autres téléphones montrent le nom, la catégorie **et la photo** avec son crédit. Le joueur actif peut rester face à la TV, sans se lever du canapé. Son téléphone ne reçoit toujours rien du personnage.
+- `hote:reglerMode` : `{ format, longueur, temps, objectif, affichage, niveaux }`. Un temps de l'autre format devient le temps par défaut du nouveau.
+
 ### Points
 
 | Situation | Points |
 |---|---|
-| Personnage trouvé (validé) | **300** pour le joueur actif, quel que soit le temps mis |
+| Personnage trouvé (validé), format « Le plus possible » | **300** pour le joueur actif, quel que soit le temps mis |
+| Objectif atteint, format « Contre la montre » | 1 par dixième de seconde restant sur le temps maximal |
 | Personnage passé | 0, et 15 s de moins au chrono |
 | Joueurs qui répondent | 0 |
 
