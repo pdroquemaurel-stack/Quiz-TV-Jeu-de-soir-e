@@ -563,6 +563,23 @@ const JEUX = [
     taches: ['Ajouter des personnages à Qui suis-je ?', 'Une photo de Qui suis-je ? est mauvaise'],
   },
   {
+    id: 'chapeau', nom: 'Le chapeau', icone: '🎩', resume: 'Deux équipes, les mêmes mots : décrire, un seul mot, mimer',
+    joueurs: '4 à 10', options: 'mots <strong>écrits par les joueurs</strong> ou tous au hasard ; <strong>30</strong>, 45 ou 60 s par tour',
+    fichiers: [['data/chapeau.json', 'les mots à piocher']],
+    ajouter: [
+      'Ajoute <code>id</code> (<code>ch-</code> + le mot en minuscules, sans accents, avec des tirets) et <code>mot</code> (30 caractères au plus).',
+    ],
+    corriger: ['Retirer un mot trop dur à mimer ou que personne ne connaît.'],
+    regles: [
+      'Des mots connus en France, faciles à décrire et à mimer : célébrités, personnages, objets, animaux, lieux, films.',
+      'Pas deux fois le même mot (accents, majuscules et pluriel ne comptent pas).',
+      'Au moins 60 mots.',
+    ],
+    exemple: `{"id":"ch-tour-eiffel","mot":"Tour Eiffel"}`,
+    commandes: [['node scripts/verifier-chapeau.js', 'Vérifie le format des mots.']],
+    taches: ['Ajouter des mots au chapeau'],
+  },
+  {
     id: 'wiki-course', nom: 'Wiki course', icone: '🧭', resume: 'De lien en lien sur Wikipédia, jusqu\'à la page cible',
     joueurs: '2 à 10', options: '<strong>course libre</strong> (3, <strong>5</strong> ou 8 min, ou sans limite) ou manches (10, <strong>15</strong> ou 20 s par lien) ; 1, <strong>3</strong> ou 5 courses ; départ <strong>commun</strong> ou au hasard ; niveaux Facile, Difficile ou <strong>les deux</strong>',
     fichiers: [['data/wiki-course.json', 'les couples départ → cible']],

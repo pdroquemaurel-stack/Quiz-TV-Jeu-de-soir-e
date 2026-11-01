@@ -1,5 +1,6 @@
 // Registre des modes de jeu : salles.js et index.js ne passent que par lui.
 import * as blindTest from './blind-test.js';
+import * as chapeau from './chapeau.js';
 import * as bluff from './bluff.js';
 import * as defiEncheres from './defi-encheres.js';
 import * as estimation from './estimation.js';
@@ -19,7 +20,7 @@ import * as wikiCourse from './wiki-course.js';
 export const modes = {
   quiz, estimation, 'qui-de-nous': quiDeNous, undercover, 'meme-reponse': memeReponse, bluff, legende, 'blind-test': blindTest, geoquiz,
   'mot-le-plus-long': motLePlusLong, 'le-compte-est-bon': leCompteEstBon, 'petit-bac': petitBac, nuancier, 'defi-encheres': defiEncheres,
-  'qui-suis-je': quiSuisJe, 'wiki-course': wikiCourse,
+  'qui-suis-je': quiSuisJe, 'wiki-course': wikiCourse, chapeau,
 };
 
 // Modes prévus mais pas encore codés : affichés grisés (« Bientôt »), jamais choisis.

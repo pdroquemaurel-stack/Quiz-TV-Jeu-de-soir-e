@@ -652,6 +652,81 @@
     <button id="bouton-suivant-wc" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="chapeau-saisie" hidden>
+    <p class="ch-chrono-joueur" id="ch-chrono-saisie"></p>
+    <div class="ch-formulaire" id="ch-formulaire">
+      <p class="gros-texte">Mets 3 mots dans le chapeau</p>
+      <p class="discret">Un nom, une célébrité, un objet, un film… Facile à faire deviner et à mimer.</p>
+      <input class="champ-mot ch-champ" type="text" maxlength="30" autocomplete="off" enterkeyhint="next" aria-label="Mot 1">
+      <input class="champ-mot ch-champ" type="text" maxlength="30" autocomplete="off" enterkeyhint="next" aria-label="Mot 2">
+      <input class="champ-mot ch-champ" type="text" maxlength="30" autocomplete="off" enterkeyhint="done" aria-label="Mot 3">
+      <button id="ch-valider" class="bouton" disabled>Dans le chapeau !</button>
+      <button id="ch-piocher" class="bouton secondaire">Piocher au hasard</button>
+    </div>
+    <div class="ch-envoyes" id="ch-envoyes" hidden>
+      <p class="carte-resultat juste rebond">C'est dans le chapeau !</p>
+      <ul class="ch-mes-mots" id="ch-mes-mots"></ul>
+      <p class="discret" id="ch-nb-finis"></p>
+      <button id="ch-modifier" class="bouton secondaire">Modifier</button>
+    </div>
+  </main>
+
+  <main data-ecran="chapeau-annonce" hidden>
+    <p class="discret" id="ch-numero-annonce"></p>
+    <p class="ch-titre-manche-joueur rebond" id="ch-titre-annonce"></p>
+    <p class="gros-texte" id="ch-regle-annonce"></p>
+    <p class="discret" id="ch-equipe-annonce"></p>
+  </main>
+
+  <main data-ecran="chapeau-preparation_actif" hidden>
+    <p class="discret" id="ch-numero-preparation-actif"></p>
+    <p class="carte-resultat juste rebond">C'est ton tour !</p>
+    <p class="gros-texte" id="ch-regle-preparation-actif"></p>
+    <div class="qsj-zone-boutons en-bas">
+      <button id="ch-partir" class="bouton qsj-gros-bouton">C'est parti !</button>
+    </div>
+  </main>
+
+  <main data-ecran="chapeau-preparation" hidden>
+    <p class="discret" id="ch-numero-preparation"></p>
+    <p class="gros-texte" id="ch-consigne-preparation"></p>
+    <p class="discret" id="ch-regle-preparation"></p>
+  </main>
+
+  <main data-ecran="chapeau-faire_deviner" hidden>
+    <p class="ch-chrono-joueur" id="ch-chrono-actif"></p>
+    <p class="discret" id="ch-regle-actif"></p>
+    <p class="ch-mot" id="ch-mot-actif"></p>
+    <p class="discret" id="ch-compte-actif"></p>
+    <div class="qsj-zone-boutons en-bas">
+      <button id="ch-trouve" class="bouton qsj-gros-bouton">Trouvé !</button>
+      <button id="ch-passer" class="bouton secondaire">Passer</button>
+    </div>
+  </main>
+
+  <main data-ecran="chapeau-deviner" hidden>
+    <p class="ch-chrono-joueur" id="ch-chrono-deviner"></p>
+    <p class="carte-resultat juste rebond">Devine !</p>
+    <p class="gros-texte" id="ch-consigne-deviner"></p>
+    <p class="discret" id="ch-compte-deviner"></p>
+  </main>
+
+  <main data-ecran="chapeau-surveiller" hidden>
+    <p class="ch-chrono-joueur" id="ch-chrono-surveiller"></p>
+    <p class="discret" id="ch-consigne-surveiller"></p>
+    <p class="ch-mot" id="ch-mot-surveiller"></p>
+    <p class="gros-texte" id="ch-regle-surveiller"></p>
+    <p class="discret" id="ch-compte-surveiller"></p>
+  </main>
+
+  <main data-ecran="chapeau-bilan" hidden>
+    <p id="ch-resultat" class="carte-resultat rebond"></p>
+    <p id="ch-mots-trouves" class="discret"></p>
+    <p id="ch-scores" class="gros-texte"></p>
+    <p>Score : <strong id="score-ch"></strong> · Rang : <strong id="rang-ch"></strong></p>
+    <button id="ch-suivant" class="bouton en-bas" hidden>Suivant</button>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -741,6 +816,12 @@
         <p class="titre-option">Niveaux</p>
         <div id="wc-choix-niveaux" class="choix-reglages"></div>
       </div>
+      <div data-reglages="chapeau" hidden>
+        <p class="titre-option">Les mots</p>
+        <div id="ch-choix-origines" class="choix-reglages"></div>
+        <p class="titre-option">Durée d'un tour</p>
+        <div id="ch-choix-temps" class="choix-reglages"></div>
+      </div>
       <div data-reglages="petit-bac" hidden>
         <p class="titre-option">Lettres rares (K, Q, W, X, Y, Z)</p>
         <div id="pb-choix-rares" class="choix-reglages"></div>
@@ -807,5 +888,6 @@
   <script src="/joueur/modes/defi-encheres.js"></script>
   <script src="/joueur/modes/qui-suis-je.js"></script>
   <script src="/joueur/modes/wiki-course.js"></script>
+  <script src="/joueur/modes/chapeau.js"></script>
 </body>
 </html>

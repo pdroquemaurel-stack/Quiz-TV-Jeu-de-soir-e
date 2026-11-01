@@ -1,0 +1,165 @@
+/* Écrans du chapeau sur la TV. Chargé après tv.css (voir tv/index.html). */
+
+.ch-centre {
+  text-align: center;
+}
+
+/* ---------- Annonce d'une manche ---------- */
+
+.ch-titre-manche {
+  margin-top: auto;
+  text-align: center;
+  font-size: 160px;
+  color: var(--accent);
+}
+
+.ch-regle {
+  font-size: 64px;
+}
+
+/* ---------- Tour : qui fait deviner, les trouvés ---------- */
+
+.ch-annonce-actif {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-size: 88px;
+  text-align: center;
+}
+
+.ch-trouves {
+  font-size: 120px;
+  font-weight: 700;
+  color: var(--juste);
+}
+
+.ch-restants {
+  font-size: 48px;
+  color: var(--texte-doux);
+}
+
+/* ---------- Les deux équipes, en bas, côte à côte ---------- */
+
+.ch-equipes {
+  margin-top: auto;
+  display: flex;
+  gap: 40px;
+  /* Place laissée au petit QR code du coin. */
+  padding-right: 220px;
+}
+
+.ch-equipe {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 28px;
+  background: var(--panneau);
+  border: 6px solid var(--couleur-equipe);
+  border-bottom-width: 14px;
+  border-radius: 28px;
+}
+
+.ch-equipe.equipe-0 {
+  --couleur-equipe: var(--choix-0);
+}
+
+.ch-equipe.equipe-1 {
+  --couleur-equipe: var(--choix-1);
+}
+
+.ch-nom-equipe {
+  margin: 0 0 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--couleur-equipe);
+}
+
+.ch-equipe ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  font-size: 40px;
+}
+
+.ch-equipe li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ch-equipe li.actif {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--couleur-equipe);
+  text-underline-offset: 8px;
+}
+
+.ch-equipe li.deconnecte {
+  opacity: 0.5;
+}
+
+/* ---------- Bilan et fin de manche ---------- */
+
+main[data-ecran="chapeau-bilan"] .tv-haut,
+main[data-ecran="chapeau-finManche"] .tv-haut {
+  min-height: 0;
+}
+
+.ch-verdict {
+  font-size: 64px;
+}
+
+.ch-mots-trouves {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 24px;
+}
+
+.ch-mots-trouves li {
+  padding: 8px 28px;
+  font-size: 56px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--juste);
+  border: 5px solid var(--contour);
+  border-radius: 24px;
+}
+
+.ch-colonnes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 48px;
+}
+
+.ch-equipes.ch-equipes-colonne {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+  flex-direction: column;
+  padding-right: 0;
+}
+
+main[data-ecran="chapeau-finManche"] .classement-colonne {
+  width: 700px;
+  align-self: flex-start;
+}
+
+.ch-equipes-colonne .ch-equipe {
+  flex: 0 0 auto;
+}
+
+main[data-ecran^="chapeau"] .numero {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

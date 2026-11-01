@@ -128,6 +128,11 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Un joueur arrive à la cible (`arrive` passe à vrai) | `victoire` |
 | | Révélation d'une manche | `etape` |
 | | Bilan de la course | `etape` |
+| Le chapeau | Saisie, annonce d'une manche, préparation d'un tour | `etape` |
+| | Début du tour (« C'est parti ! ») | `lancement` |
+| | Mot trouvé (`nbTrouvesDuTour` augmente) | `reponse` |
+| | Bilan du tour | `etape` |
+| | Fin de manche (chapeau vide) | `victoire` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="/tv/modes/defi-encheres.css">
   <link rel="stylesheet" href="/tv/modes/qui-suis-je.css">
   <link rel="stylesheet" href="/tv/modes/wiki-course.css">
+  <link rel="stylesheet" href="/tv/modes/chapeau.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -269,6 +270,70 @@
       <div class="wc-colonnes">
         <ul class="wc-parcours" id="wc-parcours"></ul>
         <ol class="classement classement-colonne" id="wc-classement"></ol>
+      </div>
+    </main>
+
+    <main data-ecran="chapeau-saisie" hidden>
+      <div class="tv-haut">
+        <p class="numero">Le chapeau</p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="ch-barre-saisie"></div></div>
+        <p class="chrono" id="ch-chrono-saisie"></p>
+      </div>
+      <h1 class="question rebond">Écrivez 3 mots sur vos téléphones</h1>
+      <p class="attente ch-centre">Un nom, une célébrité, un objet, un film… ou piochez au hasard.</p>
+      <ul class="etiquettes ont-repondu" id="ch-ont-fini"></ul>
+    </main>
+
+    <main data-ecran="chapeau-annonce" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ch-numero-annonce"></p>
+      </div>
+      <h1 class="ch-titre-manche rebond" id="ch-titre-annonce"></h1>
+      <p class="ch-regle ch-centre" id="ch-regle-annonce"></p>
+      <div class="ch-equipes" id="ch-equipes-annonce"></div>
+    </main>
+
+    <main data-ecran="chapeau-preparation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ch-numero-preparation"></p>
+      </div>
+      <p class="ch-annonce-actif rebond" id="ch-actif-preparation"></p>
+      <p class="ch-regle ch-centre" id="ch-regle-preparation"></p>
+      <p class="attente ch-centre" id="ch-mots-preparation"></p>
+      <div class="ch-equipes" id="ch-equipes-preparation"></div>
+    </main>
+
+    <main data-ecran="chapeau-jeu" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ch-numero-jeu"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="ch-barre-jeu"></div></div>
+        <p class="chrono" id="ch-chrono-jeu"></p>
+      </div>
+      <p class="ch-annonce-actif" id="ch-actif-jeu"></p>
+      <p class="ch-regle ch-centre" id="ch-regle-jeu"></p>
+      <p class="ch-trouves ch-centre" id="ch-trouves-jeu"></p>
+      <p class="ch-centre ch-restants" id="ch-mots-jeu"></p>
+      <div class="ch-equipes" id="ch-equipes-jeu"></div>
+    </main>
+
+    <main data-ecran="chapeau-bilan" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ch-numero-bilan"></p>
+        <h1 class="ch-verdict rebond" id="ch-verdict-bilan"></h1>
+      </div>
+      <ul class="ch-mots-trouves" id="ch-mots-bilan"></ul>
+      <div class="ch-equipes" id="ch-equipes-bilan"></div>
+    </main>
+
+    <main data-ecran="chapeau-finManche" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ch-numero-fin"></p>
+        <h1 class="ch-verdict rebond" id="ch-verdict-fin"></h1>
+      </div>
+      <ul class="ch-mots-trouves" id="ch-mots-fin"></ul>
+      <div class="ch-colonnes">
+        <div class="ch-equipes ch-equipes-colonne" id="ch-equipes-fin"></div>
+        <ol class="classement classement-colonne" id="ch-classement"></ol>
       </div>
     </main>
 
@@ -722,5 +787,6 @@
   <script src="/tv/modes/defi-encheres.js"></script>
   <script src="/tv/modes/qui-suis-je.js"></script>
   <script src="/tv/modes/wiki-course.js"></script>
+  <script src="/tv/modes/chapeau.js"></script>
 </body>
 </html>

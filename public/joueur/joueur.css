@@ -1698,3 +1698,50 @@ main[data-ecran="wiki-course-course"]::after {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ---------- Le chapeau ---------- */
+
+.ch-formulaire,
+.ch-envoyes {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.ch-champ {
+  height: 64px;
+  font-size: 28px;
+}
+
+.ch-mes-mots {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.ch-chrono-joueur {
+  font-size: 48px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ch-titre-manche-joueur {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Le mot à faire deviner : le plus gros possible, lisible d'un coup d'œil. */
+.ch-mot {
+  max-width: 100%;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
