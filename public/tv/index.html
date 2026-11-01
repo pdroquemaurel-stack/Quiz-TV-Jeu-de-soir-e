@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/tv/modes/qui-suis-je.css">
   <link rel="stylesheet" href="/tv/modes/wiki-course.css">
   <link rel="stylesheet" href="/tv/modes/chapeau.css">
+  <link rel="stylesheet" href="/tv/modes/cherche-trouve.css">
   <!-- Carte du GéoQuiz. Si le CDN ne répond pas, seul le GéoQuiz est touché. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
     integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
@@ -334,6 +335,41 @@
       <div class="ch-colonnes">
         <div class="ch-equipes ch-equipes-colonne" id="ch-equipes-fin"></div>
         <ol class="classement classement-colonne" id="ch-classement"></ol>
+      </div>
+    </main>
+
+    <main data-ecran="cherche-trouve-annonce" hidden>
+      <div class="tv-haut">
+        <p class="numero">Cherche &amp; trouve</p>
+      </div>
+      <h1 class="ct-nom-scene rebond" id="ct-nom-scene"></h1>
+      <p class="ct-consigne" id="ct-consigne-annonce"></p>
+      <p class="attente ct-centre">Zoomez avec deux doigts, glissez, et touchez le détail demandé.</p>
+    </main>
+
+    <main data-ecran="cherche-trouve-recherche" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ct-numero-recherche"></p>
+        <div class="barre-temps"><div class="barre-temps-remplie" id="ct-barre"></div></div>
+        <p class="chrono" id="ct-chrono"></p>
+      </div>
+      <p class="ct-paire rebond" id="ct-paire-recherche"></p>
+      <h1 class="ct-texte-detail" id="ct-texte-recherche"></h1>
+      <p class="attente ct-centre">Cherchez sur vos téléphones !</p>
+      <ul class="etiquettes ont-repondu" id="ct-ont-trouve"></ul>
+    </main>
+
+    <main data-ecran="cherche-trouve-revelation" hidden>
+      <div class="tv-haut">
+        <p class="numero" id="ct-numero-revelation"></p>
+        <h1 class="ct-verdict" id="ct-texte-revelation"></h1>
+      </div>
+      <div class="ct-colonnes">
+        <div class="ct-visionneuse" id="ct-visionneuse-tv"></div>
+        <div class="ct-colonne-droite">
+          <ul class="ct-resultats" id="ct-resultats"></ul>
+          <ol class="classement classement-colonne" id="ct-classement"></ol>
+        </div>
       </div>
     </main>
 
@@ -788,5 +824,11 @@
   <script src="/tv/modes/qui-suis-je.js"></script>
   <script src="/tv/modes/wiki-course.js"></script>
   <script src="/tv/modes/chapeau.js"></script>
+  <!-- Visionneuse d'images zoomables de Cherche & trouve. Si le CDN ne répond pas, seul ce mode est touché. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.1/openseadragon.min.js"
+    integrity="sha512-LbaoUnRCul2C+I4cdS/EMnMbynmZMU58AApBnZkhMzp/r8rOS7htjTsox7g6rf5ZXkSx56F5dDYmhLwqV1Zt4A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/commun/cherche-trouve.js"></script>
+  <script src="/tv/modes/cherche-trouve.js"></script>
 </body>
 </html>

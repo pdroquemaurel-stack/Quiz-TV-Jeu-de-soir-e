@@ -563,6 +563,27 @@ const JEUX = [
     taches: ['Ajouter des personnages à Qui suis-je ?', 'Une photo de Qui suis-je ? est mauvaise'],
   },
   {
+    id: 'cherche-trouve', nom: 'Cherche & trouve', icone: '🔍', resume: 'Explorer une scène sur son téléphone et toucher le détail',
+    joueurs: '1 à 10', options: '4, <strong>6</strong> ou 8 détails ; 45, <strong>60</strong> ou 90 s par détail',
+    fichiers: [['scripts/construire-cherche-trouve.js', 'les thèmes des scènes (emojis, accessoires, fonds), au début du fichier (c\'est du code)'], ['data/cherche-trouve.json', 'les scènes et la position des détails, écrit par le script']],
+    ajouter: [
+      'Les scènes ne s\'écrivent pas à la main : elles sont générées. Dans <code>THEMES</code>, au début du script, change les emojis d\'un thème ou ajoutes-en un, puis relance le script.',
+      'Ouvre ensuite l\'image produite (<code>public/cherche-trouve/&lt;thème&gt;.svg</code>) dans le navigateur pour la regarder.',
+    ],
+    corriger: ['Une scène trop dure ou trop facile : change <code>REMPLISSAGE</code> (la part de cases occupées) ou la <code>graine</code> du thème, puis relance le script.'],
+    regles: [
+      'Des emojis simples (pas de famille ni de drapeau composés), lisibles sur tous les téléphones.',
+      'Au moins 8 détails par scène.',
+    ],
+    exemple: '{ id: \'plage\', nom: \'La plage\', graine: 11, bases: { \'🦀\': \'le crabe\', … }, figurants: [\'🏄\', …], fond: fondPlage }',
+    pieges: ['C\'est un fichier de code : <code>npm test</code> est indispensable après la modification.'],
+    commandes: [
+      ['node scripts/construire-cherche-trouve.js', 'Réécrit les scènes et le catalogue (toujours les mêmes pour une même graine).'],
+      ['node scripts/verifier-cherche-trouve.js', 'Vérifie le catalogue et la présence des images.'],
+    ],
+    taches: ['Changer les scènes de Cherche & trouve'],
+  },
+  {
     id: 'chapeau', nom: 'Le chapeau', icone: '🎩', resume: 'Deux équipes, les mêmes mots : décrire, un seul mot, mimer',
     joueurs: '4 à 10', options: 'mots <strong>écrits par les joueurs</strong> ou tous au hasard ; <strong>30</strong>, 45 ou 60 s par tour',
     fichiers: [['data/chapeau.json', 'les mots à piocher']],

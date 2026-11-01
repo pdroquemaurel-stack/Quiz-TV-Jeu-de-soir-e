@@ -1745,3 +1745,138 @@ main[data-ecran="wiki-course-course"]::after {
   color: var(--accent);
   overflow-wrap: anywhere;
 }
+
+/* ---------- Cherche & trouve ---------- */
+
+.ct-nom-scene-joueur {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* La scène prend tout l'écran sous le bandeau du détail. */
+main[data-ecran="cherche-trouve-recherche"] {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+}
+
+main[data-ecran="cherche-trouve-recherche"]::before,
+main[data-ecran="cherche-trouve-recherche"]::after {
+  content: none;
+}
+
+.ct-bandeau {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  text-align: left;
+  border-bottom: 4px solid var(--contour);
+}
+
+.ct-paire {
+  position: relative;
+  line-height: 1;
+}
+
+.ct-paire-joueur .ct-base {
+  font-size: 48px;
+}
+
+.ct-paire-joueur .ct-accessoire {
+  position: absolute;
+  right: -12px;
+  top: -8px;
+  font-size: 26px;
+}
+
+.ct-bandeau-texte {
+  flex: 1;
+  min-width: 0;
+}
+
+.ct-bandeau-texte p {
+  margin: 0;
+}
+
+.ct-texte-joueur {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ct-chrono-joueur {
+  font-size: 28px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Une hauteur fixe : OpenSeadragon remplit son conteneur, qui doit donc avoir une taille. */
+.ct-scene {
+  position: relative;
+  height: 68vh;
+  height: 68dvh;
+}
+
+.ct-visionneuse-joueur {
+  width: 100%;
+  height: 100%;
+  background: var(--contour);
+  /* Le navigateur ne fait ni défiler ni zoomer la page : les gestes vont à la scène. */
+  touch-action: none;
+}
+
+/* « Raté ! » ou « Trouvé ! » un instant, au milieu de la scène. */
+.ct-flash {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  margin: 0;
+  padding: 12px 28px;
+  transform: translate(-50%, -50%);
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--rate);
+  border: 4px solid var(--contour);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.ct-flash.juste {
+  background: var(--juste);
+}
+
+.ct-erreur {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+}
+
+.ct-resultat-joueur {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-top: 4px solid var(--contour);
+}
+
+.ct-resultat-joueur .carte-resultat {
+  margin: 0;
+  padding: 14px;
+  font-size: 26px;
+}
+
+/* Le cercle autour du détail, posé par OpenSeadragon à la révélation. */
+.ct-cercle {
+  border: 6px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px #fff;
+}

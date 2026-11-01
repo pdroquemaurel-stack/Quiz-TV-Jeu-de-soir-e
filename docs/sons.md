@@ -133,6 +133,9 @@ Chaque mode joue ses sons dans ses fonctions d'affichage, sur `nouvelleEtape` ou
 | | Mot trouvé (`nbTrouvesDuTour` augmente) | `reponse` |
 | | Bilan du tour | `etape` |
 | | Fin de manche (chapeau vide) | `victoire` |
+| Cherche & trouve | Annonce, début d'une recherche | `etape` |
+| | Un joueur trouve (`ontTrouve` grandit) | `reponse` |
+| | Révélation (la TV zoome sur le détail) | `revelation` |
 
 Le son d'une étape ne joue qu'à son arrivée, jamais à chaque état reçu pendant l'étape.
 

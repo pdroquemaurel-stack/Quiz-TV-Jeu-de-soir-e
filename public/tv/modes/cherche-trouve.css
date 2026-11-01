@@ -1,0 +1,145 @@
+/* Écrans de Cherche & trouve sur la TV. Chargé après tv.css (voir tv/index.html). */
+
+.ct-centre {
+  text-align: center;
+}
+
+main[data-ecran^="cherche-trouve"] .numero {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ---------- Annonce ---------- */
+
+.ct-nom-scene {
+  margin-top: auto;
+  text-align: center;
+  font-size: 180px;
+  color: var(--accent);
+}
+
+.ct-consigne {
+  text-align: center;
+  font-size: 64px;
+}
+
+main[data-ecran="cherche-trouve-annonce"] .attente {
+  margin-bottom: auto;
+}
+
+/* ---------- Le détail à trouver : l'emoji et son accessoire, comme dans la scène ---------- */
+
+.ct-paire {
+  position: relative;
+  align-self: center;
+  margin: 24px 0 0;
+  line-height: 1;
+}
+
+.ct-base {
+  font-size: 260px;
+}
+
+.ct-accessoire {
+  position: absolute;
+  right: -70px;
+  top: -40px;
+  font-size: 140px;
+}
+
+.ct-texte-detail {
+  text-align: center;
+  font-size: 80px;
+}
+
+/* ---------- Révélation : la scène zoomée à gauche, les résultats à droite ---------- */
+
+main[data-ecran="cherche-trouve-revelation"] .tv-haut {
+  min-height: 0;
+}
+
+.ct-verdict {
+  font-size: 56px;
+}
+
+.ct-colonnes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 40px;
+}
+
+.ct-visionneuse {
+  flex: 1;
+  min-width: 0;
+  background: var(--contour);
+  border: 6px solid var(--contour);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.ct-colonne-droite {
+  width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ct-resultats {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ct-resultats li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 20px;
+  font-size: 40px;
+  background: var(--panneau);
+  border: 4px solid var(--contour);
+  border-radius: 18px;
+}
+
+.ct-resultats li.trouve {
+  border-color: var(--juste);
+}
+
+.ct-resultats .pseudo {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ct-temps {
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.ct-points {
+  font-weight: 700;
+  color: var(--juste);
+}
+
+main[data-ecran="cherche-trouve-revelation"] .classement-colonne {
+  width: 100%;
+  padding-right: 0;
+}
+
+/* Le cercle autour du détail, posé par OpenSeadragon sur la scène. */
+.ct-cercle {
+  border: 12px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px #fff;
+  animation: pulser-ct 1.2s ease-in-out infinite;
+}
+
+@keyframes pulser-ct {
+  50% { opacity: 0.55; }
+}

@@ -727,6 +727,38 @@
     <button id="ch-suivant" class="bouton en-bas" hidden>Suivant</button>
   </main>
 
+  <main data-ecran="cherche-trouve-annonce" hidden>
+    <p class="discret">Cherche &amp; trouve</p>
+    <p class="ct-nom-scene-joueur rebond" id="ct-nom-scene-joueur"></p>
+    <p class="gros-texte" id="ct-consigne-joueur"></p>
+    <p class="discret" id="ct-chargement-joueur">Chargement de la scène…</p>
+  </main>
+
+  <!-- Sert aussi à la révélation : la scène reste chargée, elle zoome sur le détail. -->
+  <main data-ecran="cherche-trouve-recherche" hidden>
+    <div class="ct-bandeau">
+      <span class="ct-paire ct-paire-joueur" id="ct-paire-joueur"></span>
+      <div class="ct-bandeau-texte">
+        <p class="ct-texte-joueur" id="ct-texte-joueur"></p>
+        <p class="discret" id="ct-etat-joueur"></p>
+      </div>
+      <span class="ct-chrono-joueur" id="ct-chrono-joueur"></span>
+    </div>
+    <div class="ct-scene">
+      <div class="ct-visionneuse-joueur" id="ct-visionneuse-joueur"></div>
+      <p class="ct-flash" id="ct-flash" hidden></p>
+      <div class="ct-erreur" id="ct-erreur" hidden>
+        <p>Image indisponible.</p>
+        <button id="ct-recharger" class="bouton">Réessayer</button>
+      </div>
+    </div>
+    <div class="ct-resultat-joueur" id="ct-resultat-joueur" hidden>
+      <p id="ct-resultat-texte" class="carte-resultat"></p>
+      <p>Score : <strong id="score-ct"></strong> · Rang : <strong id="rang-ct"></strong></p>
+      <button id="ct-suivant" class="bouton" hidden>Suivant</button>
+    </div>
+  </main>
+
   <main data-ecran="fin" hidden>
     <p class="gros-texte">Partie terminée</p>
     <p id="rang-fin" class="rang-fin rebond"></p>
@@ -889,5 +921,11 @@
   <script src="/joueur/modes/qui-suis-je.js"></script>
   <script src="/joueur/modes/wiki-course.js"></script>
   <script src="/joueur/modes/chapeau.js"></script>
+  <!-- Visionneuse d'images zoomables de Cherche & trouve. Si le CDN ne répond pas, seul ce mode est touché. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.1/openseadragon.min.js"
+    integrity="sha512-LbaoUnRCul2C+I4cdS/EMnMbynmZMU58AApBnZkhMzp/r8rOS7htjTsox7g6rf5ZXkSx56F5dDYmhLwqV1Zt4A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/commun/cherche-trouve.js"></script>
+  <script src="/joueur/modes/cherche-trouve.js"></script>
 </body>
 </html>

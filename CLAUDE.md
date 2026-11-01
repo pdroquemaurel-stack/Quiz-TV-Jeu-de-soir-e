@@ -43,13 +43,15 @@ server/
   modes/qui-suis-je.js # mode Qui suis-je ? (docs/modes/qui-suis-je.md)
   modes/wiki-course.js # mode Wiki course (docs/modes/wiki-course.md)
   modes/chapeau.js  # mode Le chapeau (docs/modes/chapeau.md), demandé comme « Time's Up »
+  modes/cherche-trouve.js # mode Cherche & trouve (docs/modes/cherche-trouve.md)
 public/
   tv/               # page TV (1920x1080), tv/modes/<mode>.js et <mode>.css pour les écrans d'un mode
   joueur/           # page téléphone (portrait), joueur/modes/<mode>.js idem
   tv/sons.js        # sons et musique synthétisés par la TV (docs/sons.md)
   tv/extraits.js    # lecture des extraits Deezer, planche /tv?extraits
   tv/planche-nuancier.js # planche /tv?nuancier : les logos du Nuancier, masqués puis à la couleur cible
-  commun/           # CSS et JS partagés, dont commun/nuancier.js (affichage des logos du Nuancier)
+  commun/           # CSS et JS partagés, dont commun/nuancier.js (affichage des logos du Nuancier) et commun/cherche-trouve.js (visionneuse OpenSeadragon)
+  cherche-trouve/   # scènes SVG de Cherche & trouve, écrites par scripts/construire-cherche-trouve.js
   gifs/             # vidéos MP4 de La légende (<id Imgflip>.mp4, 1 Mo max)
   logos/nuancier/   # logos SVG du Nuancier (Wikimedia Commons), passés dans scripts/prep-nuancier.html
 data/questions.json
@@ -69,6 +71,7 @@ data/defi-encheres.json # défis du Défi des enchères : id et sujet
 data/qui-suis-je.json  # personnages de Qui suis-je ? : nom, catégorie, niveau, titre Wikipédia, photo et crédit
 data/wiki-course.json  # couples départ → cible de la Wiki course (titres d'articles de Wikipédia FR), avec leur niveau
 data/chapeau.json      # mots à piocher du chapeau : id et mot
+data/cherche-trouve.json # scènes de Cherche & trouve et position des détails (connue du serveur seul), écrit par le script
 scripts/verifier-questions.js
 scripts/verifier-estimation.js
 scripts/verifier-qui-de-nous.js
@@ -92,6 +95,8 @@ scripts/construire-qui-suis-je.py # ajoute à data/qui-suis-je.json l'image prin
 scripts/verifier-qui-suis-je.js
 scripts/verifier-wiki-course.js
 scripts/verifier-chapeau.js
+scripts/construire-cherche-trouve.js # génère les scènes en emojis (graine fixe) et le catalogue
+scripts/verifier-cherche-trouve.js
 docs/spec.md
 docs/modes/        # une mini-spec par mode de jeu
 docs/sons.md       # mini-spec des sons (tranche 16)
@@ -124,6 +129,8 @@ docs/sons.md       # mini-spec des sons (tranche 16)
 - `node scripts/verifier-qui-suis-je.js` : vérifie le format de `qui-suis-je.json`
 - `node scripts/verifier-wiki-course.js` : vérifie le format de `wiki-course.json` ; avec `--wikipedia`, vérifie en plus en ligne que chaque titre existe, sans redirection ni homonymie, et que chaque départ a au moins 20 liens
 - `node scripts/verifier-chapeau.js` : vérifie le format de `chapeau.json`
+- `node scripts/construire-cherche-trouve.js` : réécrit les scènes SVG de `public/cherche-trouve/` et `data/cherche-trouve.json` (mêmes scènes à chaque fois, graine fixe)
+- `node scripts/verifier-cherche-trouve.js` : vérifie `cherche-trouve.json` et la présence des images
 
 ## Ajouter un mode
 
